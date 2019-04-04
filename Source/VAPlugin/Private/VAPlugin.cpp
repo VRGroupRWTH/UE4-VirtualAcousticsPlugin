@@ -203,7 +203,7 @@ void FVAPluginModule::playTestSound(bool loop)
 	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
 }
 
-int FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, int action)
+int FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
 {
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
 	soundRot = VAUtils::toVACoordinateSystem(soundRot);
@@ -219,6 +219,8 @@ int FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRota
 	const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName);
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
+
+
 
 	const int iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
 	pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);

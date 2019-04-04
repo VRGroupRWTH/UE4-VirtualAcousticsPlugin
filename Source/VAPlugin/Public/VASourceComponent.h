@@ -17,6 +17,16 @@ enum EMovement {
 	OwnPosition,
 };
 
+// struct used to get 
+UENUM()
+enum EPlayAction {
+	Play,
+	Pause, 
+	Stop
+};
+
+
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VAPLUGIN_API UVASourceComponent : public UActorComponent
@@ -33,11 +43,15 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 		FString vSoundName = "Audiofiles/Bauer.wav";
 
 	// Loop sound?
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action"))
+		TEnumAsByte<EPlayAction> vAction = EPlayAction::Play;
+
+	// Loop sound?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop"))
 		bool vLoop = false;
 
-	// Start in x Seconds
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Starting time (s)"))
+	// Start at Second x
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Starting Sound at Second x"))
 		float vDelay = 0.0f;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
@@ -59,6 +73,18 @@ public:
 	UVASourceComponent();
 
 	bool sendSoundData();
+
+	// Plays Sound
+	UFUNCTION(BlueprintCallable)
+	void playSound();
+
+	// Pauses Sound
+	UFUNCTION(BlueprintCallable)
+	void stopSound();
+
+	// Stops Sound
+	UFUNCTION(BlueprintCallable)
+	void pauseSound();
 
 protected:
 	// Called when the game starts

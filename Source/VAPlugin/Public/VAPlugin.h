@@ -27,7 +27,7 @@ public:
 
 	static void playTestSound(bool loop = true);
 
-	static int initializeSound(FString soundNameF, FVector soundPos = FVector(0,0,0), FRotator soundRot = FRotator(0,0,0), float gain = 0.0f, bool loop = false, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+	static int initializeSound(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0), float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
 	static bool enqueueSound(UVASourceComponent* soundComponent);
 	static bool processSoundQueue();
 	static bool setSoundAction(int soundID, int soundAction);

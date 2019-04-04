@@ -51,18 +51,41 @@ bool UVASourceComponent::sendSoundData()
 			break;
 	}
 
-	int action;
-	if (vDelay == 0.0f) {
-		action = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
-		started = true;
+	int vActionP;
+	switch (vAction)
+	{
+		case EPlayAction::Play :
+			vActionP = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
+			break;
+
+		case EPlayAction::Pause :
+			vActionP = IVAInterface::VA_PLAYBACK_ACTION_PAUSE;
+			break;
+
+		case EPlayAction::Stop :
+			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
+			break;
 	}
-	else {
-		action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE;
-	}
+
 	
-	soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, action);
+	soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
 
 	return true;
+}
+
+void UVASourceComponent::playSound()
+{
+	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+}
+
+void UVASourceComponent::stopSound()
+{
+	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+}
+
+void UVASourceComponent::pauseSound()
+{
+	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 }
 
 
@@ -76,18 +99,13 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	{
 		timer += DeltaTime;
 		if (timer > vDelay) {
-			FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+			playSound();
 			started = true;
 		}
 	}
 	else
 	{
 		// update Pos
-		if (vMovement == EMovement::MoveWithObject)
-		{
-			// TODO update Source Pos
-		}
-
 	}
 }
 
