@@ -106,6 +106,11 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	else
 	{
 		// update Pos
+		if (vMovement == EMovement::MoveWithObject)
+		{
+			FTransform trans = ownerActor->GetTransform();
+			FVAPluginModule::updateSourcePos(soundID, trans.GetLocation(), trans.GetRotation().Rotator());
+		}
 	}
 }
 
