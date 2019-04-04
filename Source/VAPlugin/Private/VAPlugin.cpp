@@ -53,12 +53,21 @@ void FVAPluginModule::StartupModule()
 	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
 	FString pathNet, pathBase, pathVistaAspects, pathVistaBase, pathVistaInterProcComm;
 
+#if PLATFORM_WINDOWS
 	//LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/VAPlugin/x64/Release/VABase.dll"));
 	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.dll"));
 	pathBase				=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.dll"));
 	pathVistaAspects		=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.dll"));
 	pathVistaBase			=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.dll"));
 	pathVistaInterProcComm	=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.dll"));
+#elif PLATFORM_LINUX
+	//LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/VAPlugin/x64/Release/VABase.dll"));
+	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.so"));
+	pathBase				=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.so"));
+	pathVistaAspects		=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.so"));
+	pathVistaBase			=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.so"));
+	pathVistaInterProcComm	=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.so"));
+#endif
 
 	// ++ Load DLL Handles ++ // 
 	//ExampleLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
@@ -203,7 +212,7 @@ void FVAPluginModule::playTestSound(bool loop)
 	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
 }
 
-int FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
+int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
 {
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
 	soundRot = VAUtils::toVACoordinateSystem(soundRot);
