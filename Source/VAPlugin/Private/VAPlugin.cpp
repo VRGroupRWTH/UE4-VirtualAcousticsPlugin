@@ -99,6 +99,13 @@ void FVAPluginModule::ShutdownModule()
 		if (pVANet->IsConnected())
 			pVANet->Disconnect();
 
+
+	FPlatformProcess::FreeDllHandle(LibraryHandleNet);
+	FPlatformProcess::FreeDllHandle(LibraryHandleBase);
+	FPlatformProcess::FreeDllHandle(LibraryHandleVistaAspects);
+	FPlatformProcess::FreeDllHandle(LibraryHandleVistaBase);
+	FPlatformProcess::FreeDllHandle(LibraryHandleVistaInterProcComm);
+
 }
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
