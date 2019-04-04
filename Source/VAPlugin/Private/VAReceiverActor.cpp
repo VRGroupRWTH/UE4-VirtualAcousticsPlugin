@@ -25,12 +25,19 @@ void AVAReceiverActor::BeginPlay()
 
 	controller = GetWorld()->GetFirstPlayerController();
 	
-	FVAPluginModule::initializeServer();
+	FString adresse = "localhost";
+	if (vAdress == EAdress::Cave) {
+		adresse = "10.0.1.240";
+	}
+
+	// Connect to VA Server
+	FVAPluginModule::initializeServer(adresse, vPort);
+	
+	// Initialize Receiver Actor
 	FVAPluginModule::initializeReceiver(this);
+	
+	// Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
 	FVAPluginModule::processSoundQueue();
-
-
-
 	
 }
 
@@ -81,14 +88,16 @@ float AVAReceiverActor::getScale()
 
 FString AVAReceiverActor::getIPAdress()
 {
-	if (vIPAdress.ip1 == 127 && vIPAdress.ip2 == 0 && vIPAdress.ip3 == 0 && vIPAdress.ip4 == 1) {
+	if (vAdress == EAdress::localhost) {
 		return "localhost";
 	}
-	else {
-		VAUtils::openMessageBox("could not translate IP Adress, using localhost", true); // TODO: implement other IP Adresses
+	else if (vAdress == EAdress::Cave) {
+		return "10.0.1.240";
 	}
 
-	return "localhost";
+	VAUtils::openMessageBox("could not evaluate IP Adress. Returning localhost (AVAReceiverActor::getIPAdress())", true);
+
+	return "localhost"
 }
 
 float AVAReceiverActor::getGainFactor()

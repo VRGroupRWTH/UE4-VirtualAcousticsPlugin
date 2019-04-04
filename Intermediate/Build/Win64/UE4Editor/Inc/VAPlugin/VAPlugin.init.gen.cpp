@@ -19,8 +19,8 @@ void EmptyLinkFunctionForGeneratedCodeVAPlugin_init() {}
 			static const UE4CodeGen_Private::FPackageParams PackageParams = {
 				"/Script/VAPlugin",
 				PKG_CompiledIn | 0x00000000,
-				0xFE208C5C,
-				0x0BB2BFF2,
+				0xA1FBED9A,
+				0xDBC8CE79,
 				nullptr, 0,
 				METADATA_PARAMS(nullptr, 0)
 			};

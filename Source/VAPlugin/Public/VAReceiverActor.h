@@ -13,26 +13,12 @@ enum EDir {
 	DefaultHRIR
 }; 
 
-// struct used to input IP-Adress of VA server via Variable in UE4 Editor
-USTRUCT()
-struct FAdress {
-	GENERATED_BODY()
-
-		UPROPERTY(EditAnywhere, meta = (DisplayName = "xxx._._._"))
-		uint8 ip1;
-
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "_.xxx._._"))
-		uint8 ip2;
-
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "_._.xxx._"))
-		uint8 ip3;
-
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "_._._.xxx"))
-		uint8 ip4;
-
-	FAdress(uint8 ip1_ = 127, uint8 ip2_ = 0, uint8 ip3_ = 0, uint8 ip4_ = 1) : ip1(ip1_), ip2(ip2_), ip3(ip3_), ip4(ip4_)
-	{ }
+UENUM()
+enum EAdress {
+	localhost, 
+	Cave
 };
+
 
 
 UCLASS()
@@ -56,12 +42,14 @@ public:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale"))
 		float vScale = 100.0f;
 
-	// IP Adress of VA Server. 127.0.0.1 = localhost
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress"))
-		FAdress vIPAdress = FAdress(127,0,0,1);
+	// Choose Where To use the Plugin (Important for IP Adress and Port)
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase"))
+		TEnumAsByte<EAdress> vAdress = EAdress::localhost;
 
+	// Factor for global output Gain
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]", ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
+		uint16 vPort = 12340;
 
-	
 	// return directivity x in form: $(x)
 	std::string getDirectivity();
 	

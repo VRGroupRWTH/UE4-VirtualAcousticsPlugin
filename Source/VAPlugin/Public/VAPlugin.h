@@ -19,9 +19,9 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-	static bool connectServer(FString host = "localhost");
 	static bool initializeReceiver(AVAReceiverActor * actor);
-	static bool initializeServer();
+	static bool initializeServer(FString host = "localhost", int port = 12340);
+	static bool connectServer	(FString host = "localhost", int port = 12340);
 	static bool ini();
 
 

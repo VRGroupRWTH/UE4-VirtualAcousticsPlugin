@@ -13,13 +13,59 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeVAReceiverActor() {}
 // Cross Module References
-	VAPLUGIN_API UEnum* Z_Construct_UEnum_VAPlugin_EDir();
+	VAPLUGIN_API UEnum* Z_Construct_UEnum_VAPlugin_EAdress();
 	UPackage* Z_Construct_UPackage__Script_VAPlugin();
-	VAPLUGIN_API UScriptStruct* Z_Construct_UScriptStruct_FAdress();
+	VAPLUGIN_API UEnum* Z_Construct_UEnum_VAPlugin_EDir();
 	VAPLUGIN_API UClass* Z_Construct_UClass_AVAReceiverActor_NoRegister();
 	VAPLUGIN_API UClass* Z_Construct_UClass_AVAReceiverActor();
 	ENGINE_API UClass* Z_Construct_UClass_AActor();
 // End Cross Module References
+	static UEnum* EAdress_StaticEnum()
+	{
+		static UEnum* Singleton = nullptr;
+		if (!Singleton)
+		{
+			Singleton = GetStaticEnum(Z_Construct_UEnum_VAPlugin_EAdress, Z_Construct_UPackage__Script_VAPlugin(), TEXT("EAdress"));
+		}
+		return Singleton;
+	}
+	static FCompiledInDeferEnum Z_CompiledInDeferEnum_UEnum_EAdress(EAdress_StaticEnum, TEXT("/Script/VAPlugin"), TEXT("EAdress"), false, nullptr, nullptr);
+	uint32 Get_Z_Construct_UEnum_VAPlugin_EAdress_CRC() { return 4182445685U; }
+	UEnum* Z_Construct_UEnum_VAPlugin_EAdress()
+	{
+#if WITH_HOT_RELOAD
+		UPackage* Outer = Z_Construct_UPackage__Script_VAPlugin();
+		static UEnum* ReturnEnum = FindExistingEnumIfHotReloadOrDynamic(Outer, TEXT("EAdress"), 0, Get_Z_Construct_UEnum_VAPlugin_EAdress_CRC(), false);
+#else
+		static UEnum* ReturnEnum = nullptr;
+#endif // WITH_HOT_RELOAD
+		if (!ReturnEnum)
+		{
+			static const UE4CodeGen_Private::FEnumeratorParam Enumerators[] = {
+				{ "localhost", (int64)localhost },
+				{ "Cave", (int64)Cave },
+			};
+#if WITH_METADATA
+			const UE4CodeGen_Private::FMetaDataPairParam Enum_MetaDataParams[] = {
+				{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
+			};
+#endif
+			static const UE4CodeGen_Private::FEnumParams EnumParams = {
+				(UObject*(*)())Z_Construct_UPackage__Script_VAPlugin,
+				UE4CodeGen_Private::EDynamicType::NotDynamic,
+				"EAdress",
+				RF_Public|RF_Transient|RF_MarkAsNative,
+				nullptr,
+				(uint8)UEnum::ECppForm::Regular,
+				"EAdress",
+				Enumerators,
+				ARRAY_COUNT(Enumerators),
+				METADATA_PARAMS(Enum_MetaDataParams, ARRAY_COUNT(Enum_MetaDataParams))
+			};
+			UE4CodeGen_Private::ConstructUEnum(ReturnEnum, EnumParams);
+		}
+		return ReturnEnum;
+	}
 	static UEnum* EDir_StaticEnum()
 	{
 		static UEnum* Singleton = nullptr;
@@ -66,125 +112,6 @@ void EmptyLinkFunctionForGeneratedCodeVAReceiverActor() {}
 		}
 		return ReturnEnum;
 	}
-class UScriptStruct* FAdress::StaticStruct()
-{
-	static class UScriptStruct* Singleton = NULL;
-	if (!Singleton)
-	{
-		extern VAPLUGIN_API uint32 Get_Z_Construct_UScriptStruct_FAdress_CRC();
-		Singleton = GetStaticStruct(Z_Construct_UScriptStruct_FAdress, Z_Construct_UPackage__Script_VAPlugin(), TEXT("Adress"), sizeof(FAdress), Get_Z_Construct_UScriptStruct_FAdress_CRC());
-	}
-	return Singleton;
-}
-static FCompiledInDeferStruct Z_CompiledInDeferStruct_UScriptStruct_FAdress(FAdress::StaticStruct, TEXT("/Script/VAPlugin"), TEXT("Adress"), false, nullptr, nullptr);
-static struct FScriptStruct_VAPlugin_StaticRegisterNativesFAdress
-{
-	FScriptStruct_VAPlugin_StaticRegisterNativesFAdress()
-	{
-		UScriptStruct::DeferCppStructOps(FName(TEXT("Adress")),new UScriptStruct::TCppStructOps<FAdress>);
-	}
-} ScriptStruct_VAPlugin_StaticRegisterNativesFAdress;
-	struct Z_Construct_UScriptStruct_FAdress_Statics
-	{
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam Struct_MetaDataParams[];
-#endif
-		static void* NewStructOps();
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_ip4_MetaData[];
-#endif
-		static const UE4CodeGen_Private::FBytePropertyParams NewProp_ip4;
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_ip3_MetaData[];
-#endif
-		static const UE4CodeGen_Private::FBytePropertyParams NewProp_ip3;
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_ip2_MetaData[];
-#endif
-		static const UE4CodeGen_Private::FBytePropertyParams NewProp_ip2;
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_ip1_MetaData[];
-#endif
-		static const UE4CodeGen_Private::FBytePropertyParams NewProp_ip1;
-		static const UE4CodeGen_Private::FPropertyParamsBase* const PropPointers[];
-		static const UE4CodeGen_Private::FStructParams ReturnStructParams;
-	};
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UScriptStruct_FAdress_Statics::Struct_MetaDataParams[] = {
-		{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
-		{ "ToolTip", "struct used to input IP-Adress of VA server via Variable in UE4 Editor" },
-	};
-#endif
-	void* Z_Construct_UScriptStruct_FAdress_Statics::NewStructOps()
-	{
-		return (UScriptStruct::ICppStructOps*)new UScriptStruct::TCppStructOps<FAdress>();
-	}
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip4_MetaData[] = {
-		{ "Category", "Adress" },
-		{ "DisplayName", "_._._.xxx" },
-		{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FBytePropertyParams Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip4 = { UE4CodeGen_Private::EPropertyClass::Byte, "ip4", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(FAdress, ip4), nullptr, METADATA_PARAMS(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip4_MetaData, ARRAY_COUNT(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip4_MetaData)) };
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip3_MetaData[] = {
-		{ "Category", "Adress" },
-		{ "DisplayName", "_._.xxx._" },
-		{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FBytePropertyParams Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip3 = { UE4CodeGen_Private::EPropertyClass::Byte, "ip3", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(FAdress, ip3), nullptr, METADATA_PARAMS(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip3_MetaData, ARRAY_COUNT(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip3_MetaData)) };
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip2_MetaData[] = {
-		{ "Category", "Adress" },
-		{ "DisplayName", "_.xxx._._" },
-		{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FBytePropertyParams Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip2 = { UE4CodeGen_Private::EPropertyClass::Byte, "ip2", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(FAdress, ip2), nullptr, METADATA_PARAMS(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip2_MetaData, ARRAY_COUNT(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip2_MetaData)) };
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip1_MetaData[] = {
-		{ "Category", "Adress" },
-		{ "DisplayName", "xxx._._._" },
-		{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FBytePropertyParams Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip1 = { UE4CodeGen_Private::EPropertyClass::Byte, "ip1", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(FAdress, ip1), nullptr, METADATA_PARAMS(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip1_MetaData, ARRAY_COUNT(Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip1_MetaData)) };
-	const UE4CodeGen_Private::FPropertyParamsBase* const Z_Construct_UScriptStruct_FAdress_Statics::PropPointers[] = {
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip4,
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip3,
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip2,
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FAdress_Statics::NewProp_ip1,
-	};
-	const UE4CodeGen_Private::FStructParams Z_Construct_UScriptStruct_FAdress_Statics::ReturnStructParams = {
-		(UObject* (*)())Z_Construct_UPackage__Script_VAPlugin,
-		nullptr,
-		&NewStructOps,
-		"Adress",
-		RF_Public|RF_Transient|RF_MarkAsNative,
-		EStructFlags(0x00000001),
-		sizeof(FAdress),
-		alignof(FAdress),
-		Z_Construct_UScriptStruct_FAdress_Statics::PropPointers, ARRAY_COUNT(Z_Construct_UScriptStruct_FAdress_Statics::PropPointers),
-		METADATA_PARAMS(Z_Construct_UScriptStruct_FAdress_Statics::Struct_MetaDataParams, ARRAY_COUNT(Z_Construct_UScriptStruct_FAdress_Statics::Struct_MetaDataParams))
-	};
-	UScriptStruct* Z_Construct_UScriptStruct_FAdress()
-	{
-#if WITH_HOT_RELOAD
-		extern uint32 Get_Z_Construct_UScriptStruct_FAdress_CRC();
-		UPackage* Outer = Z_Construct_UPackage__Script_VAPlugin();
-		static UScriptStruct* ReturnStruct = FindExistingStructIfHotReloadOrDynamic(Outer, TEXT("Adress"), sizeof(FAdress), Get_Z_Construct_UScriptStruct_FAdress_CRC(), false);
-#else
-		static UScriptStruct* ReturnStruct = nullptr;
-#endif
-		if (!ReturnStruct)
-		{
-			UE4CodeGen_Private::ConstructUScriptStruct(ReturnStruct, Z_Construct_UScriptStruct_FAdress_Statics::ReturnStructParams);
-		}
-		return ReturnStruct;
-	}
-	uint32 Get_Z_Construct_UScriptStruct_FAdress_CRC() { return 1597868847U; }
 	void AVAReceiverActor::StaticRegisterNativesAVAReceiverActor()
 	{
 	}
@@ -199,9 +126,13 @@ static struct FScriptStruct_VAPlugin_StaticRegisterNativesFAdress
 		static const UE4CodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
 #if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_vIPAdress_MetaData[];
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_vPort_MetaData[];
 #endif
-		static const UE4CodeGen_Private::FStructPropertyParams NewProp_vIPAdress;
+		static const UE4CodeGen_Private::FUInt16PropertyParams NewProp_vPort;
+#if WITH_METADATA
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_vAdress_MetaData[];
+#endif
+		static const UE4CodeGen_Private::FBytePropertyParams NewProp_vAdress;
 #if WITH_METADATA
 		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_vScale_MetaData[];
 #endif
@@ -229,14 +160,27 @@ static struct FScriptStruct_VAPlugin_StaticRegisterNativesFAdress
 	};
 #endif
 #if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vIPAdress_MetaData[] = {
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vPort_MetaData[] = {
 		{ "Category", "VAReceiverActor" },
-		{ "DisplayName", "IP Adress" },
+		{ "ClampMax", "65535" },
+		{ "ClampMin", "0" },
+		{ "DisplayName", "Port [0, 65535]" },
 		{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
-		{ "ToolTip", "IP Adress of VA Server. 127.0.0.1 = localhost" },
+		{ "ToolTip", "Factor for global output Gain" },
+		{ "UIMax", "65535" },
+		{ "UIMin", "0" },
 	};
 #endif
-	const UE4CodeGen_Private::FStructPropertyParams Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vIPAdress = { UE4CodeGen_Private::EPropertyClass::Struct, "vIPAdress", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(AVAReceiverActor, vIPAdress), Z_Construct_UScriptStruct_FAdress, METADATA_PARAMS(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vIPAdress_MetaData, ARRAY_COUNT(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vIPAdress_MetaData)) };
+	const UE4CodeGen_Private::FUInt16PropertyParams Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vPort = { UE4CodeGen_Private::EPropertyClass::UInt16, "vPort", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(AVAReceiverActor, vPort), METADATA_PARAMS(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vPort_MetaData, ARRAY_COUNT(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vPort_MetaData)) };
+#if WITH_METADATA
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vAdress_MetaData[] = {
+		{ "Category", "VAReceiverActor" },
+		{ "DisplayName", "Usecase" },
+		{ "ModuleRelativePath", "Public/VAReceiverActor.h" },
+		{ "ToolTip", "Choose Where To use the Plugin (Important for IP Adress and Port)" },
+	};
+#endif
+	const UE4CodeGen_Private::FBytePropertyParams Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vAdress = { UE4CodeGen_Private::EPropertyClass::Byte, "vAdress", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(AVAReceiverActor, vAdress), Z_Construct_UEnum_VAPlugin_EAdress, METADATA_PARAMS(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vAdress_MetaData, ARRAY_COUNT(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vAdress_MetaData)) };
 #if WITH_METADATA
 	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vScale_MetaData[] = {
 		{ "Category", "VAReceiverActor" },
@@ -269,7 +213,8 @@ static struct FScriptStruct_VAPlugin_StaticRegisterNativesFAdress
 #endif
 	const UE4CodeGen_Private::FFloatPropertyParams Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vGainFactor = { UE4CodeGen_Private::EPropertyClass::Float, "vGainFactor", RF_Public|RF_Transient|RF_MarkAsNative, (EPropertyFlags)0x0010000000000001, 1, nullptr, STRUCT_OFFSET(AVAReceiverActor, vGainFactor), METADATA_PARAMS(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vGainFactor_MetaData, ARRAY_COUNT(Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vGainFactor_MetaData)) };
 	const UE4CodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_AVAReceiverActor_Statics::PropPointers[] = {
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vIPAdress,
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vPort,
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vAdress,
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vScale,
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vDirectivity,
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AVAReceiverActor_Statics::NewProp_vGainFactor,
@@ -297,7 +242,7 @@ static struct FScriptStruct_VAPlugin_StaticRegisterNativesFAdress
 		}
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AVAReceiverActor, 3130988215);
+	IMPLEMENT_CLASS(AVAReceiverActor, 3552912630);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AVAReceiverActor(Z_Construct_UClass_AVAReceiverActor, &AVAReceiverActor::StaticClass, TEXT("/Script/VAPlugin"), TEXT("AVAReceiverActor"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AVAReceiverActor);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
