@@ -97,12 +97,13 @@ FString AVAReceiverActor::getIPAdress()
 
 	VAUtils::openMessageBox("could not evaluate IP Adress. Returning localhost (AVAReceiverActor::getIPAdress())", true);
 
-	return "localhost"
+	return "localhost";
 }
 
 float AVAReceiverActor::getGainFactor()
 {
 	return vGainFactor;
 }
+
 
 
