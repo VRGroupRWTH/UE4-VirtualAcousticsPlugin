@@ -5,7 +5,6 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "VAPlugin.h"
 //#include "VA.h"
 //#include "VANet.h"

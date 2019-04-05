@@ -161,8 +161,6 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 
 bool FVAPluginModule::ini()
 {
-
-
 	connectServer();
 
 	const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile("$(DemoSound)");
@@ -170,23 +168,19 @@ bool FVAPluginModule::ini()
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, true);
 
 	iSoundSourceID = pVA->CreateSoundSource("C++ example sound source");
-	VAQuat* SourceQuat = new VAQuat(0.0f, 0.0f, 0.0f, 1.0f);
-	VAVec3* SourceVec3 = new VAVec3(-2.0f, 1.7f, -2.0f);
-	pVA->SetSoundSourcePose(iSoundSourceID, *SourceVec3, *SourceQuat);
+	tmpQuat = new VAQuat(0.0f, 0.0f, 0.0f, 1.0f);
+	tmpVec = new VAVec3(-2.0f, 1.7f, -2.0f);
+	pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
 
 	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
 
 	iHRIR = pVA->CreateDirectivityFromFile("$(DefaultHRIR)");
 
 	iSoundReceiverID = pVA->CreateSoundReceiver("ReceiverActor");
-	VAQuat* RecQuat = new VAQuat(0.0f, 0.0f, 0.0f, 1.0f);
-	VAVec3* RecVec3 = new VAVec3(0.0f, 1.7f, 0.0f);
-	pVA->SetSoundReceiverPose(iSoundReceiverID, *RecVec3, *RecQuat);
+	tmpQuat = new VAQuat(0.0f, 0.0f, 0.0f, 1.0f);
+	tmpVec = new VAVec3(0.0f, 1.7f, 0.0f);
+	pVA->SetSoundReceiverPose(iSoundReceiverID, *tmpVec, *tmpQuat);
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
-
-
-	delete RecQuat, RecVec3;
-
 
 
 	//pVA->SetSoundReceiverPose(iSoundReceiverID, *RecVec3, *RecQuat);
