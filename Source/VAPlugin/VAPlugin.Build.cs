@@ -62,17 +62,17 @@ public class VAPlugin : ModuleRules
             // Add the import library
             //PublicLibraryPaths.Add("VALibrary/lib");
             //PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "x64", "Release"));
+            PublicAdditionalLibraries.Add("VABase.lib");
             PublicAdditionalLibraries.Add("VistaBase.lib");
             PublicAdditionalLibraries.Add("VistaAspects.lib");
             PublicAdditionalLibraries.Add("VistaInterProcComm.lib");
-            PublicAdditionalLibraries.Add("VABase.lib");
             PublicAdditionalLibraries.Add("VANet.lib");
 
             // Delay-load the DLL, so we can load it from the right place first
+            PublicDelayLoadDLLs.Add("VABase.dll");
             PublicDelayLoadDLLs.Add("VistaBase.dll");
             PublicDelayLoadDLLs.Add("VistaAspects.dll");
             PublicDelayLoadDLLs.Add("VistaInterProcComm.dll");
-            PublicDelayLoadDLLs.Add("VABase.dll");
             PublicDelayLoadDLLs.Add("VANet.dll");
         }
         else if (Target.Platform == UnrealTargetPlatform.Linux)
