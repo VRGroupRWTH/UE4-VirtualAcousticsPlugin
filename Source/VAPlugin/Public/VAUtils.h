@@ -22,9 +22,9 @@ public:
 
 
 	// ++ Open Message Box with Text. bool error expresses whether to use excl. marks ++ //
-	static void openMessageBox(char* text, bool error = false);
-	static void openMessageBoxV(char* text, bool error = false);
-	static char* addExclamationMarkInChar(char* text);
+	static void openMessageBox(FString text, bool error = false);
+	static void openMessageBoxV(FString text, bool error = false);
+	static FString addExclamationMarkInChar(FString text);
 
 	// ++ Checking LibraryHandle ++ //
 	static bool checkLibraryHandle(void* libraryHandle);

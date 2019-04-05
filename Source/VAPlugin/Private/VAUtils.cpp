@@ -11,32 +11,32 @@
 //#include "VistaBase/VistaTimeUtils.h"
 
 
-void VAUtils::openMessageBox(char* text, bool error)
+void VAUtils::openMessageBox(FString text, bool error)
 {
 	//char* text;
 	if (error) {
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(addExclamationMarkInChar(text))));
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(addExclamationMarkInChar(text)));
 		//text = addExclamationMarkInChar(text);
 	}
 	else {
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(text)));
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(text));
 		//text = text_p;
 	}
 	//FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(text)), &FText::FromString(ANSI_TO_TCHAR(title)));
 	//FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(text)));
 }
 
-void VAUtils::openMessageBoxV(char* text, bool error)
+void VAUtils::openMessageBoxV(FString text, bool error)
 {
 	if (M_VERBOSE)
 		openMessageBox(text, error);
 }
 
-char* VAUtils::addExclamationMarkInChar(char* text)
+FString VAUtils::addExclamationMarkInChar(FString text)
 {
-	size_t len = strlen(text);
-	char* ret = new char[len + 21];
-
+	size_t len = text.Len();
+	//char* ret = new char[len + 21];
+	FString ret = FString();
 	for (int i = 0; i < 10; i++)
 	{
 		ret[i] = '!';
