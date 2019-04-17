@@ -527,7 +527,7 @@ char* FVAPluginModule::addExclamationMarkInChar(char* text)
 
 	ret[len + 20] = '\0';
 
-	/*strcpy(ret, text);
+	strcpy(ret, text);
 	ret[len] = a;
 	ret[len + 1] = '\0';
 
