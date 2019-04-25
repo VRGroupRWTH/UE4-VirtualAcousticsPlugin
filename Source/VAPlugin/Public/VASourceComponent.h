@@ -90,11 +90,16 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-
+    // Link to Owner Actor //
 	AActor* ownerActor;
 
+    // Sound ID, used to identify Sound at VA Server //
 	int soundID;
+    
+    // Check if Sound is started, used to start at different time //
 	bool started;
+    
+    // Check time // 
 	float timer;
 	
 

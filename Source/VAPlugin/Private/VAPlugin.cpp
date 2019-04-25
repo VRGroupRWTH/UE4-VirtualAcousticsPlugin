@@ -159,6 +159,7 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	return true;
 }
 
+/*
 bool FVAPluginModule::ini()
 {
 	connectServer();
@@ -186,16 +187,11 @@ bool FVAPluginModule::ini()
 	//pVA->SetSoundReceiverPose(iSoundReceiverID, *RecVec3, *RecQuat);
 	//pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
-
-	//updateReceiverPos(SourceVec3, SourceQuat);
-	//updateReceiverPos(SourceVec3, SourceQuat);
-	//updateReceiverPos(SourceVec3, SourceQuat);
-	//updateReceiverPos(SourceVec3, SourceQuat);
-	//updateReceiverPos(SourceVec3, SourceQuat);
-
 	return true;
 }
+ */
 
+/*
 void FVAPluginModule::playTestSound(bool loop)
 {
 	VAUtils::openMessageBox("in playTestAudio", true);
@@ -212,6 +208,7 @@ void FVAPluginModule::playTestSound(bool loop)
 
 	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
 }
+ */
 
 int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
 {
@@ -268,6 +265,7 @@ bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 	return true;
 }
 
+/*
 void FVAPluginModule::updateReceiverPos(VAVec3* pos, VAQuat* quat)
 {
 	if (!pVANet->IsConnected())
@@ -280,21 +278,26 @@ void FVAPluginModule::updateReceiverPos(VAVec3* pos, VAQuat* quat)
 	//pVA->SetSoundReceiverPose(iSoundReceiverID, *pos, *quat);
 	
 }
+ */
 
-void FVAPluginModule::updateReceiverPosRot(FVector& posF, FQuat& quatF)
+/*
+ void FVAPluginModule::updateReceiverPosRot(FVector& posF, FQuat& quatF)
 {
 	VAUtils::fVecToVAVec3Rot(posF, *tmpVec);
 	VAUtils::fQuatToVAQuatRot(quatF, *tmpQuat);
 
 	pVA->SetSoundReceiverPose(iSoundReceiverID, *tmpVec, *tmpQuat);
 }
+*/
 
+/*
 void FVAPluginModule::updateReceiverPosRot(FVector& posF, FRotator& rot)
 {
 	FQuat quatF = rot.Quaternion();
 	
 	updateReceiverPosRot(posF, quatF);
 }
+ */
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat)
 {
@@ -314,7 +317,10 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 
 	VAUtils::scaleVAVec(*tmpVec, scale);
 
-	pVA->SetSoundSourcePose(iSourceID, *tmpVec, *tmpQuat);
+    pVA->SetSoundSourceOrientation(iSoundReceiverID, *tmpQuat);
+    pVA->SetSoundSourcePosition(iSoundReceiverID, *tmpVec);
+    
+	// pVA->SetSoundSourcePose(iSourceID, *tmpVec, *tmpQuat);
 	return true;
 }
 
@@ -353,6 +359,7 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 	return false;
 }
 
+/*
 bool FVAPluginModule::runServerTest()
 {
 	VAUtils::openMessageBox("IN RUNSERVERTEST()", true);
@@ -378,12 +385,12 @@ bool FVAPluginModule::runServerTest()
 	pVA->SetSoundReceiverPose(iSoundReceiverID, *RecVec3, *RecQuat);
 
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
-	/*
 	// do something that suspends the program ...
-	*/
+ 
 	pVANet->Disconnect();
 	return true;
 }
+*/
 
 bool FVAPluginModule::checkLibraryHandles(bool einzeln)
 {
