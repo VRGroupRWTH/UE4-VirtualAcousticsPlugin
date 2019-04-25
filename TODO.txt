@@ -1,7 +1,7 @@
 VAPlugin.Build.cs Mac case
 
 
-Doing it this way ?b
+Doing it this way ?
 https://answers.unrealengine.com/questions/262233/how-do-you-link-to-a-dll-from-a-plugin.html
 
 
