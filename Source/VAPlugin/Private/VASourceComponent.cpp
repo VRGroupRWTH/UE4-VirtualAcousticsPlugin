@@ -56,6 +56,7 @@ bool UVASourceComponent::sendSoundData()
 	{
 		case EPlayAction::Play :
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
+			started = true;
 			break;
 
 		case EPlayAction::Pause :

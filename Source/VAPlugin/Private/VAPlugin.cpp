@@ -144,11 +144,11 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 
 	//receiverActor->getStartingPosition();
 
-	tmpQuat->Set(0.0f, 0.0f, 0.0f, 1.0f);
-	tmpVec->Set(0.0f, 1.7f, 0.0f);
+	// tmpQuat->Set(0.0f, 0.0f, 0.0f, 1.0f);
+	// tmpVec->Set(0.0f, 1.7f, 0.0f);
 
 	iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
-	updateReceiverPos(tmpVec, tmpQuat);
+	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
 	std::string dir = receiverActor->getDirectivity();
 	iHRIR = pVA->CreateDirectivityFromFile(dir);

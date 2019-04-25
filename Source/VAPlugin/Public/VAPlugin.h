@@ -138,11 +138,10 @@ protected:
     // ID of Sound Receiver // // TODO: move to Actor //
 	static int iSoundReceiverID;
     
-	// static int iSoundSourceID;
-    // static int iHRIR;
-
-    
-	// static std::string directivity;
+	// TODO: check if needed //
+	static int iSoundSourceID;
+    static int iHRIR;
+	static std::string directivity;
 
 	//static void openMessageBox(char* text, bool error = false);
 	//static void openMessageBoxV(char* text, bool error = false);
