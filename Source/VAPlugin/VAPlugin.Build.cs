@@ -55,7 +55,9 @@ public class VAPlugin : ModuleRules
 			);
 
 
-        PublicLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
+        Path pPath = Path.Combine(ModuleDirectory, "..", "VALibrary", "lib");
+        PublicLibraryPaths.Add(pPath);
+        PublicRuntimeLibraryPaths.Add(pPath);
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
@@ -77,11 +79,12 @@ public class VAPlugin : ModuleRules
         }
         else if (Target.Platform == UnrealTargetPlatform.Linux)
         {
-            PublicDelayLoadDLLs.Add("VistaBase.so");
-            PublicDelayLoadDLLs.Add("VistaAspects.so");
-            PublicDelayLoadDLLs.Add("VistaInterProcComm.so");
-            PublicDelayLoadDLLs.Add("VABase.so");
-            PublicDelayLoadDLLs.Add("VANet.so");
+
+            PublicAdditionalLibraries.Add("VistaBase.so");
+            PublicAdditionalLibraries.Add("VistaAspects.so");
+            PublicAdditionalLibraries.Add("VistaInterProcComm.so");
+            PublicAdditionalLibraries.Add("VABase.so");
+            PublicAdditionalLibraries.Add("VANet.so");
         }
     }
 }
