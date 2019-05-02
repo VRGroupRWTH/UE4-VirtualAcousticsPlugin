@@ -80,12 +80,18 @@ public class VAPlugin : ModuleRules
         else // if (Target.Platform == UnrealTargetPlatform.Linux)
         {
             // Tried PublicAdditionalLibraries("VABase.so");
+            
+            // PublicAdditionalLibraries.Add("VistaBase.so");
+            // PublicAdditionalLibraries.Add("VistaAspects.so");
+            // PublicAdditionalLibraries.Add("VistaInterProcComm.so");
+            // PublicAdditionalLibraries.Add("VABase.so");
+            // PublicAdditionalLibraries.Add("VANet.so");
 
-            PublicAdditionalLibraries.Add("VistaBase.so");
-            PublicAdditionalLibraries.Add("VistaAspects.so");
-            PublicAdditionalLibraries.Add("VistaInterProcComm.so");
-            PublicAdditionalLibraries.Add("VABase.so");
-            PublicAdditionalLibraries.Add("VANet.so");
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VABase.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VistaBase.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VistaAspects.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VistaInterProcComm.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VANet.so"));
 
             // PublicAdditionalLibraries.Add("VistaBase.so");
             // PublicAdditionalLibraries.Add("VistaAspects.so");
