@@ -4,6 +4,12 @@
 
 #include "Modules/ModuleManager.h"
 
+#define VANET_STATIC
+#define VABASE_STATIC
+#define VA_STATIC
+
+#include "VADefines.h"
+
 #include "VA.h"
 #include "VANet.h"
 #include "VAUtils.h"

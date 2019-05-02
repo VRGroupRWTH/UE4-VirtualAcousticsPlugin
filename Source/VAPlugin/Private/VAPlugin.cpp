@@ -11,7 +11,6 @@
 //#include "VANet.h"
 #include "VistaBase/VistaTimeUtils.h"
 
-#include "VADefines.h"
 
 
 
@@ -47,6 +46,8 @@ void FVAPluginModule::StartupModule()
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	
 	setViewMode();
+
+	VAVec3 vec;
 
 	// ++ Get Paths of DLL Handles ++ //
 	//FString LibraryPath;

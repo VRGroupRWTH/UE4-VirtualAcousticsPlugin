@@ -55,9 +55,9 @@ public class VAPlugin : ModuleRules
 			);
 
 
-        Path pPath = Path.Combine(ModuleDirectory, "..", "VALibrary", "lib");
-        PublicLibraryPaths.Add(pPath);
-        PublicRuntimeLibraryPaths.Add(pPath);
+        // Path pPath = Path.Combine(ModuleDirectory, "..", "VALibrary", "lib");
+        PublicLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
+        PublicRuntimeLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
