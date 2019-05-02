@@ -77,14 +77,21 @@ public class VAPlugin : ModuleRules
             PublicDelayLoadDLLs.Add("VistaInterProcComm.dll");
             PublicDelayLoadDLLs.Add("VANet.dll");
         }
-        else if (Target.Platform == UnrealTargetPlatform.Linux)
+        else // if (Target.Platform == UnrealTargetPlatform.Linux)
         {
+            // Tried PublicAdditionalLibraries("VABase.so");
 
             PublicAdditionalLibraries.Add("VistaBase.so");
             PublicAdditionalLibraries.Add("VistaAspects.so");
             PublicAdditionalLibraries.Add("VistaInterProcComm.so");
             PublicAdditionalLibraries.Add("VABase.so");
             PublicAdditionalLibraries.Add("VANet.so");
+
+            // PublicAdditionalLibraries.Add("VistaBase.so");
+            // PublicAdditionalLibraries.Add("VistaAspects.so");
+            // PublicAdditionalLibraries.Add("VistaInterProcComm.so");
+            // PublicAdditionalLibraries.Add("VABase.so");
+            // PublicAdditionalLibraries.Add("VANet.so");
         }
     }
 }

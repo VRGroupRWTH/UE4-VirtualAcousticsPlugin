@@ -66,6 +66,9 @@ bool UVASourceComponent::sendSoundData()
 		case EPlayAction::Stop :
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
 			break;
+
+		default: 
+			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
 	}
 
 	
