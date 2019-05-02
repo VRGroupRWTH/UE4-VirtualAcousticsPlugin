@@ -59,6 +59,7 @@ public class VAPlugin : ModuleRules
         PublicLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
         PublicRuntimeLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
 
+
         if ((Target.Platform == UnrealTargetPlatform.Win32) || (Target.Platform == UnrealTargetPlatform.Win64))
         {
             // Add the import library
@@ -79,19 +80,33 @@ public class VAPlugin : ModuleRules
         }
         else // if (Target.Platform == UnrealTargetPlatform.Linux)
         {
+            PublicRuntimeLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
+
             // Tried PublicAdditionalLibraries("VABase.so");
-            
+
             // PublicAdditionalLibraries.Add("VistaBase.so");
             // PublicAdditionalLibraries.Add("VistaAspects.so");
             // PublicAdditionalLibraries.Add("VistaInterProcComm.so");
             // PublicAdditionalLibraries.Add("VABase.so");
             // PublicAdditionalLibraries.Add("VANet.so");
 
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VABase.so"));
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VistaBase.so"));
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VistaAspects.so"));
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VistaInterProcComm.so"));
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib", "VANet.so"));
+            // PublicAdditionalLibraries.Add("VABase.so");
+            // PublicAdditionalLibraries.Add("VistaBase.so");
+            // PublicAdditionalLibraries.Add("VistaAspects.so");
+            // PublicAdditionalLibraries.Add("VistaInterProcComm.so");
+            // PublicAdditionalLibraries.Add("VANet.so");
+
+
+            // Path.GetFullPath(Path.Combine(ModuleDirectory, actualPath))
+
+            PublicDelayLoadDLLs.Add("VABase.so");
+            PublicDelayLoadDLLs.Add("VistaBase.so");
+            PublicDelayLoadDLLs.Add("VistaAspects.so");
+            PublicDelayLoadDLLs.Add("VistaInterProcComm.so");
+            PublicDelayLoadDLLs.Add("VANet.so");
+
+
+
 
             // PublicAdditionalLibraries.Add("VistaBase.so");
             // PublicAdditionalLibraries.Add("VistaAspects.so");
