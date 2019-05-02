@@ -105,7 +105,11 @@ public class VAPlugin : ModuleRules
             PublicDelayLoadDLLs.Add("VistaInterProcComm.so");
             PublicDelayLoadDLLs.Add("VANet.so");
 
-
+            PublicAdditionalLibraries.Add("VABase.so");
+            PublicAdditionalLibraries.Add("VistaBase.so");
+            PublicAdditionalLibraries.Add("VistaAspects.so");
+            PublicAdditionalLibraries.Add("VistaInterProcComm.so");
+            PublicAdditionalLibraries.Add("VANet.so");
 
 
             // PublicAdditionalLibraries.Add("VistaBase.so");
