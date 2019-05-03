@@ -80,7 +80,7 @@ public class VAPlugin : ModuleRules
         }
         else // if (Target.Platform == UnrealTargetPlatform.Linux)
         {
-            PublicRuntimeLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
+            // PublicRuntimeLibraryPaths.Add(Path.Combine(ModuleDirectory, "..", "VALibrary", "lib"));
 
             // Tried PublicAdditionalLibraries("VABase.so");
 
@@ -99,11 +99,12 @@ public class VAPlugin : ModuleRules
 
             // Path.GetFullPath(Path.Combine(ModuleDirectory, actualPath))
 
-            PublicDelayLoadDLLs.Add("VABase.so");
-            PublicDelayLoadDLLs.Add("VistaBase.so");
-            PublicDelayLoadDLLs.Add("VistaAspects.so");
-            PublicDelayLoadDLLs.Add("VistaInterProcComm.so");
-            PublicDelayLoadDLLs.Add("VANet.so");
+            // run fr 3.5. 18.00
+            // PublicDelayLoadDLLs.Add("VABase.so");
+            // PublicDelayLoadDLLs.Add("VistaBase.so");
+            // PublicDelayLoadDLLs.Add("VistaAspects.so");
+            // PublicDelayLoadDLLs.Add("VistaInterProcComm.so");
+            // PublicDelayLoadDLLs.Add("VANet.so");
 
             // PublicAdditionalLibraries.Add("VABase.so");
             // PublicAdditionalLibraries.Add("VistaBase.so");
@@ -117,6 +118,39 @@ public class VAPlugin : ModuleRules
             // PublicAdditionalLibraries.Add("VistaInterProcComm.so");
             // PublicAdditionalLibraries.Add("VABase.so");
             // PublicAdditionalLibraries.Add("VANet.so");
+
+            // from USDImporter.Build.cs (G:\Programme\UE_4.21\Engine\Plugins\Editor\USDImporter\Source\USDImporter)
+            /*
+            else if (Target.Platform == UnrealTargetPlatform.Linux && Target.Architecture.StartsWith("x86_64"))
+            {
+                // link directly to runtime libs on Linux, as this also puts them into rpath
+                string RuntimeLibraryPath = Path.Combine(ModuleDirectory, "../../Binaries", Target.Platform.ToString(), Target.Architecture.ToString());
+                PrivateRuntimeLibraryPaths.Add(RuntimeLibraryPath);
+                PublicAdditionalLibraries.Add(RuntimeLibraryPath + "/libUnrealUSDWrapper.so");
+
+                foreach (string FilePath in Directory.EnumerateFiles(RuntimeLibraryPath, "*.so*", SearchOption.AllDirectories))
+                {
+                    RuntimeDependencies.Add(FilePath);
+                }
+            }
+            */
+
+            // PrivateRuntimeLibraryPaths.Add(RuntimeLibraryPath);
+            string RuntimeLibraryPath = Path.Combine(ModuleDirectory, "..", "VALibrary", "lib");
+            PublicRuntimeLibraryPaths.Add(RuntimeLibraryPath);
+
+            foreach (string FilePath in Directory.EnumerateFiles(RuntimeLibraryPath, "*.so*", SearchOption.AllDirectories))
+            {
+                PublicAdditionalLibraries.Add(FilePath);
+                RuntimeDependencies.Add(FilePath);
+            }
+
+            // RuntimeDependencies.Add("VistaBase.so");
+            // RuntimeDependencies.Add("VistaAspects.so");
+            // RuntimeDependencies.Add("VistaInterProcComm.so");
+            // RuntimeDependencies.Add("VABase.so");
+            // RuntimeDependencies.Add("VANet.so");
+
         }
     }
 }
