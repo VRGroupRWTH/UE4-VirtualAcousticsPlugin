@@ -155,7 +155,7 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
 	std::string dir; // = receiverActor->getDirectivity(); // DELETED HERE
-	iHRIR; // = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+	// iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
 	pVA->SetOutputGain(actor->getGainFactor());
