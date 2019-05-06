@@ -5,6 +5,7 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
+
 #include "VAReceiverActor.h"
 #include "VASourceComponent.h"
 //#include "VA.h"
@@ -22,6 +23,8 @@ AVAReceiverActor* FVAPluginModule::receiverActor;
 TArray<UVASourceComponent*> FVAPluginModule::soundComponents;
 TArray<UVASourceComponent*> FVAPluginModule::uninitializedSoundComponents;
 TMap<int, std::string> FVAPluginModule::soundComponentsIDs;
+TMap<int, TArray<int>> FVAPluginModule::soundComponentsReflectionIDs;
+TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
 
 void* FVAPluginModule::LibraryHandleNet;
 void* FVAPluginModule::LibraryHandleBase;
@@ -140,6 +143,18 @@ bool FVAPluginModule::initializeServer(FString host, int port)
 	return true;
 }
 
+void FVAPluginModule::initializeWalls(TArray<AVAReflectionWall*> walls)
+{
+
+	reflectionWalls = walls;
+
+	//GetAllActorsOfClass(AActor::GetWorld());
+	//FindAllActors(AActor::GetWorld(), reflectionWalls);
+
+	// TArray<AActor*> FoundActors;
+	// UGameplayStatics::GetAllActorsOfClass(GetWorld(), YourClass::StaticClass(), FoundActors);
+}
+
 bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 {
 	receiverActor = actor;
@@ -154,8 +169,8 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
-	std::string dir; // = receiverActor->getDirectivity(); // DELETED HERE
-	// iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+	std::string dir = receiverActor->getDirectivity(); // DELETED HERE
+	iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
 	pVA->SetOutputGain(actor->getGainFactor());
@@ -214,6 +229,48 @@ void FVAPluginModule::playTestSound(bool loop)
 }
  */
 
+int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
+{
+	
+	// first initialize real sound
+	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gain, loop, soundOffset, action);
+	
+	TArray<int> reflectionArray;
+
+	// now all reflections
+	for (AVAReflectionWall* wall : reflectionWalls)
+	{
+		// Transform Positions
+		FVector n = wall->getNormalVec();
+		FVector p = wall->getSupportVec();
+		float d = wall->getD();
+		
+		float t = d - FVector::DotProduct(n, p);
+
+		FVector soundPos_new = p + 2 * t * n;
+
+
+		// Transform orientation
+		FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
+		FQuat reflectedQuat = mirrorNormalQuat * soundRot.Quaternion() * mirrorNormalQuat;
+		FRotator soundRot_new = reflectedQuat.Rotator();
+
+
+		// Set Name
+		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
+
+		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gain, loop, soundOffset, action);
+
+		return iSoundSourceID;
+		wall->spawnSphere(soundPos_new, soundRot_new);
+
+		reflectionArray.Add(id);
+	}
+	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArray);
+
+	return iSoundSourceID;
+}
+
 int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
 {
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
@@ -228,7 +285,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
 	
-	const std::string sSignalSourceID; // = pVA->CreateSignalSourceBufferFromFile(soundName); DELETED HERE
+	const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
 
@@ -358,7 +415,7 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 	if (pDirectivity == directivity)
 		return true;
 
-	// iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 	
 	return false;

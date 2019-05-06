@@ -71,8 +71,8 @@ bool UVASourceComponent::sendSoundData()
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
 	}
 
-	
-	soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
+	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
+	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
 
 	return true;
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Modules/ModuleManager.h"
+#include "Components/SphereComponent.h"
 
 #define VANET_STATIC
 #define VABASE_STATIC
@@ -13,6 +14,8 @@
 #include "VA.h"
 #include "VANet.h"
 #include "VAUtils.h"
+#include "VAReflectionWall.h"
+
 
 class AVAReceiverActor;
 class UVASourceComponent;
@@ -33,6 +36,9 @@ public:
     
     // initialize Server (and connect) //
 	static bool initializeServer(FString host = "localhost", int port = 12340);
+
+	// initialize walls // 
+	static void initializeWalls(TArray<AVAReflectionWall*> walls);
     
     // connect to Server (called by initializeServer) //
 	static bool connectServer	(FString host = "localhost", int port = 12340);
@@ -45,8 +51,13 @@ public:
 
 	// static void playTestSound(bool loop = true);
 
+	// initialize sound Sources with their Reflections
+	static int initializeSoundWithReflections(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0), 
+		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+
     // initialize sound Source at VA Server //
-	static int initializeSound(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0), float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+	static int initializeSound(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0),
+		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
     
     // enque Sound Component to prevent initialize bevor the connection to VA Server is established //
 	static bool enqueueSound(UVASourceComponent* soundComponent);
@@ -71,7 +82,6 @@ public:
 
     // set Receiver Directivity (HRIR) //
 	static bool setReceiverDirectivity(std::string directivity);
-
 
     // set View Mode //
 	static bool setViewMode();
@@ -113,6 +123,13 @@ protected:
     
     // Mapping of Sound Component IDs to their names //
 	static TMap<int, std::string> soundComponentsIDs;
+
+	// Mapping of Sound Component IDs to their Reflection IDs // 
+	static TMap<int, TArray<int>> soundComponentsReflectionIDs;
+
+	// List of all Reflection Walls in Szene //
+	static TArray<AVAReflectionWall*> reflectionWalls;
+
 
     // View Mode (unclear, Third Person, HMD, Cave) //
 	static VAUtils::viewEnum viewMode;

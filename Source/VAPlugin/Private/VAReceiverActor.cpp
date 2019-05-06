@@ -5,6 +5,10 @@
 #include "GameFramework/PlayerController.h"
 #include "VADefines.h"
 
+
+#include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AVAReceiverActor::AVAReceiverActor()
 {
@@ -36,6 +40,15 @@ void AVAReceiverActor::BeginPlay()
 	// Initialize Receiver Actor
 	FVAPluginModule::initializeReceiver(this);
 	
+	// Initialize Walls for Sound Reflection
+	TArray<AActor*> wallsA;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
+	TArray<AVAReflectionWall*> walls;
+	for (AActor* actor : wallsA) {
+		walls.Add((AVAReflectionWall*)actor);
+	}
+	FVAPluginModule::initializeWalls(walls);
+
 	// Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
 	FVAPluginModule::processSoundQueue();
 	
