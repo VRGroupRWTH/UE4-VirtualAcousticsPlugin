@@ -174,8 +174,8 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
 
-    // std::string dir = receiverActor->getDirectivity(); // DELETED HERE
-	// iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+    std::string dir = receiverActor->getDirectivity(); // DELETED HERE
+	iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
 	
 
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
@@ -240,13 +240,19 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 {
 	
 	// first initialize real sound
-	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gainFactor, loop, soundOffset, action);
+	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gainFactor, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 	
-	TArray<int> reflectionArray;
+	TArray<int> reflectionArrayIDs;
 
 	// now all reflections
 	for (AVAReflectionWall* wall : reflectionWalls)
 	{
+		// get Reflection Factor R
+		float R = wall->getR();
+		if (R == 0.0f) {	// skip if there is no reflection
+			continue;
+		}
+		
 		// Transform Positions
 		FVector n = wall->getNormalVec();
 		FVector p = wall->getSupportVec();
@@ -266,17 +272,24 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		// Set Name TODO:
 		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
 
-		// get Reflection Factor R
-		float R = wall->getR();
+		
 
-		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R * R, loop, soundOffset, action);
+		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 
+		reflectionArrayIDs.Add(id);
 		continue;
 		wall->spawnSphere(soundPos_new, soundRot_new);
-		reflectionArray.Add(id);
-
 	}
-	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArray);
+
+	// Play all sounds together
+	if (action == IVAInterface::VA_PLAYBACK_ACTION_PLAY) {
+		setSoundAction(iSoundSourceID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+		for (int i : reflectionArrayIDs) {
+			setSoundAction(i, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+		}
+	}
+
+	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArrayIDs);
 
 	return iSoundSourceID;
 }
@@ -294,8 +307,8 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
-    //const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
-	const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+	// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 	
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
@@ -432,7 +445,7 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 	}
 
 
-	// iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
 		
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 	
