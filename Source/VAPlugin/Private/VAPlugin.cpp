@@ -169,7 +169,7 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
-    std::string dir; // = receiverActor->getDirectivity(); // DELETED HERE
+    // std::string dir = receiverActor->getDirectivity(); // DELETED HERE
 	//iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
@@ -285,7 +285,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
 	
-    const std::string sSignalSourceID; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+    const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
 
