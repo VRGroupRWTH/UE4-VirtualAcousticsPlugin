@@ -238,11 +238,11 @@ void FVAPluginModule::playTestSound(bool loop)
 }
  */
 
-int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
+int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action)
 {
 	
 	// first initialize real sound
-	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gain, loop, soundOffset, action);
+	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gainFactor, loop, soundOffset, action);
 	
 	TArray<int> reflectionArray;
 
@@ -265,22 +265,25 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		FRotator soundRot_new = reflectedQuat.Rotator();
 
 
-		// Set Name
+		// Set Name TODO:
 		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
 
-		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gain, loop, soundOffset, action);
+		// get Reflection Factor R
+		float R = wall->getR();
 
-		return iSoundSourceID;
+		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R, loop, soundOffset, action);
+
+		continue;
 		wall->spawnSphere(soundPos_new, soundRot_new);
-
 		reflectionArray.Add(id);
+
 	}
 	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArray);
 
 	return iSoundSourceID;
 }
 
-int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
+int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action)
 {
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
 	soundRot = VAUtils::toVACoordinateSystem(soundRot);
@@ -307,11 +310,15 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	const int iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
 	pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
 
+	//TODO Set Gain
+	float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
+	pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
+
+
+
 	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
 
 	soundComponentsIDs.Add(iSoundSourceID, sSignalSourceID);
-
-	//TODO Set Gain
 
 	return iSoundSourceID;
 }

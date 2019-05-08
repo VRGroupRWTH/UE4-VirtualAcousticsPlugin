@@ -20,6 +20,10 @@ class VAPLUGIN_API AVAReflectionWall : public AActor
 
 	UPROPERTY(VisibleDefaultsOnly, Category = ReflectionWall)
 	class USphereComponent* dirComp;
+	
+	// In- or decrease Gain Offset 
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Reflection Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+		float vR = 1;
 
 public:	
 	// Sets default values for this actor's properties
@@ -33,6 +37,9 @@ public:
 
 	// return d of Hesian normal form n*x = d (= p*n)
 	float getD();
+
+	// return R = reflection Value for Wall
+	float getR();
 
 	// Compute all Vecs
 	void computePlaneData();

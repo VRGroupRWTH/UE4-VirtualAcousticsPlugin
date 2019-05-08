@@ -34,9 +34,9 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	GENERATED_BODY()
 
 
-	// In- or decrease Gain Offset // TODO not working yet
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "(in work) Gain"))
-		int vGainOffset = 0;
+	// In- or decrease Gain Offset 
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+		float vGainFactor = 1;
 
 	// In- or decrease Gain Offset
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name"))

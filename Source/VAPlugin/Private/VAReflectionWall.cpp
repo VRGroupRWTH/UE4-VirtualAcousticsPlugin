@@ -44,6 +44,11 @@ float AVAReflectionWall::getD()
 	return d;
 }
 
+float AVAReflectionWall::getR()
+{
+	return vR;
+}
+
 void AVAReflectionWall::computePlaneData()
 {
 	normalVec = GetTransform().GetRotation().Rotator().Vector();
