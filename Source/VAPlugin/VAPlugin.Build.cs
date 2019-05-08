@@ -129,7 +129,7 @@ public class VAPlugin : ModuleRules
                 PrivateRuntimeLibraryPaths.Add(RuntimeLibraryPath);
                 PublicAdditionalLibraries.Add(RuntimeLibraryPath + "/libUnrealUSDWrapper.so");
 
-                foreach (string FilePath in Directory.EnumerateFiles(RuntimeLibraryPath, "*.so*", SearchOption.AllDirectories))
+                foreach (string FilePath in Directory.EnumerateFiles(RuntimeLibraryPath, "V*.so*", SearchOption.AllDirectories))
                 {
                     RuntimeDependencies.Add(FilePath);
                 }
