@@ -102,16 +102,20 @@ void FVAPluginModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 	
-	if (pVANet != nullptr)
-		if (pVANet->IsConnected())
+	if (pVANet != nullptr) {
+		if (pVANet->IsConnected()) {
 			pVANet->Disconnect();
+		}
+	}
 
-
+#ifdef PLATFORM_WINDOWS
+	
 	FPlatformProcess::FreeDllHandle(LibraryHandleNet);
 	FPlatformProcess::FreeDllHandle(LibraryHandleBase);
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaAspects);
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaBase);
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaInterProcComm);
+#endif // PLATFORM_WINDOWS
 
 }
 
@@ -169,8 +173,13 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
-    // std::string dir = receiverActor->getDirectivity(); // DELETED HERE
-	//iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+#ifdef PLATFORM_WINDOWS
+
+    std::string dir = receiverActor->getDirectivity(); // DELETED HERE
+	iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+	
+#endif // WINDOWS
+
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
 	pVA->SetOutputGain(actor->getGainFactor());
@@ -284,8 +293,12 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
+#ifdef PLATFORM_WINDOWS
+    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+#else
+	const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+#endif
 	
-    const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
 
@@ -412,10 +425,14 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
-	if (pDirectivity == directivity)
+	if (pDirectivity == directivity) {
 		return true;
+	}
 
-	// iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+#ifdef PLATFORM_WINDOWS
+	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+#endif // WINDOWS
+	
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 	
 	return false;
