@@ -83,6 +83,9 @@ public:
     // set Receiver Directivity (HRIR) //
 	static bool setReceiverDirectivity(std::string directivity);
 
+	// set Sound Source Directivity // 
+	static bool setSourceDirectivity(int id, FString directivity);
+
     // set View Mode //
 	static bool setViewMode();
     
@@ -127,9 +130,14 @@ protected:
 	// Mapping of Sound Component IDs to their Reflection IDs // 
 	static TMap<int, TArray<int>> soundComponentsReflectionIDs;
 
+	// Mapping of all Sound Source Directivities to their IDs // 
+	static TMap<FString, int> dirMap;
+
+	// Default Sound Source Directivity ID // 
+	static int defaultDirID;
+
 	// List of all Reflection Walls in Szene //
 	static TArray<AVAReflectionWall*> reflectionWalls;
-
 
     // View Mode (unclear, Third Person, HMD, Cave) //
 	static VAUtils::viewEnum viewMode;

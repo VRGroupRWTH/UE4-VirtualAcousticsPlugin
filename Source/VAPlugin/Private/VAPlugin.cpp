@@ -24,7 +24,10 @@ TArray<UVASourceComponent*> FVAPluginModule::soundComponents;
 TArray<UVASourceComponent*> FVAPluginModule::uninitializedSoundComponents;
 TMap<int, std::string> FVAPluginModule::soundComponentsIDs;
 TMap<int, TArray<int>> FVAPluginModule::soundComponentsReflectionIDs;
+TMap<FString, int> FVAPluginModule::dirMap;
+int FVAPluginModule::defaultDirID;
 TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
+
 
 void* FVAPluginModule::LibraryHandleNet;
 void* FVAPluginModule::LibraryHandleBase;
@@ -450,6 +453,22 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 	
 	return false;
+}
+
+bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
+{
+	// Find dir in Map
+	int* dirID = dirMap.Find(directivity);
+
+	// if not available choose default
+	if (dirID == nullptr) {
+		pVA->SetSoundSourceDirectivity(id, defaultDirID);
+		return false;
+	}
+	else {
+		pVA->SetSoundSourceDirectivity(id, *dirID);
+		return true;
+	}
 }
 
 /*
