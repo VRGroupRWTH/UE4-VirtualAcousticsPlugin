@@ -72,7 +72,7 @@ bool UVASourceComponent::sendSoundData()
 	}
 
 	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
-	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor, vLoop, vDelay, vActionP);
+	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, vActionP);
 
 	return true;
 }

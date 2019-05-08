@@ -173,12 +173,10 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
-#ifdef PLATFORM_WINDOWS
 
-    std::string dir = receiverActor->getDirectivity(); // DELETED HERE
-	iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+    // std::string dir = receiverActor->getDirectivity(); // DELETED HERE
+	// iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
 	
-#endif // WINDOWS
 
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
@@ -271,7 +269,7 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		// get Reflection Factor R
 		float R = wall->getR();
 
-		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R, loop, soundOffset, action);
+		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R * R, loop, soundOffset, action);
 
 		continue;
 		wall->spawnSphere(soundPos_new, soundRot_new);
@@ -296,11 +294,8 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
-#ifdef PLATFORM_WINDOWS
-    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
-#else
+    //const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 	const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
-#endif
 	
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
@@ -436,10 +431,9 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 		return true;
 	}
 
-#ifdef PLATFORM_WINDOWS
-	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
-#endif // WINDOWS
-	
+
+	// iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+		
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 	
 	return false;
