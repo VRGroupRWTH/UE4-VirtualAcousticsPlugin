@@ -45,6 +45,9 @@ public:
     
     // check if VA Server is connected //
     static bool isConnected();
+
+	// initialize Sound Source Directivities //
+	static bool initializeSoundSourceDirectivities();
     
 	// static bool ini();
 
