@@ -30,10 +30,13 @@ void AVAReceiverActor::BeginPlay()
 
 	controller = GetWorld()->GetFirstPlayerController();
 	
-	FString adresse = "localhost";
-	if (vAdress == EAdress::Cave) {
-		adresse = "10.0.1.240";
-	}
+	
+    FString adresse;
+#if PLATFORM_WINDOWS
+    adresse = "localhost";
+#elseif
+    adresse = "10.0.1.240";
+#endif
 
 	// Connect to VA Server
 	FVAPluginModule::initializeServer(adresse, vPort);
