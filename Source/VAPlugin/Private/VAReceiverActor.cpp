@@ -34,7 +34,7 @@ void AVAReceiverActor::BeginPlay()
     FString adresse;
 #if PLATFORM_WINDOWS
     adresse = "localhost";
-#elseif
+#else
     adresse = "10.0.1.240";
 #endif
 
