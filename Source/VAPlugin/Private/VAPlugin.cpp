@@ -645,8 +645,8 @@ bool FVAPluginModule::isViewModeCave()
 
 bool FVAPluginModule::isMaster()
 {
-	return true;
-	//return IDisplayCluster::Get().GetClusterMgr()->IsMaster();
+	// return true;
+	return IDisplayCluster::Get().GetClusterMgr()->IsMaster();
 }
 
 bool FVAPluginModule::isConnected()
