@@ -32,8 +32,8 @@ public class VAPlugin : ModuleRules
                 "Projects",
                 "CoreUObject",
                 "Engine",
-                "DisplayClusterExtensions",
-                "InputCore"
+                "DisplayClusterExtensions"
+                // "InputCore"
 
                 //,
                 //"VALibrary"
