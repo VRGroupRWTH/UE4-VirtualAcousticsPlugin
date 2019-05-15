@@ -31,7 +31,10 @@ public class VAPlugin : ModuleRules
 				"Core",
                 "Projects",
                 "CoreUObject",
-                "Engine"
+                "Engine",
+                "DisplayClusterExtensions",
+                "InputCore"
+
                 //,
                 //"VALibrary"
 				// ... add other public dependencies that you statically link with here ...
