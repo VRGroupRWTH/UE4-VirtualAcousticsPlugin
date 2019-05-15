@@ -5,6 +5,9 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
+#include "IDisplayCluster.h"
+#include "IDisplayClusterClusterManager.h"
+
 
 #include "VAReceiverActor.h"
 #include "VASourceComponent.h"
@@ -104,6 +107,10 @@ void FVAPluginModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
+
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return;
+	}
 	
 	if (pVANet != nullptr) {
 		if (pVANet->IsConnected()) {
@@ -112,7 +119,6 @@ void FVAPluginModule::ShutdownModule()
 	}
 
 #if PLATFORM_WINDOWS
-	
 	FPlatformProcess::FreeDllHandle(LibraryHandleNet);
 	FPlatformProcess::FreeDllHandle(LibraryHandleBase);
     FPlatformProcess::FreeDllHandle(LibraryHandleVistaAspects);
@@ -124,6 +130,10 @@ void FVAPluginModule::ShutdownModule()
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	VAUtils::openMessageBox("Connecting to VAServer. Be sure to have it switched on");
 
 	pVANet = IVANetClient::Create();
@@ -137,12 +147,17 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 
 	pVA = pVANet->GetCoreInstance();
 	pVA->Reset();
+	
 
 	return true;
 }
 
 bool FVAPluginModule::initializeServer(FString host, int port)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	if (!connectServer(host, port)) {
 		// Try again
 		return connectServer(host, port);
@@ -165,8 +180,13 @@ void FVAPluginModule::initializeWalls(TArray<AVAReflectionWall*> walls)
 bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 {
 	receiverActor = actor;
-
 	scale = receiverActor->getScale();
+	
+	
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 
 	//receiverActor->getStartingPosition();
 
@@ -281,7 +301,7 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 
 		reflectionArrayIDs.Add(id);
 		continue;
-		wall->spawnSphere(soundPos_new, soundRot_new);
+		wall->spawnSphere(soundPos_new, soundRot_new); // TODO: delete
 	}
 
 	// Play all sounds together
@@ -309,6 +329,10 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	VAUtils::scaleVAVec(*tmpVec, scale);
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
+
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return -1;
+	}
 
     const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 	// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
@@ -352,6 +376,10 @@ bool FVAPluginModule::processSoundQueue()
 
 bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	std::string sSoundID = soundComponentsIDs[iSoundID];
 	pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
 
@@ -400,6 +428,10 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	VAUtils::rotateFVec(pos);
 	VAUtils::rotateFRotator(rot);
 
@@ -419,12 +451,20 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	FRotator rot = quat.Rotator();
 	return updateReceiverPos(pos, rot);
 }
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	VAUtils::rotateFVec(pos);
 	VAUtils::rotateFRotator(rot);
 
@@ -443,10 +483,13 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	if (pDirectivity == directivity) {
 		return true;
 	}
-
 
 	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
 		
@@ -457,6 +500,10 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 
 bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	// Find dir in Map
 	int* dirID = dirMap.Find(directivity);
 
@@ -598,6 +645,10 @@ bool FVAPluginModule::isViewModeCave()
 
 bool FVAPluginModule::isConnected()
 {
+	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+		return false;
+	}
+
 	// TODO return false if nullptr
 	if (pVANet == nullptr)
 		return false;
