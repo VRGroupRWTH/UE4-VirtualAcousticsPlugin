@@ -5,8 +5,8 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
-// #include "IDisplayCluster.h"
-// #include "IDisplayClusterClusterManager.h"
+#include "IDisplayCluster.h"
+#include "IDisplayClusterClusterManager.h"
 
 
 #include "VAReceiverActor.h"
