@@ -5,8 +5,8 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
-#include "IDisplayCluster.h"
-#include "IDisplayClusterClusterManager.h"
+// #include "IDisplayCluster.h"
+// #include "IDisplayClusterClusterManager.h"
 
 
 #include "VAReceiverActor.h"
@@ -108,7 +108,7 @@ void FVAPluginModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return;
 	}
 	
@@ -130,7 +130,7 @@ void FVAPluginModule::ShutdownModule()
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -154,7 +154,7 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 
 bool FVAPluginModule::initializeServer(FString host, int port)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -183,7 +183,7 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	scale = receiverActor->getScale();
 	
 	
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -330,7 +330,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return -1;
 	}
 
@@ -376,7 +376,7 @@ bool FVAPluginModule::processSoundQueue()
 
 bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -428,7 +428,7 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -451,7 +451,7 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -461,7 +461,7 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -483,7 +483,7 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -500,7 +500,7 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 
 bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 
@@ -643,9 +643,15 @@ bool FVAPluginModule::isViewModeCave()
 	return viewMode == VAUtils::viewEnum::Cave;
 }
 
+bool FVAPluginModule::isMaster()
+{
+	return true;
+	//return IDisplayCluster::Get().GetClusterMgr()->IsMaster();
+}
+
 bool FVAPluginModule::isConnected()
 {
-	if (!IDisplayCluster::Get().GetClusterMgr()->IsMaster()) {
+	if (!isMaster()) {
 		return false;
 	}
 

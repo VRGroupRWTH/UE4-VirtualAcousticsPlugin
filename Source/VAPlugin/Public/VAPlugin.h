@@ -107,7 +107,8 @@ public:
     // check if View Mode is Cave //
 	static bool isViewModeCave();
 
-    
+    // check if is Master // 
+	static bool isMaster();
 
 
 protected:
