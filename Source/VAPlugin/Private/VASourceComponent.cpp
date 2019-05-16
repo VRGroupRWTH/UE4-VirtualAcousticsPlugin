@@ -94,9 +94,9 @@ void UVASourceComponent::pauseSound()
 	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 }
 
-void UVASourceComponent::updatePosition(FTransform trans)
+void UVASourceComponent::updatePosition(FVector vec, FRotator rot)
 {
-	FVAPluginModule::updateSourcePos(soundID, trans.GetLocation(), trans.GetRotation().Rotator());
+	FVAPluginModule::updateSourcePos(soundID, vec, rot);
 }
 
 

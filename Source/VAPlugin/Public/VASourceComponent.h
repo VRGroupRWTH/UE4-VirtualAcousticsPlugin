@@ -89,7 +89,7 @@ public:
 
 	// Update Position // 
 	UFUNCTION(BlueprintCallable)
-	void updatePosition(FTransform trans);
+	void updatePosition(FVector vec, FRotator rot);
 
 
 
