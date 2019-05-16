@@ -98,6 +98,9 @@ protected:
     
     // Check if Sound is started, used to start at different time //
 	bool started;
+
+	// Check if it is the first tick //
+	bool firstTick;
     
     // Check time // 
 	float timer;

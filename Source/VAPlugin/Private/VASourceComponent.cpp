@@ -19,6 +19,7 @@ void UVASourceComponent::BeginPlay()
 
 	ownerActor = GetOwner();
 	started = false;
+	firstTick = true;
 
 	if (FVAPluginModule::isConnected()) {
 		sendSoundData();
@@ -51,12 +52,12 @@ bool UVASourceComponent::sendSoundData()
 			break;
 	}
 
+	/*
 	int vActionP;
 	switch (vAction)
 	{
 		case EPlayAction::Play :
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
-			started = true;
 			break;
 
 		case EPlayAction::Pause :
@@ -70,9 +71,10 @@ bool UVASourceComponent::sendSoundData()
 		default: 
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
 	}
+	*/
 
 	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
-	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, vActionP);
+	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 
 	return true;
 }
@@ -98,6 +100,13 @@ void UVASourceComponent::pauseSound()
 void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (firstTick) {
+		firstTick = false;
+		if (vAction == EPlayAction::Play) {
+			FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+		}
+	}
+
 
 	if (!started)
 	{
