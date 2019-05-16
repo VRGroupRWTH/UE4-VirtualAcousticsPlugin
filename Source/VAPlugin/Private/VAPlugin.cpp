@@ -386,6 +386,23 @@ bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 	return true;
 }
 
+bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction)
+{
+	if (!isMaster()) {
+		return false;
+	}
+
+	setSoundAction(soundID, soundAction);
+
+	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
+
+	for (int id : reflectionArrayIDs) {
+		setSoundAction(id, soundAction);
+	}
+
+	return true;
+}
+
 /*
 void FVAPluginModule::updateReceiverPos(VAVec3* pos, VAQuat* quat)
 {

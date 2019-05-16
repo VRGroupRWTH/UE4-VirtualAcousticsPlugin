@@ -71,6 +71,9 @@ public:
     // change Sound action (play, pause, stop, ..) //
 	static bool setSoundAction(int soundID, int soundAction);
 
+	// change Sound action (play, pause, stop, ..) of source and its reflections // 
+	static bool setSoundActionWithReflections(int soundID, int soundAction);
+
 	// static void updateReceiverPos(VAVec3* pos, VAQuat* quat);
 	// static void updateReceiverPosRot(FVector& pos, FQuat& quat);
 	// static void updateReceiverPosRot(FVector& pos, FRotator& rot);
@@ -131,7 +134,7 @@ protected:
     // Mapping of Sound Component IDs to their names //
 	static TMap<int, std::string> soundComponentsIDs;
 
-	// Mapping of Sound Component IDs to their Reflection IDs // 
+	// Mapping of Sound Component IDs to their Reflection IDs - Make sure to always handle the "normal" instance, too // 
 	static TMap<int, TArray<int>> soundComponentsReflectionIDs;
 
 	// Mapping of all Sound Source Directivities to their IDs // 

@@ -15,6 +15,7 @@ enum EMovement {
 	ObjectSpawnPoint,
 	MoveWithObject,
 	OwnPosition,
+	Manual
 };
 
 // struct used to get 
@@ -74,17 +75,23 @@ public:
 
 	bool sendSoundData();
 
-	// Plays Sound
+	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
 	void playSound();
 
-	// Pauses Sound
+	// Pauses Sound //
 	UFUNCTION(BlueprintCallable)
 	void stopSound();
 
-	// Stops Sound
+	// Stops Sound //
 	UFUNCTION(BlueprintCallable)
 	void pauseSound();
+
+	// Update Position // 
+	UFUNCTION(BlueprintCallable)
+	void updatePosition(FTransform trans);
+
+
 
 protected:
 	// Called when the game starts

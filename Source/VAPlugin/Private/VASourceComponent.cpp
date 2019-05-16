@@ -94,33 +94,35 @@ void UVASourceComponent::pauseSound()
 	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 }
 
+void UVASourceComponent::updatePosition(FTransform trans)
+{
+	FVAPluginModule::updateSourcePos(soundID, trans.GetLocation(), trans.GetRotation().Rotator());
+}
 
 
 // Called every frame
 void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 	if (firstTick) {
 		firstTick = false;
 		if (vAction == EPlayAction::Play) {
-			FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+			FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
 		}
 	}
 
 
-	if (!started)
-	{
+	if (!started) {
 		timer += DeltaTime;
 		if (timer > vDelay) {
 			playSound();
 			started = true;
 		}
 	}
-	else
-	{
+	else {
 		// update Pos
-		if (vMovement == EMovement::MoveWithObject)
-		{
+		if (vMovement == EMovement::MoveWithObject) {
 			FTransform trans = ownerActor->GetTransform();
 			FVAPluginModule::updateSourcePos(soundID, trans.GetLocation(), trans.GetRotation().Rotator());
 		}
