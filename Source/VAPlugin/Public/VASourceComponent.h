@@ -67,6 +67,14 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Rotation"))
 		FRotator vRot = FRotator(0, 0, 0);
 
+	// Offset
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset"))
+		FVector vOffset = FVector(0, 0, 0);
+
+	// Manual Rotation (if used)
+	// UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation"))
+	// 	bool vOffsetRot = false;
+
 
 
 public:	
