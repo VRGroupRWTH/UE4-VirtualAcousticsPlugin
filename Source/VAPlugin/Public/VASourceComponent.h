@@ -15,6 +15,7 @@ enum EMovement {
 	ObjectSpawnPoint,
 	MoveWithObject,
 	OwnPosition,
+	Manual
 };
 
 // struct used to get 
@@ -34,9 +35,9 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	GENERATED_BODY()
 
 
-	// In- or decrease Gain Offset // TODO not working yet
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "(in work) Gain"))
-		int vGainOffset = 0;
+	// In- or decrease Gain Offset 
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+		float vGainFactor = 1;
 
 	// In- or decrease Gain Offset
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name"))
@@ -74,17 +75,23 @@ public:
 
 	bool sendSoundData();
 
-	// Plays Sound
+	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
 	void playSound();
 
-	// Pauses Sound
+	// Pauses Sound //
 	UFUNCTION(BlueprintCallable)
 	void stopSound();
 
-	// Stops Sound
+	// Stops Sound //
 	UFUNCTION(BlueprintCallable)
 	void pauseSound();
+
+	// Update Position // 
+	UFUNCTION(BlueprintCallable)
+	void updatePosition(FVector vec, FRotator rot);
+
+
 
 protected:
 	// Called when the game starts
@@ -98,6 +105,9 @@ protected:
     
     // Check if Sound is started, used to start at different time //
 	bool started;
+
+	// Check if it is the first tick //
+	bool firstTick;
     
     // Check time // 
 	float timer;

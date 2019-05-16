@@ -19,6 +19,7 @@ void UVASourceComponent::BeginPlay()
 
 	ownerActor = GetOwner();
 	started = false;
+	firstTick = true;
 
 	if (FVAPluginModule::isConnected()) {
 		sendSoundData();
@@ -51,12 +52,12 @@ bool UVASourceComponent::sendSoundData()
 			break;
 	}
 
+	/*
 	int vActionP;
 	switch (vAction)
 	{
 		case EPlayAction::Play :
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
-			started = true;
 			break;
 
 		case EPlayAction::Pause :
@@ -66,10 +67,14 @@ bool UVASourceComponent::sendSoundData()
 		case EPlayAction::Stop :
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
 			break;
-	}
 
-	
-	soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
+		default: 
+			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
+	}
+	*/
+
+	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
+	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 
 	return true;
 }
@@ -89,6 +94,10 @@ void UVASourceComponent::pauseSound()
 	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 }
 
+void UVASourceComponent::updatePosition(FVector vec, FRotator rot)
+{
+	FVAPluginModule::updateSourcePos(soundID, vec, rot);
+}
 
 
 // Called every frame
@@ -96,19 +105,24 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!started)
-	{
+	if (firstTick) {
+		firstTick = false;
+		if (vAction == EPlayAction::Play) {
+			FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+		}
+	}
+
+
+	if (!started) {
 		timer += DeltaTime;
 		if (timer > vDelay) {
 			playSound();
 			started = true;
 		}
 	}
-	else
-	{
+	else {
 		// update Pos
-		if (vMovement == EMovement::MoveWithObject)
-		{
+		if (vMovement == EMovement::MoveWithObject) {
 			FTransform trans = ownerActor->GetTransform();
 			FVAPluginModule::updateSourcePos(soundID, trans.GetLocation(), trans.GetRotation().Rotator());
 		}

@@ -1,23 +1,33 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "VAPlugin",
-	"Description": "",
-	"Category": "Other",
-	"CreatedBy": "",
-	"CreatedByURL": "",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"Installed": false,
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "VAPlugin",
+  "Description": "",
+  "Category": "Other",
+  "CreatedBy": "",
+  "CreatedByURL": "",
+  "DocsURL": "",
+  "MarketplaceURL": "",
+  "SupportURL": "",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "Installed": false,
   "Modules": [
     {
       "Name": "VAPlugin",
       "Type": "Runtime",
       "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "nDisplay",
+      "Enabled": true
+    },
+    {
+      "Name": "nDisplayInput",
+      "Enabled": true
     }
   ]
 }

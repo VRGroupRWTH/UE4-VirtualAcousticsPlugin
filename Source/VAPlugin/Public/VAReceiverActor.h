@@ -30,8 +30,8 @@ public:
 	// Sets default values for this actor's properties
 	AVAReceiverActor();
 
-	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta=(DisplayName = "Gain Factor [0,1]", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	// Factor for global output Gain // TODO:
+	UPROPERTY(EditAnywhere, meta=(DisplayName = "Gain Factor [0,1] (not working yet)", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 		float vGainFactor = 1.0f;
 	
 	// Choose Directivity File for Receiver

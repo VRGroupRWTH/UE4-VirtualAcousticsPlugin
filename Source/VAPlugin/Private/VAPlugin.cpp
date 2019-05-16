@@ -5,13 +5,23 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
+
+#include "Cluster/IDisplayClusterClusterManager.h"
+#include "Game/IDisplayClusterGameManager.h"
+#include "Input/IDisplayClusterInputManager.h"
+#include "IDisplayCluster.h"
+
+
+// #include "IDisplayCluster.h"
+// #include "IDisplayClusterClusterManager.h"
+
+
 #include "VAReceiverActor.h"
 #include "VASourceComponent.h"
 //#include "VA.h"
 //#include "VANet.h"
 #include "VistaBase/VistaTimeUtils.h"
 
-#include "VADefines.h"
 
 
 
@@ -23,6 +33,11 @@ AVAReceiverActor* FVAPluginModule::receiverActor;
 TArray<UVASourceComponent*> FVAPluginModule::soundComponents;
 TArray<UVASourceComponent*> FVAPluginModule::uninitializedSoundComponents;
 TMap<int, std::string> FVAPluginModule::soundComponentsIDs;
+TMap<int, TArray<int>> FVAPluginModule::soundComponentsReflectionIDs;
+TMap<FString, int> FVAPluginModule::dirMap;
+int FVAPluginModule::defaultDirID;
+TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
+
 
 void* FVAPluginModule::LibraryHandleNet;
 void* FVAPluginModule::LibraryHandleBase;
@@ -47,6 +62,8 @@ void FVAPluginModule::StartupModule()
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	
 	setViewMode();
+
+	VAVec3 vec;
 
 	// ++ Get Paths of DLL Handles ++ //
 	//FString LibraryPath;
@@ -97,22 +114,33 @@ void FVAPluginModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
+
+	if (!isMaster()) {
+		return;
+	}
 	
-	if (pVANet != nullptr)
-		if (pVANet->IsConnected())
+	if (pVANet != nullptr) {
+		if (pVANet->IsConnected()) {
 			pVANet->Disconnect();
+		}
+	}
 
-
+#if PLATFORM_WINDOWS
 	FPlatformProcess::FreeDllHandle(LibraryHandleNet);
 	FPlatformProcess::FreeDllHandle(LibraryHandleBase);
-	FPlatformProcess::FreeDllHandle(LibraryHandleVistaAspects);
+    FPlatformProcess::FreeDllHandle(LibraryHandleVistaAspects);
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaBase);
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaInterProcComm);
+#endif // PLATFORM_WINDOWS
 
 }
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
+	if (!isMaster()) {
+		return false;
+	}
+
 	VAUtils::openMessageBox("Connecting to VAServer. Be sure to have it switched on");
 
 	pVANet = IVANetClient::Create();
@@ -126,12 +154,17 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 
 	pVA = pVANet->GetCoreInstance();
 	pVA->Reset();
+	
 
 	return true;
 }
 
 bool FVAPluginModule::initializeServer(FString host, int port)
 {
+	if (!isMaster()) {
+		return false;
+	}
+
 	if (!connectServer(host, port)) {
 		// Try again
 		return connectServer(host, port);
@@ -139,11 +172,28 @@ bool FVAPluginModule::initializeServer(FString host, int port)
 	return true;
 }
 
+void FVAPluginModule::initializeWalls(TArray<AVAReflectionWall*> walls)
+{
+
+	reflectionWalls = walls;
+
+	//GetAllActorsOfClass(AActor::GetWorld());
+	//FindAllActors(AActor::GetWorld(), reflectionWalls);
+
+	// TArray<AActor*> FoundActors;
+	// UGameplayStatics::GetAllActorsOfClass(GetWorld(), YourClass::StaticClass(), FoundActors);
+}
+
 bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 {
 	receiverActor = actor;
-
 	scale = receiverActor->getScale();
+	
+	
+	if (!isMaster()) {
+		return false;
+	}
+
 
 	//receiverActor->getStartingPosition();
 
@@ -153,8 +203,11 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
-	std::string dir = receiverActor->getDirectivity();
-	iHRIR = pVA->CreateDirectivityFromFile(dir);
+
+    std::string dir = receiverActor->getDirectivity(); // DELETED HERE
+	iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+	
+
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
 	pVA->SetOutputGain(actor->getGainFactor());
@@ -213,7 +266,65 @@ void FVAPluginModule::playTestSound(bool loop)
 }
  */
 
-int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gain, bool loop, float soundOffset, int action)
+int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action)
+{
+	
+	// first initialize real sound
+	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gainFactor, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+	
+	TArray<int> reflectionArrayIDs;
+
+	// now all reflections
+	for (AVAReflectionWall* wall : reflectionWalls)
+	{
+		// get Reflection Factor R
+		float R = wall->getR();
+		if (R == 0.0f) {	// skip if there is no reflection
+			continue;
+		}
+		
+		// Transform Positions
+		FVector n = wall->getNormalVec();
+		FVector p = wall->getSupportVec();
+		float d = wall->getD();
+		
+		float t = d - FVector::DotProduct(n, p);
+
+		FVector soundPos_new = p + 2 * t * n;
+
+
+		// Transform orientation
+		FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
+		FQuat reflectedQuat = mirrorNormalQuat * soundRot.Quaternion() * mirrorNormalQuat;
+		FRotator soundRot_new = reflectedQuat.Rotator();
+
+
+		// Set Name TODO:
+		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
+
+		
+
+		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+
+		reflectionArrayIDs.Add(id);
+		continue;
+		wall->spawnSphere(soundPos_new, soundRot_new); // TODO: delete
+	}
+
+	// Play all sounds together
+	if (action == IVAInterface::VA_PLAYBACK_ACTION_PLAY) {
+		setSoundAction(iSoundSourceID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+		for (int i : reflectionArrayIDs) {
+			setSoundAction(i, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+		}
+	}
+
+	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArrayIDs);
+
+	return iSoundSourceID;
+}
+
+int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action)
 {
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
 	soundRot = VAUtils::toVACoordinateSystem(soundRot);
@@ -226,7 +337,13 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
-	const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName);
+	if (!isMaster()) {
+		return -1;
+	}
+
+    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+	// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+	
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
 
@@ -235,11 +352,15 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	const int iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
 	pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
 
+	//TODO Set Gain
+	float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
+	pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
+
+
+
 	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
 
 	soundComponentsIDs.Add(iSoundSourceID, sSignalSourceID);
-
-	//TODO Set Gain
 
 	return iSoundSourceID;
 }
@@ -262,8 +383,29 @@ bool FVAPluginModule::processSoundQueue()
 
 bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 {
+	if (!isMaster()) {
+		return false;
+	}
+
 	std::string sSoundID = soundComponentsIDs[iSoundID];
 	pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
+
+	return true;
+}
+
+bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction)
+{
+	if (!isMaster()) {
+		return false;
+	}
+
+	setSoundAction(soundID, soundAction);
+
+	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
+
+	for (int id : reflectionArrayIDs) {
+		setSoundAction(id, soundAction);
+	}
 
 	return true;
 }
@@ -310,6 +452,10 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 {
+	if (!isMaster()) {
+		return false;
+	}
+
 	VAUtils::rotateFVec(pos);
 	VAUtils::rotateFRotator(rot);
 
@@ -329,12 +475,20 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 {
+	if (!isMaster()) {
+		return false;
+	}
+
 	FRotator rot = quat.Rotator();
 	return updateReceiverPos(pos, rot);
 }
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 {
+	if (!isMaster()) {
+		return false;
+	}
+
 	VAUtils::rotateFVec(pos);
 	VAUtils::rotateFRotator(rot);
 
@@ -353,13 +507,39 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
-	if (pDirectivity == directivity)
-		return true;
+	if (!isMaster()) {
+		return false;
+	}
 
-	iHRIR = pVA->CreateDirectivityFromFile(directivity);
+	if (pDirectivity == directivity) {
+		return true;
+	}
+
+	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+		
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 	
 	return false;
+}
+
+bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
+{
+	if (!isMaster()) {
+		return false;
+	}
+
+	// Find dir in Map
+	int* dirID = dirMap.Find(directivity);
+
+	// if not available choose default
+	if (dirID == nullptr) {
+		pVA->SetSoundSourceDirectivity(id, defaultDirID);
+		return false;
+	}
+	else {
+		pVA->SetSoundSourceDirectivity(id, *dirID);
+		return true;
+	}
 }
 
 /*
@@ -487,13 +667,35 @@ bool FVAPluginModule::isViewModeCave()
 	return viewMode == VAUtils::viewEnum::Cave;
 }
 
+bool FVAPluginModule::isMaster()
+{
+	// return true;
+	return (IDisplayCluster::Get().GetClusterMgr()!= nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster());
+}
+
 bool FVAPluginModule::isConnected()
 {
+	if (!isMaster()) {
+		return false;
+	}
+
 	// TODO return false if nullptr
 	if (pVANet == nullptr)
 		return false;
 
 	return pVANet->IsConnected();
+}
+
+bool FVAPluginModule::initializeSoundSourceDirectivities()
+{
+	// Read config file
+
+	// set defaultDirID
+
+	// fill dirMap
+
+
+	return false;
 }
 
 

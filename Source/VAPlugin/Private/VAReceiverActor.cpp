@@ -1,9 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+// what's up?
 
 #include "VAReceiverActor.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "VADefines.h"
+
+
+#include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AVAReceiverActor::AVAReceiverActor()
@@ -25,10 +30,13 @@ void AVAReceiverActor::BeginPlay()
 
 	controller = GetWorld()->GetFirstPlayerController();
 	
-	FString adresse = "localhost";
-	if (vAdress == EAdress::Cave) {
-		adresse = "10.0.1.240";
-	}
+	
+    FString adresse;
+#if PLATFORM_WINDOWS
+    adresse = "localhost";
+#else
+    adresse = "10.0.1.240";
+#endif
 
 	// Connect to VA Server
 	FVAPluginModule::initializeServer(adresse, vPort);
@@ -36,6 +44,15 @@ void AVAReceiverActor::BeginPlay()
 	// Initialize Receiver Actor
 	FVAPluginModule::initializeReceiver(this);
 	
+	// Initialize Walls for Sound Reflection
+	TArray<AActor*> wallsA;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
+	TArray<AVAReflectionWall*> walls;
+	for (AActor* actor : wallsA) {
+		walls.Add((AVAReflectionWall*)actor);
+	}
+	FVAPluginModule::initializeWalls(walls);
+
 	// Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
 	FVAPluginModule::processSoundQueue();
 	

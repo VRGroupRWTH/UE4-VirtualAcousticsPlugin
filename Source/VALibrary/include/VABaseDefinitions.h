@@ -14,17 +14,22 @@
 #ifndef IW_VABASE_DEFINITIONS
 #define IW_VABASE_DEFINITIONS
 
+// #define VANET_STATIC
+// #define VABASE_STATIC
+// #define VA_STATIC
+
+
 #if ( defined WIN32 ) && !( defined VABASE_STATIC || defined VA_STATIC )
-#ifdef VABASE_EXPORTS
-#define VABASE_API __declspec( dllexport )
-#define VABASE_IMPL_TEMPLATE
+	#ifdef VABASE_EXPORTS
+		#define VABASE_API __declspec( dllexport )
+		#define VABASE_IMPL_TEMPLATE
+	#else
+		#define VABASE_API __declspec( dllimport )
+		#define VABASE_IMPL_TEMPLATE
+	#endif
 #else
-#define VABASE_API __declspec( dllimport )
-#define VABASE_IMPL_TEMPLATE
-#endif
-#else
-#define VABASE_API
-#define VABASE_IMPL_TEMPLATE
+	#define VABASE_API
+	#define VABASE_IMPL_TEMPLATE
 #endif
 
 #if defined( _MSC_VER ) || defined( WIN32 )

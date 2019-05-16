@@ -3,10 +3,19 @@
 #pragma once
 
 #include "Modules/ModuleManager.h"
+#include "Components/SphereComponent.h"
+
+#define VANET_STATIC
+#define VABASE_STATIC
+#define VA_STATIC
+
+#include "VADefines.h"
 
 #include "VA.h"
 #include "VANet.h"
 #include "VAUtils.h"
+#include "VAReflectionWall.h"
+
 
 class AVAReceiverActor;
 class UVASourceComponent;
@@ -27,20 +36,31 @@ public:
     
     // initialize Server (and connect) //
 	static bool initializeServer(FString host = "localhost", int port = 12340);
+
+	// initialize walls // 
+	static void initializeWalls(TArray<AVAReflectionWall*> walls);
     
     // connect to Server (called by initializeServer) //
 	static bool connectServer	(FString host = "localhost", int port = 12340);
     
     // check if VA Server is connected //
     static bool isConnected();
+
+	// initialize Sound Source Directivities //
+	static bool initializeSoundSourceDirectivities();
     
 	// static bool ini();
 
 
 	// static void playTestSound(bool loop = true);
 
+	// initialize sound Sources with their Reflections
+	static int initializeSoundWithReflections(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0), 
+		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+
     // initialize sound Source at VA Server //
-	static int initializeSound(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0), float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+	static int initializeSound(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0),
+		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
     
     // enque Sound Component to prevent initialize bevor the connection to VA Server is established //
 	static bool enqueueSound(UVASourceComponent* soundComponent);
@@ -50,6 +70,9 @@ public:
     
     // change Sound action (play, pause, stop, ..) //
 	static bool setSoundAction(int soundID, int soundAction);
+
+	// change Sound action (play, pause, stop, ..) of source and its reflections // 
+	static bool setSoundActionWithReflections(int soundID, int soundAction);
 
 	// static void updateReceiverPos(VAVec3* pos, VAQuat* quat);
 	// static void updateReceiverPosRot(FVector& pos, FQuat& quat);
@@ -66,6 +89,8 @@ public:
     // set Receiver Directivity (HRIR) //
 	static bool setReceiverDirectivity(std::string directivity);
 
+	// set Sound Source Directivity // 
+	static bool setSourceDirectivity(int id, FString directivity);
 
     // set View Mode //
 	static bool setViewMode();
@@ -85,7 +110,8 @@ public:
     // check if View Mode is Cave //
 	static bool isViewModeCave();
 
-    
+    // check if is Master // 
+	static bool isMaster();
 
 
 protected:
@@ -107,6 +133,18 @@ protected:
     
     // Mapping of Sound Component IDs to their names //
 	static TMap<int, std::string> soundComponentsIDs;
+
+	// Mapping of Sound Component IDs to their Reflection IDs - Make sure to always handle the "normal" instance, too // 
+	static TMap<int, TArray<int>> soundComponentsReflectionIDs;
+
+	// Mapping of all Sound Source Directivities to their IDs // 
+	static TMap<FString, int> dirMap;
+
+	// Default Sound Source Directivity ID // 
+	static int defaultDirID;
+
+	// List of all Reflection Walls in Szene //
+	static TArray<AVAReflectionWall*> reflectionWalls;
 
     // View Mode (unclear, Third Person, HMD, Cave) //
 	static VAUtils::viewEnum viewMode;
