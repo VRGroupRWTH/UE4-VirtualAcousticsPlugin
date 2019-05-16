@@ -79,7 +79,6 @@ public class VAPlugin : ModuleRules
         }
         else if (Target.Platform == UnrealTargetPlatform.Linux)
         {
-
             PublicAdditionalLibraries.Add("VistaBase.so");
             PublicAdditionalLibraries.Add("VistaAspects.so");
             PublicAdditionalLibraries.Add("VistaInterProcComm.so");
