@@ -113,6 +113,9 @@ public:
     // check if is Master // 
 	static bool isMaster();
 
+	// process / output CVAException
+	static void processExeption(FString location, CVAException e);
+
 
 protected:
 

@@ -341,8 +341,17 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 		return -1;
 	}
 
-    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE // NAME HIER
-	// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+	std::string sSignalSourceID;
+	try
+	{
+		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE // NAME HIER
+		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+	}
+	catch (CVAException& e)
+	{
+		processExeption("CreateStignalSourceBufferFromFile", e);
+	}
+
 	
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
@@ -671,6 +680,15 @@ bool FVAPluginModule::isMaster()
 {
 	// return true;
 	return (IDisplayCluster::Get().GetClusterMgr()!= nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster());
+}
+
+void FVAPluginModule::processExeption(FString location, CVAException e)
+{
+	FString one = "Error in [";
+	FString two = "] with error: ";
+	FString exp = FString(e.ToString().c_str());
+	FString error = one.Append(location).Append(two).Append(exp);
+	UE_LOG(LogTemp, Error, TEXT("%s"), *error);
 }
 
 bool FVAPluginModule::isConnected()
