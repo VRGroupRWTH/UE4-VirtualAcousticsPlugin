@@ -124,14 +124,8 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		// update Pos
 		if (vMovement == EMovement::MoveWithObject) {
 
-
 			FTransform trans = ownerActor->GetTransform();
-			FVector loc = trans.GetLocation();
-			FRotator rot = trans.GetRotation().Rotator();
 
-			loc = loc + vOffset;
-
-			FVAPluginModule::updateSourcePos(soundID, loc, rot);
 			FVector pos = trans.GetLocation();
 			FRotator rot = trans.GetRotation().Rotator();
 
