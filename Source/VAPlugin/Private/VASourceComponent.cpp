@@ -123,13 +123,25 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	else {
 		// update Pos
 		if (vMovement == EMovement::MoveWithObject) {
+
+
 			FTransform trans = ownerActor->GetTransform();
+<<<<<<< HEAD
 			FVector loc = trans.GetLocation();
 			FRotator rot = trans.GetRotation().Rotator();
 
 			loc = loc + vOffset;
 
 			FVAPluginModule::updateSourcePos(soundID, loc, rot);
+=======
+
+			FVector pos = trans.GetLocation();
+			FRotator rot = trans.GetRotation().Rotator();
+
+			pos = pos + vOffset;
+			
+			FVAPluginModule::updateSourcePos(soundID, pos, rot);
+>>>>>>> ba3f02696ca445d39ecf0fffbdfeb3de8fd5c5a3
 		}
 	}
 }
