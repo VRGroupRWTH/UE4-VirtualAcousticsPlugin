@@ -341,7 +341,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 		return -1;
 	}
 
-    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(std::string("Audiofiles/Bauer.wav")); // DELETED HERE // NAME HIER
+    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE // NAME HIER
 	// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 	
 	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
