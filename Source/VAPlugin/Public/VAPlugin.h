@@ -110,8 +110,8 @@ public:
     // check if View Mode is Cave //
 	static bool isViewModeCave();
 
-    // check if is Master // 
-	static bool isMaster();
+    // check if is Master and VA Server should be used // 
+	static bool isMasterAndUsed();
 
 	// process / output CVAException
 	static void processExeption(FString location, CVAException e);
@@ -190,6 +190,9 @@ protected:
 
 	// Check if all Library Handles are well initialized //
     static bool checkLibraryHandles(bool einzeln);
+
+	// bool if VA is used // 
+	static bool useVA;
     
     
 	// bool runServerTest();

@@ -38,6 +38,8 @@ TMap<FString, int> FVAPluginModule::dirMap;
 int FVAPluginModule::defaultDirID;
 TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
 
+bool FVAPluginModule::useVA;
+
 
 void* FVAPluginModule::LibraryHandleNet;
 void* FVAPluginModule::LibraryHandleBase;
@@ -69,6 +71,8 @@ void FVAPluginModule::StartupModule()
 	//FString LibraryPath;
 	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
 	FString pathNet, pathBase, pathVistaAspects, pathVistaBase, pathVistaInterProcComm;
+
+	useVA = true;
 
 #if PLATFORM_WINDOWS
 	//LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/VAPlugin/x64/Release/VABase.dll"));
@@ -115,7 +119,7 @@ void FVAPluginModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return;
 	}
 	
@@ -137,7 +141,7 @@ void FVAPluginModule::ShutdownModule()
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -161,13 +165,19 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 
 bool FVAPluginModule::initializeServer(FString host, int port)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server?"));
+	if (ret == EAppReturnType::Type::No) {
+		useVA = false;
 		return false;
 	}
 
 	if (!connectServer(host, port)) {
-		// Try again
-		return connectServer(host, port);
+		useVA = false;
+		return false;
 	}
 	return true;
 }
@@ -190,7 +200,7 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	scale = receiverActor->getScale();
 	
 	
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -337,7 +347,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return -1;
 	}
 
@@ -392,7 +402,7 @@ bool FVAPluginModule::processSoundQueue()
 
 bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -404,7 +414,7 @@ bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 
 bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -461,7 +471,7 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -484,7 +494,7 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -494,7 +504,7 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -516,7 +526,7 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -533,7 +543,7 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 
 bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -676,10 +686,9 @@ bool FVAPluginModule::isViewModeCave()
 	return viewMode == VAUtils::viewEnum::Cave;
 }
 
-bool FVAPluginModule::isMaster()
+bool FVAPluginModule::isMasterAndUsed()
 {
-	// return true;
-	return (IDisplayCluster::Get().GetClusterMgr()!= nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster());
+	return (IDisplayCluster::Get().GetClusterMgr()!= nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster() && useVA);
 }
 
 void FVAPluginModule::processExeption(FString location, CVAException e)
@@ -693,7 +702,7 @@ void FVAPluginModule::processExeption(FString location, CVAException e)
 
 bool FVAPluginModule::isConnected()
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
