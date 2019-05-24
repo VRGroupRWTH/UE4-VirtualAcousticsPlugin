@@ -8,6 +8,7 @@ public class VAPlugin : ModuleRules
 	public VAPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		bEnableExceptions = true;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
