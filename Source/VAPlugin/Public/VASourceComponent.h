@@ -36,7 +36,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 
 
 	// In- or decrease Gain Offset 
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
 		float vGainFactor = 1;
 
 	// In- or decrease Gain Offset
