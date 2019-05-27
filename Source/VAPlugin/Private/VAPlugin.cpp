@@ -356,30 +356,31 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	{
 		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE // NAME HIER
 		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+		pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
+		pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
+
+
+
+		const int iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
+		pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
+
+		//TODO Set Gain
+		float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
+		pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
+
+
+
+		pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
+
+		soundComponentsIDs.Add(iSoundSourceID, sSignalSourceID);
 	}
 	catch (CVAException& e)
 	{
-		processExeption("CreateStignalSourceBufferFromFile", e);
+		processExeption("initializeSound", e);
+		return -1;
 	}
 
 	
-	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
-	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
-
-
-
-	const int iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
-	pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
-
-	//TODO Set Gain
-	float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
-	pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
-
-
-
-	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
-
-	soundComponentsIDs.Add(iSoundSourceID, sSignalSourceID);
 
 	return iSoundSourceID;
 }
@@ -407,7 +408,13 @@ bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 	}
 
 	std::string sSoundID = soundComponentsIDs[iSoundID];
-	pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
+	try	{
+		pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
+	}
+	catch (CVAException& e) {
+		processExeption("setSoundAction()", e);
+		return -1;
+	}
 
 	return true;
 }
@@ -484,9 +491,14 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 
 	VAUtils::scaleVAVec(*tmpVec, scale);
-
-    pVA->SetSoundSourceOrientation(iSoundReceiverID, *tmpQuat);
-    pVA->SetSoundSourcePosition(iSoundReceiverID, *tmpVec);
+	try {
+		pVA->SetSoundSourceOrientation(iSoundReceiverID, *tmpQuat);
+		pVA->SetSoundSourcePosition(iSoundReceiverID, *tmpVec);
+}
+	catch (CVAException& e) {
+		processExeption("updateSoundSourcePos", e);
+		return -1;
+	}
     
 	// pVA->SetSoundSourcePose(iSourceID, *tmpVec, *tmpQuat);
 	return true;
@@ -517,9 +529,15 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 	
 	VAUtils::scaleVAVec(*tmpVec, scale);
+	try {
+		pVA->SetSoundReceiverOrientation(iSoundReceiverID, *tmpQuat);
+		pVA->SetSoundReceiverPosition(iSoundReceiverID, *tmpVec);
+	}
+	catch (CVAException& e) {
+		processExeption("updateReceiverPos()", e);
+		return -1;
+	}
 
-	pVA->SetSoundReceiverOrientation(iSoundReceiverID, *tmpQuat);
-	pVA->SetSoundReceiverPosition(iSoundReceiverID, *tmpVec);
 	//pVA->SetSoundReceiverPose(iSoundReceiverID, *tmpVec, *tmpQuat);
 	return true;
 }
@@ -534,9 +552,15 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 		return true;
 	}
 
-	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
-		
-	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
+	try {
+		iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+		pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
+	}
+	catch (CVAException& e) {
+		processExeption("setReceiverDirectivity", e);
+		return -1;
+	}
+
 	
 	return false;
 }
@@ -550,15 +574,23 @@ bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 	// Find dir in Map
 	int* dirID = dirMap.Find(directivity);
 
-	// if not available choose default
-	if (dirID == nullptr) {
-		pVA->SetSoundSourceDirectivity(id, defaultDirID);
-		return false;
+	try {
+		// if not available choose default
+		if (dirID == nullptr) {
+			pVA->SetSoundSourceDirectivity(id, defaultDirID);
+			return false;
+		}
+		else {
+			pVA->SetSoundSourceDirectivity(id, *dirID);
+			return true;
+		}
 	}
-	else {
-		pVA->SetSoundSourceDirectivity(id, *dirID);
-		return true;
+	catch (CVAException& e) {
+		processExeption("setSourceDirectivity()", e);
+		return -1;
 	}
+
+
 }
 
 /*
@@ -693,6 +725,7 @@ bool FVAPluginModule::isMasterAndUsed()
 
 void FVAPluginModule::processExeption(FString location, CVAException e)
 {
+	useVA = false;
 	FString one = "Error in [";
 	FString two = "] with error: ";
 	FString exp = FString(e.ToString().c_str());
@@ -707,10 +740,18 @@ bool FVAPluginModule::isConnected()
 	}
 
 	// TODO return false if nullptr
-	if (pVANet == nullptr)
+	if (pVANet == nullptr) {
 		return false;
+	}
 
-	return pVANet->IsConnected();
+	try {
+		return pVANet->IsConnected();
+	}
+	catch (CVAException& e) {
+		processExeption("isConnected", e);
+		return false;
+	}
+
 }
 
 bool FVAPluginModule::initializeSoundSourceDirectivities()
