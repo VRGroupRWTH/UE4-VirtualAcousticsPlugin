@@ -85,19 +85,35 @@ public:
 
 	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
-	void playSound();
+		void playSound();
 
 	// Pauses Sound //
 	UFUNCTION(BlueprintCallable)
-	void stopSound();
+		void stopSound();
 
 	// Stops Sound //
 	UFUNCTION(BlueprintCallable)
-	void pauseSound();
+		void pauseSound();
 
 	// Update Position // 
 	UFUNCTION(BlueprintCallable)
-	void updatePosition(FVector vec, FRotator rot);
+		void updatePosition(FVector vec, FRotator rot);
+
+	// Plays Sound With Reflections // 
+	UFUNCTION(BlueprintCallable)
+		void playSoundWithReflections();
+
+	// Pauses Sound With Reflections //
+	UFUNCTION(BlueprintCallable)
+		void stopSoundWithReflections();
+
+	// Stops Sound With Reflections //
+	UFUNCTION(BlueprintCallable)
+		void pauseSoundWithReflections();
+
+	// Update Position With Reflections // 
+	UFUNCTION(BlueprintCallable)
+		void updatePositionWithReflections(FVector vec, FRotator rot);
 
 
 

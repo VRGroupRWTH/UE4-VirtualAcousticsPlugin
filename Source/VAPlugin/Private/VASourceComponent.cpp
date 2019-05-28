@@ -99,6 +99,26 @@ void UVASourceComponent::updatePosition(FVector vec, FRotator rot)
 	FVAPluginModule::updateSourcePos(soundID, vec, rot);
 }
 
+void UVASourceComponent::playSoundWithReflections()
+{
+	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+}
+
+void UVASourceComponent::stopSoundWithReflections()
+{
+	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+}
+
+void UVASourceComponent::pauseSoundWithReflections()
+{
+	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+}
+
+void UVASourceComponent::updatePositionWithReflections(FVector vec, FRotator rot)
+{
+	FVAPluginModule::updateSourcePosWithReflections(soundID, vec, rot);
+}
+
 
 // Called every frame
 void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

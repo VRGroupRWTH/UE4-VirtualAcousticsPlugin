@@ -78,9 +78,14 @@ public:
 	// static void updateReceiverPosRot(FVector& pos, FQuat& quat);
 	// static void updateReceiverPosRot(FVector& pos, FRotator& rot);
 
-    // update Sound Source Position and Orientation //
+	// update Sound Source Position and Orientation //
 	static bool updateSourcePos(int iSourceID, FVector pos, FQuat quat);
 	static bool updateSourcePos(int iSourceID, FVector pos, FRotator rot);
+
+
+	// update Sound Source Position and Orientation With Reflections //
+	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat);
+	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot);
 
     // update Receiver Position and Oritentation //
 	static bool updateReceiverPos(FVector pos, FQuat quat);

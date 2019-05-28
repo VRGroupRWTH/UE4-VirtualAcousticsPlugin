@@ -413,7 +413,7 @@ bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 	}
 	catch (CVAException& e) {
 		processExeption("setSoundAction()", e);
-		return -1;
+		return false;
 	}
 
 	return true;
@@ -497,10 +497,33 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 }
 	catch (CVAException& e) {
 		processExeption("updateSoundSourcePos", e);
-		return -1;
+		return false;
 	}
     
 	// pVA->SetSoundSourcePose(iSourceID, *tmpVec, *tmpQuat);
+	return true;
+}
+
+bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat)
+{
+	FRotator rot = quat.Rotator();
+	return updateSourcePosWithReflections(iSourceID, pos, rot);
+}
+
+bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot)
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	updateSourcePos(iSourceID, pos, rot);
+
+	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(iSourceID);
+
+	for (int id : reflectionArrayIDs) {
+		updateSourcePos(id, pos, rot);
+	}
+
 	return true;
 }
 
@@ -535,7 +558,7 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 	}
 	catch (CVAException& e) {
 		processExeption("updateReceiverPos()", e);
-		return -1;
+		return false;
 	}
 
 	//pVA->SetSoundReceiverPose(iSoundReceiverID, *tmpVec, *tmpQuat);
@@ -558,7 +581,7 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 	}
 	catch (CVAException& e) {
 		processExeption("setReceiverDirectivity", e);
-		return -1;
+		return false;
 	}
 
 	
@@ -587,10 +610,8 @@ bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 	}
 	catch (CVAException& e) {
 		processExeption("setSourceDirectivity()", e);
-		return -1;
+		return false;
 	}
-
-
 }
 
 /*
