@@ -63,6 +63,9 @@ protected:
 	// is PlaneData already computed?
 	bool alreadyComputed;
 
+	// // sphere to show // 
+	// UStaticMeshComponent* SphereMesh;
+
 
 
 public:	

@@ -87,6 +87,10 @@ public:
 	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat);
 	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot);
 
+	// compute Transform of reflected sound Source // 
+	static FTransform computeReflectedTransform(AVAReflectionWall* wall, FTransform trans);
+	static FTransform computeReflectedTransform(AVAReflectionWall* wall, FVector vec, FRotator rot);
+
     // update Receiver Position and Oritentation //
 	static bool updateReceiverPos(FVector pos, FQuat quat);
 	static bool updateReceiverPos(FVector pos, FRotator rot);
@@ -144,6 +148,9 @@ protected:
 
 	// Mapping of Sound Component IDs to their Reflection IDs - Make sure to always handle the "normal" instance, too // 
 	static TMap<int, TArray<int>> soundComponentsReflectionIDs;
+
+	// Mapping of Sound Reflection to their walls //
+	static TMap<int, AVAReflectionWall*> matchingReflectionWalls;
 
 	// Mapping of all Sound Source Directivities to their IDs // 
 	static TMap<FString, int> dirMap;

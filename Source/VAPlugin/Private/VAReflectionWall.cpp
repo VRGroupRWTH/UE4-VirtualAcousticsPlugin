@@ -62,19 +62,28 @@ void AVAReflectionWall::computePlaneData()
 
 void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot)
 {
-	float size = 50.0f;
 
-	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	sphereComp->SetAbsolute(true, true, true);
-	sphereComp->InitSphereRadius(size);
-	sphereComp->SetWorldLocation(pos);
-	//sphereComp->SetVisibility(true);
+	// SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMeshz"));
+	// //this->SphereMesh->AttachTo(GetRootComponent());
+	// SetRootComponent(SphereMesh);
+	// 
+	// static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
+	// this->SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
 
-	dirComp = CreateDefaultSubobject<USphereComponent>(TEXT("dirComp"));
-	dirComp->SetAbsolute(true, true, true);
-	dirComp->InitSphereRadius(size / 4.0f);
-	dirComp->SetWorldLocation(pos + size*rot.Vector());
-	// dirComp->SetVisibility(true);
+
+	// float size = 50.0f;
+	// 
+	// sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	// sphereComp->SetAbsolute(true, true, true);
+	// sphereComp->InitSphereRadius(size);
+	// sphereComp->SetWorldLocation(pos);
+	// //sphereComp->SetVisibility(true);
+	// 
+	// dirComp = CreateDefaultSubobject<USphereComponent>(TEXT("dirComp"));
+	// dirComp->SetAbsolute(true, true, true);
+	// dirComp->InitSphereRadius(size / 4.0f);
+	// dirComp->SetWorldLocation(pos + size*rot.Vector());
+	// // dirComp->SetVisibility(true);
 
 	
 }

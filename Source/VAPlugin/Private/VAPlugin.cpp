@@ -34,6 +34,7 @@ TArray<UVASourceComponent*> FVAPluginModule::soundComponents;
 TArray<UVASourceComponent*> FVAPluginModule::uninitializedSoundComponents;
 TMap<int, std::string> FVAPluginModule::soundComponentsIDs;
 TMap<int, TArray<int>> FVAPluginModule::soundComponentsReflectionIDs;
+TMap<int, AVAReflectionWall*> FVAPluginModule::matchingReflectionWalls;
 TMap<FString, int> FVAPluginModule::dirMap;
 int FVAPluginModule::defaultDirID;
 TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
@@ -298,32 +299,20 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 			continue;
 		}
 		
-		// Transform Positions
-		FVector n = wall->getNormalVec();
-		FVector p = wall->getSupportVec();
-		float d = wall->getD();
-		
-		float t = d - FVector::DotProduct(n, p);
-
-		FVector soundPos_new = p + 2 * t * n;
-
-
-		// Transform orientation
-		FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
-		FQuat reflectedQuat = mirrorNormalQuat * soundRot.Quaternion() * mirrorNormalQuat;
-		FRotator soundRot_new = reflectedQuat.Rotator();
+		FTransform trans = computeReflectedTransform(wall, soundPos, soundRot);
 
 
 		// Set Name TODO:
 		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
-
 		
 
-		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+		int id = initializeSound(soundNameF, trans.GetLocation(), trans.GetRotation().Rotator(), gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+
+		matchingReflectionWalls.Add(id, wall);
 
 		reflectionArrayIDs.Add(id);
 		continue;
-		wall->spawnSphere(soundPos_new, soundRot_new); // TODO: delete
+		wall->spawnSphere(trans.GetLocation(), trans.GetRotation().Rotator()); // TODO: delete
 	}
 
 	// Play all sounds together
@@ -356,6 +345,8 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 		return -1;
 	}
 
+	int iSoundSourceID;
+
 	std::string sSignalSourceID;
 	try
 	{
@@ -366,7 +357,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 
 
-		const int iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
+		iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
 		pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
 
 		//TODO Set Gain
@@ -526,10 +517,47 @@ bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos,
 	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(iSourceID);
 
 	for (int id : reflectionArrayIDs) {
-		updateSourcePos(id, pos, rot);
+		// eval wich wall to reflect on 
+		AVAReflectionWall* wall = *matchingReflectionWalls.Find(id);
+		
+		// get new pos
+		FTransform trans_new = computeReflectedTransform(wall, pos, rot);
+		
+		// update to the new pos
+		updateSourcePos(id, trans_new.GetLocation(), trans_new.GetRotation().Rotator());
 	}
 
 	return true;
+}
+
+FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, FTransform trans)
+{
+	return computeReflectedTransform(wall, trans.GetLocation(), trans.GetRotation().Rotator());
+}
+
+FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, FVector pos, FRotator rot)
+{
+	// Transform Positions
+	FVector n = wall->getNormalVec();
+	FVector p = wall->getSupportVec();
+	float d = wall->getD();
+
+	float t = d - FVector::DotProduct(n, p);
+
+	FVector soundPos_new = p + 2 * t * n;
+
+
+	// Transform orientation
+	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
+	FQuat reflectedQuat = mirrorNormalQuat * rot.Quaternion() * mirrorNormalQuat;
+	FRotator soundRot_new = reflectedQuat.Rotator();
+
+	// bring all together in new Transform
+	FTransform trans_new = FTransform();
+	trans_new.SetLocation(soundPos_new);
+	trans_new.SetRotation(reflectedQuat);
+
+	return trans_new;
 }
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
