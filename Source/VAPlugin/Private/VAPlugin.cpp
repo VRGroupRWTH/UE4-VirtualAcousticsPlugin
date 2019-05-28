@@ -147,19 +147,24 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 
 	VAUtils::openMessageBox("Connecting to VAServer. Be sure to have it switched on");
 
-	pVANet = IVANetClient::Create();
+	try {
+		pVANet = IVANetClient::Create();
 
-	std::string host(TCHAR_TO_UTF8(*hostF));
-	pVANet->Initialize(host, port);
-	if (!pVANet->IsConnected()) {
-		VAUtils::openMessageBox("Could not connect to VA Server", true);
+		std::string host(TCHAR_TO_UTF8(*hostF));
+		pVANet->Initialize(host, port);
+		if (!pVANet->IsConnected()) {
+			VAUtils::openMessageBox("Could not connect to VA Server", true);
+			return false;
+		}
+
+		pVA = pVANet->GetCoreInstance();
+		pVA->Reset();
+	}
+	catch (CVAException& e) {
+		processExeption("connectServer()", e);
 		return false;
 	}
-
-	pVA = pVANet->GetCoreInstance();
-	pVA->Reset();
 	
-
 	return true;
 }
 
