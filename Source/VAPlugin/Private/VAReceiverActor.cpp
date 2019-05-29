@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "VADefines.h"
 
+#include "DisplayClusterPawn.h"
+#include "DisplayClusterSceneComponent.h"
+
 
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -88,23 +91,24 @@ bool AVAReceiverActor::updateRealWorldPosition()
     FVector pos;
     FRotator rot;
     
-    /*
-     include Controller.h?
-     APawn* pawn = AController::GetPawn()
-     Class rightComp;
-     TVector<Class> = pawn->GetComponentByClass(CLASS?!)
-     for(p : TVector)
-     {
-        if(p->GetName() == "shutter_glasses")
-        {
-            rightComp = *p;
-        }
-     }
+    //include Controller.h
+	// APawn* pawn = UGameplayStatics::GetPlayerCharacter(getWorld(), 0);
+	// UDisplayClusterSceneComponent* rightComp;
+    // TVector<Class> = pawn->GetComponentByClass(CLASS?!)
+    // for(p : TVector)
+    // {
+    //    if(p->GetName() == "shutter_glasses")
+    //    {
+    //        rightComp = *p;
+    //    }
+    // }
+
+	// https://devhub.vr.rwth-aachen.de/VR-Group/widgetinteraction/blob/develop/Source/WidgetInteraction/Private/WidgetInteraction.cpp
+	// https://devhub.vr.rwth-aachen.de/VR-Group/unreallaunchscripts/blob/master/.misc/configurations/ndisplay/aixcave_5_sides_421.cfg
      
-     pos = rightComp->GetRealtiveLocation();
-     rot = rightComp->GetRelativeRotation().Rotator();
-     
-    */
+    //pos = rightComp->GetRealtiveLocation();
+    //rot = rightComp->GetRelativeRotation().Rotator();
+    
     return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 }
 

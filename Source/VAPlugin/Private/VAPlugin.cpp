@@ -162,7 +162,7 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 		pVA->Reset();
 	}
 	catch (CVAException& e) {
-		processExeption("connectServer()", e);
+		processExeption("connectServer()", FString(e.ToString().c_str()));
 		return false;
 	}
 	
@@ -308,7 +308,7 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
 		
 
-		int id = initializeSound(soundNameF, soundPos, soundRot, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+		int id = initializeSound(soundNameF, pos_new, rot_new, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 
 		matchingReflectionWalls.Add(id, wall);
 
@@ -380,7 +380,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	}
 	catch (CVAException& e)
 	{
-		processExeption("initializeSound", e);
+		processExeption("initializeSound", FString(e.ToString().c_str()));
 		return -1;
 	}
 
@@ -416,7 +416,7 @@ bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 		pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
 	}
 	catch (CVAException& e) {
-		processExeption("setSoundAction()", e);
+		processExeption("setSoundAction()", FString(e.ToString().c_str()));
 		return false;
 	}
 
@@ -429,14 +429,18 @@ bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction
 		return false;
 	}
 
-	// setSoundAction(soundID, soundAction);
-
 	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
+
+	// setSoundAction(soundID, soundAction);
 
 	for (int id : reflectionArrayIDs) {
 		setSoundAction(id, soundAction);
 	}
 
+	FString text = "Counter started Reflections: ";
+	text.Append(FString::FromInt(reflectionArrayIDs.Num()));
+	VAUtils::openMessageBox(text);
+	
 	return true;
 }
 
@@ -500,7 +504,7 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 		pVA->SetSoundSourcePosition(iSoundReceiverID, *tmpVec);
 }
 	catch (CVAException& e) {
-		processExeption("updateSoundSourcePos", e);
+		processExeption("updateSoundSourcePos", FString(e.ToString().c_str()));
 		return false;
 	}
     
@@ -638,7 +642,7 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 		pVA->SetSoundReceiverPosition(iSoundReceiverID, *tmpVec);
 	}
 	catch (CVAException& e) {
-		processExeption("updateReceiverPos()", e);
+		processExeption("updateReceiverPos()", FString(e.ToString().c_str()));
 		return false;
 	}
 
@@ -682,7 +686,7 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 		pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 	}
 	catch (CVAException& e) {
-		processExeption("setReceiverDirectivity", e);
+		processExeption("setReceiverDirectivity", FString(e.ToString().c_str()));
 		return false;
 	}
 
@@ -711,7 +715,7 @@ bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 		}
 	}
 	catch (CVAException& e) {
-		processExeption("setSourceDirectivity()", e);
+		processExeption("setSourceDirectivity()", FString(e.ToString().c_str()));
 		return false;
 	}
 }
@@ -849,11 +853,14 @@ bool FVAPluginModule::isMasterAndUsed()
 void FVAPluginModule::processExeption(FString location, CVAException e)
 {
 	useVA = false;
-	FString one = "Error in [";
-	FString two = "] with error: ";
 	FString exp = FString(e.ToString().c_str());
-	FString error = one.Append(location).Append(two).Append(exp);
-	UE_LOG(LogTemp, Error, TEXT("%s"), *error);
+	UE_LOG(LogTemp, Error, TEXT("Error in [%s] with error: %s"), *location, *exp);
+}
+
+void FVAPluginModule::processExeption(FString location, FString exp)
+{
+	useVA = false;
+	UE_LOG(LogTemp, Error, TEXT("Error in [%s] with error: %s"), *location, *exp);
 }
 
 bool FVAPluginModule::isConnected()
@@ -871,7 +878,7 @@ bool FVAPluginModule::isConnected()
 		return pVANet->IsConnected();
 	}
 	catch (CVAException& e) {
-		processExeption("isConnected", e);
+		processExeption("isConnected", FString(e.ToString().c_str()));
 		return false;
 	}
 

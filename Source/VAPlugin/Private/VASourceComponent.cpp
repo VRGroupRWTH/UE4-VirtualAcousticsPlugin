@@ -134,13 +134,13 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	}
 
 	
-	if (!started) {
-		timer += DeltaTime;
-		if (timer > vDelay) {
-			playSoundWithReflections();
-			started = true;
-		}
-	}
+	// if (!started) {
+	// 	timer += DeltaTime;
+	// 	if (timer > vDelay) {
+	// 		playSoundWithReflections();
+	// 		started = true;
+	// 	}
+	// }
 
 	else {
 		// update Pos

@@ -131,6 +131,7 @@ public:
 
 	// process / output CVAException
 	static void processExeption(FString location, CVAException e);
+	static void processExeption(FString location, FString exception);
 
 
 protected:
