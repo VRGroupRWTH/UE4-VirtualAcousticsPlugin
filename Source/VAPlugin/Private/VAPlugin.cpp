@@ -531,8 +531,8 @@ bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos,
 		// get new pos
 		// FTransform trans_new = computeReflectedTransform(wall, pos, rot);
         
-        FVector pos_new = computeReflectedPos(wall, soundPos);
-        FRotator rot_new = computeReflectedRot(wall, soundRot);
+        FVector pos_new = computeReflectedPos(wall, pos);
+        FRotator rot_new = computeReflectedRot(wall, rot);
 		
 		// update to the new pos
 		updateSourcePos(id, pos_new, rot_new);
