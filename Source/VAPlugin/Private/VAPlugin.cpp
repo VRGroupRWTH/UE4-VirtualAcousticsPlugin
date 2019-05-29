@@ -529,10 +529,13 @@ bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos,
 		AVAReflectionWall* wall = *matchingReflectionWalls.Find(id);
 		
 		// get new pos
-		FTransform trans_new = computeReflectedTransform(wall, pos, rot);
+		// FTransform trans_new = computeReflectedTransform(wall, pos, rot);
+        
+        FVector pos_new = computeReflectedPos(wall, soundPos);
+        FRotator rot_new = computeReflectedRot(wall, soundRot);
 		
 		// update to the new pos
-		updateSourcePos(id, trans_new.GetLocation(), trans_new.GetRotation().Rotator());
+		updateSourcePos(id, pos_new, rot_new);
 	}
 
 	return true;
