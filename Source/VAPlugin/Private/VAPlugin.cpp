@@ -581,7 +581,7 @@ FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector po
 
 	float t = d - FVector::DotProduct(n, p);
 
-	FVector soundPos_new = p + 2 * t * n;
+	FVector soundPos_new = p + ((float) (2 * t)) * n;
 
 	return soundPos_new;
 }
