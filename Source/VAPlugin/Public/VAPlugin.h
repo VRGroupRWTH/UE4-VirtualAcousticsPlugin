@@ -99,8 +99,8 @@ public:
 	static bool updateReceiverPos(FVector pos, FRotator rot);
     
     // update Recievers real World Position and Oritentation // 
-    static bool updateReceiverRealWorldPosition(FVector pos, FQuat quat);
-    static bool updateReceiverRealWorldPosition(FVector pos, FRotator rot);
+    static bool updateReceiverRealWorldPos(FVector pos, FQuat quat);
+    static bool updateReceiverRealWorldPos(FVector pos, FRotator rot);
 
     // set Receiver Directivity (HRIR) //
 	static bool setReceiverDirectivity(std::string directivity);

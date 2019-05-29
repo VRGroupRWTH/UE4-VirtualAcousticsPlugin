@@ -105,7 +105,7 @@ bool updateRealWorldPosition()
      rot = rightComp->GetRelativeRotation().Rotator();
      
     */
-    FVAPluginModule::updateRealWorldPosition(pos, rot)
+    FVAPluginModule::updateReceiverRealWorldPos(pos, rot)
 }
 
 std::string AVAReceiverActor::getDirectivity()
