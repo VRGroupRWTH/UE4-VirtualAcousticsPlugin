@@ -82,7 +82,7 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 	return false;
 }
 
-bool updateRealWorldPosition()
+bool AVAReceiverActor::updateRealWorldPosition()
 {
     
     FVector pos;
