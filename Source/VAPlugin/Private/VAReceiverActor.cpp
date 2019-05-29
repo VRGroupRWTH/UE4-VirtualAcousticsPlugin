@@ -118,11 +118,11 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	auto player_controller = world->GetFirstPlayerController();
 
 	if (player_controller == nullptr) {
-		return;
+		return false;
 	}
 	auto vr_pawn = dynamic_cast<AVirtualRealityPawn*>(player_controller->AcknowledgedPawn);
 	if (vr_pawn == nullptr) {
-		return;
+		return false;
 	}
 
 	FVector posPawn, posOrigin;
@@ -137,16 +137,16 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	for (auto parent : parent_vec) {
 		if (parent->GetName() == FString("shutter_glasses"))
 		{
-			// TODO do sth
+			// TODO do sth with parent? but there is no ->GetLocation or sth
 		}
 		if (parent->GetName() == FString("cave_origin"))
 		{
-			// TODO do sth
+			// TODO do sth with parent? but there is no ->GetLocation or sth
 		}
 	}
 
-	FVector pos = posPawn - posOrigin;
-	FRotator rot = rotPawn;
+	pos = posPawn - posOrigin;
+	rot = rotPawn;
     
     return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 }
