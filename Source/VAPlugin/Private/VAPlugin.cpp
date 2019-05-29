@@ -677,7 +677,7 @@ bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FRotator rot)
 	VAUtils::scaleVAVec(*tmpVec, scale);
 
 	try {
-		pVA->SetSoundReceiverRealWorldPose(iSoundReceiverID, *tmpVec, *tmpQuat)
+		pVA->SetSoundReceiverRealWorldPose(iSoundReceiverID, *tmpVec, *tmpQuat);
 	}
 	catch (CVAException& e) {
 		processExeption("updateReceiverRealWorldPos()", FString(e.ToString().c_str()));
