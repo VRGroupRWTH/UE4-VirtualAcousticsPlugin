@@ -660,15 +660,31 @@ bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FQuat quat)
     return updateReceiverRealWorldPos(pos, rot);
 }
 
-bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FRotator quat)
+bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FRotator rot)
 {
     if (!isMasterAndUsed()) {
         return false;
     }
-    
-    // TODO: do stuff
-   
-    return false;
+
+	VAUtils::rotateFVec(pos);
+	VAUtils::rotateFRotator(rot);
+
+	FQuat quat = rot.Quaternion();
+
+	VAUtils::fVecToVAVec3(pos, *tmpVec);
+	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
+
+	VAUtils::scaleVAVec(*tmpVec, scale);
+
+	try {
+		pVA->SetSoundReceiverRealWorldPose(iSoundReceiverID, *tmpVec, *tmpQuat)
+	}
+	catch (CVAException& e) {
+		processExeption("updateReceiverRealWorldPos()", FString(e.ToString().c_str()));
+		return false;
+	}
+	
+	return false;
 }
 
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
