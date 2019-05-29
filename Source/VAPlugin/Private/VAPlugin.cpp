@@ -596,7 +596,7 @@ FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator 
 
 	float t = d - FVector::DotProduct(n, p);
 
-	FVector soundPos_new = p + 2 * t * n;
+	FVector soundPos_new = p + ((float) (2 * t)) * n;
 
 
 	// Transform orientation
