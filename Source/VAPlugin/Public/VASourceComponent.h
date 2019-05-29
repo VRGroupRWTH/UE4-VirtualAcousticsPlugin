@@ -36,7 +36,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 
 
 	// In- or decrease Gain Offset 
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
 		float vGainFactor = 1;
 
 	// In- or decrease Gain Offset
@@ -71,6 +71,11 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset"))
 		FVector vOffset = FVector(0, 0, 0);
 
+	// Manual Rotation (if used)
+	// UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation"))
+	// 	bool vOffsetRot = false;
+
+
 
 public:	
 	// Sets default values for this component's properties
@@ -80,19 +85,35 @@ public:
 
 	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
-	void playSound();
+		void playSound();
 
 	// Pauses Sound //
 	UFUNCTION(BlueprintCallable)
-	void stopSound();
+		void stopSound();
 
 	// Stops Sound //
 	UFUNCTION(BlueprintCallable)
-	void pauseSound();
+		void pauseSound();
 
 	// Update Position // 
 	UFUNCTION(BlueprintCallable)
-	void updatePosition(FVector vec, FRotator rot);
+		void updatePosition(FVector vec, FRotator rot);
+
+	// Plays Sound With Reflections // 
+	UFUNCTION(BlueprintCallable)
+		void playSoundWithReflections();
+
+	// Pauses Sound With Reflections //
+	UFUNCTION(BlueprintCallable)
+		void stopSoundWithReflections();
+
+	// Stops Sound With Reflections //
+	UFUNCTION(BlueprintCallable)
+		void pauseSoundWithReflections();
+
+	// Update Position With Reflections // 
+	UFUNCTION(BlueprintCallable)
+		void updatePositionWithReflections(FVector vec, FRotator rot);
 
 
 

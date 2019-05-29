@@ -67,10 +67,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Updates the Virtual World Position of the Player
+	// Updates the Virtual World Position of the Player // 
 	bool updateVirtualWorldPosition();
 
-	// Updates the Real World Position of the Player
+	// Updates the Real World Position of the Player //
 	bool updateRealWorldPosition();
 
 	// Link to the PlayerController

@@ -67,6 +67,7 @@ void AVAReceiverActor::Tick(float DeltaTime)
 
 	if (timeSinceUpdate > (1.0f / 91)) {
 		updateVirtualWorldPosition();
+        updateRealWorldPosition();
 	}
 }
 
@@ -79,6 +80,32 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 
 	timeSinceUpdate = 0.0f;
 	return false;
+}
+
+bool AVAReceiverActor::updateRealWorldPosition()
+{
+    
+    FVector pos;
+    FRotator rot;
+    
+    /*
+     include Controller.h?
+     APawn* pawn = AController::GetPawn()
+     Class rightComp;
+     TVector<Class> = pawn->GetComponentByClass(CLASS?!)
+     for(p : TVector)
+     {
+        if(p->GetName() == "shutter_glasses")
+        {
+            rightComp = *p;
+        }
+     }
+     
+     pos = rightComp->GetRealtiveLocation();
+     rot = rightComp->GetRelativeRotation().Rotator();
+     
+    */
+    return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 }
 
 std::string AVAReceiverActor::getDirectivity()

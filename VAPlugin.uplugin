@@ -22,7 +22,15 @@
   ],
   "Plugins": [
     {
+      "Name": "nDisplay",
+      "Enabled": true
+    },
+    {
       "Name": "nDisplayExtensions",
+      "Enabled": true
+    },
+	{
+      "Name": "nDisplayInput",
       "Enabled": true
     }
   ]

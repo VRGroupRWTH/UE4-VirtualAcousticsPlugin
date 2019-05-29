@@ -34,9 +34,12 @@ TArray<UVASourceComponent*> FVAPluginModule::soundComponents;
 TArray<UVASourceComponent*> FVAPluginModule::uninitializedSoundComponents;
 TMap<int, std::string> FVAPluginModule::soundComponentsIDs;
 TMap<int, TArray<int>> FVAPluginModule::soundComponentsReflectionIDs;
+TMap<int, AVAReflectionWall*> FVAPluginModule::matchingReflectionWalls;
 TMap<FString, int> FVAPluginModule::dirMap;
 int FVAPluginModule::defaultDirID;
 TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
+
+bool FVAPluginModule::useVA;
 
 
 void* FVAPluginModule::LibraryHandleNet;
@@ -69,6 +72,8 @@ void FVAPluginModule::StartupModule()
 	//FString LibraryPath;
 	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
 	FString pathNet, pathBase, pathVistaAspects, pathVistaBase, pathVistaInterProcComm;
+
+	useVA = true;
 
 #if PLATFORM_WINDOWS
 	//LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/VAPlugin/x64/Release/VABase.dll"));
@@ -115,7 +120,7 @@ void FVAPluginModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return;
 	}
 	
@@ -137,37 +142,48 @@ void FVAPluginModule::ShutdownModule()
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
 	VAUtils::openMessageBox("Connecting to VAServer. Be sure to have it switched on");
 
-	pVANet = IVANetClient::Create();
+	try {
+		pVANet = IVANetClient::Create();
 
-	std::string host(TCHAR_TO_UTF8(*hostF));
-	pVANet->Initialize(host, port);
-	if (!pVANet->IsConnected()) {
-		VAUtils::openMessageBox("Could not connect to VA Server", true);
+		std::string host(TCHAR_TO_UTF8(*hostF));
+		pVANet->Initialize(host, port);
+		if (!pVANet->IsConnected()) {
+			VAUtils::openMessageBox("Could not connect to VA Server", true);
+			return false;
+		}
+
+		pVA = pVANet->GetCoreInstance();
+		pVA->Reset();
+	}
+	catch (CVAException& e) {
+		processExeption("connectServer()", e);
 		return false;
 	}
-
-	pVA = pVANet->GetCoreInstance();
-	pVA->Reset();
 	
-
 	return true;
 }
 
 bool FVAPluginModule::initializeServer(FString host, int port)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server?"));
+	if (ret == EAppReturnType::Type::No) {
+		useVA = false;
 		return false;
 	}
 
 	if (!connectServer(host, port)) {
-		// Try again
-		return connectServer(host, port);
+		useVA = false;
+		return false;
 	}
 	return true;
 }
@@ -190,7 +206,7 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	scale = receiverActor->getScale();
 	
 	
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -283,41 +299,37 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 			continue;
 		}
 		
-		// Transform Positions
-		FVector n = wall->getNormalVec();
-		FVector p = wall->getSupportVec();
-		float d = wall->getD();
-		
-		float t = d - FVector::DotProduct(n, p);
+		//FTransform trans = computeReflectedTransform(wall, soundPos, soundRot);
 
-		FVector soundPos_new = p + 2 * t * n;
-
-
-		// Transform orientation
-		FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
-		FQuat reflectedQuat = mirrorNormalQuat * soundRot.Quaternion() * mirrorNormalQuat;
-		FRotator soundRot_new = reflectedQuat.Rotator();
-
+		FVector pos_new = computeReflectedPos(wall, soundPos);
+		FRotator rot_new = computeReflectedRot(wall, soundRot);
 
 		// Set Name TODO:
 		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
-
 		
 
-		int id = initializeSound(soundNameF, soundPos_new, soundRot_new, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+		int id = initializeSound(soundNameF, soundPos, soundRot, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+
+		matchingReflectionWalls.Add(id, wall);
 
 		reflectionArrayIDs.Add(id);
+		wall->spawnSphere(pos_new, rot_new); // TODO: delete
+
+		FString text = "old pos: ";
+		text.Append(FString::FromInt(soundPos.X)).Append("/").Append(FString::FromInt(soundPos.Y)).Append("/").Append(FString::FromInt(soundPos.Z));
+		text.Append(" to ");
+		text.Append(FString::FromInt(pos_new.X)).Append("/").Append(FString::FromInt(pos_new.Y)).Append("/").Append(FString::FromInt(pos_new.Z));
+		VAUtils::openMessageBox(text);
 		continue;
-		wall->spawnSphere(soundPos_new, soundRot_new); // TODO: delete
 	}
 
 	// Play all sounds together
-	if (action == IVAInterface::VA_PLAYBACK_ACTION_PLAY) {
-		setSoundAction(iSoundSourceID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
-		for (int i : reflectionArrayIDs) {
-			setSoundAction(i, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
-		}
-	}
+	// if (action == IVAInterface::VA_PLAYBACK_ACTION_PLAY) {
+	// 	setSoundAction(iSoundSourceID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+	// 	for (int i : reflectionArrayIDs) {
+	// 		setSoundAction(i, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+	// 	}
+	// }
 
 	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArrayIDs);
 
@@ -337,30 +349,42 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 	std::string soundName = std::string(TCHAR_TO_UTF8(*soundNameF));
 
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return -1;
 	}
 
-    const std::string sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
-	// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+	int iSoundSourceID;
+
+	std::string sSignalSourceID;
+	try
+	{
+		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE // NAME HIER
+		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+		pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
+		pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
+
+
+
+		iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
+		pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
+
+		//TODO Set Gain
+		float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
+		pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
+
+
+
+		pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
+
+		soundComponentsIDs.Add(iSoundSourceID, sSignalSourceID);
+	}
+	catch (CVAException& e)
+	{
+		processExeption("initializeSound", e);
+		return -1;
+	}
+
 	
-	pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
-	pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
-
-
-
-	const int iSoundSourceID = pVA->CreateSoundSource(soundName + "_source");
-	pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
-
-	//TODO Set Gain
-	float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
-	pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
-
-
-
-	pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
-
-	soundComponentsIDs.Add(iSoundSourceID, sSignalSourceID);
 
 	return iSoundSourceID;
 }
@@ -383,23 +407,29 @@ bool FVAPluginModule::processSoundQueue()
 
 bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
 	std::string sSoundID = soundComponentsIDs[iSoundID];
-	pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
+	try	{
+		pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
+	}
+	catch (CVAException& e) {
+		processExeption("setSoundAction()", e);
+		return false;
+	}
 
 	return true;
 }
 
 bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
-	setSoundAction(soundID, soundAction);
+	// setSoundAction(soundID, soundAction);
 
 	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
 
@@ -452,7 +482,7 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -465,17 +495,122 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 
 	VAUtils::scaleVAVec(*tmpVec, scale);
-
-    pVA->SetSoundSourceOrientation(iSoundReceiverID, *tmpQuat);
-    pVA->SetSoundSourcePosition(iSoundReceiverID, *tmpVec);
+	try {
+		pVA->SetSoundSourceOrientation(iSoundReceiverID, *tmpQuat);
+		pVA->SetSoundSourcePosition(iSoundReceiverID, *tmpVec);
+}
+	catch (CVAException& e) {
+		processExeption("updateSoundSourcePos", e);
+		return false;
+	}
     
 	// pVA->SetSoundSourcePose(iSourceID, *tmpVec, *tmpQuat);
 	return true;
 }
 
+bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat)
+{
+	FRotator rot = quat.Rotator();
+	return updateSourcePosWithReflections(iSourceID, pos, rot);
+}
+
+bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot)
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	updateSourcePos(iSourceID, pos, rot);
+
+	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(iSourceID);
+
+	for (int id : reflectionArrayIDs) {
+		// eval wich wall to reflect on 
+		AVAReflectionWall* wall = *matchingReflectionWalls.Find(id);
+		
+		// get new pos
+		// FTransform trans_new = computeReflectedTransform(wall, pos, rot);
+        
+        FVector pos_new = computeReflectedPos(wall, pos);
+        FRotator rot_new = computeReflectedRot(wall, rot);
+		
+		// update to the new pos
+		updateSourcePos(id, pos_new, rot_new);
+	}
+
+	return true;
+}
+
+FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, FTransform trans)
+{
+	return computeReflectedTransform(wall, trans.GetLocation(), trans.GetRotation().Rotator());
+}
+
+FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, FVector pos, FRotator rot)
+{
+	// Transform Positions
+	FVector n = wall->getNormalVec();
+	FVector p = wall->getSupportVec();
+	float d = wall->getD();
+
+	float t = d - FVector::DotProduct(n, p);
+
+	FVector soundPos_new = p + 2 * t * n;
+
+
+	// Transform orientation
+	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
+	FQuat reflectedQuat = mirrorNormalQuat * rot.Quaternion() * mirrorNormalQuat;
+	FRotator soundRot_new = reflectedQuat.Rotator();
+
+	// bring all together in new Transform
+	FTransform trans_new = FTransform();
+	trans_new.SetLocation(soundPos_new);
+	trans_new.SetRotation(reflectedQuat);
+
+	return trans_new;
+}
+
+
+FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector pos) 
+{
+	// Transform Positions
+	FVector n = wall->getNormalVec();
+	FVector p = wall->getSupportVec();
+	float d = wall->getD();
+
+	float t = d - FVector::DotProduct(n, p);
+
+	FVector soundPos_new = p + ((float) (2 * t)) * n;
+
+	return soundPos_new;
+}
+
+
+FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
+{
+	// Transform Positions
+	FVector n = wall->getNormalVec();
+	FVector p = wall->getSupportVec();
+	float d = wall->getD();
+
+	float t = d - FVector::DotProduct(n, p);
+
+	FVector soundPos_new = p + ((float) (2 * t)) * n;
+
+
+	// Transform orientation
+	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
+	FQuat reflectedQuat = mirrorNormalQuat * rot.Quaternion() * mirrorNormalQuat;
+	FRotator soundRot_new = reflectedQuat.Rotator();
+	
+	return soundRot_new;
+}
+
+
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -485,7 +620,7 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -498,16 +633,43 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 	
 	VAUtils::scaleVAVec(*tmpVec, scale);
+	try {
+		pVA->SetSoundReceiverOrientation(iSoundReceiverID, *tmpQuat);
+		pVA->SetSoundReceiverPosition(iSoundReceiverID, *tmpVec);
+	}
+	catch (CVAException& e) {
+		processExeption("updateReceiverPos()", e);
+		return false;
+	}
 
-	pVA->SetSoundReceiverOrientation(iSoundReceiverID, *tmpQuat);
-	pVA->SetSoundReceiverPosition(iSoundReceiverID, *tmpVec);
 	//pVA->SetSoundReceiverPose(iSoundReceiverID, *tmpVec, *tmpQuat);
 	return true;
 }
 
+bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FQuat quat)
+{
+    if (!isMasterAndUsed()) {
+        return false;
+    }
+    
+    FRotator rot = quat.Rotator();
+    return updateReceiverRealWorldPos(pos, rot);
+}
+
+bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FRotator quat)
+{
+    if (!isMasterAndUsed()) {
+        return false;
+    }
+    
+    // TODO: do stuff
+   
+    return false;
+}
+
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
@@ -515,30 +677,42 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 		return true;
 	}
 
-	iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
-		
-	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
+	try {
+		iHRIR = pVA->CreateDirectivityFromFile(directivity); // DELETED HERE
+		pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
+	}
+	catch (CVAException& e) {
+		processExeption("setReceiverDirectivity", e);
+		return false;
+	}
+
 	
 	return false;
 }
 
 bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
 	// Find dir in Map
 	int* dirID = dirMap.Find(directivity);
 
-	// if not available choose default
-	if (dirID == nullptr) {
-		pVA->SetSoundSourceDirectivity(id, defaultDirID);
-		return false;
+	try {
+		// if not available choose default
+		if (dirID == nullptr) {
+			pVA->SetSoundSourceDirectivity(id, defaultDirID);
+			return false;
+		}
+		else {
+			pVA->SetSoundSourceDirectivity(id, *dirID);
+			return true;
+		}
 	}
-	else {
-		pVA->SetSoundSourceDirectivity(id, *dirID);
-		return true;
+	catch (CVAException& e) {
+		processExeption("setSourceDirectivity()", e);
+		return false;
 	}
 }
 
@@ -667,23 +841,40 @@ bool FVAPluginModule::isViewModeCave()
 	return viewMode == VAUtils::viewEnum::Cave;
 }
 
-bool FVAPluginModule::isMaster()
+bool FVAPluginModule::isMasterAndUsed()
 {
-	// return true;
-	return (IDisplayCluster::Get().GetClusterMgr()!= nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster());
+	return (IDisplayCluster::Get().GetClusterMgr()!= nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster() && useVA);
+}
+
+void FVAPluginModule::processExeption(FString location, CVAException e)
+{
+	useVA = false;
+	FString one = "Error in [";
+	FString two = "] with error: ";
+	FString exp = FString(e.ToString().c_str());
+	FString error = one.Append(location).Append(two).Append(exp);
+	UE_LOG(LogTemp, Error, TEXT("%s"), *error);
 }
 
 bool FVAPluginModule::isConnected()
 {
-	if (!isMaster()) {
+	if (!isMasterAndUsed()) {
 		return false;
 	}
 
 	// TODO return false if nullptr
-	if (pVANet == nullptr)
+	if (pVANet == nullptr) {
 		return false;
+	}
 
-	return pVANet->IsConnected();
+	try {
+		return pVANet->IsConnected();
+	}
+	catch (CVAException& e) {
+		processExeption("isConnected", e);
+		return false;
+	}
+
 }
 
 bool FVAPluginModule::initializeSoundSourceDirectivities()

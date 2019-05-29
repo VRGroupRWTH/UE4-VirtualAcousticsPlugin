@@ -78,13 +78,29 @@ public:
 	// static void updateReceiverPosRot(FVector& pos, FQuat& quat);
 	// static void updateReceiverPosRot(FVector& pos, FRotator& rot);
 
-    // update Sound Source Position and Orientation //
+	// update Sound Source Position and Orientation //
 	static bool updateSourcePos(int iSourceID, FVector pos, FQuat quat);
 	static bool updateSourcePos(int iSourceID, FVector pos, FRotator rot);
+
+
+	// update Sound Source Position and Orientation With Reflections //
+	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat);
+	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot);
+
+	// compute Transform of reflected sound Source // 
+	static FTransform computeReflectedTransform(AVAReflectionWall* wall, FTransform trans);
+	static FTransform computeReflectedTransform(AVAReflectionWall* wall, FVector vec, FRotator rot);
+
+	static FVector computeReflectedPos(AVAReflectionWall* wall, FVector pos);
+	static FRotator computeReflectedRot(AVAReflectionWall* wall, FRotator rot);
 
     // update Receiver Position and Oritentation //
 	static bool updateReceiverPos(FVector pos, FQuat quat);
 	static bool updateReceiverPos(FVector pos, FRotator rot);
+    
+    // update Recievers real World Position and Oritentation // 
+    static bool updateReceiverRealWorldPos(FVector pos, FQuat quat);
+    static bool updateReceiverRealWorldPos(FVector pos, FRotator rot);
 
     // set Receiver Directivity (HRIR) //
 	static bool setReceiverDirectivity(std::string directivity);
@@ -110,8 +126,11 @@ public:
     // check if View Mode is Cave //
 	static bool isViewModeCave();
 
-    // check if is Master // 
-	static bool isMaster();
+    // check if is Master and VA Server should be used // 
+	static bool isMasterAndUsed();
+
+	// process / output CVAException
+	static void processExeption(FString location, CVAException e);
 
 
 protected:
@@ -136,6 +155,9 @@ protected:
 
 	// Mapping of Sound Component IDs to their Reflection IDs - Make sure to always handle the "normal" instance, too // 
 	static TMap<int, TArray<int>> soundComponentsReflectionIDs;
+
+	// Mapping of Sound Reflection to their walls //
+	static TMap<int, AVAReflectionWall*> matchingReflectionWalls;
 
 	// Mapping of all Sound Source Directivities to their IDs // 
 	static TMap<FString, int> dirMap;
@@ -187,6 +209,9 @@ protected:
 
 	// Check if all Library Handles are well initialized //
     static bool checkLibraryHandles(bool einzeln);
+
+	// bool if VA is used // 
+	static bool useVA;
     
     
 	// bool runServerTest();
