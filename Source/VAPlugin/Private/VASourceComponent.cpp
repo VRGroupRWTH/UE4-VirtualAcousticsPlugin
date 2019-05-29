@@ -129,17 +129,19 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		firstTick = false;
 		if (vAction == EPlayAction::Play) {
 			FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
-		}
-	}
-
-
-	if (!started) {
-		timer += DeltaTime;
-		if (timer > vDelay) {
-			playSound();
 			started = true;
 		}
 	}
+
+	
+	if (!started) {
+		timer += DeltaTime;
+		if (timer > vDelay) {
+			playSoundWithReflections();
+			started = true;
+		}
+	}
+
 	else {
 		// update Pos
 		if (vMovement == EMovement::MoveWithObject) {

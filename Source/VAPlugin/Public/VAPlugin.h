@@ -91,6 +91,9 @@ public:
 	static FTransform computeReflectedTransform(AVAReflectionWall* wall, FTransform trans);
 	static FTransform computeReflectedTransform(AVAReflectionWall* wall, FVector vec, FRotator rot);
 
+	static FVector computeReflectedPos(AVAReflectionWall* wall, FVector pos);
+	static FRotator computeReflectedRot(AVAReflectionWall* wall, FRotator rot);
+
     // update Receiver Position and Oritentation //
 	static bool updateReceiverPos(FVector pos, FQuat quat);
 	static bool updateReceiverPos(FVector pos, FRotator rot);

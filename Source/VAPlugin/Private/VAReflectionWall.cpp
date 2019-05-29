@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "VAReflectionWall.h"
-#include "Components/BoxComponent.h"
+#include "VAUtils.h"
+#include "EngineUtils.h"
+#include "Engine/StaticMeshActor.h"
 
 // Sets default values
 AVAReflectionWall::AVAReflectionWall()
@@ -15,8 +17,8 @@ AVAReflectionWall::AVAReflectionWall()
 
 	alreadyComputed = false;
 
-	planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
-	planeComp->InitBoxExtent(FVector(1, 100, 100));
+	// planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
+	// planeComp->InitBoxExtent(FVector(1, 100, 100));
 
 }
 
@@ -62,6 +64,19 @@ void AVAReflectionWall::computePlaneData()
 
 void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot)
 {
+	AStaticMeshActor *Mesh = nullptr;
+	int counter = 0;
+	for (TActorIterator<AStaticMeshActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		Mesh = *ActorItr;
+		if (Mesh->GetName() == "ReflectionSphere") {
+			Mesh->SetActorLocationAndRotation(pos, rot.Quaternion());
+			counter++;
+		}
+	}
+	FString text = "Counter: ";
+	text.Append(FString::FromInt(counter));
+	VAUtils::openMessageBox(text);
 
 	// SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMeshz"));
 	// //this->SphereMesh->AttachTo(GetRootComponent());

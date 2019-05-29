@@ -299,29 +299,37 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 			continue;
 		}
 		
-		FTransform trans = computeReflectedTransform(wall, soundPos, soundRot);
+		//FTransform trans = computeReflectedTransform(wall, soundPos, soundRot);
 
+		FVector pos_new = computeReflectedPos(wall, soundPos);
+		FRotator rot_new = computeReflectedRot(wall, soundRot);
 
 		// Set Name TODO:
 		// FString soundNameF_new = soundNameF.Append("_ReflectedBy_").Append(wall->GetName());
 		
 
-		int id = initializeSound(soundNameF, trans.GetLocation(), trans.GetRotation().Rotator(), gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+		int id = initializeSound(soundNameF, soundPos, soundRot, gainFactor * R * R, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 
 		matchingReflectionWalls.Add(id, wall);
 
 		reflectionArrayIDs.Add(id);
+		wall->spawnSphere(pos_new, rot_new); // TODO: delete
+
+		FString text = "old pos: ";
+		text.Append(FString::FromInt(soundPos.X)).Append("/").Append(FString::FromInt(soundPos.Y)).Append("/").Append(FString::FromInt(soundPos.Z));
+		text.Append(" to ");
+		text.Append(FString::FromInt(pos_new.X)).Append("/").Append(FString::FromInt(pos_new.Y)).Append("/").Append(FString::FromInt(pos_new.Z));
+		VAUtils::openMessageBox(text);
 		continue;
-		wall->spawnSphere(trans.GetLocation(), trans.GetRotation().Rotator()); // TODO: delete
 	}
 
 	// Play all sounds together
-	if (action == IVAInterface::VA_PLAYBACK_ACTION_PLAY) {
-		setSoundAction(iSoundSourceID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
-		for (int i : reflectionArrayIDs) {
-			setSoundAction(i, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
-		}
-	}
+	// if (action == IVAInterface::VA_PLAYBACK_ACTION_PLAY) {
+	// 	setSoundAction(iSoundSourceID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+	// 	for (int i : reflectionArrayIDs) {
+	// 		setSoundAction(i, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+	// 	}
+	// }
 
 	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArrayIDs);
 
@@ -421,7 +429,7 @@ bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction
 		return false;
 	}
 
-	setSoundAction(soundID, soundAction);
+	// setSoundAction(soundID, soundAction);
 
 	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
 
@@ -559,6 +567,43 @@ FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, F
 
 	return trans_new;
 }
+
+
+FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector pos) 
+{
+	// Transform Positions
+	FVector n = wall->getNormalVec();
+	FVector p = wall->getSupportVec();
+	float d = wall->getD();
+
+	float t = d - FVector::DotProduct(n, p);
+
+	FVector soundPos_new = p + 2 * t * n;
+
+	return soundPos_new;
+}
+
+
+FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
+{
+	// Transform Positions
+	FVector n = wall->getNormalVec();
+	FVector p = wall->getSupportVec();
+	float d = wall->getD();
+
+	float t = d - FVector::DotProduct(n, p);
+
+	FVector soundPos_new = p + 2 * t * n;
+
+
+	// Transform orientation
+	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
+	FQuat reflectedQuat = mirrorNormalQuat * rot.Quaternion() * mirrorNormalQuat;
+	FRotator soundRot_new = reflectedQuat.Rotator();
+	
+	return soundRot_new;
+}
+
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 {
