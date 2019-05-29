@@ -643,6 +643,27 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 	return true;
 }
 
+bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FQuat quat)
+{
+    if (!isMasterAndUsed()) {
+        return false;
+    }
+    
+    FRotator rot = quat.Rotator();
+    return updateReceiverRealWorldPos(pos, rot);
+}
+
+bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FRotator quat)
+{
+    if (!isMasterAndUsed()) {
+        return false;
+    }
+    
+    // TODO: do stuff
+   
+    return false;
+}
+
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
 	if (!isMasterAndUsed()) {
