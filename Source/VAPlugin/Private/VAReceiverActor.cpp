@@ -88,6 +88,23 @@ bool updateRealWorldPosition()
     FVector pos;
     FRotator rot;
     
+    /*
+     include Controller.h?
+     APawn* pawn = AController::GetPawn()
+     Class rightComp;
+     TVector<Class> = pawn->GetComponentByClass(CLASS?!)
+     for(p : TVector)
+     {
+        if(p->GetName() == "shutter_glasses")
+        {
+            rightComp = *p;
+        }
+     }
+     
+     pos = rightComp->GetRealtiveLocation();
+     rot = rightComp->GetRelativeRotation().Rotator();
+     
+    */
     FVAPluginModule::updateRealWorldPosition(pos, rot)
 }
 
