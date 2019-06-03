@@ -14,6 +14,11 @@
 void VAUtils::openMessageBox(FString text, bool error)
 {
 	//char* text;
+
+	if (!FVAPluginModule::isMasterAndUsed()) {
+		return;
+	}
+	
 	if (error) {
 		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(addExclamationMarkInChar(text)));
 		//text = addExclamationMarkInChar(text);

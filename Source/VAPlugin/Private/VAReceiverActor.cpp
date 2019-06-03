@@ -6,6 +6,14 @@
 #include "GameFramework/PlayerController.h"
 #include "VADefines.h"
 
+#include "DisplayClusterPawn.h"
+#include "DisplayClusterSceneComponent.h"
+
+#include "IDisplayCluster.h"
+#include "IDisplayClusterClusterManager.h"
+
+#include "VirtualRealityPawn.h"
+
 
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -88,23 +96,58 @@ bool AVAReceiverActor::updateRealWorldPosition()
     FVector pos;
     FRotator rot;
     
-    /*
-     include Controller.h?
-     APawn* pawn = AController::GetPawn()
-     Class rightComp;
-     TVector<Class> = pawn->GetComponentByClass(CLASS?!)
-     for(p : TVector)
-     {
-        if(p->GetName() == "shutter_glasses")
-        {
-            rightComp = *p;
-        }
-     }
+    //include Controller.h
+	// APawn* pawn = UGameplayStatics::GetPlayerCharacter(getWorld(), 0);
+	// UDisplayClusterSceneComponent* rightComp;
+    // TVector<Class> = pawn->GetComponentByClass(CLASS?!)
+    // for(p : TVector)
+    // {
+    //    if(p->GetName() == "shutter_glasses")
+    //    {
+    //        rightComp = *p;
+    //    }
+    // }
+
+	// https://devhub.vr.rwth-aachen.de/VR-Group/widgetinteraction/blob/develop/Source/WidgetInteraction/Private/WidgetInteraction.cpp
+	// https://devhub.vr.rwth-aachen.de/VR-Group/unreallaunchscripts/blob/master/.misc/configurations/ndisplay/aixcave_5_sides_421.cfg
      
-     pos = rightComp->GetRealtiveLocation();
-     rot = rightComp->GetRelativeRotation().Rotator();
-     
-    */
+    //pos = rightComp->GetRealtiveLocation();
+    //rot = rightComp->GetRelativeRotation().Rotator();
+
+	auto world = GetWorld();
+	auto player_controller = world->GetFirstPlayerController();
+
+	if (player_controller == nullptr) {
+		return false;
+	}
+	auto vr_pawn = dynamic_cast<AVirtualRealityPawn*>(player_controller->AcknowledgedPawn);
+	if (vr_pawn == nullptr) {
+		return false;
+	}
+
+	FVector posPawn, posOrigin;
+	FRotator rotPawn;
+
+
+	
+	UClass* component_class = UDisplayClusterSceneComponent::StaticClass();
+
+	auto parent_vec = vr_pawn->GetComponentsByClass(component_class);
+	
+	for (auto parent : parent_vec) {
+		if (parent->GetName() == FString("shutter_glasses"))
+		{
+			// TODO do sth with parent? but there is no ->GetLocation or sth
+		}
+		if (parent->GetName() == FString("cave_origin"))
+		{
+			// TODO do sth with parent? but there is no ->GetLocation or sth
+		}
+	}
+
+	pos = posPawn - posOrigin;
+	rot = rotPawn;
+    
     return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 }
 
