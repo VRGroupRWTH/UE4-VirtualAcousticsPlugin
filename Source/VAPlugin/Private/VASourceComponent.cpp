@@ -35,6 +35,9 @@ void UVASourceComponent::BeginPlay()
 
 	skeletal_mesh_component = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshCmp"));
 	skeletal_mesh_component->SetupAttachment(root_component);
+
+	if (skeletal_mesh_component->DoesSocketExist(face_bone_name))
+		vMovement = EMovement::Human;
 	// USphereComponent* root_component;skeletal_mesh_component->GetAnimInstance()->PlaySlotAnimationAsDynamicMontage(idle_animation, default_slot_name, 0.0f, 0.0f, 1.0f, 1000);
 
 }
