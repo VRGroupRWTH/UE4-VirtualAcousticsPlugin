@@ -34,6 +34,7 @@ void AVAReceiverActor::BeginPlay()
 	tmpPos = new VAVec3();
 	tmpQuat = new VAQuat();
 
+
 	timeSinceUpdate = 0.0f;
 
 	controller = GetWorld()->GetFirstPlayerController();
