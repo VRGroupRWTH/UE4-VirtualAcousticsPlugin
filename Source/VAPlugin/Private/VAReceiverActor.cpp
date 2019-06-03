@@ -115,6 +115,66 @@ bool AVAReceiverActor::updateRealWorldPosition()
     //pos = rightComp->GetRealtiveLocation();
     //rot = rightComp->GetRelativeRotation().Rotator();
 
+	if (IDisplayCluster::Get().GetClusterMgr()->IsStandalone()) {
+		return false;
+	}
+	
+
+	auto world = GetWorld();
+
+	if (world == nullptr)
+		return false;
+
+	auto player_controller = world->GetFirstPlayerController();
+	if (player_controller == nullptr)
+		return false;
+
+	auto vr_pawn = dynamic_cast<AVirtualRealityPawn*>(player_controller->AcknowledgedPawn);
+	if (vr_pawn == nullptr)
+		return false;
+
+	FString name1 = "shutter_glasses";
+	FString name2 = "cave_origin";
+	UClass* component_class = UDisplayClusterSceneComponent::StaticClass();
+
+	FVector shutter; 
+	FVector origin;
+
+	FRotator shutterRot;
+	FRotator originRot;
+
+	auto parent_vec = vr_pawn->GetComponentsByClass(component_class);
+	bool suc1 = false;
+	bool suc2 = false;
+
+	for (auto parent : parent_vec) {
+		if (parent->GetName() == FString(name1)) {
+			auto tmp = dynamic_cast<USceneComponent*>(parent);
+			
+			shutter = tmp->GetComponentLocation();
+			shutterRot = tmp->GetComponentRotation();
+			suc1 = true;
+
+		}
+		else if (parent->GetName() == FString(name2)) {
+
+			auto tmp = dynamic_cast<USceneComponent*>(parent);
+
+			origin = tmp->GetComponentLocation();
+			originRot = tmp->GetComponentRotation();
+			suc2 = true;
+		}
+	}
+
+	if (!(suc1 && suc2))
+		return false;
+
+	pos = shutter - origin;
+	rot = shutterRot - originRot;
+
+
+
+	/*
 	auto world = GetWorld();
 	auto player_controller = world->GetFirstPlayerController();
 
@@ -148,7 +208,8 @@ bool AVAReceiverActor::updateRealWorldPosition()
 
 	pos = posPawn - posOrigin;
 	rot = rotPawn;
-    
+    */
+
     return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 }
 

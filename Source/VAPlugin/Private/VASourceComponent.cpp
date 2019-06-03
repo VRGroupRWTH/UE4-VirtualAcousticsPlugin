@@ -173,7 +173,7 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 			FVector pos = skeletal_mesh_component->GetSocketLocation(face_bone_name);
 
-			FRotator rot = skeletal_mesh_component->GetSocketRotation();
+			FRotator rot = skeletal_mesh_component->GetSocketRotation(face_bone_name);
 			
 			// FVector current_forward = eye_rot.RotateVector(eye_forward);
 			// 
