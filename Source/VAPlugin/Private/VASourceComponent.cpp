@@ -27,6 +27,16 @@ void UVASourceComponent::BeginPlay()
 	else {
 		FVAPluginModule::enqueueSound(this);
 	}
+
+
+	face_bone_name = "CC_Base_FacialBone";
+
+	root_component = CreateDefaultSubobject<USphereComponent>(TEXT("RootCmp"));
+
+	skeletal_mesh_component = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshCmp"));
+	skeletal_mesh_component->SetupAttachment(root_component);
+	// USphereComponent* root_component;skeletal_mesh_component->GetAnimInstance()->PlaySlotAnimationAsDynamicMontage(idle_animation, default_slot_name, 0.0f, 0.0f, 1.0f, 1000);
+
 }
 
 
@@ -154,6 +164,28 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 			pos = pos + vOffset;
 			
 			FVAPluginModule::updateSourcePos(soundID, pos, rot);
+		}
+		else if (vMovement == EMovement::Human) {
+
+			if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
+				return;
+			}
+
+			FVector pos = skeletal_mesh_component->GetSocketLocation(face_bone_name);
+
+			FRotator rot = skeletal_mesh_component->GetSocketRotation();
+			
+			// FVector current_forward = eye_rot.RotateVector(eye_forward);
+			// 
+			// FVector new_forward = position - eye_pos;
+			// 
+			// FQuat missing_rot = FQuat::FindBetweenVectors(current_forward, new_forward);
+			// 
+			// FQuat new_quat = missing_rot * FQuat(currentRot);
+			// return new_quat;
+
+			FVAPluginModule::updateSourcePos(soundID, pos, rot);
+
 		}
 	}
 }

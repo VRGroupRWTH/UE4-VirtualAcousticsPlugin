@@ -6,6 +6,10 @@
 #include "CoreMinimal.h"
 #include "Array.h"
 #include "Components/ActorComponent.h"
+
+#include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "VASourceComponent.generated.h"
 
 
@@ -15,7 +19,8 @@ enum EMovement {
 	ObjectSpawnPoint,
 	MoveWithObject,
 	OwnPosition,
-	Manual
+	Manual,
+	Human
 };
 
 // struct used to get 
@@ -135,6 +140,15 @@ protected:
     
     // Check time // 
 	float timer;
+
+	// name of face_bone // 
+	FName face_bone_name;
+
+	// skeletal_mesh
+	USkeletalMeshComponent* skeletal_mesh_component;
+
+	// root component
+	USphereComponent* root_component;
 	
 
 public:	
