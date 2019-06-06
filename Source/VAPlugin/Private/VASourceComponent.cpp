@@ -9,6 +9,10 @@ UVASourceComponent::UVASourceComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	// root_component = CreateDefaultSubobject<USphereComponent>(TEXT("RootCmp"));
+	// 
+	// skeletal_mesh_component = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshCmp"));
+	// skeletal_mesh_component->SetupAttachment(root_component);
 }
 
 
@@ -20,7 +24,17 @@ void UVASourceComponent::BeginPlay()
 	ownerActor = GetOwner();
 	started = false;
 	firstTick = true;
+	alreadySent = false;
+	
+	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*> (ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+	// face_bone_name = "CC_Base_FacialBone";
+	face_bone_name = "CC_Base_L_Eye";
 
+	if (skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
+		vMovement = EMovement::Human;
+	}
+
+	
 	if (FVAPluginModule::isConnected()) {
 		sendSoundData();
 	}
@@ -29,15 +43,8 @@ void UVASourceComponent::BeginPlay()
 	}
 
 
-	face_bone_name = "CC_Base_FacialBone";
 
-	root_component = CreateDefaultSubobject<USphereComponent>(TEXT("RootCmp"));
 
-	skeletal_mesh_component = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshCmp"));
-	skeletal_mesh_component->SetupAttachment(root_component);
-
-	if (skeletal_mesh_component->DoesSocketExist(face_bone_name))
-		vMovement = EMovement::Human;
 	// USphereComponent* root_component;skeletal_mesh_component->GetAnimInstance()->PlaySlotAnimationAsDynamicMontage(idle_animation, default_slot_name, 0.0f, 0.0f, 1.0f, 1000);
 
 }
@@ -45,6 +52,13 @@ void UVASourceComponent::BeginPlay()
 
 bool UVASourceComponent::sendSoundData()
 {
+	if (alreadySent) {
+		VAUtils::openMessageBox("Send Sound data for multiple times");
+		return false;
+	}
+
+	alreadySent = true;
+
 	FVector pos;
 	FRotator rot;
 	FTransform trans;
@@ -60,6 +74,16 @@ bool UVASourceComponent::sendSoundData()
 		case EMovement::OwnPosition :
 			pos = vPos;
 			rot = vRot;
+			break;
+
+		case EMovement::Human :
+			if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
+				VAUtils::openMessageBox("Could not find socket");
+				return false;
+			}
+			VAUtils::openMessageBox("Socket found");
+			pos = skeletal_mesh_component->GetSocketLocation(face_bone_name);
+			rot = skeletal_mesh_component->GetSocketRotation(face_bone_name);
 			break;
 		default :
 			break;

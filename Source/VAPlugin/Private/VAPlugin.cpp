@@ -142,8 +142,13 @@ void FVAPluginModule::ShutdownModule()
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
+
 	if (!isMasterAndUsed()) {
 		return false;
+	}
+
+	if (isConnected()) {
+		return true;
 	}
 
 	VAUtils::openMessageBox("Connecting to VAServer. Be sure to have it switched on");
