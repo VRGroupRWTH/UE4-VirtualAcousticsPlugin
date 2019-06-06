@@ -14,3 +14,4 @@ https://wiki.unrealengine.com/How_to_Link_External_C_Libraries_.dll_.lib_With_Yo
 
 Other notes:
 https://answers.unrealengine.com/questions/678214/two-modules-in-one-plugin.html
+
