@@ -7,6 +7,7 @@
 #include "Array.h"
 #include "Components/ActorComponent.h"
 
+#include "Components/SphereComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -137,6 +138,9 @@ protected:
 
 	// Check if it is the first tick //
 	bool firstTick;
+
+	// Check if Sound data is already sent // 
+	bool alreadySent;
     
     // Check time // 
 	float timer;
