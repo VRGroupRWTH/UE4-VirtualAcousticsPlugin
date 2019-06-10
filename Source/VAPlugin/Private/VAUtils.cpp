@@ -41,7 +41,11 @@ FString VAUtils::addExclamationMarkInChar(FString text)
 {
 	size_t len = text.Len();
 	//char* ret = new char[len + 21];
-	FString ret = FString();
+	FString ret = FString("!!!!!");
+	ret.Append(text).Append("!!!!!");
+	
+	return ret;
+	
 	for (int i = 0; i < 10; i++)
 	{
 		ret[i] = '!';
@@ -170,7 +174,7 @@ bool VAUtils::scaleVAVec(VAVec3 & vecVA, float scale)
 
 void VAUtils::logStuff(FString text)
 {
-	UE_LOG(LogTemp, Error, TEXT("%s"), *text);
+	UE_LOG(LogTemp, Error, TEXT("[MSchmeling] : %s"), *text);
 }
 
 

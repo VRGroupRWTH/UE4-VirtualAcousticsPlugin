@@ -86,7 +86,7 @@ bool UVASourceComponent::sendSoundData()
 	}
 	*/
 
-	VAUtils::logStuff(FString("pos for ini: " + pos.ToString));
+	VAUtils::logStuff(FString("pos for ini: " + pos.ToString()));
 
 	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
 	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP);
@@ -158,8 +158,10 @@ FVector UVASourceComponent::getPosition()
 			break;
 		
 		default:
+			VAUtils::logStuff(FString("default: in getPosition"));
 			break;
 	}
+
 	return FVector::ZeroVector;
 }
 
@@ -180,13 +182,14 @@ FRotator UVASourceComponent::getRotation()
 
 	case EMovement::Human:
 		if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
-			VAUtils::logStuff(FString("Could not find face_bone in getPosition"));
+			VAUtils::logStuff(FString("Could not find face_bone in getRotation"));
 			break;
 		}
 		return skeletal_mesh_component->GetSocketRotation(face_bone_name);
 		break;
 
 	default:
+		VAUtils::logStuff(FString("default: in getRotation"));
 		break;
 	}
 	
@@ -216,6 +219,8 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// 	}
 	// }
 	
+
+	// update if object is / could be moving
 	if(vMovement == EMovement::Human || vMovement == EMovement::MoveWithObject) {
 		FVector pos = getPosition();
 		FRotator rot = getRotation();
