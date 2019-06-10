@@ -93,10 +93,6 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 
 bool AVAReceiverActor::updateRealWorldPosition()
 {
-    
-    FVector pos;
-    FRotator rot;
-    
     //include Controller.h
 	// APawn* pawn = UGameplayStatics::GetPlayerCharacter(getWorld(), 0);
 	// UDisplayClusterSceneComponent* rightComp;
@@ -115,33 +111,38 @@ bool AVAReceiverActor::updateRealWorldPosition()
     //pos = rightComp->GetRealtiveLocation();
     //rot = rightComp->GetRelativeRotation().Rotator();
 
-	if (IDisplayCluster::Get().GetClusterMgr()->IsStandalone()) {
+	if (!FVAPluginModule::isMasterAndUsed()) {
 		return false;
 	}
 	
 
 	auto world = GetWorld();
-
-	if (world == nullptr)
+	if  (world == nullptr) {
 		return false;
+	}
 
 	auto player_controller = world->GetFirstPlayerController();
-	if (player_controller == nullptr)
+	if  (player_controller == nullptr) {
 		return false;
+}
 
 	auto vr_pawn = dynamic_cast<AVirtualRealityPawn*>(player_controller->AcknowledgedPawn);
-	if (vr_pawn == nullptr)
+	if  (vr_pawn == nullptr) {
 		return false;
+	}
+
+    FVector pos;
+    FRotator rot;
 
 	FString name1 = "shutter_glasses";
 	FString name2 = "cave_origin";
-	UClass* component_class = UDisplayClusterSceneComponent::StaticClass();
 
-	FVector shutter; 
-	FVector origin;
-
+	FVector  shutter; 
 	FRotator shutterRot;
+	FVector  origin;
 	FRotator originRot;
+
+	UClass* component_class = UDisplayClusterSceneComponent::StaticClass();
 
 	auto parent_vec = vr_pawn->GetComponentsByClass(component_class);
 	bool suc1 = false;
@@ -166,13 +167,17 @@ bool AVAReceiverActor::updateRealWorldPosition()
 		}
 	}
 
-	if (!(suc1 && suc2))
+	if (!(suc1 && suc2)) {
 		return false;
+	}
+
 
 	pos = shutter - origin;
 	rot = shutterRot - originRot;
 
-
+	VAUtils::logStuff(FString("RL pos: " + pos.ToString()));
+	VAUtils::logStuff(FString("RL rot: " + rot.ToString()));
+	
 
 	/*
 	auto world = GetWorld();

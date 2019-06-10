@@ -48,6 +48,8 @@ public:
 
 	static bool scaleVAVec(VAVec3& vecVA, float scale);
 
+	static void logStuff(FString text);
+
 
 	/*
 	static bool getViewingPos(FVector* vec, FQuat* quat);

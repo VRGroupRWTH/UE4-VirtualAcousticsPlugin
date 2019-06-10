@@ -168,6 +168,11 @@ bool VAUtils::scaleVAVec(VAVec3 & vecVA, float scale)
 	return true;
 }
 
+void VAUtils::logStuff(FString text)
+{
+	UE_LOG(LogTemp, Error, TEXT("%s"), *text);
+}
+
 
 /*
 bool VAUtils::getViewingPos(FVector* vec, FQuat* quat)
