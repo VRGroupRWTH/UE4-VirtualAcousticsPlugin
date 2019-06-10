@@ -67,6 +67,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called when the game starts or when spawned
+	virtual void EndPlay();
+	
 	// Updates the Virtual World Position of the Player // 
 	bool updateVirtualWorldPosition();
 
