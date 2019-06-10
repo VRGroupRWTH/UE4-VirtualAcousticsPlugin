@@ -61,33 +61,9 @@ bool UVASourceComponent::sendSoundData()
 
 	FVector pos;
 	FRotator rot;
-	FTransform trans;
 
-	switch (vMovement) {
-		case EMovement::MoveWithObject :
-		case EMovement::ObjectSpawnPoint :
-			trans = ownerActor->GetTransform();
-			pos = trans.GetLocation();
-			rot = trans.GetRotation().Rotator();
-			break;
-
-		case EMovement::OwnPosition :
-			pos = vPos;
-			rot = vRot;
-			break;
-
-		case EMovement::Human :
-			if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
-				VAUtils::openMessageBox("Could not find socket");
-				return false;
-			}
-			VAUtils::openMessageBox("Socket found");
-			pos = skeletal_mesh_component->GetSocketLocation(face_bone_name);
-			rot = skeletal_mesh_component->GetSocketRotation(face_bone_name);
-			break;
-		default :
-			break;
-	}
+	pos = getPosition();
+	rot = getRotation();
 
 	/*
 	int vActionP;
@@ -109,6 +85,8 @@ bool UVASourceComponent::sendSoundData()
 			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
 	}
 	*/
+
+	VAUtils::logStuff(FString("pos for ini: " + pos.ToString));
 
 	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
 	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP);
@@ -156,6 +134,65 @@ void UVASourceComponent::updatePositionWithReflections(FVector vec, FRotator rot
 	FVAPluginModule::updateSourcePosWithReflections(soundID, vec, rot);
 }
 
+FVector UVASourceComponent::getPosition()
+{
+	switch (vMovement) {
+		case EMovement::MoveWithObject:
+			return ownerActor->GetTransform().GetLocation() + vOffset;
+			break;
+
+		case EMovement::ObjectSpawnPoint:
+			return ownerActor->GetTransform().GetLocation() + vOffset;
+			break;
+
+		case EMovement::OwnPosition:
+			return vPos + vOffset;
+			break;
+
+		case EMovement::Human:
+			if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
+				VAUtils::logStuff(FString("Could not find face_bone in getPosition"));
+				break;
+			}
+			return skeletal_mesh_component->GetSocketLocation(face_bone_name) + vOffset;
+			break;
+		
+		default:
+			break;
+	}
+	return FVector::ZeroVector;
+}
+
+FRotator UVASourceComponent::getRotation()
+{
+	switch (vMovement) {
+	case EMovement::MoveWithObject:
+		return ownerActor->GetTransform().GetRotation().Rotator();
+		break;
+
+	case EMovement::ObjectSpawnPoint:
+		return ownerActor->GetTransform().GetRotation().Rotator();
+		break;
+
+	case EMovement::OwnPosition:
+		return vRot;
+		break;
+
+	case EMovement::Human:
+		if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
+			VAUtils::logStuff(FString("Could not find face_bone in getPosition"));
+			break;
+		}
+		return skeletal_mesh_component->GetSocketRotation(face_bone_name);
+		break;
+
+	default:
+		break;
+	}
+	
+	return FRotator::ZeroRotator;
+}
+
 
 // Called every frame
 void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -178,42 +215,12 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// 		started = true;
 	// 	}
 	// }
-
-	else {
-		// update Pos
-		if (vMovement == EMovement::MoveWithObject) {
-
-			FTransform trans = ownerActor->GetTransform();
-
-			FVector pos = trans.GetLocation();
-			FRotator rot = trans.GetRotation().Rotator();
-
-			pos = pos + vOffset;
-			
-			FVAPluginModule::updateSourcePos(soundID, pos, rot);
-		}
-		else if (vMovement == EMovement::Human) {
-
-			if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
-				return;
-			}
-
-			FVector pos = skeletal_mesh_component->GetSocketLocation(face_bone_name);
-
-			FRotator rot = skeletal_mesh_component->GetSocketRotation(face_bone_name);
-			
-			// FVector current_forward = eye_rot.RotateVector(eye_forward);
-			// 
-			// FVector new_forward = position - eye_pos;
-			// 
-			// FQuat missing_rot = FQuat::FindBetweenVectors(current_forward, new_forward);
-			// 
-			// FQuat new_quat = missing_rot * FQuat(currentRot);
-			// return new_quat;
-
-			FVAPluginModule::updateSourcePos(soundID, pos, rot);
-
-		}
+	
+	if(vMovement == EMovement::Human || vMovement == EMovement::MoveWithObject) {
+		FVector pos = getPosition();
+		FRotator rot = getRotation();
+		FVAPluginModule::updateSourcePos(soundID, pos, rot);
 	}
+	
 }
 

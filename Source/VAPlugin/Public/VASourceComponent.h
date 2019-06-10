@@ -121,6 +121,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void updatePositionWithReflections(FVector vec, FRotator rot);
 
+	// returns the Position minding its setting for location //
+	UFUNCTION(BlueprintCallable)
+		FVector getPosition();
+
+	// returns the Roatation minding its setting for rotation // s
+	UFUNCTION(BlueprintCallable)
+		FRotator getRotation();
+
 
 
 protected:

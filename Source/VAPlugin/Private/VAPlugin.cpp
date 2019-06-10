@@ -436,7 +436,7 @@ bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction
 
 	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
 
-	// setSoundAction(soundID, soundAction);
+	setSoundAction(soundID, soundAction);
 
 	for (int id : reflectionArrayIDs) {
 		setSoundAction(id, soundAction);
