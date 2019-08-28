@@ -30,8 +30,9 @@ void UVASourceComponent::BeginPlay()
 	// face_bone_name = "CC_Base_FacialBone";
 	face_bone_name = "CC_Base_L_Eye";
 
-	if (skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
+	if (skeletal_mesh_component != nullptr && skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
 		vMovement = EMovement::Human;
+		VAUtils::openMessageBox("Human detected");
 	}
 
 	

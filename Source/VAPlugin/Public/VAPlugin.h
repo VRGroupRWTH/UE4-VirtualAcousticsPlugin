@@ -42,12 +42,18 @@ public:
     
     // connect to Server (called by initializeServer) //
 	static bool connectServer	(FString host = "localhost", int port = 12340);
+
+	// reset Server //
+	static bool resetServer();
     
     // check if VA Server is connected //
     static bool isConnected();
 
 	// initialize Sound Source Directivities //
 	static bool initializeSoundSourceDirectivities();
+
+	// reset All //
+	static bool resetAll();
     
 	// static bool ini();
 

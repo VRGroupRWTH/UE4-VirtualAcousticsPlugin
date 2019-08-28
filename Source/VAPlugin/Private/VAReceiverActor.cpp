@@ -52,12 +52,17 @@ void AVAReceiverActor::BeginPlay()
     adresse = "10.0.1.240";
 #endif
 
-	// Connect to VA Server
-	FVAPluginModule::initializeServer(adresse, vPort);
-	
+	if (!FVAPluginModule::isConnected()) {
+		// Connect to VA Server
+		FVAPluginModule::initializeServer(adresse, vPort);
+	}
+	else {
+		FVAPluginModule::resetAll();
+	}
+
 	// Initialize Receiver Actor
 	FVAPluginModule::initializeReceiver(this);
-	
+
 	// Initialize Walls for Sound Reflection
 	TArray<AActor*> wallsA;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
@@ -69,7 +74,7 @@ void AVAReceiverActor::BeginPlay()
 
 	// Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
 	FVAPluginModule::processSoundQueue();
-	
+		
 }
 
 // Called every frame

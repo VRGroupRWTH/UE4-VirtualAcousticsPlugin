@@ -174,6 +174,21 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 	return true;
 }
 
+bool FVAPluginModule::resetServer()
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	if (!isConnected()) {
+		return false;
+	}
+
+	pVA->Reset();
+
+	return true;
+}
+
 bool FVAPluginModule::initializeServer(FString host, int port)
 {
 	if (!isMasterAndUsed()) {
@@ -406,7 +421,9 @@ bool FVAPluginModule::processSoundQueue()
 	{
 		(*iter)->sendSoundData();
 	}
-	
+
+	uninitializedSoundComponents.Empty();
+
 	return true;
 }
 
@@ -914,6 +931,36 @@ bool FVAPluginModule::initializeSoundSourceDirectivities()
 	// fill dirMap
 
 
+	return false;
+}
+
+bool FVAPluginModule::resetAll()
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	resetServer();
+
+	receiverActor = nullptr; 
+	uninitializedSoundComponents.Empty();
+
+	soundComponents.Empty();
+	soundComponentsIDs.Empty();
+	soundComponentsReflectionIDs.Empty();
+
+	matchingReflectionWalls.Empty();
+	reflectionWalls.Empty();
+
+	// Walls
+	// Sound Sources
+
+	// ReceiverActor
+
+	// Lists
+
+
+	
 	return false;
 }
 
