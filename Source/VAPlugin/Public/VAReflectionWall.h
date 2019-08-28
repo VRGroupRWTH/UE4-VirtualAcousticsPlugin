@@ -13,13 +13,16 @@ class VAPLUGIN_API AVAReflectionWall : public AActor
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleDefaultsOnly, Category = ReflectionWall)
-	class UBoxComponent* planeComp;
+		class UBoxComponent* planeComp;
+	
+	UPROPERTY(VisibleDefaultsOnly, Category = ReflectionWall)
+		class USphereComponent* sphereComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = ReflectionWall)
-	class USphereComponent* sphereComp;
+		class USphereComponent* dirComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = ReflectionWall)
-	class USphereComponent* dirComp;
+		class UStaticMeshComponent* SphereMesh;
 	
 	// In- or decrease Gain Offset 
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Reflection Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))

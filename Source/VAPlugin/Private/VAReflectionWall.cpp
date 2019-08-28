@@ -4,6 +4,8 @@
 #include "VAUtils.h"
 #include "EngineUtils.h"
 #include "Engine/StaticMeshActor.h"
+#include "Components/BoxComponent.h"
+
 
 // Sets default values
 AVAReflectionWall::AVAReflectionWall()
@@ -17,8 +19,25 @@ AVAReflectionWall::AVAReflectionWall()
 
 	alreadyComputed = false;
 
-	// planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
-	// planeComp->InitBoxExtent(FVector(1, 100, 100));
+	planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
+	planeComp->InitBoxExtent(FVector(1, 100, 100));
+	planeComp->SetVisibility(true);
+
+
+	// reflection Sphere
+	sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
+	sphereComp->bHiddenInGame = false;
+	sphereComp->Mobility = EComponentMobility::Movable;
+	RootComponent = sphereComp;
+
+	SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	SphereMesh->AttachTo(RootComponent);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
+	if (SphereMeshAsset.Succeeded()) {
+		SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
+		SphereMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		SphereMesh->SetWorldScale3D(FVector(0.8f));
+	}
 
 }
 
@@ -64,6 +83,12 @@ void AVAReflectionWall::computePlaneData()
 
 void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot)
 {
+	SphereMesh->SetWorldLocation(pos);
+	//SphereMesh->SetRelativeLocation(pos);
+	//SphereMesh->Set
+
+	return;
+
 	AStaticMeshActor *Mesh = nullptr;
 	int counter = 0;
 	for (TActorIterator<AStaticMeshActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)

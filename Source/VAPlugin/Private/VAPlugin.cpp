@@ -421,7 +421,7 @@ bool FVAPluginModule::processSoundQueue()
 		return false;
 	}
 
-	if (!uninitializedSoundComponents.Num() != 0)
+	if (uninitializedSoundComponents.Num() != 0)
 	{
 		VAUtils::openMessageBox("Sound Queue is not empty!");
 	}
@@ -462,7 +462,8 @@ bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction
 
 	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
 
-	setSoundAction(soundID, soundAction);
+	// HERE DELETE
+	// setSoundAction(soundID, soundAction);
 
 	for (int id : reflectionArrayIDs) {
 		setSoundAction(id, soundAction);
@@ -612,11 +613,12 @@ FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector po
 	// Transform Positions
 	FVector n = wall->getNormalVec();
 	FVector p = wall->getSupportVec();
-	float d = wall->getD();
+	// float d = wall->getD();
+	float d = FVector::DotProduct(n, pos);
 
 	float t = d - FVector::DotProduct(n, p);
 
-	FVector soundPos_new = p + ((float) (2 * t)) * n;
+	FVector soundPos_new = p - ((float) (2.0 * t)) * n;
 
 	return soundPos_new;
 }
@@ -624,11 +626,14 @@ FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector po
 
 FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
 {
+	// THIS IS WRONG!!
+
+
 	// Transform Positions
 	FVector n = wall->getNormalVec();
 	FVector p = wall->getSupportVec();
 	float d = wall->getD();
-
+	
 	float t = d - FVector::DotProduct(n, p);
 
 	FVector soundPos_new = p + ((float) (2 * t)) * n;
