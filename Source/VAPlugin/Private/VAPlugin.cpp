@@ -417,6 +417,15 @@ bool FVAPluginModule::enqueueSound(UVASourceComponent * soundComponent)
 
 bool FVAPluginModule::processSoundQueue()
 {
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	if (!uninitializedSoundComponents.Num() != 0)
+	{
+		VAUtils::openMessageBox("Sound Queue is not empty!");
+	}
+
 	for (auto iter = uninitializedSoundComponents.CreateIterator(); iter; iter++)
 	{
 		(*iter)->sendSoundData();
@@ -944,7 +953,7 @@ bool FVAPluginModule::resetAll()
 
 	receiverActor = nullptr; 
 	uninitializedSoundComponents.Empty();
-
+	
 	soundComponents.Empty();
 	soundComponentsIDs.Empty();
 	soundComponentsReflectionIDs.Empty();

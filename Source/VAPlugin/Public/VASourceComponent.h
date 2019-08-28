@@ -89,6 +89,10 @@ public:
 
 	bool sendSoundData();
 
+	// initialize Sound Source // 
+	UFUNCTION(BlueprintCallable)
+		void initialize();
+
 	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
 		void playSound();

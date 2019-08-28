@@ -72,8 +72,24 @@ void AVAReceiverActor::BeginPlay()
 	}
 	FVAPluginModule::initializeWalls(walls);
 
-	// Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
+	// // Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
+	// FVAPluginModule::processSoundQueue();
+
+	// Handle all sound Sources
+	TArray<AActor*> actorsA;
+	TArray<UVASourceComponent*> components;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AActor::StaticClass(), actorsA);
+	
+	UVASourceComponent* tmp;
+	for (AActor* actor : actorsA) {
+		tmp = dynamic_cast<UVASourceComponent*> (actor->GetComponentByClass(UVASourceComponent::StaticClass()));
+		if (tmp != nullptr) {
+			tmp->initialize();
+		}
+	}
+
 	FVAPluginModule::processSoundQueue();
+
 		
 }
 

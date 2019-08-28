@@ -21,31 +21,6 @@ void UVASourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ownerActor = GetOwner();
-	started = false;
-	firstTick = true;
-	alreadySent = false;
-	
-	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*> (ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
-	// face_bone_name = "CC_Base_FacialBone";
-	face_bone_name = "CC_Base_L_Eye";
-
-	if (skeletal_mesh_component != nullptr && skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
-		vMovement = EMovement::Human;
-		VAUtils::openMessageBox("Human detected");
-	}
-
-	
-	if (FVAPluginModule::isConnected()) {
-		sendSoundData();
-	}
-	else {
-		FVAPluginModule::enqueueSound(this);
-	}
-
-
-
-
 	// USphereComponent* root_component;skeletal_mesh_component->GetAnimInstance()->PlaySlotAnimationAsDynamicMontage(idle_animation, default_slot_name, 0.0f, 0.0f, 1.0f, 1000);
 
 }
@@ -93,6 +68,32 @@ bool UVASourceComponent::sendSoundData()
 	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 
 	return true;
+}
+
+void UVASourceComponent::initialize()
+{
+	ownerActor = GetOwner();
+	started = false;
+	firstTick = true;
+	alreadySent = false;
+
+	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*> (ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+	// face_bone_name = "CC_Base_FacialBone";
+	face_bone_name = "CC_Base_L_Eye";
+
+	if (skeletal_mesh_component != nullptr && skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
+		vMovement = EMovement::Human;
+		VAUtils::openMessageBox("Human detected");
+	}
+
+
+	if (FVAPluginModule::isConnected()) {
+		sendSoundData();
+	}
+	else {
+		FVAPluginModule::enqueueSound(this);
+	}
+
 }
 
 void UVASourceComponent::playSound()
