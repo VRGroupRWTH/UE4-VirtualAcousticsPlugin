@@ -942,7 +942,7 @@ bool FVAPluginModule::resetAll()
 
 	resetServer();
 
-	delete receiverActor; 
+	receiverActor = nullptr; 
 	uninitializedSoundComponents.Empty();
 
 	soundComponents.Empty();
