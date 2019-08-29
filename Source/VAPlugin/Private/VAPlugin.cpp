@@ -610,17 +610,30 @@ FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, F
 
 FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector pos) 
 {
-	// Transform Positions
+
 	FVector n = wall->getNormalVec();
-	FVector p = wall->getSupportVec();
-	// float d = wall->getD();
-	float d = FVector::DotProduct(n, pos);
+	// FVector p = wall->getSupportVec();
 
-	float t = d - FVector::DotProduct(n, p);
+	float d = wall->getD();
 
-	FVector soundPos_new = p - ((float) (2.0 * t)) * n;
+	float t = d - FVector::DotProduct(n, pos);
+
+	FVector soundPos_new = pos + 2.0 * t * n;
 
 	return soundPos_new;
+
+
+	// Transform Positions
+	// FVector n = wall->getNormalVec();
+	// FVector p = wall->getSupportVec();
+	// float d = wall->getD();
+	// float d = FVector::DotProduct(n, pos);
+	// 
+	// float t = d - FVector::DotProduct(n, p);
+	// 
+	// FVector soundPos_new = p - ((float) (2.0 * t)) * n;
+	// 
+	// return soundPos_new;
 }
 
 
