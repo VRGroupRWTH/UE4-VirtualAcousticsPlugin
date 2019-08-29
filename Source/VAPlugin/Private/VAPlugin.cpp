@@ -339,7 +339,7 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		text.Append(FString::FromInt(soundPos.X)).Append("/").Append(FString::FromInt(soundPos.Y)).Append("/").Append(FString::FromInt(soundPos.Z));
 		text.Append(" to ");
 		text.Append(FString::FromInt(pos_new.X)).Append("/").Append(FString::FromInt(pos_new.Y)).Append("/").Append(FString::FromInt(pos_new.Z));
-		VAUtils::openMessageBox(text);
+		VAUtils::logStuff(text);
 		continue;
 	}
 
@@ -584,25 +584,13 @@ FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, F
 
 FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, FVector pos, FRotator rot)
 {
-	// Transform Positions
-	FVector n = wall->getNormalVec();
-	FVector p = wall->getSupportVec();
-	float d = wall->getD();
-
-	float t = d - FVector::DotProduct(n, p);
-
-	FVector soundPos_new = p + 2 * t * n;
-
-
-	// Transform orientation
-	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
-	FQuat reflectedQuat = mirrorNormalQuat * rot.Quaternion() * mirrorNormalQuat;
-	FRotator soundRot_new = reflectedQuat.Rotator();
+	FVector pos_new = computeReflectedPos(wall, pos);
+	FRotator rot_new = computeReflectedRot(wall, rot);
 
 	// bring all together in new Transform
 	FTransform trans_new = FTransform();
-	trans_new.SetLocation(soundPos_new);
-	trans_new.SetRotation(reflectedQuat);
+	trans_new.SetLocation(pos_new);
+	trans_new.SetRotation(rot_new.Quaternion());
 
 	return trans_new;
 }
@@ -610,47 +598,18 @@ FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, F
 
 FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector pos) 
 {
-
 	FVector n = wall->getNormalVec();
-	// FVector p = wall->getSupportVec();
-
 	float d = wall->getD();
-
 	float t = d - FVector::DotProduct(n, pos);
 
-	FVector soundPos_new = pos + 2.0 * t * n;
-
-	return soundPos_new;
-
-
-	// Transform Positions
-	// FVector n = wall->getNormalVec();
-	// FVector p = wall->getSupportVec();
-	// float d = wall->getD();
-	// float d = FVector::DotProduct(n, pos);
-	// 
-	// float t = d - FVector::DotProduct(n, p);
-	// 
-	// FVector soundPos_new = p - ((float) (2.0 * t)) * n;
-	// 
-	// return soundPos_new;
+	return (pos + 2.0 * t * n);
 }
 
 
 FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
 {
-	// THIS IS WRONG!!
-
-
 	// Transform Positions
 	FVector n = wall->getNormalVec();
-	FVector p = wall->getSupportVec();
-	float d = wall->getD();
-	
-	float t = d - FVector::DotProduct(n, p);
-
-	FVector soundPos_new = p + ((float) (2 * t)) * n;
-
 
 	// Transform orientation
 	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
