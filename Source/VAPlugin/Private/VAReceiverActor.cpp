@@ -141,7 +141,6 @@ bool AVAReceiverActor::updateRealWorldPosition()
 		return false;
 	}
 	
-
 	auto world = GetWorld();
 	if  (world == nullptr) {
 		return false;
@@ -160,8 +159,8 @@ bool AVAReceiverActor::updateRealWorldPosition()
     FVector pos;
     FRotator rot;
 
-	FString name1 = "shutter_glasses";
-	FString name2 = "cave_origin";
+	FString name_shutter = "shutter_glasses";
+	FString name_origin = "cave_origin";
 
 	FVector  shutter; 
 	FRotator shutterRot;
@@ -175,7 +174,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	bool suc2 = false;
 
 	for (auto parent : parent_vec) {
-		if (parent->GetName() == FString(name1)) {
+		if (parent->GetName() == FString(name_shutter)) {
 			auto tmp = dynamic_cast<USceneComponent*>(parent);
 			
 			shutter = tmp->GetComponentLocation();
@@ -183,7 +182,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 			suc1 = true;
 
 		}
-		else if (parent->GetName() == FString(name2)) {
+		else if (parent->GetName() == FString(name_origin)) {
 
 			auto tmp = dynamic_cast<USceneComponent*>(parent);
 

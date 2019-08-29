@@ -938,15 +938,6 @@ bool FVAPluginModule::resetAll()
 	matchingReflectionWalls.Empty();
 	reflectionWalls.Empty();
 
-	// Walls
-	// Sound Sources
-
-	// ReceiverActor
-
-	// Lists
-
-
-	
 	return false;
 }
 
