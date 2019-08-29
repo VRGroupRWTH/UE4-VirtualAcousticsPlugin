@@ -134,8 +134,8 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	// https://devhub.vr.rwth-aachen.de/VR-Group/widgetinteraction/blob/develop/Source/WidgetInteraction/Private/WidgetInteraction.cpp
 	// https://devhub.vr.rwth-aachen.de/VR-Group/unreallaunchscripts/blob/master/.misc/configurations/ndisplay/aixcave_5_sides_421.cfg
      
-    //pos = rightComp->GetRealtiveLocation();
-    //rot = rightComp->GetRelativeRotation().Rotator();
+    // pos = rightComp->GetRealtiveLocation();
+    // rot = rightComp->GetRelativeRotation().Rotator();
 
 	if (!FVAPluginModule::isMasterAndUsed()) {
 		return false;
@@ -156,14 +156,11 @@ bool AVAReceiverActor::updateRealWorldPosition()
 		return false;
 	}
 
-    FVector pos;
-    FRotator rot;
-
 	FString name_shutter = "shutter_glasses";
-	FString name_origin = "cave_origin";
-
 	FVector  shutter; 
 	FRotator shutterRot;
+	
+	FString name_origin = "cave_origin";
 	FVector  origin;
 	FRotator originRot;
 
@@ -180,10 +177,8 @@ bool AVAReceiverActor::updateRealWorldPosition()
 			shutter = tmp->GetComponentLocation();
 			shutterRot = tmp->GetComponentRotation();
 			suc1 = true;
-
 		}
 		else if (parent->GetName() == FString(name_origin)) {
-
 			auto tmp = dynamic_cast<USceneComponent*>(parent);
 
 			origin = tmp->GetComponentLocation();
@@ -192,17 +187,20 @@ bool AVAReceiverActor::updateRealWorldPosition()
 		}
 	}
 
+	// check if both is found
 	if (!(suc1 && suc2)) {
 		return false;
 	}
 
+	// calculate positions
+	FVector pos = shutter - origin;
+	FRotator rot = shutterRot - originRot;
 
-	pos = shutter - origin;
-	rot = shutterRot - originRot;
-
+	// log positions
 	VAUtils::logStuff(FString("RL pos: " + pos.ToString()));
 	VAUtils::logStuff(FString("RL rot: " + rot.ToString()));
 	
+    return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 
 	/*
 	auto world = GetWorld();
@@ -240,7 +238,6 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	rot = rotPawn;
     */
 
-    return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 }
 
 std::string AVAReceiverActor::getDirectivity()
