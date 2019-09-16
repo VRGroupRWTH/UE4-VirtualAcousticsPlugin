@@ -58,6 +58,11 @@ std::string FVAPluginModule::directivity;
 VAQuat* FVAPluginModule::tmpQuat = new VAQuat();
 VAVec3* FVAPluginModule::tmpVec = new VAVec3();
 
+TArray<FString> FVAPluginModule::listOfPhonemes;
+TArray<FString> FVAPluginModule::listOfDirectivities;
+TMap<FString, FString> FVAPluginModule::dirMapping;
+TMap<FString, int> FVAPluginModule::dirMappingToInt;
+
 
 void FVAPluginModule::StartupModule()
 {
@@ -884,6 +889,82 @@ void FVAPluginModule::processExeption(FString location, FString exp)
 {
 	useVA = false;
 	UE_LOG(LogTemp, Error, TEXT("Error in [%s] with error: %s"), *location, *exp);
+}
+
+bool FVAPluginModule::readDirFile(FString dirName)
+{
+	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
+	FString dir = FPaths::Combine(*BaseDir, TEXT("config/directivities/"));
+	FString config_file_name = dir + dirName;
+
+	GConfig->UnloadFile(config_file_name);
+	GConfig->LoadFile(config_file_name);
+
+	FConfigFile* config = GConfig->FindConfigFile(config_file_name);
+
+	if (config == nullptr) {
+		// UE_LOG(LogTemp, Error, TEXT("[Sc]Unable to load study config file: %s"), *config_file_name_);
+		VAUtils::logStuff(FString("Unable to load directivity config file") + config_file_name);
+		return false;
+	}
+
+	listOfPhonemes.Empty();
+	dirMapping.Empty();
+	listOfDirectivities.Empty();
+
+	config->GetArray(TEXT("DirectivityMapping"), TEXT("ListOfPhonemesArray"), listOfPhonemes);
+	// FString listOfdir;
+	// config->GetString(TEXT("DirectivityMapping"), TEXT("ListOfPhonemesString"), listOfDir);
+
+	VAUtils::logStuff("The following inputs for dirs were registered: ");
+	FString tmpS;
+	FString test = "Hallo";
+	for (auto entry : listOfPhonemes) {
+		config->GetString(TEXT("DirectivityMapping"), *entry, tmpS);
+		
+		if (tmpS.IsEmpty()) {
+			UE_LOG(LogTemp, Warning, TEXT("   Directivity for %s is empty!"), *entry);
+			continue;
+		}
+
+		dirMapping.Add(entry, tmpS);
+		UE_LOG(LogTemp, Warning, TEXT("   %s --> %s"), *entry, *tmpS);
+		
+
+
+		// if(tmpS is not in Directivities yet)
+		if (!listOfDirectivities.Contains(tmpS)) {
+			listOfDirectivities.Add(tmpS);
+		}
+	}
+	VAUtils::logStuff("------------------");
+
+	   	  
+	VAUtils::logStuff("Finished reading Dir File");
+
+	FString folder;
+	config->GetString(TEXT("DirectivityMapping"), TEXT("dirFolder"), folder);
+
+	int iHRIR;
+	FString tmp;
+	for (auto entry : listOfDirectivities) {
+		// tmp = folder;
+		// tmp.Append(entry);
+		std::string dir(TCHAR_TO_UTF8(*(folder + entry)));
+		iHRIR = pVA->CreateDirectivityFromFile(dir);
+		dirMappingToInt.Add(entry, iHRIR);
+	}
+
+	return true;
+}
+
+bool FVAPluginModule::processDirFile()
+{
+
+
+	
+	// iHRIR = pVA->CreateDirectivityFromFile(dir);
+	return false;
 }
 
 bool FVAPluginModule::isConnected()

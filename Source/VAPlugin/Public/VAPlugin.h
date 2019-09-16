@@ -130,14 +130,25 @@ public:
     static bool isViewModeHMD();
     
     // check if View Mode is Cave //
+
 	static bool isViewModeCave();
 
     // check if is Master and VA Server should be used // 
 	static bool isMasterAndUsed();
 
-	// process / output CVAException
+	// process / output CVAException //
 	static void processExeption(FString location, CVAException e);
 	static void processExeption(FString location, FString exception);
+
+	// read Dir file //
+	static bool readDirFile(FString dirName);
+
+	// process Dir file //
+	static bool processDirFile();
+
+	// TODO: //
+	// change Dir file //
+
 
 
 protected:
@@ -219,7 +230,18 @@ protected:
 
 	// bool if VA is used // 
 	static bool useVA;
-    
+
+	// List of all registered input Phonemes //
+	static TArray<FString> listOfPhonemes;
+
+	// List of all actual dirs//
+	static TArray<FString> listOfDirectivities;
+
+	// Mapping of all inputs to their phenomes //
+	static TMap<FString, FString> dirMapping;
+
+	// Mapping of all phenomes to their int value @VA Server //
+	static TMap<FString, int> dirMappingToInt;
     
 	// bool runServerTest();
 

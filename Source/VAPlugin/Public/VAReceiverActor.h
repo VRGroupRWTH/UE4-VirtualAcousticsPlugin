@@ -50,6 +50,10 @@ public:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]", ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
 		uint16 vPort = 12340;
 
+	// Factor for global output Gain
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities"))
+		FString dirName = "default.ini";
+
 	// return directivity x in form: $(x)
 	std::string getDirectivity();
 	
