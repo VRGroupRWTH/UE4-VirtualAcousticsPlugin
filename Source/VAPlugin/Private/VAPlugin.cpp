@@ -335,12 +335,11 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		reflectionArrayIDs.Add(id);
 		wall->spawnSphere(pos_new, rot_new); // TODO: delete
 
-		FString text = "old pos: ";
+		FString text = "orig pos: ";
 		text.Append(FString::FromInt(soundPos.X)).Append("/").Append(FString::FromInt(soundPos.Y)).Append("/").Append(FString::FromInt(soundPos.Z));
-		text.Append(" to ");
+		text.Append(" // reflected pos: ");
 		text.Append(FString::FromInt(pos_new.X)).Append("/").Append(FString::FromInt(pos_new.Y)).Append("/").Append(FString::FromInt(pos_new.Z));
 		VAUtils::logStuff(text);
-		continue;
 	}
 
 	// Play all sounds together
