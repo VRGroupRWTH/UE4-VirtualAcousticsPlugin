@@ -201,12 +201,12 @@ FRotator UVASourceComponent::getRotation()
 
 bool UVASourceComponent::setDirectivityWithReflections_Phoneme(FString phoneme)
 {
-	return FVAPluginModule::setSourceDirectivityWithReflections(soundID, phoneme);
+	return FVAPluginModule::setSourceDirectivityWithReflections_Phoneme(soundID, phoneme);
 }
 
 bool UVASourceComponent::setDirectivity_Phoneme(FString phoneme)
 {
-	return FVAPluginModule::setSourceDirectivity(soundID, phoneme);
+	return FVAPluginModule::setSourceDirectivity_Phoneme(soundID, phoneme);
 }
 
 

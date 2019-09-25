@@ -755,7 +755,7 @@ bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 	}
 }
 
-bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, FString phoneme)
+bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, FString directivity)
 {
 	if (!isMasterAndUsed()) {
 		return false;
@@ -764,15 +764,69 @@ bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, FString p
 	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
 
 	// HERE DELETE
-	setSourceDirectivity(soundID, phoneme);
+	setSourceDirectivity(soundID, directivity);
 
 	for (int id : reflectionArrayIDs) {
-		setSourceDirectivity(id, phoneme);
+		setSourceDirectivity(id, directivity);
 	}
 
 
 	return false;
 }
+
+bool FVAPluginModule::setSourceDirectivity(int soundID, int dirID)
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+
+	try {
+		pVA->SetSoundSourceDirectivity(soundID, dirID);
+	}
+	catch (CVAException& e) {
+		processExeption("setSourceDirectivity()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, int dirID)
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
+
+	// HERE DELETE
+	setSourceDirectivity(soundID, dirID);
+
+	for (int id : reflectionArrayIDs) {
+		setSourceDirectivity(id, dirID);
+	}
+
+	return false;
+}
+
+bool FVAPluginModule::setSourceDirectivity_Phoneme(int soundID, FString phoneme)
+{
+	FString tmp = *dirMapping.Find(phoneme);
+	int dirID = *dirMappingToInt.Find(tmp);
+
+	setSourceDirectivity(soundID, phoneme);
+
+	
+}
+
+bool FVAPluginModule::setSourceDirectivityWithReflections_Phoneme(int soundID, FString phoneme)
+{
+	FString tmp = *dirMapping.Find(phoneme);
+	int dirID = *dirMappingToInt.Find(tmp);
+
+	return setSourceDirectivityWithReflections(soundID, phoneme);
+}
+
+
 
 
 /*

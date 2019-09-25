@@ -111,11 +111,23 @@ public:
     // set Receiver Directivity (HRIR) //
 	static bool setReceiverDirectivity(std::string directivity);
 
-	// set Sound Source Directivity // 
-	static bool setSourceDirectivity(int soundID, FString phoneme);
+	// set Sound Source Directivity with dirName // 
+	static bool setSourceDirectivity(int soundID, FString directivity);
 
-	// change sound directivity of source and its reflections // 
-	static bool setSourceDirectivityWithReflections(int soundID, FString phoneme);
+	// change sound directivity of source and its reflections with dirName // 
+	static bool setSourceDirectivityWithReflections(int soundID, FString directivity);
+
+	// set Sound Source Directivity with dirID // 
+	static bool setSourceDirectivity(int soundID, int dirID);
+
+	// change sound directivity of source and its reflections with dirID // 
+	static bool setSourceDirectivityWithReflections(int soundID, int dirID);
+
+	// set Sound Source Directivity with Phoneme // 
+	static bool setSourceDirectivity_Phoneme(int soundID, FString phoneme);
+
+	// change sound directivity of source and its reflections with Phoneme // 
+	static bool setSourceDirectivityWithReflections_Phoneme(int soundID, FString phoneme);
 
     // set View Mode //
 	static bool setViewMode();
