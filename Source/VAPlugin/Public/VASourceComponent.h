@@ -129,9 +129,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FVector getPosition();
 
-	// returns the Roatation minding its setting for rotation // s
+	// returns the Roatation minding its setting for rotation // 
 	UFUNCTION(BlueprintCallable)
 		FRotator getRotation();
+
+	// set directivity of sound source with reflections // 
+	UFUNCTION(BlueprintCallable)
+		bool setDirectivityWithReflections_Phoneme(FString phoneme);
+
+	// set directivity of sound source with reflections // 
+	UFUNCTION(BlueprintCallable)
+		bool setDirectivity_Phoneme(FString phoneme);
 
 
 

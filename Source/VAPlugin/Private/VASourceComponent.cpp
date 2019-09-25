@@ -199,6 +199,17 @@ FRotator UVASourceComponent::getRotation()
 }
 
 
+bool UVASourceComponent::setDirectivityWithReflections_Phoneme(FString phoneme)
+{
+	return FVAPluginModule::setSourceDirectivityWithReflections(soundID, phoneme);
+}
+
+bool UVASourceComponent::setDirectivity_Phoneme(FString phoneme)
+{
+	return FVAPluginModule::setSourceDirectivity(soundID, phoneme);
+}
+
+
 // Called every frame
 void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
