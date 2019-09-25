@@ -244,9 +244,15 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 	iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
 	updateReceiverPos(FVector(0,1.7,0), FQuat(0,0,0,0));
 
-
-    std::string dir = receiverActor->getDirectivity(); // DELETED HERE
-	iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+	try {
+		std::string dir = receiverActor->getDirectivity(); // DELETED HERE
+		iHRIR = pVA->CreateDirectivityFromFile(dir); // DELETED HERE
+	}
+	catch (CVAException& e) {
+		processExeption("initializeReceiver", FString(e.ToString().c_str()));
+		return false;
+	}
+   
 	
 
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
@@ -951,7 +957,18 @@ bool FVAPluginModule::readDirFile(FString dirName)
 		// tmp = folder;
 		// tmp.Append(entry);
 		std::string dir(TCHAR_TO_UTF8(*(folder + entry)));
-		iHRIR = pVA->CreateDirectivityFromFile(dir);
+		try {
+			iHRIR = pVA->CreateDirectivityFromFile(dir);
+		}
+		catch (CVAException& e) {
+			// VAUtils::openMessageBox("Hallo");
+			//processExeption("readDirFile", FString(e.ToString().c_str()));
+			if (&e == nullptr)
+			{
+			}
+			continue;
+		}
+
 		dirMappingToInt.Add(entry, iHRIR);
 	}
 

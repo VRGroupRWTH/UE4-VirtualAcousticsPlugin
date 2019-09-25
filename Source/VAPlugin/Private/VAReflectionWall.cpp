@@ -26,7 +26,7 @@ AVAReflectionWall::AVAReflectionWall()
 
 	// reflection Sphere
 	sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
-	sphereComp->bHiddenInGame = false;
+	sphereComp->bHiddenInGame = true;
 	sphereComp->Mobility = EComponentMobility::Movable;
 	RootComponent = sphereComp;
 
@@ -83,7 +83,9 @@ void AVAReflectionWall::computePlaneData()
 
 void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot)
 {
-	SphereMesh->SetWorldLocation(pos);
+	
+	FVector offset(0, 0, 40);
+	SphereMesh->SetWorldLocation(pos - offset);
 	//SphereMesh->SetRelativeLocation(pos);
 	//SphereMesh->Set
 
