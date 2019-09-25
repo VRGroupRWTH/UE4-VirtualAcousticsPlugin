@@ -112,7 +112,10 @@ public:
 	static bool setReceiverDirectivity(std::string directivity);
 
 	// set Sound Source Directivity // 
-	static bool setSourceDirectivity(int id, FString directivity);
+	static bool setSourceDirectivity(int soundID, FString phoneme);
+
+	// change sound directivity of source and its reflections // 
+	static bool setSourceDirectivityWithReflections(int soundID, FString phoneme);
 
     // set View Mode //
 	static bool setViewMode();
@@ -143,8 +146,7 @@ public:
 	// read Dir file //
 	static bool readDirFile(FString dirName);
 
-	// process Dir file //
-	static bool processDirFile();
+
 
 	// TODO: //
 	// change Dir file //

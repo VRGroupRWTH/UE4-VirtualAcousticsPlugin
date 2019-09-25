@@ -91,7 +91,6 @@ void AVAReceiverActor::BeginPlay()
 	FVAPluginModule::processSoundQueue();
 
 	FVAPluginModule::readDirFile(dirName);
-	FVAPluginModule::processDirFile();
 }
 
 // Called every frame

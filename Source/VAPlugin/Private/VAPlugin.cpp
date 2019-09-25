@@ -481,7 +481,8 @@ bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction
 
 	FString text = "Counter started Reflections: ";
 	text.Append(FString::FromInt(reflectionArrayIDs.Num()));
-	VAUtils::openMessageBox(text);
+	VAUtils::logStuff(text);
+
 	
 	return true;
 }
@@ -754,6 +755,26 @@ bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 	}
 }
 
+bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, FString phoneme)
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
+
+	// HERE DELETE
+	setSourceDirectivity(soundID, phoneme);
+
+	for (int id : reflectionArrayIDs) {
+		setSourceDirectivity(id, phoneme);
+	}
+
+
+	return false;
+}
+
+
 /*
 bool FVAPluginModule::runServerTest()
 {
@@ -899,6 +920,10 @@ void FVAPluginModule::processExeption(FString location, FString exp)
 
 bool FVAPluginModule::readDirFile(FString dirName)
 {
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
 	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
 	FString dir = FPaths::Combine(*BaseDir, TEXT("config/directivities/"));
 	FString config_file_name = dir + dirName;
@@ -975,14 +1000,6 @@ bool FVAPluginModule::readDirFile(FString dirName)
 	return true;
 }
 
-bool FVAPluginModule::processDirFile()
-{
-
-
-	
-	// iHRIR = pVA->CreateDirectivityFromFile(dir);
-	return false;
-}
 
 bool FVAPluginModule::isConnected()
 {
