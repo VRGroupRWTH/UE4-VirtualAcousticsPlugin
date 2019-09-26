@@ -788,6 +788,8 @@ bool FVAPluginModule::setSourceDirectivity(int soundID, int dirID)
 		processExeption("setSourceDirectivity()", FString(e.ToString().c_str()));
 		return false;
 	}
+	
+	return true;
 }
 
 bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, int dirID)
@@ -805,7 +807,7 @@ bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, int dirID
 		setSourceDirectivity(id, dirID);
 	}
 
-	return false;
+	return true;
 }
 
 bool FVAPluginModule::setSourceDirectivity_Phoneme(int soundID, FString phoneme)
@@ -813,9 +815,8 @@ bool FVAPluginModule::setSourceDirectivity_Phoneme(int soundID, FString phoneme)
 	FString tmp = *dirMapping.Find(phoneme);
 	int dirID = *dirMappingToInt.Find(tmp);
 
-	setSourceDirectivity(soundID, phoneme);
+	return setSourceDirectivity(soundID, phoneme);
 
-	
 }
 
 bool FVAPluginModule::setSourceDirectivityWithReflections_Phoneme(int soundID, FString phoneme)
@@ -1038,17 +1039,18 @@ bool FVAPluginModule::readDirFile(FString dirName)
 		std::string dir(TCHAR_TO_UTF8(*(folder + entry)));
 		try {
 			iHRIR = pVA->CreateDirectivityFromFile(dir);
+			dirMappingToInt.Add(entry, iHRIR);
 		}
 		catch (CVAException& e) {
 			// VAUtils::openMessageBox("Hallo");
-			//processExeption("readDirFile", FString(e.ToString().c_str()));
+			// processExeption("readDirFile", FString(*e.ToString().c_str()));
+			// VAUtils::logStuff(FString("Could not read Directivity from phenmoes config: " + *e.ToString().c_str()));
 			if (&e == nullptr)
 			{
 			}
 			continue;
 		}
 
-		dirMappingToInt.Add(entry, iHRIR);
 	}
 
 	return true;
