@@ -26,10 +26,10 @@ AVAReceiverActor::AVAReceiverActor()
 
 }
 
-void AVAReceiverActor::EndPlay() {
-
-	VAUtils::logStuff("In End Play!!!");
-}
+// void AVAReceiverActor::EndPlay() {
+// 
+// 	VAUtils::logStuff("In End Play!!!");
+// }
 
 // Called when the game starts or when spawned
 void AVAReceiverActor::BeginPlay()
