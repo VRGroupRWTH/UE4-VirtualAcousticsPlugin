@@ -197,8 +197,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	FRotator rot = shutterRot - originRot;
 
 	// log positions
-	VAUtils::logStuff(FString("RL pos: " + pos.ToString()));
-	VAUtils::logStuff(FString("RL rot: " + rot.ToString()));
+	VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "RL rot: " + rot.ToString()));
 	
     return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 
