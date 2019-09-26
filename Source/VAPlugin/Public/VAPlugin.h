@@ -114,11 +114,11 @@ public:
 	// set Sound Source Directivity with dirName // 
 	static bool setSourceDirectivity(int soundID, FString directivity);
 
-	// change sound directivity of source and its reflections with dirName // 
-	static bool setSourceDirectivityWithReflections(int soundID, FString directivity);
-
 	// set Sound Source Directivity with dirID // 
 	static bool setSourceDirectivity(int soundID, int dirID);
+
+	// change sound directivity of source and its reflections with dirName // 
+	static bool setSourceDirectivityWithReflections(int soundID, FString directivity);
 
 	// change sound directivity of source and its reflections with dirID // 
 	static bool setSourceDirectivityWithReflections(int soundID, int dirID);
