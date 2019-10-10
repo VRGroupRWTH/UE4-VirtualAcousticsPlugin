@@ -3,6 +3,7 @@
 #pragma once
 
 #include "VAPlugin.h"
+#include "VAReflectionWall.h"
 #include "CoreMinimal.h"
 #include "Array.h"
 #include "Components/ActorComponent.h"
@@ -77,6 +78,25 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset"))
 		FVector vOffset = FVector(0, 0, 0);
 
+	// UPROPERTY(VisibleDefaultsOnly)
+	// 	class USceneComponent* sceneComp;
+	// 
+	// UPROPERTY(VisibleDefaultsOnly)
+	// 	TMap<AVAReflectionWall*, class UStaticMeshComponent*> coneMeshMap;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class USphereComponent *sphereComp;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		TMap<AVAReflectionWall*, class UStaticMeshComponent*> coneMeshMap;
+
+
+	//UPROPERTY(VisibleDefaultsOnly)
+	//	TMap<AVAReflectionWall*, class UStaticMeshComponent*> sphereMeshMapBig;
+	//
+	//UPROPERTY(VisibleDefaultsOnly)
+	//	TMap<AVAReflectionWall*, class UStaticMeshComponent*> sphereMeshMapSmall;
+
 	// Manual Rotation (if used)
 	// UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation"))
 	// 	bool vOffsetRot = false;
@@ -141,6 +161,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool setDirectivity_Phoneme(FString phoneme);
 
+	// set directivity of sound source with reflections // 
+	UFUNCTION(BlueprintCallable)
+		bool createReflectedSourceRepresentation(AVAReflectionWall *wall, FVector pos, FRotator rot);
+
 
 
 protected:
@@ -173,6 +197,12 @@ protected:
 
 	// root component
 	USphereComponent* root_component;
+
+	// if sound source has run BeginPlay() //
+	bool initialized = false;
+
+	// Map of all cones that have to be placed at their position
+	TMap<AVAReflectionWall*, FTransform> conesTodo;
 	
 
 public:	

@@ -197,7 +197,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	FRotator rot = shutterRot - originRot;
 
 	// log positions
-	VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "RL rot: " + rot.ToString()));
+	// VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "RL rot: " + rot.ToString()));
 	
     return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
 
@@ -270,7 +270,7 @@ FString AVAReceiverActor::getIPAdress()
 		return "10.0.1.240";
 	}
 
-	VAUtils::openMessageBox("could not evaluate IP Adress. Returning localhost (AVAReceiverActor::getIPAdress())", true);
+	VAUtils::logStuff("could not evaluate IP Adress. Returning localhost (AVAReceiverActor::getIPAdress())");
 
 	return "localhost";
 }

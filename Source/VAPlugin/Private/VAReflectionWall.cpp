@@ -2,6 +2,7 @@
 
 #include "VAReflectionWall.h"
 #include "VAUtils.h"
+#include "VAPlugin.h"
 #include "EngineUtils.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/BoxComponent.h"
@@ -18,26 +19,36 @@ AVAReflectionWall::AVAReflectionWall()
 	d = 0;
 
 	alreadyComputed = false;
-
+	
 	planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
 	planeComp->InitBoxExtent(FVector(1, 100, 100));
 	planeComp->SetVisibility(true);
+	planeComp->SetRelativeLocation(FVector(0, 0, 0));
+
+	// planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));q
+	// planeComp->InitBoxExtent(FVector(100, 100, 100));
+	// planeComp->SetVisibility(true);
+	// planeComp->SetRelativeLocation(FVector(0, 0, 0));
+	// 
+	// 
+	// // reflection Sphere
+	// sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
+	// sphereComp->bHiddenInGame = !FVAPluginModule::isInDebugMode();
+	// sphereComp->Mobility = EComponentMobility::Movable;
+	// sphereComp->SetRelativeScale3D(FVector(1, 1, 1));
+	// RootComponent = sphereComp;
+	// 
+	// SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	// SphereMesh->AttachTo(RootComponent);
+	// static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
+	// if (SphereMeshAsset.Succeeded()) {
+	// 	SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
+	// 	SphereMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	// 	SphereMesh->SetWorldScale3D(FVector(0.8f));
+	// 	SphereMesh->SetVisibility(FVAPluginModule::isInDebugMode());
+	// }
 
 
-	// reflection Sphere
-	sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
-	sphereComp->bHiddenInGame = true;
-	sphereComp->Mobility = EComponentMobility::Movable;
-	RootComponent = sphereComp;
-
-	SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	SphereMesh->AttachTo(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
-	if (SphereMeshAsset.Succeeded()) {
-		SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
-		SphereMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		SphereMesh->SetWorldScale3D(FVector(0.8f));
-	}
 
 }
 
@@ -83,27 +94,28 @@ void AVAReflectionWall::computePlaneData()
 
 void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot)
 {
-	
-	FVector offset(0, 0, 40);
-	SphereMesh->SetWorldLocation(pos - offset);
+	VAUtils::openMessageBox("in spawnSphere of Reflection Wall, thats wrong");
+	// FVector offset(0, 0, 40);
+	// SphereMesh->SetWorldLocation(pos - offset);
+	// SphereMesh->SetVisibility(FVAPluginModule::isInDebugMode());
 	//SphereMesh->SetRelativeLocation(pos);
 	//SphereMesh->Set
 
 	return;
 
-	AStaticMeshActor *Mesh = nullptr;
-	int counter = 0;
-	for (TActorIterator<AStaticMeshActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		Mesh = *ActorItr;
-		if (Mesh->GetName() == "ReflectionSphere") {
-			Mesh->SetActorLocationAndRotation(pos, rot.Quaternion());
-			counter++;
-		}
-	}
-	FString text = "Counter: ";
-	text.Append(FString::FromInt(counter));
-	VAUtils::openMessageBox(text);
+	// AStaticMeshActor *Mesh = nullptr;
+	// int counter = 0;
+	// for (TActorIterator<AStaticMeshActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	// {
+	// 	Mesh = *ActorItr;
+	// 	if (Mesh->GetName() == "ReflectionSphere") {
+	// 		Mesh->SetActorLocationAndRotation(pos, rot.Quaternion());
+	// 		counter++;
+	// 	}
+	// }
+	// FString text = "Counter: ";
+	// text.Append(FString::FromInt(counter));
+	// VAUtils::logStuff(text);
 
 	// SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMeshz"));
 	// //this->SphereMesh->AttachTo(GetRootComponent());

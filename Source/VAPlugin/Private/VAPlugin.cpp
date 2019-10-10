@@ -40,6 +40,7 @@ int FVAPluginModule::defaultDirID;
 TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
 
 bool FVAPluginModule::useVA;
+bool FVAPluginModule::debugMode = true; // TODO: Change here
 
 
 void* FVAPluginModule::LibraryHandleNet;
@@ -59,6 +60,7 @@ VAQuat* FVAPluginModule::tmpQuat = new VAQuat();
 VAVec3* FVAPluginModule::tmpVec = new VAVec3();
 
 TArray<FString> FVAPluginModule::listOfPhonemes;
+TArray<FString> FVAPluginModule::listOfPairs;
 TArray<FString> FVAPluginModule::listOfDirectivities;
 TMap<FString, FString> FVAPluginModule::dirMapping;
 TMap<FString, int> FVAPluginModule::dirMappingToInt;
@@ -100,7 +102,7 @@ void FVAPluginModule::StartupModule()
 	// ++ Check Handles ++ //
 	if (!checkLibraryHandles(true))
 	{
-		VAUtils::openMessageBoxV("stop initialzing because of incomplete libraryHandles", true);
+		VAUtils::openMessageBox("stop initialzing because of incomplete libraryHandles");
 		return;
 	}
 
@@ -156,7 +158,7 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 		return true;
 	}
 
-	VAUtils::openMessageBox("Connecting to VAServer. Be sure to have it switched on");
+	VAUtils::logStuff("Connecting to VAServer. Be sure to have it switched on");
 
 	try {
 		pVANet = IVANetClient::Create();
@@ -200,7 +202,16 @@ bool FVAPluginModule::initializeServer(FString host, int port)
 		return false;
 	}
 
-	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server?"));
+	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server? If yes, make sure to have it switched on."));
+
+	EAppReturnType::Type retD = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Start in Debug mode?"));
+	if (ret == EAppReturnType::Type::Yes) {
+		debugMode = true;
+	}
+	else {
+		debugMode = false;
+	}
+
 	if (ret == EAppReturnType::Type::No) {
 		useVA = false;
 		return false;
@@ -210,6 +221,7 @@ bool FVAPluginModule::initializeServer(FString host, int port)
 		useVA = false;
 		return false;
 	}
+	
 	return true;
 }
 
@@ -313,7 +325,7 @@ void FVAPluginModule::playTestSound(bool loop)
 }
  */
 
-int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action)
+int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action, UVASourceComponent* sourceComp)
 {
 	
 	// first initialize real sound
@@ -344,7 +356,10 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		matchingReflectionWalls.Add(id, wall);
 
 		reflectionArrayIDs.Add(id);
-		wall->spawnSphere(pos_new, rot_new); // TODO: delete
+		if(sourceComp != nullptr && isInDebugMode()){
+			sourceComp->createReflectedSourceRepresentation(wall, pos_new, rot_new);
+		}
+			// wall->spawnSphere(pos_new, rot_new); // TODO: delete
 
 		FString text = "orig pos: ";
 		text.Append(FString::FromInt(soundPos.X)).Append("/").Append(FString::FromInt(soundPos.Y)).Append("/").Append(FString::FromInt(soundPos.Z));
@@ -366,7 +381,7 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 	return iSoundSourceID;
 }
 
-int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action)
+int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action, UVASourceComponent* sourceComp)
 {
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
 	soundRot = VAUtils::toVACoordinateSystem(soundRot);
@@ -433,7 +448,7 @@ bool FVAPluginModule::processSoundQueue()
 
 	if (uninitializedSoundComponents.Num() != 0)
 	{
-		VAUtils::openMessageBox("Sound Queue is not empty!");
+		VAUtils::logStuff("processSoundQueue(): Sound Queue is not empty!");
 	}
 
 	for (auto iter = uninitializedSoundComponents.CreateIterator(); iter; iter++)
@@ -868,38 +883,38 @@ bool FVAPluginModule::checkLibraryHandles(bool einzeln)
 	if (einzeln == true)
 	{
 		if (LibraryHandleNet) {
-			VAUtils::openMessageBoxV("loaded Net");
+			VAUtils::logStuff("loaded Net");
 		}
 		else {
-			VAUtils::openMessageBox("could not load Net", true);
+			VAUtils::logStuff("could not load Net");
 		}
 
 		if (LibraryHandleBase) {
-			VAUtils::openMessageBoxV("loaded Base");
+			VAUtils::logStuff("loaded Base");
 		}
 		else {
-			VAUtils::openMessageBox("could not load Base", true);
+			VAUtils::logStuff("could not load Base");
 		}
 
 		if (LibraryHandleVistaAspects) {
-			VAUtils::openMessageBoxV("loaded Vista Aspects");
+			VAUtils::logStuff("loaded Vista Aspects");
 		}
 		else {
-			VAUtils::openMessageBox("could not load Vista Aspects", true);
+			VAUtils::logStuff("could not load Vista Aspects");
 		}
 
 		if (LibraryHandleVistaBase) {
-			VAUtils::openMessageBoxV("loaded Vista Base");
+			VAUtils::logStuff("loaded Vista Base");
 		}
 		else {
-			VAUtils::openMessageBox("could not load Vista Base", true);
+			VAUtils::logStuff("could not load Vista Base");
 		}
 
 		if (LibraryHandleVistaInterProcComm) {
-			VAUtils::openMessageBoxV("loaded Vista InterProcComm");
+			VAUtils::logStuff("loaded Vista InterProcComm");
 		}
 		else {
-			VAUtils::openMessageBox("could not load Vista InterProcComm", true);
+			VAUtils::logStuff("could not load Vista InterProcComm");
 		}
 	}
 
@@ -907,11 +922,11 @@ bool FVAPluginModule::checkLibraryHandles(bool einzeln)
 		LibraryHandleVistaAspects && LibraryHandleVistaBase && LibraryHandleVistaInterProcComm)
 	{
 		// all fine
-		VAUtils::openMessageBoxV("all fine");
+		VAUtils::logStuff("all fine");
 		return true;
 	}
 	else {
-		VAUtils::openMessageBox("could not load all dll", true);
+		VAUtils::logStuff("could not load all dll");
 		return false;
 	}
 
@@ -995,26 +1010,47 @@ bool FVAPluginModule::readDirFile(FString dirName)
 	}
 
 	listOfPhonemes.Empty();
+	listOfPairs.Empty();
 	dirMapping.Empty();
 	listOfDirectivities.Empty();
+	FString divideSymbol;
 
-	config->GetArray(TEXT("DirectivityMapping"), TEXT("ListOfPhonemesArray"), listOfPhonemes);
+	//config->GetArray(TEXT("DirectivityMapping"), TEXT("ListOfPhonemesArray"), listOfPhonemes);
+	config->GetArray(TEXT("DirectivityMapping"), TEXT("pair"), listOfPairs);
+	config->GetString(TEXT("DirectivityMapping"), TEXT("dividingSymbol"), divideSymbol);
 	// FString listOfdir;
 	// config->GetString(TEXT("DirectivityMapping"), TEXT("ListOfPhonemesString"), listOfDir);
 
 	VAUtils::logStuff("The following inputs for dirs were registered: ");
-	FString tmpS;
+	FString tmpS, tmpP, tmp; // tmpS = Name of directivity, tmpP = Name of input Phenome "name"
+	int tmpPos;
 	FString test = "Hallo";
-	for (auto entry : listOfPhonemes) {
-		config->GetString(TEXT("DirectivityMapping"), *entry, tmpS);
+	for (auto entry : listOfPairs) {
+		//for (auto entry : listOfPhonemes) {
+		// When using a=ad
+		// b = bd
+		// config->GetString(TEXT("DirectivityMapping"), *entry, tmpS);
 		
-		if (tmpS.IsEmpty()) {
-			UE_LOG(LogTemp, Warning, TEXT("   Directivity for %s is empty!"), *entry);
+		// When using Mapping=a,ad
+		// Mapping = b,bd
+		tmpPos = entry.Find(divideSymbol);
+		if (!entry.Contains(divideSymbol)) {
+			UE_LOG(LogTemp, Warning, TEXT("   Directivity %s has a wrong format!"), *entry);
 			continue;
 		}
 
-		dirMapping.Add(entry, tmpS);
-		UE_LOG(LogTemp, Warning, TEXT("   %s --> %s"), *entry, *tmpS);
+		tmp = *entry;
+		tmp.Split(divideSymbol, &tmpP, &tmpS);
+
+		if (tmpS.IsEmpty() || tmpP.IsEmpty()) {
+			UE_LOG(LogTemp, Warning, TEXT("   Directivity %s has a wrong format!"), *entry);
+			continue;
+		}
+		// dirMapping.Add(entry, tmpS);
+		// UE_LOG(LogTemp, Warning, TEXT("   %s --> %s"), *entry, *tmpS);
+
+		dirMapping.Add(tmpP, tmpS);
+		UE_LOG(LogTemp, Warning, TEXT("   %s --> %s"), *tmpP, *tmpS);
 		
 
 
@@ -1023,16 +1059,39 @@ bool FVAPluginModule::readDirFile(FString dirName)
 			listOfDirectivities.Add(tmpS);
 		}
 	}
-	VAUtils::logStuff("------------------");
 
-	   	  
+	// Do default!
+	config->GetString(TEXT("DirectivityMapping"), TEXT("default"), tmpS);
+	dirMapping.Add("default", tmpS);
+	UE_LOG(LogTemp, Warning, TEXT("   default --> %s"), *tmpS);
+
+	VAUtils::logStuff("------------------"); 	  
 	VAUtils::logStuff("Finished reading Dir File");
+
 
 	FString folder;
 	config->GetString(TEXT("DirectivityMapping"), TEXT("dirFolder"), folder);
 
+
+	// First do default
+	std::string dirD(TCHAR_TO_UTF8(*(folder + tmpS)));
+	try {
+		iHRIR = pVA->CreateDirectivityFromFile(dirD);
+		dirMappingToInt.Add(tmpS, iHRIR);
+	}
+	catch (CVAException& e) {
+		// VAUtils::openMessageBox("Hallo");
+		// processExeption("readDirFile", FString(*e.ToString().c_str()));
+		// VAUtils::logStuff(FString("Could not read Directivity from phenmoes config: " + *e.ToString().c_str()));
+		if (&e == nullptr)
+		{
+		}
+	}
+
+	// ************ // 
+
+
 	int iHRIR;
-	FString tmp;
 	for (auto entry : listOfDirectivities) {
 		// tmp = folder;
 		// tmp.Append(entry);
@@ -1050,8 +1109,9 @@ bool FVAPluginModule::readDirFile(FString dirName)
 			}
 			continue;
 		}
-
 	}
+
+	// Do default
 
 	return true;
 }
@@ -1109,6 +1169,11 @@ bool FVAPluginModule::resetAll()
 	reflectionWalls.Empty();
 
 	return false;
+}
+
+bool FVAPluginModule::isInDebugMode()
+{
+	return debugMode;
 }
 
 

@@ -62,11 +62,11 @@ public:
 
 	// initialize sound Sources with their Reflections
 	static int initializeSoundWithReflections(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0), 
-		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE, UVASourceComponent* sourceComp = nullptr);
 
     // initialize sound Source at VA Server //
 	static int initializeSound(FString soundNameF, FVector soundPos = FVector(0, 0, 0), FRotator soundRot = FRotator(0, 0, 0),
-		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+		float gain = 0.0f, bool loop = false, float soundOffset = 0.0f, int action = IVAInterface::VA_PLAYBACK_ACTION_PAUSE, UVASourceComponent* sourceComp = nullptr);
     
     // enque Sound Component to prevent initialize bevor the connection to VA Server is established //
 	static bool enqueueSound(UVASourceComponent* soundComponent);
@@ -158,6 +158,8 @@ public:
 	// read Dir file //
 	static bool readDirFile(FString dirName);
 
+	// returns if is in Debug Mode //
+	static bool isInDebugMode();
 
 
 	// TODO: //
@@ -245,8 +247,14 @@ protected:
 	// bool if VA is used // 
 	static bool useVA;
 
+	// bool if is in Debug Mode //
+	static bool debugMode;
+
 	// List of all registered input Phonemes //
 	static TArray<FString> listOfPhonemes;
+
+	// List of all registered input Pairs //
+	static TArray<FString> listOfPairs;
 
 	// List of all actual dirs//
 	static TArray<FString> listOfDirectivities;
@@ -256,6 +264,8 @@ protected:
 
 	// Mapping of all phenomes to their int value @VA Server //
 	static TMap<FString, int> dirMappingToInt;
+
+
     
 	// bool runServerTest();
 
