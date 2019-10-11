@@ -33,19 +33,19 @@ ASoundSourceRepresentation::ASoundSourceRepresentation()
 bool ASoundSourceRepresentation::setPos(FVector pos)
 {
 	sphereComp->SetWorldLocation(pos);
-	return false;
+	return true;
 }
 
 bool ASoundSourceRepresentation::setRot(FRotator rot)
 {
 	sphereComp->SetWorldRotation(rot);
-	return false;
+	return true;
 }
 
 bool ASoundSourceRepresentation::setVis(bool visibility)
 {
 	sphereComp->SetVisibility(visibility);
-	return false;
+	return true;
 }
 
 // Called when the game starts or when spawned

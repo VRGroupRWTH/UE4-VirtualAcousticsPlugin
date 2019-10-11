@@ -93,11 +93,12 @@ void AVAReflectionWall::computePlaneData()
 	FRotator normalRot = planeComp->GetComponentRotation();
 	normalVec = normalRot.Vector();
 
+
 	FString text = "computePlaneData() Normal vec: ";
 	text.Append(FString::FromInt(normalVec.X)).Append("/").Append(FString::FromInt(normalVec.Y)).Append("/").Append(FString::FromInt(normalVec.Z));
 	text.Append(" // normal rot: ");
 	text.Append(FString::FromInt(normalRot.Roll)).Append("/").Append(FString::FromInt(normalRot.Pitch)).Append("/").Append(FString::FromInt(normalRot.Yaw));
-	VAUtils::openMessageBox(text);
+	VAUtils::logStuff(text);
 
 
 	supportVec = planeComp->GetComponentLocation();
