@@ -15,3 +15,4 @@ Spawn Cones in Source Component
 
 
 TODO: Set Input for Debug Mode
+Set Walls to static ?!

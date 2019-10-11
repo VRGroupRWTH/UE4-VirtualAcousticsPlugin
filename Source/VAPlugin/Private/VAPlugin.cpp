@@ -357,7 +357,8 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 
 		reflectionArrayIDs.Add(id);
 		if(sourceComp != nullptr && isInDebugMode()){
-			sourceComp->createReflectedSourceRepresentation(wall, pos_new, rot_new);
+			sourceComp->setReflectedSourceRepresentation(wall, pos_new, rot_new);
+			// sourceComp->setReflectedSourceReprVisibility(wall, true);
 		}
 			// wall->spawnSphere(pos_new, rot_new); // TODO: delete
 
@@ -366,6 +367,12 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		text.Append(" // reflected pos: ");
 		text.Append(FString::FromInt(pos_new.X)).Append("/").Append(FString::FromInt(pos_new.Y)).Append("/").Append(FString::FromInt(pos_new.Z));
 		VAUtils::logStuff(text);
+
+		text = "orig rot: ";
+		text.Append(FString::FromInt(soundRot.Roll)).Append("/").Append(FString::FromInt(soundRot.Pitch)).Append("/").Append(FString::FromInt(soundRot.Yaw));
+		text.Append(" // reflected pos: ");
+		text.Append(FString::FromInt(rot_new.Roll)).Append("/").Append(FString::FromInt(rot_new.Pitch)).Append("/").Append(FString::FromInt(rot_new.Yaw));
+		VAUtils::openMessageBox(text);
 	}
 
 	// Play all sounds together
@@ -641,6 +648,22 @@ FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator 
 	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
 	FQuat reflectedQuat = mirrorNormalQuat * rot.Quaternion() * mirrorNormalQuat;
 	FRotator soundRot_new = reflectedQuat.Rotator();
+
+
+
+
+
+
+
+
+
+
+	FRotator tmp = mirrorNormalQuat.Rotator();
+	FString text = "Normal vec: ";
+	text.Append(FString::FromInt(n.X)).Append("/").Append(FString::FromInt(n.Y)).Append("/").Append(FString::FromInt(n.Z));
+	text.Append(" // normal rot: ");
+	text.Append(FString::FromInt(tmp.Roll)).Append("/").Append(FString::FromInt(tmp.Pitch)).Append("/").Append(FString::FromInt(tmp.Yaw));
+	// VAUtils::openMessageBox(text);
 	
 	return soundRot_new;
 }

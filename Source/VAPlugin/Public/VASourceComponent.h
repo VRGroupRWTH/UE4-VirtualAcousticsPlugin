@@ -4,6 +4,7 @@
 
 #include "VAPlugin.h"
 #include "VAReflectionWall.h"
+#include "SoundSourceRepresentation.h"
 #include "CoreMinimal.h"
 #include "Array.h"
 #include "Components/ActorComponent.h"
@@ -83,12 +84,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	// 
 	// UPROPERTY(VisibleDefaultsOnly)
 	// 	TMap<AVAReflectionWall*, class UStaticMeshComponent*> coneMeshMap;
-
-	UPROPERTY(VisibleDefaultsOnly)
-		class USphereComponent *sphereComp;
-
-	UPROPERTY(VisibleDefaultsOnly)
-		TMap<AVAReflectionWall*, class UStaticMeshComponent*> coneMeshMap;
+	
 
 
 	//UPROPERTY(VisibleDefaultsOnly)
@@ -163,7 +159,19 @@ public:
 
 	// set directivity of sound source with reflections // 
 	UFUNCTION(BlueprintCallable)
-		bool createReflectedSourceRepresentation(AVAReflectionWall *wall, FVector pos, FRotator rot);
+		bool setReflectedSourceRepresentation(AVAReflectionWall *wall, FVector pos, FRotator rot);
+
+	// set directivity of sound source with reflections // 
+	UFUNCTION(BlueprintCallable)
+		bool setSourceRepresentation();
+
+	// sets visibility of sound source representation // 
+	UFUNCTION(BlueprintCallable)
+		bool setReflectedSourceReprVisibility(AVAReflectionWall *wall, bool visibility);
+
+	// sets visibility of sound source representation // 
+	UFUNCTION(BlueprintCallable)
+		bool setSourceReprVisibility(bool visibility);
 
 
 
@@ -203,6 +211,18 @@ protected:
 
 	// Map of all cones that have to be placed at their position
 	TMap<AVAReflectionWall*, FTransform> conesTodo;
+
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class USphereComponent *sphereComp;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		TMap<AVAReflectionWall*, class UStaticMeshComponent*> coneMeshMap;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		TMap<AVAReflectionWall*, ASoundSourceRepresentation*> sourceReprMap;
+
+	ASoundSourceRepresentation* sourceRepr;
 	
 
 public:	

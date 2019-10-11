@@ -14,16 +14,16 @@ AVAReflectionWall::AVAReflectionWall()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	normalVec = FVector(1, 0, 0);
-	supportVec = FVector(0, 0, 0);
-	d = 0;
+	// normalVec = FVector(1, 0, 0);
+	// supportVec = FVector(0, 0, 0);
+	// d = 0;
 
 	alreadyComputed = false;
 	
 	planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
 	planeComp->InitBoxExtent(FVector(1, 100, 100));
 	planeComp->SetVisibility(true);
-	planeComp->SetRelativeLocation(FVector(0, 0, 0));
+	// planeComp->SetRelativeLocation(FVector(0, 0, 0));
 
 	// planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));q
 	// planeComp->InitBoxExtent(FVector(100, 100, 100));
@@ -83,8 +83,26 @@ float AVAReflectionWall::getR()
 
 void AVAReflectionWall::computePlaneData()
 {
-	normalVec = GetTransform().GetRotation().Rotator().Vector();
-	supportVec = GetTransform().GetLocation();
+	
+	// normalVec  = GetTransform().GetRotation().Rotator().Vector();
+	// supportVec = GetTransform().GetLocation();
+
+	// normalVec  = GetActorRotation().Vector();
+	// supportVec = GetActorLocation();
+
+	FRotator normalRot = planeComp->GetComponentRotation();
+	normalVec = normalRot.Vector();
+
+	FString text = "computePlaneData() Normal vec: ";
+	text.Append(FString::FromInt(normalVec.X)).Append("/").Append(FString::FromInt(normalVec.Y)).Append("/").Append(FString::FromInt(normalVec.Z));
+	text.Append(" // normal rot: ");
+	text.Append(FString::FromInt(normalRot.Roll)).Append("/").Append(FString::FromInt(normalRot.Pitch)).Append("/").Append(FString::FromInt(normalRot.Yaw));
+	VAUtils::openMessageBox(text);
+
+
+	supportVec = planeComp->GetComponentLocation();
+	// normalVec  = 
+	// supportVec =
 
 	d = FVector::DotProduct(normalVec, supportVec);
 

@@ -51,7 +51,7 @@ UVASourceComponent::UVASourceComponent()
 
 	for (auto& Elem : conesTodo)
 	{
-		createReflectedSourceRepresentation(Elem.Key, Elem.Value.GetLocation(), Elem.Value.GetRotation().Rotator());
+		setReflectedSourceRepresentation(Elem.Key, Elem.Value.GetLocation(), Elem.Value.GetRotation().Rotator());
 	}
 
 
@@ -283,8 +283,9 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	}
 }
 
-bool UVASourceComponent::createReflectedSourceRepresentation(AVAReflectionWall *wall, FVector pos, FRotator rot)
+bool UVASourceComponent::setReflectedSourceRepresentation(AVAReflectionWall *wall, FVector pos, FRotator rot)
 {
+	/*
 	// sceneComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
 	// sceneComp->bHiddenInGame = !FVAPluginModule::isInDebugMode();
 	// sceneComp->Mobility = EComponentMobility::Movable;
@@ -294,7 +295,7 @@ bool UVASourceComponent::createReflectedSourceRepresentation(AVAReflectionWall *
 
 	// NewComponent->RegisterComponent();
 	// NewComponent->OnComponentCreated(); // Might need this line, might not.
-	// NewComponent->AttachTo(GetRootComponent(), SocketName /* NAME_None */);
+	// NewComponent->AttachTo(GetRootComponent(), SocketName);
 	// 
 	// class UStaticMeshComponent *coneMesh = NewObject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	// coneMesh->AttachTo(sphereComp);
@@ -312,53 +313,94 @@ bool UVASourceComponent::createReflectedSourceRepresentation(AVAReflectionWall *
 	// coneMeshMap.Add(wall, coneMesh);
 	// class UStaticMeshComponent tmpMesh = dynamic_cast<UStaticMeshComponent>(coneMeshMap.Find(wall));
 
-	if (initialized == false) {
-		FTransform trans;
-		trans.SetLocation(pos);
-		trans.SetRotation(rot.Quaternion());
-		conesTodo.Add(wall, trans);
-		return true;
+	*/
+
+	ASoundSourceRepresentation* tmp;
+
+	if (sourceReprMap.Contains(wall)) {
+		tmp = sourceReprMap[wall];
+
+		tmp->setPos(pos);
+		tmp->setRot(rot);
+
 	}
+	else {
+		// If there is no Source Representation for that wall yet
+		tmp = GetWorld()->SpawnActor<ASoundSourceRepresentation>(ASoundSourceRepresentation::StaticClass());
+
+		tmp->setPos(pos);
+		tmp->setRot(rot);
+		tmp->setVis(false);
+
+		sourceReprMap.Add(wall, tmp);
+	}
+	
+
+	return true;
+
+	/*
+	// if (initialized == false) {
+	// 	FTransform trans;
+	// 	trans.SetLocation(pos);
+	// 	trans.SetRotation(rot.Quaternion());
+	// 	conesTodo.Add(wall, trans);
+	// 	return true;
+	// }
 
 
-	class UStaticMeshComponent *tmpMesh = *(coneMeshMap.Find(wall));
+	// class UStaticMeshComponent *tmpMesh = *(coneMeshMap.Find(wall));
 
 	//tmpMesh->
 	// tmpMesh->SetWorldLocation(pos); 
 	// tmpMesh->SetWorldRotation(rot);
 
 	
-	
-	return true;
-
-	
+	// return true;
 
 	// class UStaticMeshComponent *coneMesh;
 	// coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	// coneMesh->SetStaticMesh(coneStaticMesh)
 	// coneMash->AttachTo(sceneComp);
 	// coneMash->
-
-
-
 	//coneMeshMap.Add(*wall, comp);
+
+	*/
+}
+
+bool UVASourceComponent::setSourceRepresentation()
+{
+	if (sourceRepr == nullptr) {
+		sourceRepr = GetWorld()->SpawnActor<ASoundSourceRepresentation>(ASoundSourceRepresentation::StaticClass());
+		sourceRepr->setVis(false);
+	}
+	sourceRepr->setPos(getPosition());
+	sourceRepr->setRot(getRotation());
+	return true;
+}
+
+bool UVASourceComponent::setReflectedSourceReprVisibility(AVAReflectionWall * wall, bool visibility)
+{
+	ASoundSourceRepresentation* tmp;
+
+	if (sourceReprMap.Contains(wall)) {
+		tmp = sourceReprMap[wall];
+		tmp->setVis(visibility);
+		return true;
+	}
+
+	return false;
+}
+
+bool UVASourceComponent::setSourceReprVisibility(bool visibility)
+{
+	// Check if there is no Source Representation yet
+	if (sourceRepr == nullptr) {
+		return false;
+	}
+
+	sourceRepr->setVis(visibility);
+	
+	return true;
 }
 
 
-
-// // reflection Sphere
-// sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
-// sphereComp->bHiddenInGame = !FVAPluginModule::isInDebugMode();
-// sphereComp->Mobility = EComponentMobility::Movable;
-// sphereComp->SetRelativeScale3D(FVector(1, 1, 1));
-// RootComponent = sphereComp;
-// 
-// SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-// SphereMesh->AttachTo(RootComponent);
-// static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
-// if (SphereMeshAsset.Succeeded()) {
-// 	SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
-// 	SphereMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-// 	SphereMesh->SetWorldScale3D(FVector(0.8f));
-// 	SphereMesh->SetVisibility(FVAPluginModule::isInDebugMode());
-// }
