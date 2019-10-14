@@ -330,6 +330,12 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 	
 	// first initialize real sound
 	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gainFactor, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+
+	if (sourceComp != nullptr && isInDebugMode()) {
+		sourceComp->setSourceRepresentation();
+		// sourceComp->setReflectedSourceReprVisibility(wall, true);
+	}
+
 	
 	TArray<int> reflectionArrayIDs;
 
@@ -555,6 +561,7 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 		return false;
 	}
 
+
 	VAUtils::rotateFVec(pos);
 	VAUtils::rotateFRotator(rot);
 
@@ -641,42 +648,60 @@ FVector FVAPluginModule::computeReflectedPos(AVAReflectionWall* wall, FVector po
 
 FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
 {
-	// Transform Positions
-	FVector n = wall->getNormalVec();
-
-	// Transform orientation
-	FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
-	FQuat rotQuat = rot.Quaternion();
-	FQuat tmp = mirrorNormalQuat * rotQuat;
-	FQuat reflectedQuat = tmp * mirrorNormalQuat;
-	FRotator soundRot_new = reflectedQuat.Rotator();
-
-
-
-
-
-
-
-
-
-
-	FString text = "Normal vec x 10: ";
-	text.Append(FString::FromInt(n.X * 10)).Append("/").Append(FString::FromInt(n.Y * 10)).Append("/").Append(FString::FromInt(n.Z * 10));
-	text.Append(" // rot source: ");
-	text.Append(FString::FromInt(rot.Roll)).Append("/").Append(FString::FromInt(rot.Pitch)).Append("/").Append(FString::FromInt(rot.Yaw));
-	text.Append(" // rot new: ");
-	text.Append(FString::FromInt(soundRot_new.Roll)).Append("/").Append(FString::FromInt(soundRot_new.Pitch)).Append("/").Append(FString::FromInt(soundRot_new.Yaw));
-	text.Append(" // mirrorNormalQuat: ");
-	text.Append(FString::FromInt(mirrorNormalQuat.X * 1000)).Append("/").Append(FString::FromInt(mirrorNormalQuat.Y * 1000)).Append("/").Append(FString::FromInt(mirrorNormalQuat.Z * 1000)).Append("/").Append(FString::FromInt(mirrorNormalQuat.W * 1000));
-	text.Append(" // reflectedQuat: ");
-	text.Append(FString::FromInt(reflectedQuat.X * 1000)).Append("/").Append(FString::FromInt(reflectedQuat.Y * 1000)).Append("/").Append(FString::FromInt(reflectedQuat.Z * 1000)).Append("/").Append(FString::FromInt(reflectedQuat.W * 1000));
-	text.Append(" // tmp: ");
-	text.Append(FString::FromInt(tmp.X * 1000)).Append("/").Append(FString::FromInt(tmp.Y * 1000)).Append("/").Append(FString::FromInt(tmp.Z * 1000)).Append("/").Append(FString::FromInt(tmp.W * 1000));
-	text.Append(" // rotQuat: ");
-	text.Append(FString::FromInt(rotQuat.X * 1000)).Append("/").Append(FString::FromInt(rotQuat.Y * 1000)).Append("/").Append(FString::FromInt(rotQuat.Z * 1000)).Append("/").Append(FString::FromInt(rotQuat.W * 1000));
-	VAUtils::openMessageBox(text);
+	FVector pos1, pos2, pos1_, pos2_, n, tmp, dir;
 	
-	return soundRot_new;
+	n = wall->getNormalVec();
+
+	dir = rot.Vector();
+
+	pos1 = wall->getSupportVec() + (1000 * n);
+	pos2 = pos1 + (500 * dir);
+
+	pos1_ = computeReflectedPos(wall, pos1);
+	pos2_ = computeReflectedPos(wall, pos2);
+
+	tmp = pos2_ - pos1_;
+
+	// return FRotator(0, 0, 0);
+	return tmp.Rotation();
+
+
+	// // Transform Positions
+	// FVector n = wall->getNormalVec();
+	// 
+	// // Transform orientation
+	// FQuat mirrorNormalQuat = FQuat(n.X, n.Y, n.Z, 0); // see https://answers.unrealengine.com/questions/758012/mirror-a-frotator-along-a-plane.html
+	// FQuat rotQuat = rot.Quaternion();
+	// FQuat tmp = mirrorNormalQuat * rotQuat;
+	// FQuat reflectedQuat = tmp * mirrorNormalQuat;
+	// FRotator soundRot_new = reflectedQuat.Rotator();
+
+
+
+
+
+
+
+
+
+
+	// FString text = "Normal vec x 10: ";
+	// text.Append(FString::FromInt(n.X * 10)).Append("/").Append(FString::FromInt(n.Y * 10)).Append("/").Append(FString::FromInt(n.Z * 10));
+	// text.Append(" // rot source: ");
+	// text.Append(FString::FromInt(rot.Roll)).Append("/").Append(FString::FromInt(rot.Pitch)).Append("/").Append(FString::FromInt(rot.Yaw));
+	// text.Append(" // rot new: ");
+	// text.Append(FString::FromInt(soundRot_new.Roll)).Append("/").Append(FString::FromInt(soundRot_new.Pitch)).Append("/").Append(FString::FromInt(soundRot_new.Yaw));
+	// text.Append(" // mirrorNormalQuat: ");
+	// text.Append(FString::FromInt(mirrorNormalQuat.X * 1000)).Append("/").Append(FString::FromInt(mirrorNormalQuat.Y * 1000)).Append("/").Append(FString::FromInt(mirrorNormalQuat.Z * 1000)).Append("/").Append(FString::FromInt(mirrorNormalQuat.W * 1000));
+	// text.Append(" // reflectedQuat: ");
+	// text.Append(FString::FromInt(reflectedQuat.X * 1000)).Append("/").Append(FString::FromInt(reflectedQuat.Y * 1000)).Append("/").Append(FString::FromInt(reflectedQuat.Z * 1000)).Append("/").Append(FString::FromInt(reflectedQuat.W * 1000));
+	// text.Append(" // tmp: ");
+	// text.Append(FString::FromInt(tmp.X * 1000)).Append("/").Append(FString::FromInt(tmp.Y * 1000)).Append("/").Append(FString::FromInt(tmp.Z * 1000)).Append("/").Append(FString::FromInt(tmp.W * 1000));
+	// text.Append(" // rotQuat: ");
+	// text.Append(FString::FromInt(rotQuat.X * 1000)).Append("/").Append(FString::FromInt(rotQuat.Y * 1000)).Append("/").Append(FString::FromInt(rotQuat.Z * 1000)).Append("/").Append(FString::FromInt(rotQuat.W * 1000));
+	// VAUtils::openMessageBox(text);
+	
+	// return soundRot_new;
 }
 
 

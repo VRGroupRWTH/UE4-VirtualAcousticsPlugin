@@ -211,17 +211,18 @@ FVector UVASourceComponent::getPosition()
 
 FRotator UVASourceComponent::getRotation()
 {
+	FRotator rot;
 	switch (vMovement) {
 	case EMovement::MoveWithObject:
-		return ownerActor->GetTransform().GetRotation().Rotator();
+		rot = ownerActor->GetTransform().GetRotation().Rotator();
 		break;
 
 	case EMovement::ObjectSpawnPoint:
-		return ownerActor->GetTransform().GetRotation().Rotator();
+		rot = ownerActor->GetTransform().GetRotation().Rotator();
 		break;
 
 	case EMovement::OwnPosition:
-		return vRot;
+		rot = vRot;
 		break;
 
 	case EMovement::Human:
@@ -229,15 +230,20 @@ FRotator UVASourceComponent::getRotation()
 			VAUtils::logStuff(FString("Could not find face_bone in getRotation"));
 			break;
 		}
-		return skeletal_mesh_component->GetSocketRotation(face_bone_name);
+		rot = skeletal_mesh_component->GetSocketRotation(face_bone_name) + FRotator(0, 90, 0);
 		break;
 
 	default:
 		VAUtils::logStuff(FString("default: in getRotation"));
+		rot = FRotator::ZeroRotator;
 		break;
 	}
+
+	FString text = "Rotation of Source is: ";
+	text.Append(FString::FromInt(rot.Roll)).Append("/").Append(FString::FromInt(rot.Pitch)).Append("/").Append(FString::FromInt(rot.Yaw));
+	VAUtils::logStuff(text);
 	
-	return FRotator::ZeroRotator;
+	return rot;
 }
 
 
@@ -280,6 +286,12 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		FVector pos = getPosition();
 		FRotator rot = getRotation();
 		FVAPluginModule::updateSourcePos(soundID, pos, rot);
+		
+		if (FVAPluginModule::isInDebugMode()) {
+			setSourceRepresentation();
+			// sourceComp->setReflectedSourceReprVisibility(wall, true);
+		}
+
 	}
 }
 
