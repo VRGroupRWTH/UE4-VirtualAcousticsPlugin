@@ -942,35 +942,35 @@ bool FVAPluginModule::checkLibraryHandles(bool einzeln)
 	if (einzeln == true)
 	{
 		if (LibraryHandleNet) {
-			VAUtils::logStuff("loaded Net");
+			// VAUtils::logStuff("loaded Net");
 		}
 		else {
 			VAUtils::logStuff("could not load Net");
 		}
 
 		if (LibraryHandleBase) {
-			VAUtils::logStuff("loaded Base");
+			// VAUtils::logStuff("loaded Base");
 		}
 		else {
 			VAUtils::logStuff("could not load Base");
 		}
 
 		if (LibraryHandleVistaAspects) {
-			VAUtils::logStuff("loaded Vista Aspects");
+			// VAUtils::logStuff("loaded Vista Aspects");
 		}
 		else {
 			VAUtils::logStuff("could not load Vista Aspects");
 		}
 
 		if (LibraryHandleVistaBase) {
-			VAUtils::logStuff("loaded Vista Base");
+			// VAUtils::logStuff("loaded Vista Base");
 		}
 		else {
 			VAUtils::logStuff("could not load Vista Base");
 		}
 
 		if (LibraryHandleVistaInterProcComm) {
-			VAUtils::logStuff("loaded Vista InterProcComm");
+			// VAUtils::logStuff("loaded Vista InterProcComm");
 		}
 		else {
 			VAUtils::logStuff("could not load Vista InterProcComm");
@@ -981,7 +981,7 @@ bool FVAPluginModule::checkLibraryHandles(bool einzeln)
 		LibraryHandleVistaAspects && LibraryHandleVistaBase && LibraryHandleVistaInterProcComm)
 	{
 		// all fine
-		VAUtils::logStuff("all fine");
+		// VAUtils::logStuff("all fine");
 		return true;
 	}
 	else {
