@@ -28,10 +28,6 @@
     {
       "Name": "nDisplayExtensions",
       "Enabled": true
-    },
-	{
-      "Name": "nDisplayInput",
-      "Enabled": true
     }
   ]
 }
