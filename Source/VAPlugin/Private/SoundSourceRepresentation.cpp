@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SoundSourceRepresentation.h"
-
+#include "VAPlugin.h"
 
 #include "Engine/StaticMeshActor.h"
 
@@ -27,6 +27,7 @@ ASoundSourceRepresentation::ASoundSourceRepresentation()
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
 
+	setVis(FVAPluginModule::isInDebugMode());
 
 }
 
@@ -44,7 +45,7 @@ bool ASoundSourceRepresentation::setRot(FRotator rot)
 
 bool ASoundSourceRepresentation::setVis(bool visibility)
 {
-	sphereComp->SetVisibility(visibility);
+	sphereMesh->SetVisibility(visibility);
 	return true;
 }
 
