@@ -19,7 +19,7 @@ ASoundSourceRepresentation::ASoundSourceRepresentation()
 
 	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	sphereMesh->AttachTo(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone.Shape_Cone"));
 	if (SphereMeshAsset.Succeeded()) {
 		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
 		sphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));

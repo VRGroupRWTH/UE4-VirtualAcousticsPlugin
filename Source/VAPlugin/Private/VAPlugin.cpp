@@ -549,16 +549,21 @@ void FVAPluginModule::updateReceiverPosRot(FVector& posF, FRotator& rot)
 }
  */
 
-bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat)
+bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat, UVASourceComponent* sourceComp)
 {
 	FRotator rot = quat.Rotator();
-	return updateSourcePos(iSourceID, pos, rot);
+	return updateSourcePos(iSourceID, pos, rot, sourceComp);
 }
 
-bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
+bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot, UVASourceComponent* sourceComp)
 {
 	if (!isMasterAndUsed()) {
 		return false;
+	}
+
+	if (sourceComp != nullptr && isInDebugMode()) {
+		sourceComp->setSourceRepresentation();
+		// sourceComp->setReflectedSourceReprVisibility(wall, true);
 	}
 
 
@@ -584,16 +589,21 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot)
 	return true;
 }
 
-bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat)
+bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat, UVASourceComponent* sourceComp)
 {
 	FRotator rot = quat.Rotator();
-	return updateSourcePosWithReflections(iSourceID, pos, rot);
+	return updateSourcePosWithReflections(iSourceID, pos, rot, sourceComp);
 }
 
-bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot)
+bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot, UVASourceComponent* sourceComp)
 {
 	if (!isMasterAndUsed()) {
 		return false;
+	}
+
+	if (sourceComp != nullptr && isInDebugMode()) {
+		sourceComp->setSourceRepresentation();
+		// sourceComp->setReflectedSourceReprVisibility(wall, true);
 	}
 
 	updateSourcePos(iSourceID, pos, rot);
@@ -612,6 +622,11 @@ bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos,
 		
 		// update to the new pos
 		updateSourcePos(id, pos_new, rot_new);
+
+		if (sourceComp != nullptr && isInDebugMode()) {
+			sourceComp->setReflectedSourceRepresentation(wall, pos_new, rot_new);
+			// sourceComp->setReflectedSourceReprVisibility(wall, true);
+		}
 	}
 
 	return true;
@@ -1140,7 +1155,7 @@ bool FVAPluginModule::readDirFile(FString dirName)
 	}
 	catch (CVAException& e) {
 		// VAUtils::openMessageBox("Hallo");
-		// processExeption("readDirFile", FString(*e.ToString().c_str()));
+		// processExeption("readDirFile", FString(e.ToString().c_str()));
 		// VAUtils::logStuff(FString("Could not read Directivity from phenmoes config: " + *e.ToString().c_str()));
 		if (&e == nullptr)
 		{
@@ -1161,7 +1176,7 @@ bool FVAPluginModule::readDirFile(FString dirName)
 		}
 		catch (CVAException& e) {
 			// VAUtils::openMessageBox("Hallo");
-			// processExeption("readDirFile", FString(*e.ToString().c_str()));
+			// processExeption("readDirFile", FString(e.ToString().c_str()));
 			// VAUtils::logStuff(FString("Could not read Directivity from phenmoes config: " + *e.ToString().c_str()));
 			if (&e == nullptr)
 			{

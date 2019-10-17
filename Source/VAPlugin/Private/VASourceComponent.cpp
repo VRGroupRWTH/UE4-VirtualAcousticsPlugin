@@ -21,38 +21,40 @@ UVASourceComponent::UVASourceComponent()
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> ConeMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
 	
-	TArray<AActor*> wallsA;
-	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
-	TArray<AVAReflectionWall*> walls;
-	for (AActor* actor : wallsA) {
-		walls.Add((AVAReflectionWall*)actor);
-	}
 
-	for (auto wall : walls)
-	{
-		VAUtils::openMessageBox("In walls loop");
-		class UStaticMeshComponent *coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-		coneMesh->AttachTo(sphereComp);
 
-		if (ConeMeshAsset.Succeeded()) {
-			VAUtils::openMessageBox("ConeMeshAsset succeded");
-			coneMesh->SetStaticMesh(ConeMeshAsset.Object);
-			coneMesh->SetMobility(EComponentMobility::Movable);
-			coneMesh->SetWorldScale3D(FVector(0.8f));
-			coneMesh->SetVisibility(true); // FVAPluginModule::isInDebugMode());
-			coneMesh->SetWorldLocation(FVector(100,100,100));
-			// coneMesh->SetWorldRotation(rot);
-			coneMeshMap.Add(wall, coneMesh);
-		}
-
-	}
-
-	initialized = true;
-
-	for (auto& Elem : conesTodo)
-	{
-		setReflectedSourceRepresentation(Elem.Key, Elem.Value.GetLocation(), Elem.Value.GetRotation().Rotator());
-	}
+	// TArray<AActor*> wallsA;
+	// UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
+	// TArray<AVAReflectionWall*> walls;
+	// for (AActor* actor : wallsA) {
+	// 	walls.Add((AVAReflectionWall*)actor);
+	// }
+	// 
+	// for (auto wall : walls)
+	// {
+	// 	VAUtils::openMessageBox("In walls loop");
+	// 	class UStaticMeshComponent *coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	// 	coneMesh->AttachTo(sphereComp);
+	// 
+	// 	if (ConeMeshAsset.Succeeded()) {
+	// 		VAUtils::openMessageBox("ConeMeshAsset succeded");
+	// 		coneMesh->SetStaticMesh(ConeMeshAsset.Object);
+	// 		coneMesh->SetMobility(EComponentMobility::Movable);
+	// 		coneMesh->SetWorldScale3D(FVector(0.8f));
+	// 		coneMesh->SetVisibility(true); // FVAPluginModule::isInDebugMode());
+	// 		coneMesh->SetWorldLocation(FVector(100,100,100));
+	// 		// coneMesh->SetWorldRotation(rot);
+	// 		coneMeshMap.Add(wall, coneMesh);
+	// 	}
+	// 
+	// }
+	// 
+	// initialized = true;
+	// 
+	// for (auto& Elem : conesTodo)
+	// {
+	// 	setReflectedSourceRepresentation(Elem.Key, Elem.Value.GetLocation(), Elem.Value.GetRotation().Rotator());
+	// }
 
 
 }
@@ -121,7 +123,7 @@ void UVASourceComponent::initialize()
 
 	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*> (ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
 	// face_bone_name = "CC_Base_FacialBone";
-	face_bone_name = "CC_Base_L_Eye";
+	face_bone_name = "CC_Base_Head";
 
 	if (skeletal_mesh_component != nullptr && skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
 		vMovement = EMovement::Human;
@@ -285,7 +287,7 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	if(vMovement == EMovement::Human || vMovement == EMovement::MoveWithObject) {
 		FVector pos = getPosition();
 		FRotator rot = getRotation();
-		FVAPluginModule::updateSourcePos(soundID, pos, rot);
+		FVAPluginModule::updateSourcePosWithReflections(soundID, pos, rot, this);
 		
 		if (FVAPluginModule::isInDebugMode()) {
 			setSourceRepresentation();

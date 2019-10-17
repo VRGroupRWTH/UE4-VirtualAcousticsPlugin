@@ -11,8 +11,10 @@
 
 #include "VADefines.h"
 
+#pragma warning(disable:5038) //disable initilization order warning
 #include "VA.h"
 #include "VANet.h"
+#pragma warning(default:5038)
 #include "VAUtils.h"
 #include "VAReflectionWall.h"
 
@@ -85,13 +87,13 @@ public:
 	// static void updateReceiverPosRot(FVector& pos, FRotator& rot);
 
 	// update Sound Source Position and Orientation //
-	static bool updateSourcePos(int iSourceID, FVector pos, FQuat quat);
-	static bool updateSourcePos(int iSourceID, FVector pos, FRotator rot);
+	static bool updateSourcePos(int iSourceID, FVector pos, FQuat quat, UVASourceComponent* sourceComp = nullptr);
+	static bool updateSourcePos(int iSourceID, FVector pos, FRotator rot, UVASourceComponent* sourceComp = nullptr);
 
 
 	// update Sound Source Position and Orientation With Reflections //
-	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat);
-	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot);
+	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat, UVASourceComponent* sourceComp = nullptr);
+	static bool updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot, UVASourceComponent* sourceComp = nullptr);
 
 	// compute Transform of reflected sound Source // 
 	static FTransform computeReflectedTransform(AVAReflectionWall* wall, FTransform trans);
