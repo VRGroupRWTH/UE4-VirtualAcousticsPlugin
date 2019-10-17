@@ -18,6 +18,8 @@
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 
+// bool AVAReceiverActor::vDebugMode;
+
 // Sets default values
 AVAReceiverActor::AVAReceiverActor()
 {

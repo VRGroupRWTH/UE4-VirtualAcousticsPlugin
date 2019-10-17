@@ -204,14 +204,6 @@ bool FVAPluginModule::initializeServer(FString host, int port)
 
 	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
 
-	EAppReturnType::Type retD = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Start in Debug mode?"));
-	if (ret == EAppReturnType::Type::Yes) {
-		debugMode = true;
-	}
-	else {
-		debugMode = false;
-	}
-
 	if (ret == EAppReturnType::Type::No) {
 		useVA = false;
 		return false;
@@ -220,6 +212,18 @@ bool FVAPluginModule::initializeServer(FString host, int port)
 	if (!connectServer(host, port)) {
 		useVA = false;
 		return false;
+	}
+	else {
+		useVA = true;
+	}
+
+	EAppReturnType::Type retD = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Start in Debug mode?"));
+
+	if (retD == EAppReturnType::Type::Yes) {
+		debugMode = true;
+	}
+	else {
+		debugMode = false;
 	}
 	
 	return true;

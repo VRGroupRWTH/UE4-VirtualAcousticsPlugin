@@ -54,6 +54,10 @@ public:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities"))
 		FString dirName = "default.ini";
 
+	// // Factor for global output Gain
+	// UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?"))
+	// 	static bool vDebugMode;
+
 	// return directivity x in form: $(x)
 	std::string getDirectivity();
 	
