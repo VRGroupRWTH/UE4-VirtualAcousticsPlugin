@@ -85,8 +85,6 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 		FRotator vOffsetRotation = FRotator(0, 90, 0);
 
 
-	
-
 	// Name of Bone bound to
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name"))
 		FName vBoneName = FName("CC_Base_Head");
@@ -125,6 +123,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void playSound();
 
+	// Plays Sound from second // 
+	UFUNCTION(BlueprintCallable)
+		void playSoundFromSecond(float time);
+
 	// Pauses Sound //
 	UFUNCTION(BlueprintCallable)
 		void stopSound();
@@ -140,6 +142,10 @@ public:
 	// Plays Sound With Reflections // 
 	UFUNCTION(BlueprintCallable)
 		void playSoundWithReflections();
+
+ 	// Plays Sound starting at second x With Reflections // 
+ 	UFUNCTION(BlueprintCallable)
+ 		void playSoundFromSecondWithReflections(float time);
 
 	// Pauses Sound With Reflections //
 	UFUNCTION(BlueprintCallable)

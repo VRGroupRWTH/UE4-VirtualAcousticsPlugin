@@ -82,6 +82,12 @@ public:
 	// change Sound action (play, pause, stop, ..) of source and its reflections // 
 	static bool setSoundActionWithReflections(int soundID, int soundAction);
 
+	// change Sound time //
+	static bool setSoundTime(int soundID, double time);
+
+	// change Sound action time of source and its reflections // 
+	static bool setSoundTimeWithReflections(int soundID, double time);
+
 	// static void updateReceiverPos(VAVec3* pos, VAQuat* quat);
 	// static void updateReceiverPosRot(FVector& pos, FQuat& quat);
 	// static void updateReceiverPosRot(FVector& pos, FRotator& rot);

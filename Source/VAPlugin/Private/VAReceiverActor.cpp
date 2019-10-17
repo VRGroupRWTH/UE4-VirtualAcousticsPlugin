@@ -112,6 +112,8 @@ void AVAReceiverActor::Tick(float DeltaTime)
 	if (timeSinceUpdate > (1.0f / 91)) {
 		updateVirtualWorldPosition();
         updateRealWorldPosition();
+
+		timeSinceUpdate = 0.0f;
 	}
 }
 
@@ -122,7 +124,6 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 
 	FVAPluginModule::updateReceiverPos(tmpPosF, tmpRotF);
 
-	timeSinceUpdate = 0.0f;
 	return false;
 }
 

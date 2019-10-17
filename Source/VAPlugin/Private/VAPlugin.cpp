@@ -368,17 +368,17 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 		}
 			// wall->spawnSphere(pos_new, rot_new); // TODO: delete
 
-		FString text = "orig pos: ";
-		text.Append(FString::FromInt(soundPos.X)).Append("/").Append(FString::FromInt(soundPos.Y)).Append("/").Append(FString::FromInt(soundPos.Z));
-		text.Append(" // reflected pos: ");
-		text.Append(FString::FromInt(pos_new.X)).Append("/").Append(FString::FromInt(pos_new.Y)).Append("/").Append(FString::FromInt(pos_new.Z));
-		VAUtils::logStuff(text);
-
-		text = "orig rot: ";
-		text.Append(FString::FromInt(soundRot.Roll)).Append("/").Append(FString::FromInt(soundRot.Pitch)).Append("/").Append(FString::FromInt(soundRot.Yaw));
-		text.Append(" // reflected pos: ");
-		text.Append(FString::FromInt(rot_new.Roll)).Append("/").Append(FString::FromInt(rot_new.Pitch)).Append("/").Append(FString::FromInt(rot_new.Yaw));
-		VAUtils::logStuff(text);
+		// FString text = "orig pos: ";
+		// text.Append(FString::FromInt(soundPos.X)).Append("/").Append(FString::FromInt(soundPos.Y)).Append("/").Append(FString::FromInt(soundPos.Z));
+		// text.Append(" // reflected pos: ");
+		// text.Append(FString::FromInt(pos_new.X)).Append("/").Append(FString::FromInt(pos_new.Y)).Append("/").Append(FString::FromInt(pos_new.Z));
+		// VAUtils::logStuff(text);
+		// 
+		// text = "orig rot: ";
+		// text.Append(FString::FromInt(soundRot.Roll)).Append("/").Append(FString::FromInt(soundRot.Pitch)).Append("/").Append(FString::FromInt(soundRot.Yaw));
+		// text.Append(" // reflected pos: ");
+		// text.Append(FString::FromInt(rot_new.Roll)).Append("/").Append(FString::FromInt(rot_new.Pitch)).Append("/").Append(FString::FromInt(rot_new.Yaw));
+		// VAUtils::logStuff(text);
 	}
 
 	// Play all sounds together
@@ -420,6 +420,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
 		pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, action);
 		pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
+		pVA->SetSignalSourceBufferPlaybackPosition(sSignalSourceID, soundOffset);
 
 
 
@@ -433,6 +434,7 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 
 
 		pVA->SetSoundSourceSignalSource(iSoundSourceID, sSignalSourceID);
+
 
 		soundComponentsIDs.Add(iSoundSourceID, sSignalSourceID);
 	}
@@ -474,13 +476,13 @@ bool FVAPluginModule::processSoundQueue()
 	return true;
 }
 
-bool FVAPluginModule::setSoundAction(int iSoundID, int soundAction)
+bool FVAPluginModule::setSoundAction(int soundID, int soundAction)
 {
 	if (!isMasterAndUsed()) {
 		return false;
 	}
 
-	std::string sSoundID = soundComponentsIDs[iSoundID];
+	std::string sSoundID = soundComponentsIDs[soundID];
 	try	{
 		pVA->SetSignalSourceBufferPlaybackAction(sSoundID, soundAction);
 	}
@@ -506,12 +508,43 @@ bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction
 	for (int id : reflectionArrayIDs) {
 		setSoundAction(id, soundAction);
 	}
-
-	FString text = "Counter started Reflections: ";
-	text.Append(FString::FromInt(reflectionArrayIDs.Num()));
-	VAUtils::logStuff(text);
-
 	
+	return true;
+}
+
+bool FVAPluginModule::setSoundTime(int soundID, double time)
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	std::string sSoundID = soundComponentsIDs[soundID];
+	try {
+		pVA->SetSignalSourceBufferPlaybackPosition(sSoundID, time);
+	}
+	catch (CVAException& e) {
+		processExeption("setSoundTime()", FString(e.ToString().c_str()));
+		return false;
+	}
+
+	return true;
+}
+
+bool FVAPluginModule::setSoundTimeWithReflections(int soundID, double time)
+{
+	if (!isMasterAndUsed()) {
+		return false;
+	}
+
+	TArray<int> reflectionArrayIDs = *soundComponentsReflectionIDs.Find(soundID);
+
+	// HERE DELETE
+	setSoundTime(soundID, time);
+
+	for (int id : reflectionArrayIDs) {
+		setSoundTime(id, time);
+	}
+
 	return true;
 }
 

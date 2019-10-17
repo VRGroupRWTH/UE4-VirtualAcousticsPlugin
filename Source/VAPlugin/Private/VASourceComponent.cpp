@@ -23,31 +23,31 @@ UVASourceComponent::UVASourceComponent()
 	
 
 
-	TArray<AActor*> wallsA;
-	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
-	TArray<AVAReflectionWall*> walls;
-	for (AActor* actor : wallsA) {
-		walls.Add((AVAReflectionWall*)actor);
-	}
-	
-	for (auto wall : walls)
-	{
-		VAUtils::openMessageBox("In walls loop");
-		class UStaticMeshComponent *coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-		coneMesh->AttachTo(sphereComp);
-	
-		if (ConeMeshAsset.Succeeded()) {
-			VAUtils::openMessageBox("ConeMeshAsset succeded");
-			coneMesh->SetStaticMesh(ConeMeshAsset.Object);
-			coneMesh->SetMobility(EComponentMobility::Movable);
-			coneMesh->SetWorldScale3D(FVector(0.8f));
-			coneMesh->SetVisibility(true); // FVAPluginModule::isInDebugMode());
-			coneMesh->SetWorldLocation(FVector(100,100,100));
-			// coneMesh->SetWorldRotation(rot);
-			coneMeshMap.Add(wall, coneMesh);
-		}
-	
-	}
+	// TArray<AActor*> wallsA;
+	// UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
+	// TArray<AVAReflectionWall*> walls;
+	// for (AActor* actor : wallsA) {
+	// 	walls.Add((AVAReflectionWall*)actor);
+	// }
+	// 
+	// for (auto wall : walls)
+	// {
+	// 	VAUtils::openMessageBox("In walls loop");
+	// 	class UStaticMeshComponent *coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	// 	coneMesh->AttachTo(sphereComp);
+	// 
+	// 	if (ConeMeshAsset.Succeeded()) {
+	// 		VAUtils::openMessageBox("ConeMeshAsset succeded");
+	// 		coneMesh->SetStaticMesh(ConeMeshAsset.Object);
+	// 		coneMesh->SetMobility(EComponentMobility::Movable);
+	// 		coneMesh->SetWorldScale3D(FVector(0.8f));
+	// 		coneMesh->SetVisibility(true); // FVAPluginModule::isInDebugMode());
+	// 		coneMesh->SetWorldLocation(FVector(100,100,100));
+	// 		// coneMesh->SetWorldRotation(rot);
+	// 		coneMeshMap.Add(wall, coneMesh);
+	// 	}
+	// 
+	// }
 	
 	initialized = true;
 	
@@ -149,6 +149,12 @@ void UVASourceComponent::playSound()
 	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
 }
 
+void UVASourceComponent::playSoundFromSecond(float time)
+{
+	FVAPluginModule::setSoundTime(soundID, double(time));
+	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+}
+
 void UVASourceComponent::stopSound()
 {
 	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
@@ -156,7 +162,7 @@ void UVASourceComponent::stopSound()
 
 void UVASourceComponent::pauseSound()
 {
-	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
 }
 
 void UVASourceComponent::updatePosition(FVector vec, FRotator rot)
@@ -169,6 +175,12 @@ void UVASourceComponent::playSoundWithReflections()
 	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
 }
 
+void UVASourceComponent::playSoundFromSecondWithReflections(float time)
+{
+	FVAPluginModule::setSoundTimeWithReflections(soundID, double(time));
+	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+}
+
 void UVASourceComponent::stopSoundWithReflections()
 {
 	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
@@ -176,7 +188,7 @@ void UVASourceComponent::stopSoundWithReflections()
 
 void UVASourceComponent::pauseSoundWithReflections()
 {
-	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
 }
 
 void UVASourceComponent::updatePositionWithReflections(FVector vec, FRotator rot)
@@ -272,7 +284,8 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	if (firstTick) {
 		firstTick = false;
 		if (vAction == EPlayAction::Play) {
-			FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+			// FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+			playSoundFromSecondWithReflections(vDelay);
 			started = true;
 		}
 	}
