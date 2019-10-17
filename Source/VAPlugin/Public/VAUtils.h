@@ -4,8 +4,10 @@
 
 #include "Modules/ModuleManager.h"
 
+#pragma warning(disable:5038) //disable initilization order warning
 #include "VA.h"
 #include "VANet.h"
+#pragma warning(default:5038)
 
 
 
