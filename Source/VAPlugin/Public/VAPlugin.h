@@ -11,10 +11,10 @@
 
 #include "VADefines.h"
 
-#pragma warning(disable:5038) //disable initilization order warning
+// #pragma warning(disable:5038) //disable initilization order warning
 #include "VA.h"
 #include "VANet.h"
-#pragma warning(default:5038)
+// #pragma warning(default:5038)
 
 #include "VAUtils.h"
 #include "VAReflectionWall.h"

@@ -148,8 +148,8 @@ public:
 		  * @param[in] sInitServer Initialization server identifier
 		  */
 		inline CEvent( const int iInitType, const std::string& sInitServer )
-			: iType( iInitType )
-			, sServer( sInitServer )
+			: sServer( sInitServer )
+			, iType( iInitType )
 		{
 		};
 	};
