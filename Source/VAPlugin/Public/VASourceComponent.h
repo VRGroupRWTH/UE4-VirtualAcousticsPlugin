@@ -23,6 +23,7 @@ enum EMovement {
 	MoveWithObject,
 	OwnPosition,
 	Manual,
+	AttatchToBone,
 	Human
 };
 
@@ -78,6 +79,17 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	// Offset
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset"))
 		FVector vOffset = FVector(0, 0, 0);
+
+	// Offset
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation"))
+		FRotator vOffsetRotation = FRotator(0, 90, 0);
+
+
+	
+
+	// Name of Bone bound to
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name"))
+		FName vBoneName = FName("CC_Base_Head");
 
 	// UPROPERTY(VisibleDefaultsOnly)
 	// 	class USceneComponent* sceneComp;
@@ -175,6 +187,7 @@ public:
 
 
 
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -197,8 +210,8 @@ protected:
     // Check time // 
 	float timer;
 
-	// name of face_bone // 
-	FName face_bone_name;
+	// // name of face_bone // 
+	// FName face_bone_name;
 
 	// skeletal_mesh
 	USkeletalMeshComponent* skeletal_mesh_component;

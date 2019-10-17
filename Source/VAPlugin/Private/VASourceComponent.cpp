@@ -23,38 +23,38 @@ UVASourceComponent::UVASourceComponent()
 	
 
 
-	// TArray<AActor*> wallsA;
-	// UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
-	// TArray<AVAReflectionWall*> walls;
-	// for (AActor* actor : wallsA) {
-	// 	walls.Add((AVAReflectionWall*)actor);
-	// }
-	// 
-	// for (auto wall : walls)
-	// {
-	// 	VAUtils::openMessageBox("In walls loop");
-	// 	class UStaticMeshComponent *coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	// 	coneMesh->AttachTo(sphereComp);
-	// 
-	// 	if (ConeMeshAsset.Succeeded()) {
-	// 		VAUtils::openMessageBox("ConeMeshAsset succeded");
-	// 		coneMesh->SetStaticMesh(ConeMeshAsset.Object);
-	// 		coneMesh->SetMobility(EComponentMobility::Movable);
-	// 		coneMesh->SetWorldScale3D(FVector(0.8f));
-	// 		coneMesh->SetVisibility(true); // FVAPluginModule::isInDebugMode());
-	// 		coneMesh->SetWorldLocation(FVector(100,100,100));
-	// 		// coneMesh->SetWorldRotation(rot);
-	// 		coneMeshMap.Add(wall, coneMesh);
-	// 	}
-	// 
-	// }
-	// 
-	// initialized = true;
-	// 
-	// for (auto& Elem : conesTodo)
-	// {
-	// 	setReflectedSourceRepresentation(Elem.Key, Elem.Value.GetLocation(), Elem.Value.GetRotation().Rotator());
-	// }
+	TArray<AActor*> wallsA;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
+	TArray<AVAReflectionWall*> walls;
+	for (AActor* actor : wallsA) {
+		walls.Add((AVAReflectionWall*)actor);
+	}
+	
+	for (auto wall : walls)
+	{
+		VAUtils::openMessageBox("In walls loop");
+		class UStaticMeshComponent *coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+		coneMesh->AttachTo(sphereComp);
+	
+		if (ConeMeshAsset.Succeeded()) {
+			VAUtils::openMessageBox("ConeMeshAsset succeded");
+			coneMesh->SetStaticMesh(ConeMeshAsset.Object);
+			coneMesh->SetMobility(EComponentMobility::Movable);
+			coneMesh->SetWorldScale3D(FVector(0.8f));
+			coneMesh->SetVisibility(true); // FVAPluginModule::isInDebugMode());
+			coneMesh->SetWorldLocation(FVector(100,100,100));
+			// coneMesh->SetWorldRotation(rot);
+			coneMeshMap.Add(wall, coneMesh);
+		}
+	
+	}
+	
+	initialized = true;
+	
+	for (auto& Elem : conesTodo)
+	{
+		setReflectedSourceRepresentation(Elem.Key, Elem.Value.GetLocation(), Elem.Value.GetRotation().Rotator());
+	}
 
 
 }
@@ -120,14 +120,18 @@ void UVASourceComponent::initialize()
 	started = false;
 	firstTick = true;
 	alreadySent = false;
+	
+
 
 	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*> (ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
 	// face_bone_name = "CC_Base_FacialBone";
-	face_bone_name = "CC_Base_Head";
-
-	if (skeletal_mesh_component != nullptr && skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
-		vMovement = EMovement::Human;
+	
+	if (skeletal_mesh_component != nullptr && skeletal_mesh_component->DoesSocketExist(vBoneName)) {
+		vMovement = EMovement::AttatchToBone;
 		VAUtils::logStuff("Human detected");
+	}
+	else {
+		VAUtils::logStuff("Error: Could not find bone");
 	}
 
 
@@ -195,12 +199,12 @@ FVector UVASourceComponent::getPosition()
 			return vPos + vOffset;
 			break;
 
-		case EMovement::Human:
-			if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
-				VAUtils::logStuff(FString("Could not find face_bone in getPosition"));
+		case EMovement::AttatchToBone:
+			if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
+				VAUtils::logStuff(FString("Could not find vBoneName in getPosition"));
 				break;
 			}
-			return skeletal_mesh_component->GetSocketLocation(face_bone_name) + vOffset;
+			return skeletal_mesh_component->GetSocketLocation(vBoneName) + vOffset;
 			break;
 		
 		default:
@@ -216,23 +220,23 @@ FRotator UVASourceComponent::getRotation()
 	FRotator rot;
 	switch (vMovement) {
 	case EMovement::MoveWithObject:
-		rot = ownerActor->GetTransform().GetRotation().Rotator();
+		rot = ownerActor->GetTransform().GetRotation().Rotator() + vOffsetRotation;
 		break;
 
 	case EMovement::ObjectSpawnPoint:
-		rot = ownerActor->GetTransform().GetRotation().Rotator();
+		rot = ownerActor->GetTransform().GetRotation().Rotator() + vOffsetRotation;
 		break;
 
 	case EMovement::OwnPosition:
-		rot = vRot;
+		rot = vRot + vOffsetRotation;
 		break;
 
-	case EMovement::Human:
-		if (!skeletal_mesh_component->DoesSocketExist(face_bone_name)) {
-			VAUtils::logStuff(FString("Could not find face_bone in getRotation"));
+	case EMovement::AttatchToBone:
+		if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
+			VAUtils::logStuff(FString("Could not find vBoneName in getRotation"));
 			break;
 		}
-		rot = skeletal_mesh_component->GetSocketRotation(face_bone_name) + FRotator(0, 90, 0);
+		rot = skeletal_mesh_component->GetSocketRotation(vBoneName) + vOffsetRotation;
 		break;
 
 	default:
@@ -284,7 +288,7 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	
 
 	// update if object is / could be moving
-	if(vMovement == EMovement::Human || vMovement == EMovement::MoveWithObject) {
+	if(vMovement == EMovement::AttatchToBone || vMovement == EMovement::MoveWithObject) {
 		FVector pos = getPosition();
 		FRotator rot = getRotation();
 		FVAPluginModule::updateSourcePosWithReflections(soundID, pos, rot, this);
@@ -344,11 +348,11 @@ bool UVASourceComponent::setReflectedSourceRepresentation(AVAReflectionWall *wal
 
 		tmp->setPos(pos);
 		tmp->setRot(rot);
-		tmp->setVis(false);
 
 		sourceReprMap.Add(wall, tmp);
 	}
 	
+	tmp->setVis(FVAPluginModule::isInDebugMode());
 
 	return true;
 
@@ -389,6 +393,7 @@ bool UVASourceComponent::setSourceRepresentation()
 	}
 	sourceRepr->setPos(getPosition());
 	sourceRepr->setRot(getRotation());
+	sourceRepr->setVis(FVAPluginModule::isInDebugMode());
 	return true;
 }
 

@@ -72,8 +72,13 @@ protected:
 	virtual void BeginPlay() override;
 
 	// // Called when the game starts or when spawned
-	// virtual void EndPlay();
-	
+	// virtual void EndPlay() override;
+
+	// UFUNCTION()
+	// 	void WhenDestroyed();
+
+	virtual void BeginDestroy() override;
+
 	// Updates the Virtual World Position of the Player // 
 	bool updateVirtualWorldPosition();
 

@@ -26,9 +26,16 @@ AVAReceiverActor::AVAReceiverActor()
 
 }
 
-// void AVAReceiverActor::EndPlay() {
-// 
-// 	VAUtils::logStuff("In End Play!!!");
+void AVAReceiverActor::BeginDestroy()
+{
+	Super::BeginDestroy();
+	FVAPluginModule::resetServer();
+	// VAUtils::openMessageBox("In WhenDestroyed");
+}
+
+// void AVAReceiverActor::EndPlay() 
+// {
+// 	VAUtils::openMessageBox("In End Play!!!");
 // }
 
 // Called when the game starts or when spawned
@@ -91,6 +98,8 @@ void AVAReceiverActor::BeginPlay()
 	FVAPluginModule::processSoundQueue();
 
 	FVAPluginModule::readDirFile(dirName);
+
+	// OnDestroyed.AddDynamic(this, WhenDestroyed);
 }
 
 // Called every frame
