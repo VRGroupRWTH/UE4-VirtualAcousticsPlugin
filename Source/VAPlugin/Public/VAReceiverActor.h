@@ -3,6 +3,9 @@
 #pragma once
 
 #include "VAPlugin.h"
+
+#include "VADirectivityManager.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "VAReceiverActor.generated.h"
@@ -62,13 +65,17 @@ public:
 	std::string getDirectivity();
 	
 	// return Offset
-	float getGainFactor();
+	// float getGainFactor();
 
 	// return Scale
 	float getScale();
 
 	// return IP Adress as FString TODO wie sonst?
 	FString getIPAdress();
+
+	static VADirectivity* getDirectvityByPhoneme(FString phoneme);
+
+	TArray<AVAReflectionWall*> getReflectionWalls();
 
 
 protected:
@@ -105,6 +112,24 @@ protected:
 	VAVec3*		tmpPos;
 	VAQuat*		tmpQuat;
 
+	bool isMaster;
+
+	int receiverID;
+
+	// STUFF AFTER CHANGE
+
+	static VADirectivityManager dirManager;
+
+	TArray<AVAReflectionWall*> reflectionWalls;
+
+
+
+
+
+
+
+
+	bool trash;
 
 public:	
 	// Called every frame

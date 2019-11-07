@@ -1,77 +1,68 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "VASourceComponent.h"
+#include "VASoundSource.h"
 
 // Sets default values for this component's properties
-UVASourceComponent::UVASourceComponent()
-{
+UVASourceComponent::UVASourceComponent() {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// root_component = CreateDefaultSubobject<USphereComponent>(TEXT("RootCmp"));
-	// 
-	// skeletal_mesh_component = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshCmp"));
-	// skeletal_mesh_component->SetupAttachment(root_component);
-
-	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	sphereComp->bHiddenInGame = true;
-	sphereComp->Mobility = EComponentMobility::Movable;
-	sphereComp->SetRelativeScale3D(FVector(1, 1, 1));
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ConeMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
-	
-
-
-	// TArray<AActor*> wallsA;
-	// UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
-	// TArray<AVAReflectionWall*> walls;
-	// for (AActor* actor : wallsA) {
-	// 	walls.Add((AVAReflectionWall*)actor);
-	// }
-	// 
-	// for (auto wall : walls)
-	// {
-	// 	VAUtils::openMessageBox("In walls loop");
-	// 	class UStaticMeshComponent *coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	// 	coneMesh->AttachTo(sphereComp);
-	// 
-	// 	if (ConeMeshAsset.Succeeded()) {
-	// 		VAUtils::openMessageBox("ConeMeshAsset succeded");
-	// 		coneMesh->SetStaticMesh(ConeMeshAsset.Object);
-	// 		coneMesh->SetMobility(EComponentMobility::Movable);
-	// 		coneMesh->SetWorldScale3D(FVector(0.8f));
-	// 		coneMesh->SetVisibility(true); // FVAPluginModule::isInDebugMode());
-	// 		coneMesh->SetWorldLocation(FVector(100,100,100));
-	// 		// coneMesh->SetWorldRotation(rot);
-	// 		coneMeshMap.Add(wall, coneMesh);
-	// 	}
-	// 
-	// }
-	
-	initialized = true;
-	
-	for (auto& Elem : conesTodo)
-	{
-		setReflectedSourceRepresentation(Elem.Key, Elem.Value.GetLocation(), Elem.Value.GetRotation().Rotator());
-	}
-
-
+	initialized = false;
+	firstTick = true;
 }
 
 
 // Called when the game starts
-void UVASourceComponent::BeginPlay()
-{
+void UVASourceComponent::BeginPlay() {
 	Super::BeginPlay();
+}
 
-	// USphereComponent* root_component;skeletal_mesh_component->GetAnimInstance()->PlaySlotAnimationAsDynamicMontage(idle_animation, default_slot_name, 0.0f, 0.0f, 1.0f, 1000);
+
+// Called every frame
+void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
+
+	if (!initialized) {
+		VAUtils::openMessageBox("A Sound source is not initialized");
+	}
+
+	if (firstTick && isMaster) {
+		firstTick = false;
+		timeSinceUpdate = 1.0f;
+		if (vAction == EPlayAction::Play) {
+			soundSource->playSound();
+		}
+	}
+
+
+	timeSinceUpdate += DeltaTime;
+
+	if ((vMovement == EMovement::AttatchToBone || vMovement == EMovement::MoveWithObject) && 
+		timeSinceUpdate > (1.0f / 30.0f)) {
+
+		// Checks himself if only updating graphical (in every node, not just master) or send information
+		soundSource->setPos(getPosition());
+		soundSource->setRot(getRotation());
+		
+		// soundSource->setPos(FVector(0, 0, 0));
+		// soundSource->setRot(FRotator(0, 0, 0));
+
+		timeSinceUpdate = 0.0f;
+	}
 
 }
 
 
+
+
 bool UVASourceComponent::sendSoundData()
 {
+	/*
 	if (alreadySent) {
 		VAUtils::logStuff("Send Sound data for multiple times");
 		return false;
@@ -85,116 +76,103 @@ bool UVASourceComponent::sendSoundData()
 	pos = getPosition();
 	rot = getRotation();
 
-	/*
-	int vActionP;
-	switch (vAction)
-	{
-		case EPlayAction::Play :
-			vActionP = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
-			break;
-
-		case EPlayAction::Pause :
-			vActionP = IVAInterface::VA_PLAYBACK_ACTION_PAUSE;
-			break;
-
-		case EPlayAction::Stop :
-			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
-			break;
-
-		default: 
-			vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
-	}
-	*/
+	
+	// int vActionP;
+	// switch (vAction)
+	// {
+	// 	case EPlayAction::Play :
+	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
+	// 		break;
+	// 
+	// 	case EPlayAction::Pause :
+	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_PAUSE;
+	// 		break;
+	// 
+	// 	case EPlayAction::Stop :
+	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
+	// 		break;
+	// 
+	// 	default: 
+	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
+	// }
+	
 
 	VAUtils::logStuff(FString("pos for ini: " + pos.ToString()));
 
 	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
-	soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP, this);
+	// soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP, this);
 
+
+	// VASoundSource* a = new VASoundSource();
+	soundSource = new VASoundSource(this);
 	return true;
+	*/
+	return false;
 }
 
 void UVASourceComponent::initialize()
 {
 	ownerActor = GetOwner();
-	started = false;
 	firstTick = true;
-	alreadySent = false;
-	
 
+	isMaster = FVAPluginModule::getIsMaster();
 
 	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*> (ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
-	// face_bone_name = "CC_Base_FacialBone";
 	
-	if (skeletal_mesh_component != nullptr && skeletal_mesh_component->DoesSocketExist(vBoneName)) {
-		vMovement = EMovement::AttatchToBone;
-		VAUtils::logStuff("Human detected");
+	if (vMovement == EMovement::AttatchToBone) {
+		if (skeletal_mesh_component != nullptr 
+			&& skeletal_mesh_component->DoesSocketExist(vBoneName)) {
+			VAUtils::logStuff("Bone detected.");
+		}
+		else {
+			VAUtils::openMessageBox("Error: Could not find bone, using MoveWithObject instead.");
+			vMovement == EMovement::MoveWithObject;
+		}
 	}
-	else {
-		VAUtils::logStuff("Error: Could not find bone");
-	}
+	
+	soundSource = new VASoundSource(this);
+	// soundSource->setVisibility(FVAPluginModule::isInDebugMode());
 
-
-	if (FVAPluginModule::isConnected()) {
-		sendSoundData();
-	}
-	else {
-		FVAPluginModule::enqueueSound(this);
-	}
+	initialized = true;
 
 }
 
 void UVASourceComponent::playSound()
 {
-	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+	soundSource->playSound();
 }
 
 void UVASourceComponent::playSoundFromSecond(float time)
 {
-	FVAPluginModule::setSoundTime(soundID, double(time));
-	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+	soundSource->playSoundFromSecond(time);
 }
 
 void UVASourceComponent::stopSound()
 {
-	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
+	soundSource->stopSound();
 }
 
 void UVASourceComponent::pauseSound()
 {
-	FVAPluginModule::setSoundAction(soundID, IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
+	soundSource->pauseSound();
 }
 
-void UVASourceComponent::updatePosition(FVector vec, FRotator rot)
+/*
+void UVASourceComponent::updatePosition(FVector pos, FRotator rot)
 {
-	FVAPluginModule::updateSourcePos(soundID, vec, rot);
+	soundSource->setPos(pos);
+	soundSource->setRot(rot);
+}
+*/
+
+void UVASourceComponent::setSoundSourcePosition(FVector pos) {
+	soundSource->setPos(pos);
 }
 
-void UVASourceComponent::playSoundWithReflections()
-{
-	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
+void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
+	soundSource->setRot(rot);
 }
 
-void UVASourceComponent::playSoundFromSecondWithReflections(float time)
-{
-	FVAPluginModule::setSoundTimeWithReflections(soundID, double(time));
-	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
-}
-
-void UVASourceComponent::stopSoundWithReflections()
-{
-	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_STOP);
-}
-
-void UVASourceComponent::pauseSoundWithReflections()
-{
-	FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PAUSE);
-}
-
-void UVASourceComponent::updatePositionWithReflections(FVector vec, FRotator rot)
-{
-	FVAPluginModule::updateSourcePosWithReflections(soundID, vec, rot);
-}
 
 FVector UVASourceComponent::getPosition()
 {
@@ -204,7 +182,7 @@ FVector UVASourceComponent::getPosition()
 			break;
 
 		case EMovement::ObjectSpawnPoint:
-			return ownerActor->GetTransform().GetLocation() + vOffset;
+			return spawnPosition + vOffset;
 			break;
 
 		case EMovement::OwnPosition:
@@ -212,10 +190,10 @@ FVector UVASourceComponent::getPosition()
 			break;
 
 		case EMovement::AttatchToBone:
-			if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
-				VAUtils::logStuff(FString("Could not find vBoneName in getPosition"));
-				break;
-			}
+			// if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
+			// 	VAUtils::logStuff(FString("Could not find vBoneName in getPosition"));
+			// 	break;
+			// }
 			return skeletal_mesh_component->GetSocketLocation(vBoneName) + vOffset;
 			break;
 		
@@ -236,7 +214,7 @@ FRotator UVASourceComponent::getRotation()
 		break;
 
 	case EMovement::ObjectSpawnPoint:
-		rot = ownerActor->GetTransform().GetRotation().Rotator() + vOffsetRotation;
+		rot = spawnRotation + vOffsetRotation;
 		break;
 
 	case EMovement::OwnPosition:
@@ -244,10 +222,10 @@ FRotator UVASourceComponent::getRotation()
 		break;
 
 	case EMovement::AttatchToBone:
-		if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
-			VAUtils::logStuff(FString("Could not find vBoneName in getRotation"));
-			break;
-		}
+		// if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
+		// 	VAUtils::logStuff(FString("Could not find vBoneName in getRotation"));
+		// 	break;
+		// }
 		rot = skeletal_mesh_component->GetSocketRotation(vBoneName) + vOffsetRotation;
 		break;
 
@@ -265,174 +243,41 @@ FRotator UVASourceComponent::getRotation()
 }
 
 
-bool UVASourceComponent::setDirectivityWithReflections_Phoneme(FString phoneme)
+void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 {
-	return FVAPluginModule::setSourceDirectivityWithReflections_Phoneme(soundID, phoneme);
-}
-
-bool UVASourceComponent::setDirectivity_Phoneme(FString phoneme)
-{
-	return FVAPluginModule::setSourceDirectivity_Phoneme(soundID, phoneme);
+	VADirectivity* dir = AVAReceiverActor::getDirectvityByPhoneme(phoneme);
+	soundSource->setDirectivity(dir);
 }
 
 
-// Called every frame
-void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+bool UVASourceComponent::getVisibility()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (firstTick) {
-		firstTick = false;
-		if (vAction == EPlayAction::Play) {
-			// FVAPluginModule::setSoundActionWithReflections(soundID, IVAInterface::VA_PLAYBACK_ACTION_PLAY);
-			playSoundFromSecondWithReflections(vDelay);
-			started = true;
-		}
-	}
-
-	
-	// if (!started) {
-	// 	timer += DeltaTime;
-	// 	if (timer > vDelay) {
-	// 		playSoundWithReflections();
-	// 		started = true;
-	// 	}
-	// }
-	
-
-	// update if object is / could be moving
-	if(vMovement == EMovement::AttatchToBone || vMovement == EMovement::MoveWithObject) {
-		FVector pos = getPosition();
-		FRotator rot = getRotation();
-		FVAPluginModule::updateSourcePosWithReflections(soundID, pos, rot, this);
-		
-		if (FVAPluginModule::isInDebugMode()) {
-			setSourceRepresentation();
-			// sourceComp->setReflectedSourceReprVisibility(wall, true);
-		}
-
-	}
+	return FVAPluginModule::isInDebugMode();
 }
 
-bool UVASourceComponent::setReflectedSourceRepresentation(AVAReflectionWall *wall, FVector pos, FRotator rot)
+void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
-	/*
-	// sceneComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
-	// sceneComp->bHiddenInGame = !FVAPluginModule::isInDebugMode();
-	// sceneComp->Mobility = EComponentMobility::Movable;
-	// sceneComp->SetRelativeScale3D(FVector(1, 1, 1));
-
-	// class UStaticMeshComponent* NewComponent = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, TEXT("SphereComp"));
-
-	// NewComponent->RegisterComponent();
-	// NewComponent->OnComponentCreated(); // Might need this line, might not.
-	// NewComponent->AttachTo(GetRootComponent(), SocketName);
-	// 
-	// class UStaticMeshComponent *coneMesh = NewObject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	// coneMesh->AttachTo(sphereComp);
-	// static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
-	// 
-	// if (SphereMeshAsset.Succeeded()) {
-	// 	coneMesh->SetStaticMesh(SphereMeshAsset.Object);
-	// 	coneMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-	// 	coneMesh->SetWorldLocation(pos);
-	// 	coneMesh->SetWorldRotation(rot);
-	// 	coneMesh->SetWorldScale3D(FVector(0.8f));
-	// 	coneMesh->SetVisibility(FVAPluginModule::isInDebugMode());
-	// }
-	
-	// coneMeshMap.Add(wall, coneMesh);
-	// class UStaticMeshComponent tmpMesh = dynamic_cast<UStaticMeshComponent>(coneMeshMap.Find(wall));
-
-	*/
-
-	ASoundSourceRepresentation* tmp;
-
-	if (sourceReprMap.Contains(wall)) {
-		tmp = sourceReprMap[wall];
-
-		tmp->setPos(pos);
-		tmp->setRot(rot);
-
-	}
-	else {
-		// If there is no Source Representation for that wall yet
-		tmp = GetWorld()->SpawnActor<ASoundSourceRepresentation>(ASoundSourceRepresentation::StaticClass());
-
-		tmp->setPos(pos);
-		tmp->setRot(rot);
-
-		sourceReprMap.Add(wall, tmp);
-	}
-	
-	tmp->setVis(FVAPluginModule::isInDebugMode());
-
-	return true;
-
-	/*
-	// if (initialized == false) {
-	// 	FTransform trans;
-	// 	trans.SetLocation(pos);
-	// 	trans.SetRotation(rot.Quaternion());
-	// 	conesTodo.Add(wall, trans);
-	// 	return true;
-	// }
-
-
-	// class UStaticMeshComponent *tmpMesh = *(coneMeshMap.Find(wall));
-
-	//tmpMesh->
-	// tmpMesh->SetWorldLocation(pos); 
-	// tmpMesh->SetWorldRotation(rot);
-
-	
-	// return true;
-
-	// class UStaticMeshComponent *coneMesh;
-	// coneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	// coneMesh->SetStaticMesh(coneStaticMesh)
-	// coneMash->AttachTo(sceneComp);
-	// coneMash->
-	//coneMeshMap.Add(*wall, comp);
-
-	*/
+	soundSource->setVisibility(vis);
 }
 
-bool UVASourceComponent::setSourceRepresentation()
-{
-	if (sourceRepr == nullptr) {
-		sourceRepr = GetWorld()->SpawnActor<ASoundSourceRepresentation>(ASoundSourceRepresentation::StaticClass());
-		sourceRepr->setVis(false);
-	}
-	sourceRepr->setPos(getPosition());
-	sourceRepr->setRot(getRotation());
-	sourceRepr->setVis(FVAPluginModule::isInDebugMode());
-	return true;
+FString UVASourceComponent::getFileName() {
+	return vSoundName;
 }
 
-bool UVASourceComponent::setReflectedSourceReprVisibility(AVAReflectionWall * wall, bool visibility)
-{
-	ASoundSourceRepresentation* tmp;
-
-	if (sourceReprMap.Contains(wall)) {
-		tmp = sourceReprMap[wall];
-		tmp->setVis(visibility);
-		return true;
-	}
-
-	return false;
+bool UVASourceComponent::getHandleReflections() {
+	return vHandleReflections;
 }
 
-bool UVASourceComponent::setSourceReprVisibility(bool visibility)
-{
-	// Check if there is no Source Representation yet
-	if (sourceRepr == nullptr) {
-		return false;
-	}
+bool UVASourceComponent::getLoop() {
+	return vLoop;
+}
 
-	sourceRepr->setVis(visibility);
-	
-	return true;
+float UVASourceComponent::getGainFactor() {
+	return vGainFactor;
+}
+
+float UVASourceComponent::getSoundTimeOffset() {
+	return vDelay;
 }
 
 

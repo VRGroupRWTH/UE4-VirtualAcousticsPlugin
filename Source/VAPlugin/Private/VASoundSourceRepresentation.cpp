@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SoundSourceRepresentation.h"
+#include "VASoundSourceRepresentation.h"
 #include "VAPlugin.h"
 
 #include "Engine/StaticMeshActor.h"
 
 // Sets default values
-ASoundSourceRepresentation::ASoundSourceRepresentation()
+AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -27,37 +27,37 @@ ASoundSourceRepresentation::ASoundSourceRepresentation()
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
 
-	setVis(FVAPluginModule::isInDebugMode());
+	setVisibility(FVAPluginModule::isInDebugMode());
 
 }
 
-bool ASoundSourceRepresentation::setPos(FVector pos)
+bool AVASoundSourceRepresentation::setPos(FVector pos)
 {
-	sphereComp->SetWorldLocation(pos);
+	// sphereComp->SetWorldLocation(pos);
 	return true;
 }
 
-bool ASoundSourceRepresentation::setRot(FRotator rot)
+bool AVASoundSourceRepresentation::setRot(FRotator rot)
 {
-	sphereComp->SetWorldRotation(rot);
+	// sphereComp->SetWorldRotation(rot);
 	return true;
 }
 
-bool ASoundSourceRepresentation::setVis(bool visibility)
+bool AVASoundSourceRepresentation::setVisibility(bool visibility)
 {
 	sphereMesh->SetVisibility(visibility);
 	return true;
 }
 
 // Called when the game starts or when spawned
-void ASoundSourceRepresentation::BeginPlay()
+void AVASoundSourceRepresentation::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ASoundSourceRepresentation::Tick(float DeltaTime)
+void AVASoundSourceRepresentation::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

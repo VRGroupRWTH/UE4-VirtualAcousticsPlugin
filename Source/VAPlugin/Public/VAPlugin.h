@@ -138,24 +138,24 @@ public:
 	// change sound directivity of source and its reflections with Phoneme // 
 	static bool setSourceDirectivityWithReflections_Phoneme(int soundID, FString phoneme);
 
-    // set View Mode //
-	static bool setViewMode();
-    
-    // get View Mode //
-	static VAUtils::viewEnum getViewMode();
-    
-    // check if View Mode is unclear //
-	static bool isViewModeUnclear();
-    
-    // check if View Mode is Third Person //
-	static bool isViewModeThirdPerson();
-	
-    // check if View Mode is HMD //
-    static bool isViewModeHMD();
-    
-    // check if View Mode is Cave //
-
-	static bool isViewModeCave();
+//     // set View Mode //
+// 	static bool setViewMode();
+//     
+//     // get View Mode //
+// 	static VAUtils::viewEnum getViewMode();
+//     
+//     // check if View Mode is unclear //
+// 	static bool isViewModeUnclear();
+//     
+//     // check if View Mode is Third Person //
+// 	static bool isViewModeThirdPerson();
+// 	
+//     // check if View Mode is HMD //
+//     static bool isViewModeHMD();
+//     
+//     // check if View Mode is Cave //
+// 
+// 	static bool isViewModeCave();
 
     // check if is Master and VA Server should be used // 
 	static bool isMasterAndUsed();
@@ -175,7 +175,40 @@ public:
 	// change Dir file //
 
 
+	// THINGS FOR THE CHANGE //
 
+	static std::string createNewBuffer(std::string soundFileName, bool loop = false, float soundOffset = 0.0f);
+	static bool setSoundBufferAction(std::string sBufferID, EPlayAction action);
+	static bool setSoundBufferTime(std::string sBufferID, float time);
+
+	static int createNewSoundSource(std::string bufferID, std::string name, FVector pos = FVector(0,0,0), FRotator rot = FRotator(0,0,0), float gainFactor = 1.0f);
+	static bool setSoundSourcePos(int soundSourceID, FVector pos);
+	static bool setSoundSourceRot(int soundSourceID, FRotator rot);
+
+	static int createNewDirectivity(FString fileName);
+	static bool setSoundSourceDirectivity(int soundSourceID, int dirID);
+
+	static int createNewSoundReceiver(AVAReceiverActor* actor);
+	static bool setSoundReceiverDirectivity(int soundReceiverID, int dirID);
+	static bool setSoundReceiverPosition(int soundReceiverID, FVector pos);
+	static bool setSoundReceiverRotation(int soundReceiverID, FRotator rot);
+
+	static void setReceiverActor(AVAReceiverActor* actor);
+	static AVAReceiverActor* getReceiverActor();
+
+
+	// can only be called once
+	static void askForSettings(FString host = "unknown", int port = 0);
+
+	static bool getIsInitialized();
+	static bool getUseVA();
+	static bool getIsMaster();
+
+	static TArray<AVAReflectionWall*> getReflectionWalls();
+
+	static void setScale(float scale_);
+
+	static bool initialized;
 protected:
 
     // VA Net Client //
@@ -187,11 +220,66 @@ protected:
     // Link to Receiver Actor //
 	static AVAReceiverActor* receiverActor;
 
+
+
     // List of unitialized Sound Components at beginning //
 	static TArray<UVASourceComponent*> uninitializedSoundComponents;
     
     // List of all Sound Components TODO: use and ini it //
 	static TArray<UVASourceComponent*> soundComponents;
+
+
+
+
+	// Check if all Library Handles are well initialized //
+	static bool checkLibraryHandles(bool einzeln);
+
+	// bool if VA is used // 
+	static bool useVA;
+
+	// bool if is in Debug Mode //
+	static bool debugMode;
+
+	// bool if its the master node //
+	static bool isMaster;
+
+	// TMP VAQuat //
+	static VAQuat* tmpQuat;
+
+	// TMP VAVec3 //
+	static VAVec3* tmpVec;
+
+	// Library Handle for VABase //
+	static void*    LibraryHandleBase;
+
+	// Library Handle for VANets //
+	static void*	LibraryHandleNet;
+
+	// Library Handle for VistaBase //
+	static void*    LibraryHandleVistaBase;
+
+	// Library Handle for VistaAspect //
+	static void*	LibraryHandleVistaAspects;
+
+	// Library Handle for VistaInterProcComm //
+	static void*	LibraryHandleVistaInterProcComm;
+
+	// View Mode (unclear, Third Person, HMD, Cave) //
+	static VAUtils::viewEnum viewMode;
+
+	// Number of units in UE4 that equals 1m //
+	static float scale;
+
+
+	// ************************************** //
+	// ************************************** //
+	// ************************************** //
+	// ************************************** //
+	// ************************************** //
+	// ************************************** //
+	// ************************************** //
+
+	/* 
     
     // Mapping of Sound Component IDs to their names //
 	static TMap<int, std::string> soundComponentsIDs;
@@ -211,32 +299,7 @@ protected:
 	// List of all Reflection Walls in Szene //
 	static TArray<AVAReflectionWall*> reflectionWalls;
 
-    // View Mode (unclear, Third Person, HMD, Cave) //
-	static VAUtils::viewEnum viewMode;
-    
-    // Number of units in UE4 that equals 1m //
-	static float scale;
 	
-    // TMP VAQuat //
-    static VAQuat* tmpQuat;
-    
-    // TMP VAVec3 //
-    static VAVec3* tmpVec;
-    
-    // Library Handle for VABase //
-    static void*    LibraryHandleBase;
-    
-    // Library Handle for VANets //
-	static void*	LibraryHandleNet;
-   
-    // Library Handle for VistaBase //
-    static void*    LibraryHandleVistaBase;
-    
-    // Library Handle for VistaAspect //
-	static void*	LibraryHandleVistaAspects;
-    
-    // Library Handle for VistaInterProcComm //
-	static void*	LibraryHandleVistaInterProcComm;
 
     // ID of Sound Receiver // // TODO: move to Actor //
 	static int iSoundReceiverID;
@@ -250,14 +313,6 @@ protected:
 	//static void openMessageBoxV(char* text, bool error = false);
 	//static char* addExclamationMarkInChar(char* text);
 
-	// Check if all Library Handles are well initialized //
-    static bool checkLibraryHandles(bool einzeln);
-
-	// bool if VA is used // 
-	static bool useVA;
-
-	// bool if is in Debug Mode //
-	static bool debugMode;
 
 	// List of all registered input Phonemes //
 	static TArray<FString> listOfPhonemes;
@@ -274,10 +329,8 @@ protected:
 	// Mapping of all phenomes to their int value @VA Server //
 	static TMap<FString, int> dirMappingToInt;
 
+	*/
 
-    
-	// bool runServerTest();
-
-
+	
 
 };

@@ -6,9 +6,63 @@ Spawn Cones in Source Component
 
 
 
+processException()
+
+All Enums in defines
+
+Einheitlich pos position, rot rotation, trans transform
+
+Source Component getPos & getRot richtig? 
+
+bool and void richtig mit Zugriffs Funktionen
+
+Component visibility
+
+VADirectivity Konstruktoren
+
+VADirMapper doppelte Phoneme? & was mit name default?
+
+
+EPlayAction VASoundSource::getPlayAction() {
+	return EPlayAction::Play;
+}
+
+VASoundSource::VASoundSource(UVASourceComponent * parentComponent_) :
+	parentComponent(parentComponent_)
+{
+	// TODO
+}
+
+Sound Component soundOffset --> soundTimeOffset
+
+catch bei directivity ist falsch
 
 
 
+bool AVASoundSourceRepresentation::setPos(FVector pos)
+{
+	// sphereComp->SetWorldLocation(pos);
+	return true;
+}
+
+bool AVASoundSourceRepresentation::setRot(FRotator rot)
+{
+	// sphereComp->SetWorldRotation(rot);
+	return true;
+}
+
+Reflektion Bestimmung in Wall rein 
+
+Real World Pos & Rot
+
+View Mode
+
+Receiver Actor getReflectionWalls()
+
+Component Interface Functions check if is master (play, pause, stop etc)
+
+ReceiverActor::getIPAdress()
+IP Adresse im Generellen
 
 
 

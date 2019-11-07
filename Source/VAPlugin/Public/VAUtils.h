@@ -3,13 +3,12 @@
 #pragma once
 
 #include "Modules/ModuleManager.h"
+#include "VASourceComponent.h"
 
 // #pragma warning(disable:5038) //disable initilization order warning
 #include "VA.h"
 #include "VANet.h"
 // #pragma warning(default:5038)
-
-
 
 class VAUtils
 {
@@ -52,6 +51,8 @@ public:
 	static bool scaleVAVec(VAVec3& vecVA, float scale);
 
 	static void logStuff(FString text);
+
+	static int EPlayActionToVAAction(EPlayAction action);
 
 
 	/*

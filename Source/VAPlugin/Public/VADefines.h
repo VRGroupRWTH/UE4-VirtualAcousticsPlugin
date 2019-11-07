@@ -6,6 +6,21 @@
 
 
 
+
+/* 	enum PlaybackAction
+	{
+		VA_PLAYBACK_ACTION_NONE = -1,	//!< No action
+		VA_PLAYBACK_ACTION_STOP = 0,	//!< Stop playback
+		VA_PLAYBACK_ACTION_PAUSE = 1,	//!< Pause playback
+		VA_PLAYBACK_ACTION_PLAY = 2,	//!< Start/resume playback	
+	};
+*/
+
+// struct used to get 
+// UENUM()
+
+
+
 /*
 
 TODO: Lib Handles in Array
@@ -18,5 +33,5 @@ Vorschlag:
 Bei Laden versuchen zu verbinden, wenn verbunden ok, sonst Meldung geben und bei Start erneut versuchen
 
 Fragen:
-- Kann es sein dass eine Quelle mehrmals auf unterschiedlichen Streams die gleiche Datei abspielt?
+ Kann es sein dass eine Quelle mehrmals auf unterschiedlichen Streams die gleiche Datei abspielt?
 */

@@ -177,6 +177,33 @@ void VAUtils::logStuff(FString text)
 	UE_LOG(LogTemp, Error, TEXT("[MSchmeling] : %s"), *text);
 }
 
+int VAUtils::EPlayActionToVAAction(EPlayAction action)
+{
+	// enum PlaybackAction
+	// {
+	// 	VA_PLAYBACK_ACTION_NONE = -1,	//!< No action
+	// 	VA_PLAYBACK_ACTION_STOP = 0,	//!< Stop playback
+	// 	VA_PLAYBACK_ACTION_PAUSE = 1,	//!< Pause playback
+	// 	VA_PLAYBACK_ACTION_PLAY = 2,	//!< Start/resume playback	
+	// };
+
+	switch (action)
+	{
+	case EPlayAction::Stop:
+		return 0;
+		break;
+	case EPlayAction::Pause:
+		return 1;
+		break;
+	case EPlayAction::Play:
+		return 2;
+		break;
+	default:
+		return -1;
+	}
+	return -1;
+}
+
 
 /*
 bool VAUtils::getViewingPos(FVector* vec, FQuat* quat)

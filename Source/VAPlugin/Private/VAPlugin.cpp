@@ -27,11 +27,32 @@
 
 #define LOCTEXT_NAMESPACE "FVAPluginModule"
 
+void* FVAPluginModule::LibraryHandleNet;
+void* FVAPluginModule::LibraryHandleBase;
+void* FVAPluginModule::LibraryHandleVistaAspects;
+void* FVAPluginModule::LibraryHandleVistaBase;
+void* FVAPluginModule::LibraryHandleVistaInterProcComm;
+
+bool FVAPluginModule::initialized = false;
+bool FVAPluginModule::useVA = false;
+bool FVAPluginModule::debugMode = false;
+bool FVAPluginModule::isMaster = false;
+
 IVANetClient* FVAPluginModule::pVANet;
 IVAInterface* FVAPluginModule::pVA;
+
+VAQuat* FVAPluginModule::tmpQuat = new VAQuat();
+VAVec3* FVAPluginModule::tmpVec = new VAVec3();
+
 AVAReceiverActor* FVAPluginModule::receiverActor;
 TArray<UVASourceComponent*> FVAPluginModule::soundComponents;
 TArray<UVASourceComponent*> FVAPluginModule::uninitializedSoundComponents;
+float FVAPluginModule::scale = 100.0f;
+
+
+
+
+/*
 TMap<int, std::string> FVAPluginModule::soundComponentsIDs;
 TMap<int, TArray<int>> FVAPluginModule::soundComponentsReflectionIDs;
 TMap<int, AVAReflectionWall*> FVAPluginModule::matchingReflectionWalls;
@@ -39,31 +60,22 @@ TMap<FString, int> FVAPluginModule::dirMap;
 int FVAPluginModule::defaultDirID;
 TArray<AVAReflectionWall*> FVAPluginModule::reflectionWalls;
 
-bool FVAPluginModule::useVA;
-bool FVAPluginModule::debugMode = true; // TODO: Change here
-
-
-void* FVAPluginModule::LibraryHandleNet;
-void* FVAPluginModule::LibraryHandleBase;
-void* FVAPluginModule::LibraryHandleVistaAspects;
-void* FVAPluginModule::LibraryHandleVistaBase;
-void* FVAPluginModule::LibraryHandleVistaInterProcComm;
 
 int FVAPluginModule::iSoundReceiverID;
 int FVAPluginModule::iSoundSourceID;
 int FVAPluginModule::iHRIR;
-float FVAPluginModule::scale = 1.0f;
-VAUtils::viewEnum FVAPluginModule::viewMode = VAUtils::viewEnum::unclear;
+// VAUtils::viewEnum FVAPluginModule::viewMode = VAUtils::viewEnum::unclear;
 std::string FVAPluginModule::directivity;
 
-VAQuat* FVAPluginModule::tmpQuat = new VAQuat();
-VAVec3* FVAPluginModule::tmpVec = new VAVec3();
 
 TArray<FString> FVAPluginModule::listOfPhonemes;
 TArray<FString> FVAPluginModule::listOfPairs;
 TArray<FString> FVAPluginModule::listOfDirectivities;
 TMap<FString, FString> FVAPluginModule::dirMapping;
 TMap<FString, int> FVAPluginModule::dirMappingToInt;
+*/
+
+
 
 
 void FVAPluginModule::StartupModule()
@@ -71,7 +83,7 @@ void FVAPluginModule::StartupModule()
 	// http://www.virtualacoustics.org/overview.html // 
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	
-	setViewMode();
+	// setViewMode();
 
 	VAVec3 vec;
 
@@ -79,8 +91,6 @@ void FVAPluginModule::StartupModule()
 	//FString LibraryPath;
 	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
 	FString pathNet, pathBase, pathVistaAspects, pathVistaBase, pathVistaInterProcComm;
-
-	useVA = true;
 
 #if PLATFORM_WINDOWS
 	//LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/VAPlugin/x64/Release/VABase.dll"));
@@ -115,10 +125,7 @@ void FVAPluginModule::StartupModule()
 	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.so"));
 #endif
 
-	
-	//runServerTest();
-	
-	//delete pVANet;
+
 
 }
 
@@ -155,6 +162,7 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 	}
 
 	if (isConnected()) {
+		resetServer();
 		return true;
 	}
 
@@ -167,6 +175,7 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 		pVANet->Initialize(host, port);
 		if (!pVANet->IsConnected()) {
 			VAUtils::openMessageBox("Could not connect to VA Server", true);
+			useVA = false;
 			return false;
 		}
 
@@ -174,7 +183,9 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 		pVA->Reset();
 	}
 	catch (CVAException& e) {
+		useVA = false;
 		processExeption("connectServer()", FString(e.ToString().c_str()));
+
 		return false;
 	}
 	
@@ -183,21 +194,55 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 
 bool FVAPluginModule::resetServer()
 {
-	if (!isMasterAndUsed()) {
+	if (!getIsMaster() || !isConnected() || !getUseVA()) {
 		return false;
 	}
+	
+	try {
+		pVA->Reset();
+	}
+	catch (CVAException& e) {
+		useVA = false;
+		processExeption("resetServer()", FString(e.ToString().c_str()));
 
-	if (!isConnected()) {
 		return false;
 	}
-
-	pVA->Reset();
 
 	return true;
 }
 
+void FVAPluginModule::askForSettings(FString host, int port)
+{
+	if (initialized == true) {
+		return;
+	}
+
+	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
+
+	if (ret == EAppReturnType::Type::No) {
+		useVA = false;
+	}
+	else {
+		useVA = true;
+	}
+
+	EAppReturnType::Type retD = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Start in Debug mode?"));
+
+	if (retD == EAppReturnType::Type::Yes) {
+		debugMode = true;
+	}
+	else {
+		debugMode = false;
+	}
+
+	isMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
+
+	initialized = true;
+}
+
 bool FVAPluginModule::initializeServer(FString host, int port)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -227,22 +272,27 @@ bool FVAPluginModule::initializeServer(FString host, int port)
 	}
 	
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!initializeServer");
+	return false;
 }
 
 void FVAPluginModule::initializeWalls(TArray<AVAReflectionWall*> walls)
 {
 
-	reflectionWalls = walls;
+	// reflectionWalls = walls;
 
 	//GetAllActorsOfClass(AActor::GetWorld());
 	//FindAllActors(AActor::GetWorld(), reflectionWalls);
 
 	// TArray<AActor*> FoundActors;
 	// UGameplayStatics::GetAllActorsOfClass(GetWorld(), YourClass::StaticClass(), FoundActors);
+	VAUtils::openMessageBox("wrong function called!initializeWalls");
 }
 
 bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 {
+	/*
 	receiverActor = actor;
 	scale = receiverActor->getScale();
 	
@@ -273,9 +323,13 @@ bool FVAPluginModule::initializeReceiver(AVAReceiverActor* actor)
 
 	pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 
-	pVA->SetOutputGain(actor->getGainFactor());
+	// pVA->SetOutputGain(actor->getGainFactor());
 
 	return true;
+	*/
+
+	VAUtils::openMessageBox("wrong function called!initializeReceiver");
+	return false;
 }
 
 /*
@@ -331,7 +385,7 @@ void FVAPluginModule::playTestSound(bool loop)
 
 int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action, UVASourceComponent* sourceComp)
 {
-	
+	/*
 	// first initialize real sound
 	const int iSoundSourceID = initializeSound(soundNameF, soundPos, soundRot, gainFactor, loop, soundOffset, IVAInterface::VA_PLAYBACK_ACTION_STOP);
 
@@ -396,10 +450,15 @@ int FVAPluginModule::initializeSoundWithReflections(FString soundNameF, FVector 
 	soundComponentsReflectionIDs.Add(iSoundSourceID, reflectionArrayIDs);
 
 	return iSoundSourceID;
+	*/
+
+	VAUtils::openMessageBox("wrong function called!initializeSoundWithReflections");
+	return -1;
 }
 
 int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRotator soundRot, float gainFactor, bool loop, float soundOffset, int action, UVASourceComponent* sourceComp)
 {
+	/*
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
 	soundRot = VAUtils::toVACoordinateSystem(soundRot);
 
@@ -451,6 +510,10 @@ int  FVAPluginModule::initializeSound(FString soundNameF, FVector soundPos, FRot
 	
 
 	return iSoundSourceID;
+	*/
+
+	VAUtils::openMessageBox("wrong function called!initializeSound");
+	return -1;
 }
 
 bool FVAPluginModule::enqueueSound(UVASourceComponent * soundComponent)
@@ -482,6 +545,7 @@ bool FVAPluginModule::processSoundQueue()
 
 bool FVAPluginModule::setSoundAction(int soundID, int soundAction)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -496,10 +560,14 @@ bool FVAPluginModule::setSoundAction(int soundID, int soundAction)
 	}
 
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!setSoundAction");
+	return false;
 }
 
 bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -514,10 +582,14 @@ bool FVAPluginModule::setSoundActionWithReflections(int soundID, int soundAction
 	}
 	
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!setSoundActionWithReflections");
+	return false;
 }
 
 bool FVAPluginModule::setSoundTime(int soundID, double time)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -532,10 +604,14 @@ bool FVAPluginModule::setSoundTime(int soundID, double time)
 	}
 
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!setSoundTime");
+	return false;
 }
 
 bool FVAPluginModule::setSoundTimeWithReflections(int soundID, double time)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -550,6 +626,9 @@ bool FVAPluginModule::setSoundTimeWithReflections(int soundID, double time)
 	}
 
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!setSoundTimeWithReflections");
+	return false;
 }
 
 /*
@@ -588,12 +667,17 @@ void FVAPluginModule::updateReceiverPosRot(FVector& posF, FRotator& rot)
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FQuat quat, UVASourceComponent* sourceComp)
 {
+	/*
 	FRotator rot = quat.Rotator();
 	return updateSourcePos(iSourceID, pos, rot, sourceComp);
+	*/
+	VAUtils::openMessageBox("wrong function called!updateSourcePos");
+	return false;
 }
 
 bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot, UVASourceComponent* sourceComp)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -624,16 +708,24 @@ bool FVAPluginModule::updateSourcePos(int iSourceID, FVector pos, FRotator rot, 
     
 	// pVA->SetSoundSourcePose(iSourceID, *tmpVec, *tmpQuat);
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!updateSourcePos");
+	return false;
 }
 
 bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FQuat quat, UVASourceComponent* sourceComp)
 {
+	/*
 	FRotator rot = quat.Rotator();
 	return updateSourcePosWithReflections(iSourceID, pos, rot, sourceComp);
+	*/
+	VAUtils::openMessageBox("wrong function called!updateSourcePosWithReflections");
+	return false;
 }
 
 bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos, FRotator rot, UVASourceComponent* sourceComp)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -667,6 +759,9 @@ bool FVAPluginModule::updateSourcePosWithReflections(int iSourceID, FVector pos,
 	}
 
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!updateSourcePosWithReflections");
+	return false;
 }
 
 FTransform FVAPluginModule::computeReflectedTransform(AVAReflectionWall* wall, FTransform trans)
@@ -717,7 +812,7 @@ FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator 
 	// return FRotator(0, 0, 0);
 	return tmp.Rotation();
 
-
+	/*
 	// // Transform Positions
 	// FVector n = wall->getNormalVec();
 	// 
@@ -754,21 +849,27 @@ FRotator FVAPluginModule::computeReflectedRot(AVAReflectionWall* wall, FRotator 
 	// VAUtils::openMessageBox(text);
 	
 	// return soundRot_new;
+	*/
 }
 
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FQuat quat)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
 
 	FRotator rot = quat.Rotator();
 	return updateReceiverPos(pos, rot);
+	*/
+	VAUtils::openMessageBox("wrong function called!updateReceiverPos");
+	return false;
 }
 
 bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -793,6 +894,9 @@ bool FVAPluginModule::updateReceiverPos(FVector pos, FRotator rot)
 
 	//pVA->SetSoundReceiverPose(iSoundReceiverID, *tmpVec, *tmpQuat);
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!updateReceiverPos");
+	return false;
 }
 
 bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FQuat quat)
@@ -822,7 +926,7 @@ bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FRotator rot)
 	VAUtils::scaleVAVec(*tmpVec, scale);
 
 	try {
-		pVA->SetSoundReceiverRealWorldPose(iSoundReceiverID, *tmpVec, *tmpQuat);
+//		pVA->SetSoundReceiverRealWorldPose(iSoundReceiverID, *tmpVec, *tmpQuat);
 	}
 	catch (CVAException& e) {
 		processExeption("updateReceiverRealWorldPos()", FString(e.ToString().c_str()));
@@ -834,6 +938,7 @@ bool FVAPluginModule::updateReceiverRealWorldPos(FVector pos, FRotator rot)
 
 bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -850,13 +955,16 @@ bool FVAPluginModule::setReceiverDirectivity(std::string pDirectivity)
 		processExeption("setReceiverDirectivity", FString(e.ToString().c_str()));
 		return false;
 	}
+	*/
 
+	VAUtils::openMessageBox("wrong function called!setReceiverDirectivity");
 	
 	return false;
 }
 
 bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -879,10 +987,14 @@ bool FVAPluginModule::setSourceDirectivity(int id, FString directivity)
 		processExeption("setSourceDirectivity()", FString(e.ToString().c_str()));
 		return false;
 	}
+	*/
+	VAUtils::openMessageBox("wrong function called!setSourceDirectivity");
+	return false;
 }
 
 bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, FString directivity)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -896,12 +1008,16 @@ bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, FString d
 		setSourceDirectivity(id, directivity);
 	}
 
+	*/
 
+	VAUtils::openMessageBox("wrong function called!setSourceDirectivityWithReflections");
 	return false;
+	
 }
 
 bool FVAPluginModule::setSourceDirectivity(int soundID, int dirID)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -916,10 +1032,14 @@ bool FVAPluginModule::setSourceDirectivity(int soundID, int dirID)
 	}
 	
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!setSourceDirectivity");
+	return false;
 }
 
 bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, int dirID)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -934,23 +1054,34 @@ bool FVAPluginModule::setSourceDirectivityWithReflections(int soundID, int dirID
 	}
 
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!setSourceDirectivityWithReflections");
+	return false;
 }
 
 bool FVAPluginModule::setSourceDirectivity_Phoneme(int soundID, FString phoneme)
 {
+	/*
 	FString tmp = *dirMapping.Find(phoneme);
 	int dirID = *dirMappingToInt.Find(tmp);
 
 	return setSourceDirectivity(soundID, phoneme);
 
+	*/
+	VAUtils::openMessageBox("wrong function called!setSourceDirectivity_Phoneme");
+	return false;
 }
 
 bool FVAPluginModule::setSourceDirectivityWithReflections_Phoneme(int soundID, FString phoneme)
 {
+	/*
 	FString tmp = *dirMapping.Find(phoneme);
 	int dirID = *dirMappingToInt.Find(tmp);
 
 	return setSourceDirectivityWithReflections(soundID, phoneme);
+	*/
+	VAUtils::openMessageBox("wrong function called!setSourceDirectivityWithReflections_Phoneme");
+	return false;
 }
 
 
@@ -989,6 +1120,8 @@ bool FVAPluginModule::runServerTest()
 }
 */
 
+
+// BEHALTEN!!! //
 bool FVAPluginModule::checkLibraryHandles(bool einzeln)
 {
 	if (einzeln == true)
@@ -1043,17 +1176,22 @@ bool FVAPluginModule::checkLibraryHandles(bool einzeln)
 
 }
 
+
+/*
 bool FVAPluginModule::setViewMode()
 {
-	/*UEditorEngine*    EditorEngine = Cast<UEditorEngine>(GEngine);
-	if (EditorEngine)
-	{
-		return    EditorEngine->bUseVRPreviewForPlayWorld;
-	}*/
+	
+	// UEditorEngine*    EditorEngine = Cast<UEditorEngine>(GEngine);
+	// if (EditorEngine)
+	// {
+	// 	return    EditorEngine->bUseVRPreviewForPlayWorld;
+	// }
+	
 	
 	viewMode = VAUtils::viewEnum::ThirdPerson;
 
 	return true;
+	return false;
 }
 
 VAUtils::viewEnum FVAPluginModule::getViewMode()
@@ -1080,6 +1218,7 @@ bool FVAPluginModule::isViewModeCave()
 {
 	return viewMode == VAUtils::viewEnum::Cave;
 }
+*/
 
 bool FVAPluginModule::isMasterAndUsed()
 {
@@ -1101,6 +1240,7 @@ void FVAPluginModule::processExeption(FString location, FString exp)
 
 bool FVAPluginModule::readDirFile(FString dirName)
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -1225,6 +1365,9 @@ bool FVAPluginModule::readDirFile(FString dirName)
 	// Do default
 
 	return true;
+	*/
+	VAUtils::openMessageBox("wrong function called!readDirFile");
+	return false;
 }
 
 
@@ -1258,11 +1401,13 @@ bool FVAPluginModule::initializeSoundSourceDirectivities()
 	// fill dirMap
 
 
+	VAUtils::openMessageBox("wrong function called!initializeSoundSourceDirectivities");
 	return false;
 }
 
 bool FVAPluginModule::resetAll()
 {
+	/*
 	if (!isMasterAndUsed()) {
 		return false;
 	}
@@ -1279,6 +1424,8 @@ bool FVAPluginModule::resetAll()
 	matchingReflectionWalls.Empty();
 	reflectionWalls.Empty();
 
+	*/
+	VAUtils::openMessageBox("wrong function called!resetAll");
 	return false;
 }
 
@@ -1336,6 +1483,316 @@ char* FVAPluginModule::addExclamationMarkInChar(char* text)
 }
 
 */
+
+
+// HERE AFTER CHANGE!!! //
+
+
+/*
+ TYPE FVAPluginModule::
+{
+	
+}
+*/ 
+
+std::string FVAPluginModule::createNewBuffer(std::string soundFileName, bool loop, float soundOffset)
+{
+	std::string sSignalSourceID;
+
+	try
+	{
+		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundFileName);
+		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+		// pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, VAUtils::EPlayActionToVAAction(action));
+		pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
+		pVA->SetSignalSourceBufferPlaybackPosition(sSignalSourceID, soundOffset);
+
+		return sSignalSourceID;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::createNewBuffer()", FString(e.ToString().c_str()));
+		return "";
+	}
+}
+
+int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name, 
+	FVector soundPos, FRotator soundRot, float gainFactor)
+{
+	soundPos = VAUtils::toVACoordinateSystem(soundPos);
+	soundRot = VAUtils::toVACoordinateSystem(soundRot);
+
+	FQuat fQuat = soundRot.Quaternion();
+	VAUtils::fQuatToVAQuat(fQuat, *tmpQuat);
+
+	VAUtils::fVecToVAVec3(soundPos, *tmpVec);
+	VAUtils::scaleVAVec(*tmpVec, scale);
+
+	try
+	{
+		int iSoundSourceID = pVA->CreateSoundSource(name);
+		pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
+
+		float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
+		pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
+
+		pVA->SetSoundSourceSignalSource(iSoundSourceID, bufferID);
+
+		return iSoundSourceID;
+
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::createNewSoundSource()", FString(e.ToString().c_str()));
+		return -1;
+	}
+
+}
+
+
+TArray<AVAReflectionWall*> FVAPluginModule::getReflectionWalls()
+{
+	return receiverActor->getReflectionWalls();
+}
+
+
+bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
+{
+	// pos = VAUtils::toVACoordinateSystem(pos);
+	
+	VAUtils::fVecToVAVec3(pos, *tmpVec);
+	VAUtils::scaleVAVec(*tmpVec, scale);
+
+	try
+	{
+		pVA->SetSoundSourcePosition(soundSourceID, *tmpVec);
+		// pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
+
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setSoundSourcePos()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+
+
+/*
+	VAUtils::rotateFVec(pos);
+	VAUtils::rotateFRotator(rot);
+
+	FQuat quat = rot.Quaternion();
+
+	VAUtils::fVecToVAVec3(pos, *tmpVec);
+	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
+
+	VAUtils::scaleVAVec(*tmpVec, scale);
+	try {
+		pVA->SetSoundSourceOrientation(iSoundReceiverID, *tmpQuat);
+		pVA->SetSoundSourcePosition(iSoundReceiverID, *tmpVec);
+	}
+	catch (CVAException& e) {
+		processExeption("updateSoundSourcePos", FString(e.ToString().c_str()));
+		return false;
+	}
+	
+	
+*/
+
+bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
+{
+	//rot = VAUtils::toVACoordinateSystem(rot);
+
+	FQuat fQuat = rot.Quaternion();
+	VAUtils::fQuatToVAQuat(fQuat, *tmpQuat);
+
+	try
+	{
+		pVA->SetSoundSourceOrientation(soundSourceID, *tmpQuat);
+		// pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
+		
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setSoundSourceRot()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setSoundBufferAction(std::string sBufferID, EPlayAction action)
+{
+	try
+	{
+		pVA->SetSignalSourceBufferPlaybackAction(sBufferID, VAUtils::EPlayActionToVAAction(action));
+
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setSoundSourceAction()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setSoundBufferTime(std::string sBufferID, float time)
+{
+	try
+	{
+		pVA->SetSignalSourceBufferPlaybackPosition(sBufferID, time);
+
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setSoundBufferTime()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+
+int FVAPluginModule::createNewDirectivity(FString fileName)
+{
+	try
+	{
+		std::string dir(TCHAR_TO_UTF8(*fileName));
+		return pVA->CreateDirectivityFromFile(dir);
+	}
+	catch (CVAException& e)
+	{
+		if (&e == nullptr)
+		{
+		}
+
+		//processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()));
+		return -1;
+	}
+}
+
+bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
+{
+	try
+	{
+		pVA->SetSoundSourceDirectivity(soundSourceID, dirID);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		if (&e == nullptr)
+		{
+		}
+
+		//processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::getIsInitialized()
+{
+	return initialized;
+}
+
+bool FVAPluginModule::getUseVA()
+{
+	if (!initialized) {
+		askForSettings();
+	}
+
+	return useVA;
+}
+
+bool FVAPluginModule::getIsMaster()
+{
+	if (!initialized) {
+		askForSettings();
+	}
+
+	return isMaster;
+}
+
+
+int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
+{
+	receiverActor = actor;
+	scale = receiverActor->getScale();
+
+	try {
+		return pVA->CreateSoundReceiver("VASoundReceiver");
+	}
+	catch (CVAException& e) {
+		processExeption("FVAPluginModule::createNewSoundReceiver()", FString(e.ToString().c_str()));
+		return -1;
+	}
+}
+
+bool FVAPluginModule::setSoundReceiverDirectivity(int soundReceiverID, int dirID)
+{
+	try {
+		pVA->SetSoundReceiverDirectivity(soundReceiverID, dirID);
+		return true;
+	}
+	catch (CVAException& e) {
+		processExeption("FVAPluginModule::setSoundReceiverDirectivity()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setSoundReceiverPosition(int soundReceiverID, FVector pos)
+{
+	VAUtils::rotateFVec(pos);
+
+	VAUtils::fVecToVAVec3(pos, *tmpVec);
+	VAUtils::scaleVAVec(*tmpVec, scale);
+
+	try {
+		pVA->SetSoundReceiverPosition(soundReceiverID, *tmpVec);
+		return true;
+	}
+	catch (CVAException& e) {
+		processExeption("FVAPluginModule::setSoundReceiverPosition()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setSoundReceiverRotation(int soundReceiverID, FRotator rot)
+{
+	VAUtils::rotateFRotator(rot);
+
+	FQuat quat = rot.Quaternion();
+	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
+
+	try {
+		pVA->SetSoundReceiverOrientation(soundReceiverID, *tmpQuat);
+		return true;
+	}
+	catch (CVAException& e) {
+		processExeption("FVAPluginModule::setSoundReceiverRotation()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+void FVAPluginModule::setReceiverActor(AVAReceiverActor* actor) {
+	receiverActor = actor;
+}
+
+AVAReceiverActor* FVAPluginModule::getReceiverActor() {
+	return receiverActor;
+}
+
+void FVAPluginModule::setScale(float scale_) {
+	scale = scale_;
+}
+
+/*
+ TYPE FVAPluginModule::
+{
+
+}
+*/
+
+
 
 #undef LOCTEXT_NAMESPACE
 	

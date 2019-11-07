@@ -20,6 +20,8 @@
 
 // bool AVAReceiverActor::vDebugMode;
 
+VADirectivityManager AVAReceiverActor::dirManager;
+
 // Sets default values
 AVAReceiverActor::AVAReceiverActor()
 {
@@ -54,39 +56,51 @@ void AVAReceiverActor::BeginPlay()
 	controller = GetWorld()->GetFirstPlayerController();
 	
 	
-    FString adresse;
 #if PLATFORM_WINDOWS
-    adresse = "localhost";
+	FString adresse = "localhost";
 #else
-    adresse = "10.0.1.240";
+	FString adresse = "10.0.1.240";
 #endif
 
-	if (!FVAPluginModule::isConnected()) {
-		// Connect to VA Server
-		FVAPluginModule::initializeServer(adresse, vPort);
-	}
-	else {
-		FVAPluginModule::resetAll();
+	
+	FVAPluginModule::setScale(vScale);
+	
+	FVAPluginModule::askForSettings(adresse, vPort);
+
+	isMaster = FVAPluginModule::getIsMaster();
+
+	if (!FVAPluginModule::getUseVA()) {
+		return;
 	}
 
-	// Initialize Receiver Actor
-	FVAPluginModule::initializeReceiver(this);
+	if (isMaster) {
+		if (!FVAPluginModule::isConnected()) {
+			// Connect to VA Server
+			// FVAPluginModule::initializeServer(adresse, vPort);
+			FVAPluginModule::connectServer(adresse, vPort);
+		}
+		else {
+			FVAPluginModule::resetServer();
+		}
+	
+	
+		// Initialize Receiver Actor
+		receiverID = FVAPluginModule::createNewSoundReceiver(this);
+	}
 
 	// Initialize Walls for Sound Reflection
 	TArray<AActor*> wallsA;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
-	TArray<AVAReflectionWall*> walls;
 	for (AActor* actor : wallsA) {
-		walls.Add((AVAReflectionWall*)actor);
+		reflectionWalls.Add((AVAReflectionWall*)actor);
 	}
-	FVAPluginModule::initializeWalls(walls);
+	// FVAPluginModule::initializeWalls(walls);
 
 	// // Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
 	// FVAPluginModule::processSoundQueue();
 
 	// Handle all sound Sources
 	TArray<AActor*> actorsA;
-	TArray<UVASourceComponent*> components;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AActor::StaticClass(), actorsA);
 	
 	UVASourceComponent* tmp;
@@ -97,9 +111,11 @@ void AVAReceiverActor::BeginPlay()
 		}
 	}
 
-	FVAPluginModule::processSoundQueue();
+	// FVAPluginModule::processSoundQueue();
 
-	FVAPluginModule::readDirFile(dirName);
+	dirManager.readConfigFile(dirName);
+
+	// FVAPluginModule::readDirFile(dirName);
 
 	// OnDestroyed.AddDynamic(this, WhenDestroyed);
 }
@@ -109,12 +125,20 @@ void AVAReceiverActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!FVAPluginModule::getUseVA() || !isMaster) {
+		return;
+	}
+
 	timeSinceUpdate += DeltaTime;
+	
 
-	if (timeSinceUpdate > (1.0f / 91)) {
+	if (timeSinceUpdate > (1.0f / 30.0f)) {
 		updateVirtualWorldPosition();
+		// FVAPluginModule::setSoundReceiverPosition(receiverID, FVector(100,0,0));
+		// FVAPluginModule::setSoundReceiverRotation(receiverID, FRotator(0,0,0));
         updateRealWorldPosition();
-
+		trash = FVAPluginModule::getUseVA();
+		
 		timeSinceUpdate = 0.0f;
 	}
 }
@@ -124,7 +148,10 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 {
 	controller->GetPlayerViewPoint(tmpPosF, tmpRotF);
 
-	FVAPluginModule::updateReceiverPos(tmpPosF, tmpRotF);
+	FVAPluginModule::setSoundReceiverPosition(receiverID, tmpPosF);
+	FVAPluginModule::setSoundReceiverRotation(receiverID, tmpRotF);
+
+	// FVAPluginModule::updateReceiverPos(tmpPosF, tmpRotF);
 
 	return false;
 }
@@ -287,10 +314,20 @@ FString AVAReceiverActor::getIPAdress()
 	return "localhost";
 }
 
-float AVAReceiverActor::getGainFactor()
+// float AVAReceiverActor::getGainFactor()
+// {
+// 	return vGainFactor;
+// }
+
+
+VADirectivity* AVAReceiverActor::getDirectvityByPhoneme(FString phoneme) 
 {
-	return vGainFactor;
+	return dirManager.getDirectivityByPhoneme(phoneme);
 }
 
+TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
+{
+	return reflectionWalls;
+}
 
 
