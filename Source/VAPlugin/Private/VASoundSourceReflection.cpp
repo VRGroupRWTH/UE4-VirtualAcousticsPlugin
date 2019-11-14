@@ -12,7 +12,7 @@ VASoundSourceReflection::VASoundSourceReflection(
 	parentSource(parentSource_), 
 	wall(wall_)
 {
-	showCones = FVAPluginModule::isInDebugMode();
+	showCones = parentSource->getVisibility();
 
 	pos = FVAPluginModule::computeReflectedPos(wall, pos);
 	rot = FVAPluginModule::computeReflectedRot(wall, rot);
@@ -32,7 +32,7 @@ VASoundSourceReflection::VASoundSourceReflection(
 	
 	soundSourceRepresentation->setPos(pos);
 	soundSourceRepresentation->setRot(rot);
-	soundSourceRepresentation->setVisibility(parentSource->getVisibility());
+	soundSourceRepresentation->setVisibility(showCones);
 
 
 }

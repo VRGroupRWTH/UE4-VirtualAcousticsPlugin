@@ -193,6 +193,9 @@ public:
 	static bool setSoundReceiverPosition(int soundReceiverID, FVector pos);
 	static bool setSoundReceiverRotation(int soundReceiverID, FRotator rot);
 
+	static bool setSoundReceiverRealWorldPose(int soundReceiverID, FVector pos, FRotator rot);
+
+
 	static void setReceiverActor(AVAReceiverActor* actor);
 	static AVAReceiverActor* getReceiverActor();
 

@@ -47,9 +47,6 @@ void AVAReceiverActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Start RecActor!"));
-
-
 	tmpPos = new VAVec3();
 	tmpQuat = new VAQuat();
 
@@ -250,7 +247,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	// log positions
 	// VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "RL rot: " + rot.ToString()));
 	
-    return FVAPluginModule::updateReceiverRealWorldPos(pos, rot);
+    return FVAPluginModule::setSoundReceiverRealWorldPose(receiverID, pos, rot);
 
 	/*
 	auto world = GetWorld();

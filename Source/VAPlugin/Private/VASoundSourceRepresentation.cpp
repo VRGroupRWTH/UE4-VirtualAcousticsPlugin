@@ -55,6 +55,7 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 		sphereMesh->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
+	setVisibility(false);
 
 }
 
@@ -72,7 +73,7 @@ bool AVASoundSourceRepresentation::setRot(FRotator rot)
 
 bool AVASoundSourceRepresentation::setVisibility(bool visibility)
 {
-	sphereComp->SetVisibility(true);
+	sphereMesh->SetVisibility(visibility);
 	// sphereMesh->SetVisibility(true);
 	return true;
 }

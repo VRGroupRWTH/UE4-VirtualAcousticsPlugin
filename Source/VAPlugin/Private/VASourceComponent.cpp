@@ -32,12 +32,12 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	}
 
 	if (firstTick && isMaster) {
-		firstTick = false;
 		timeSinceUpdate = 1.0f;
 		if (vAction == EPlayAction::Play) {
 			soundSource->playSound();
 		}
 	}
+	firstTick = false;
 
 
 	timeSinceUpdate += DeltaTime;

@@ -60,7 +60,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	
 	soundSourceRepresentation->setPos(getPos());
 	soundSourceRepresentation->setRot(getRot());
-	soundSourceRepresentation->setVisibility(FVAPluginModule::isInDebugMode());
+	soundSourceRepresentation->setVisibility(showCones);
 
 	if(handleReflections) {
 		for (auto wall : FVAPluginModule::getReflectionWalls())
@@ -82,16 +82,15 @@ void VASoundSource::setPos(FVector pos_)
 {
 	pos = pos_;
 
-	FString text = "Setting Position of Source (id: " + FString::FromInt(soundSourceID) + "): ";
-	text.Append(FString::FromInt(pos.X)).Append("/").Append(FString::FromInt(pos.Y)).Append("/").Append(FString::FromInt(pos.Z));
-	VAUtils::logStuff(text);
+	// FString text = "Setting Position of Source (id: " + FString::FromInt(soundSourceID) + "): ";
+	// text.Append(FString::FromInt(pos.X)).Append("/").Append(FString::FromInt(pos.Y)).Append("/").Append(FString::FromInt(pos.Z));
+	// VAUtils::logStuff(text);
 	
 	if (showCones) {
 		soundSourceRepresentation->setPos(pos);
 	}
 	
 	if (FVAPluginModule::getIsMaster()) {
-		// VAUtils::logStuff("updating pos");
 		FVAPluginModule::setSoundSourcePos(soundSourceID, pos);
 	}
 
@@ -111,9 +110,9 @@ void VASoundSource::setRot(FRotator rot_)
 {
 	rot = rot_;
 
-	FString text = "Setting Rotation of Source (id: " + FString::FromInt(soundSourceID) + "): ";
-	text.Append(FString::FromInt(rot.Roll)).Append("/").Append(FString::FromInt(rot.Pitch)).Append("/").Append(FString::FromInt(rot.Yaw));
-	VAUtils::logStuff(text);
+	// FString text = "Setting Rotation of Source (id: " + FString::FromInt(soundSourceID) + "): ";
+	// text.Append(FString::FromInt(rot.Roll)).Append("/").Append(FString::FromInt(rot.Pitch)).Append("/").Append(FString::FromInt(rot.Yaw));
+	// VAUtils::logStuff(text);
 
 	
 	if (FVAPluginModule::getIsMaster()) {

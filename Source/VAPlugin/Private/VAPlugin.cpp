@@ -199,7 +199,6 @@ bool FVAPluginModule::resetServer()
 	}
 	
 	try {
-		VAUtils::openMessageBox("Resetting Server");
 		pVA->Reset();
 	}
 	catch (CVAException& e) {
@@ -1775,6 +1774,29 @@ bool FVAPluginModule::setSoundReceiverRotation(int soundReceiverID, FRotator rot
 	}
 	catch (CVAException& e) {
 		processExeption("FVAPluginModule::setSoundReceiverRotation()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setSoundReceiverRealWorldPose(int soundReceiverID, FVector pos, FRotator rot)
+{
+
+	VAUtils::rotateFVec(pos);
+	VAUtils::rotateFRotator(rot);
+
+	FQuat quat = rot.Quaternion();
+
+	VAUtils::fVecToVAVec3(pos, *tmpVec);
+	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
+
+	VAUtils::scaleVAVec(*tmpVec, scale);
+
+	try {
+		pVA->SetSoundReceiverRealWorldPose(soundReceiverID, *tmpVec, *tmpQuat);
+		return true;
+	}
+	catch (CVAException& e) {
+		processExeption("setSoundReceiverRealWorldPose()", FString(e.ToString().c_str()));
 		return false;
 	}
 }
