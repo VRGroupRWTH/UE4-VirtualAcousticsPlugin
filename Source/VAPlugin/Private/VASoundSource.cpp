@@ -171,7 +171,7 @@ UVASourceComponent* VASoundSource::getParentComponent()
 	return parentComponent;
 }
 
-void VASoundSource::setPlayAction(EPlayAction action_)
+void VASoundSource::setPlayAction(int action_)
 {
 	if (action == action_ || !FVAPluginModule::getIsMaster()) {
 		return;
@@ -179,7 +179,7 @@ void VASoundSource::setPlayAction(EPlayAction action_)
 
 	action = action_;
 	
-	FVAPluginModule::setSoundBufferAction(sBufferID, action);
+	FVAPluginModule::setSoundBufferAction(sBufferID, static_cast<EPlayAction>(action));
 }
 
 void VASoundSource::setSoundTime(float time)

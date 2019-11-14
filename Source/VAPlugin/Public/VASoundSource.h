@@ -37,7 +37,7 @@ public:
 	UVASourceComponent* getParentComponent();
 
 
-	void setPlayAction(EPlayAction action_);
+	void setPlayAction(int action_);
 	void setSoundTime(float time);
 
 	void playSound();
@@ -59,7 +59,7 @@ private:
 
 	bool playing;
 
-	EPlayAction action;
+	int action;
 
 	static int counter;
 	
