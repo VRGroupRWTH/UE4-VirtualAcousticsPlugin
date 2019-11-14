@@ -23,7 +23,6 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	playing = false;
 	action = EPlayAction::Stop;
 
-
 	showCones = FVAPluginModule::isInDebugMode();
 
 	handleReflections = parentComponent->getHandleReflections();
@@ -133,20 +132,20 @@ void VASoundSource::setRot(FRotator rot_)
 
 void VASoundSource::setVisibility(bool vis_)
 {
-	visibility = vis_;
+	showCones = vis_;
 	
-	soundSourceRepresentation->setVisibility(visibility);
+	soundSourceRepresentation->setVisibility(showCones);
 
 	if (handleReflections) {
 		for (auto ref : reflections) {
-			ref->setVisibility(visibility);
+			ref->setVisibility(showCones);
 		}
 	}
 }
 
 bool VASoundSource::getVisibility()
 {
-	return visibility;
+	return showCones;
 }
 
 void VASoundSource::setDirectivity(VADirectivity * dir)
