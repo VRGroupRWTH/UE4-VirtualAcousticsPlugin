@@ -9,7 +9,7 @@
 // #include <string>
 
 class UVASourceComponent;
-
+enum EPlayAction;
 
 class VASoundSource : public VASoundSourceBaseClass
 {
@@ -60,7 +60,7 @@ private:
 
 	bool playing;
 
-	enum EPlayAction action;
+	EPlayAction action;
 
 	static int counter;
 	
