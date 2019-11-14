@@ -216,6 +216,11 @@ void FVAPluginModule::askForSettings(FString host, int port)
 	if (initialized == true) {
 		return;
 	}
+	useVA = true;
+	debugMode = true;
+	initialized = true;
+	
+	return;
 
 	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
 
