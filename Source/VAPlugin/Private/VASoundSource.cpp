@@ -35,7 +35,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	rot = parentComponent->getRotation();
 
 	std::string fileName(TCHAR_TO_UTF8(*parentComponent->getFileName()));
-	std::string name = "SoundSource_" + ++counter; 
+	std::string name = "SoundSource_" + FString::FromInt(++counter); 
 	std::string nameTmp;
 
 	if (FVAPluginModule::getIsMaster()) {
@@ -58,8 +58,8 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	soundSourceRepresentation = parentComponent->GetWorld()->SpawnActor<AVASoundSourceRepresentation>(AVASoundSourceRepresentation::StaticClass());
 	
 	
-	soundSourceRepresentation->setPos(getPos());
-	soundSourceRepresentation->setRot(getRot());
+	soundSourceRepresentation->setPos(parentComponent->getPosition());
+	soundSourceRepresentation->setRot(parentComponent->getRotation());
 	soundSourceRepresentation->setVisibility(showCones);
 
 	if(handleReflections) {

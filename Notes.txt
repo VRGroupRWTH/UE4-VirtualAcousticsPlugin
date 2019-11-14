@@ -38,22 +38,7 @@ Sound Component soundOffset --> soundTimeOffset
 catch bei directivity ist falsch
 
 
-
-bool AVASoundSourceRepresentation::setPos(FVector pos)
-{
-	// sphereComp->SetWorldLocation(pos);
-	return true;
-}
-
-bool AVASoundSourceRepresentation::setRot(FRotator rot)
-{
-	// sphereComp->SetWorldRotation(rot);
-	return true;
-}
-
 Reflektion Bestimmung in Wall rein 
-
-Real World Pos & Rot
 
 View Mode
 
@@ -68,7 +53,7 @@ useVA auch bei Ini richtig nutzen
 
 soundID (Component)
 
-
+Source, Reflection, Base setPos() & setRot() (ohne param)
 
 
 TODO: Set Input for Debug Mode

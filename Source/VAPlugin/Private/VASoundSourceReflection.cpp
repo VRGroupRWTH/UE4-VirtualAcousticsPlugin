@@ -39,7 +39,8 @@ VASoundSourceReflection::VASoundSourceReflection(
 
 void VASoundSourceReflection::setPos()
 {
-	setPos(parentSource->getPos());
+	return;
+	// setPos(parentSource->getPos());
 }
 
 void VASoundSourceReflection::setPos(FVector pos_)
