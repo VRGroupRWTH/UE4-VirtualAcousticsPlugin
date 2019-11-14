@@ -47,6 +47,9 @@ void AVAReceiverActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Start RecActor!"));
+
+
 	tmpPos = new VAVec3();
 	tmpQuat = new VAQuat();
 
@@ -147,6 +150,15 @@ void AVAReceiverActor::Tick(float DeltaTime)
 bool AVAReceiverActor::updateVirtualWorldPosition()
 {
 	controller->GetPlayerViewPoint(tmpPosF, tmpRotF);
+
+	FString text = "Position of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
+	text.Append(FString::FromInt(tmpPosF.X)).Append("/").Append(FString::FromInt(tmpPosF.Y)).Append("/").Append(FString::FromInt(tmpPosF.Z));
+	VAUtils::logStuff(text);
+
+	text = "Rotation of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
+	text.Append(FString::FromInt(tmpRotF.Roll)).Append("/").Append(FString::FromInt(tmpRotF.Pitch)).Append("/").Append(FString::FromInt(tmpRotF.Yaw));
+	
+	VAUtils::logStuff(text);
 
 	FVAPluginModule::setSoundReceiverPosition(receiverID, tmpPosF);
 	FVAPluginModule::setSoundReceiverRotation(receiverID, tmpRotF);

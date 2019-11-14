@@ -64,6 +64,9 @@ Component Interface Functions check if is master (play, pause, stop etc)
 ReceiverActor::getIPAdress()
 IP Adresse im Generellen
 
+useVA auch bei Ini richtig nutzen
+
+soundID (Component)
 
 
 

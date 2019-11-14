@@ -27,13 +27,12 @@ VASoundSourceReflection::VASoundSourceReflection(
 	}
 
 
-	if (soundSourceRepresentation == nullptr) {
-		soundSourceRepresentation = parentSource->getParentComponent()->GetWorld()->
-			SpawnActor<AVASoundSourceRepresentation>(AVASoundSourceRepresentation::StaticClass());
-	}
-	// soundSourceRepresentation->setVisibility(parentSource->getVisibility());
+	soundSourceRepresentation = parentSource->getParentComponent()->GetWorld()->SpawnActor<AVASoundSourceRepresentation>(AVASoundSourceRepresentation::StaticClass());
+	
+	
 	soundSourceRepresentation->setPos(pos);
 	soundSourceRepresentation->setRot(rot);
+	soundSourceRepresentation->setVisibility(parentSource->getVisibility());
 
 
 }

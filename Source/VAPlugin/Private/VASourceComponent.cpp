@@ -46,6 +46,7 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		timeSinceUpdate > (1.0f / 30.0f)) {
 
 		// Checks himself if only updating graphical (in every node, not just master) or send information
+		
 		soundSource->setPos(getPosition());
 		soundSource->setRot(getRotation());
 		
@@ -176,33 +177,40 @@ void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
 
 FVector UVASourceComponent::getPosition()
 {
+	FVector pos; 
 	switch (vMovement) {
 		case EMovement::MoveWithObject:
-			return ownerActor->GetTransform().GetLocation() + vOffset;
+			VAUtils::logStuff("getPos: MoveWithObject");
+			pos = ownerActor->GetTransform().GetLocation() + vOffset;
 			break;
 
 		case EMovement::ObjectSpawnPoint:
-			return spawnPosition + vOffset;
+			VAUtils::logStuff("getPos: ObjectSpawnPoint");
+			pos = spawnPosition + vOffset;
 			break;
 
 		case EMovement::OwnPosition:
-			return vPos + vOffset;
+			VAUtils::logStuff("getPos: OwnPosition");
+			pos = vPos + vOffset;
 			break;
 
 		case EMovement::AttatchToBone:
+			VAUtils::logStuff("getPos: AttatchToBone");
 			// if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
 			// 	VAUtils::logStuff(FString("Could not find vBoneName in getPosition"));
 			// 	break;
 			// }
-			return skeletal_mesh_component->GetSocketLocation(vBoneName) + vOffset;
+			pos = skeletal_mesh_component->GetSocketLocation(vBoneName) + vOffset;
 			break;
 		
 		default:
+			pos = FVector::ZeroVector;
+			VAUtils::logStuff("getPos: default");
 			VAUtils::logStuff(FString("default: in getPosition"));
 			break;
 	}
 
-	return FVector::ZeroVector;
+	return pos;
 }
 
 FRotator UVASourceComponent::getRotation()
@@ -235,10 +243,7 @@ FRotator UVASourceComponent::getRotation()
 		break;
 	}
 
-	FString text = "Rotation of Source is: ";
-	text.Append(FString::FromInt(rot.Roll)).Append("/").Append(FString::FromInt(rot.Pitch)).Append("/").Append(FString::FromInt(rot.Yaw));
-	VAUtils::logStuff(text);
-	
+
 	return rot;
 }
 

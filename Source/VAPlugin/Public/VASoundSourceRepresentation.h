@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
+#include "Components/ShapeComponent.h"
 #include "VASoundSourceRepresentation.generated.h"
 
 UCLASS()
@@ -17,10 +18,10 @@ public:
 	AVASoundSourceRepresentation();
 
 	UPROPERTY(VisibleDefaultsOnly)
-		class USphereComponent* sphereComp;
+		USphereComponent* sphereComp;
 
 	UPROPERTY(VisibleDefaultsOnly)
-		class UStaticMeshComponent* sphereMesh;
+		UStaticMeshComponent* sphereMesh;
 
 	bool setPos(FVector pos);
 

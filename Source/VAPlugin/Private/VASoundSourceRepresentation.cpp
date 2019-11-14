@@ -3,6 +3,9 @@
 #include "VASoundSourceRepresentation.h"
 #include "VAPlugin.h"
 
+// For path
+#include "Interfaces/IPluginManager.h"
+
 #include "Engine/StaticMeshActor.h"
 
 // Sets default values
@@ -12,6 +15,32 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// reflection Sphere
+	// sphereComp2 = CreateDefaultSubobject<USphereComponent>(FName("ShapeComponent"));
+	// sphereComp2->bHiddenInGame = false;
+	// sphereComp2->Mobility = EComponentMobility::Movable;
+	// RootComponent = sphereComp2;
+	// 
+	// sphereMesh2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	// sphereMesh2->AttachTo(RootComponent);
+	// 
+	// // static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone.Shape_Cone"));
+	// 
+	// static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
+	// 
+	// // FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
+	// // FString pathFile = FPaths::Combine(*BaseDir, TEXT("Content/Shape_Cone.Shape_Cone"));
+	// // BaseDir.Append("/Content/Shape_Cone.Shape_Cone");
+	// // static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(*BaseDir);
+	// 
+	// if (SphereMeshAsset.Succeeded()) {
+	// 	sphereMesh2->SetStaticMesh(SphereMeshAsset.Object);
+	// 	sphereMesh2->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
+	// 	sphereMesh2->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
+	// 	sphereMesh2->SetWorldScale3D(FVector(0.8f));
+	// }
+	// 
+	// setVisibility(FVAPluginModule::isInDebugMode());
+
 	sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
 	sphereComp->bHiddenInGame = true;
 	sphereComp->Mobility = EComponentMobility::Movable;
@@ -19,7 +48,7 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 
 	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	sphereMesh->AttachTo(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone.Shape_Cone"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
 	if (SphereMeshAsset.Succeeded()) {
 		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
 		sphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
@@ -27,25 +56,24 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
 
-	setVisibility(FVAPluginModule::isInDebugMode());
-
 }
 
 bool AVASoundSourceRepresentation::setPos(FVector pos)
 {
-	// sphereComp->SetWorldLocation(pos);
+	sphereComp->SetWorldLocation(pos);
 	return true;
 }
 
 bool AVASoundSourceRepresentation::setRot(FRotator rot)
 {
-	// sphereComp->SetWorldRotation(rot);
+	sphereComp->SetWorldRotation(rot);
 	return true;
 }
 
 bool AVASoundSourceRepresentation::setVisibility(bool visibility)
 {
-	sphereMesh->SetVisibility(visibility);
+	sphereComp->SetVisibility(true);
+	// sphereMesh->SetVisibility(true);
 	return true;
 }
 

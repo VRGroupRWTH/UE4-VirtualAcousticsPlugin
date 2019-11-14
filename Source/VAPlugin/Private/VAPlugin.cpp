@@ -199,6 +199,7 @@ bool FVAPluginModule::resetServer()
 	}
 	
 	try {
+		VAUtils::openMessageBox("Resetting Server");
 		pVA->Reset();
 	}
 	catch (CVAException& e) {
@@ -1235,6 +1236,7 @@ void FVAPluginModule::processExeption(FString location, CVAException e)
 void FVAPluginModule::processExeption(FString location, FString exp)
 {
 	useVA = false;
+	VAUtils::openMessageBox("In processExeption!!");
 	UE_LOG(LogTemp, Error, TEXT("Error in [%s] with error: %s"), *location, *exp);
 }
 
@@ -1558,7 +1560,7 @@ TArray<AVAReflectionWall*> FVAPluginModule::getReflectionWalls()
 
 bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
 {
-	// pos = VAUtils::toVACoordinateSystem(pos);
+	pos = VAUtils::toVACoordinateSystem(pos);
 	
 	VAUtils::fVecToVAVec3(pos, *tmpVec);
 	VAUtils::scaleVAVec(*tmpVec, scale);
@@ -1603,7 +1605,7 @@ bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
 
 bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 {
-	//rot = VAUtils::toVACoordinateSystem(rot);
+	rot = VAUtils::toVACoordinateSystem(rot);
 
 	FQuat fQuat = rot.Quaternion();
 	VAUtils::fQuatToVAQuat(fQuat, *tmpQuat);
@@ -1719,7 +1721,11 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 	scale = receiverActor->getScale();
 
 	try {
-		return pVA->CreateSoundReceiver("VASoundReceiver");
+
+		int iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
+		int iHRIR = pVA->CreateDirectivityFromFile("$(DefaultHRIR)");
+		pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
+		return iSoundReceiverID;
 	}
 	catch (CVAException& e) {
 		processExeption("FVAPluginModule::createNewSoundReceiver()", FString(e.ToString().c_str()));
