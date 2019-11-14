@@ -9,7 +9,6 @@
 // #include <string>
 
 class UVASourceComponent;
-enum EPlayAction;
 
 class VASoundSource : public VASoundSourceBaseClass
 {
