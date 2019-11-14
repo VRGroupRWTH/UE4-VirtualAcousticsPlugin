@@ -29,7 +29,7 @@ enum EMovement {
 };
 
 // struct used to get 
-UENUM()
+UENUM(BlueprintType)
 enum EPlayAction {
 	Play,
 	Pause,
