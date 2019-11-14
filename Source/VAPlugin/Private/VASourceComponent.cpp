@@ -127,7 +127,7 @@ void UVASourceComponent::initialize()
 		}
 		else {
 			VAUtils::openMessageBox("Error: Could not find bone, using MoveWithObject instead.");
-			vMovement == EMovement::MoveWithObject;
+			vMovement = EMovement::MoveWithObject;
 		}
 	}
 	

@@ -39,8 +39,8 @@ VASoundSourceReflection::VASoundSourceReflection(
 
 void VASoundSourceReflection::setPos()
 {
-	return;
 	// setPos(parentSource->getPos());
+	return;
 }
 
 void VASoundSourceReflection::setPos(FVector pos_)
@@ -58,7 +58,8 @@ void VASoundSourceReflection::setPos(FVector pos_)
 
 void VASoundSourceReflection::setRot()
 {
-	setRot(parentSource->getRot());
+	//setRot(parentSource->getRot());
+	return;
 }
 
 void VASoundSourceReflection::setRot(FRotator rot_)
