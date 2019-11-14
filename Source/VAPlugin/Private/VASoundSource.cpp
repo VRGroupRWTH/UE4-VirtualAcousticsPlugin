@@ -35,7 +35,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	rot = parentComponent->getRotation();
 
 	std::string fileName(TCHAR_TO_UTF8(*parentComponent->getFileName()));
-	std::string name = "SoundSource_";
+	std::string name = "SoundSource";
 	std::string nameTmp;
 
 	if (FVAPluginModule::getIsMaster()) {

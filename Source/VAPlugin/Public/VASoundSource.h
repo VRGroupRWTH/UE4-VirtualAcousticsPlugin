@@ -9,7 +9,6 @@
 // #include <string>
 
 class UVASourceComponent;
-enum EPlayAction;
 
 class VASoundSource : public VASoundSourceBaseClass
 {
@@ -38,7 +37,7 @@ public:
 	UVASourceComponent* getParentComponent();
 
 
-	void setPlayAction(EPlayAction action_);
+	void setPlayAction(enum EPlayAction action_);
 	void setSoundTime(float time);
 
 	void playSound();
@@ -60,7 +59,7 @@ private:
 
 	bool playing;
 
-	EPlayAction action;
+	enum EPlayAction action;
 
 	static int counter;
 	
