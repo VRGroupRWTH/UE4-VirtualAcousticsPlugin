@@ -85,10 +85,10 @@ void AVAReceiverActor::BeginPlay()
 			FVAPluginModule::resetServer();
 		}
 	
-		// Initialize Receiver Actor
-		receiverID = FVAPluginModule::createNewSoundReceiver(this);
 	
 	}
+	// Initialize Receiver Actor
+	receiverID = FVAPluginModule::createNewSoundReceiver(this);
 
 	// Initialize Walls for Sound Reflection
 	if (!wallsInitialized) {

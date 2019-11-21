@@ -1722,6 +1722,11 @@ bool FVAPluginModule::getIsMaster()
 int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 {
 	receiverActor = actor;
+
+	if (!isMaster) {
+		return -1;
+	}
+
 	scale = receiverActor->getScale();
 
 	try {
