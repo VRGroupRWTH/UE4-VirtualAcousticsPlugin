@@ -90,7 +90,7 @@ void AVAReceiverActor::BeginPlay()
 	}
 
 	// Initialize Walls for Sound Reflection
-	if (!initializeWalls) {
+	if (!wallsInitialized) {
 		initializeWalls();
 	}
 
