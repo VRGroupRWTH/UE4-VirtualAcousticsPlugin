@@ -217,7 +217,7 @@ void FVAPluginModule::askForSettings(FString host, int port)
 		return;
 	}
 	useVA = true;
-	debugMode = true;
+	debugMode = false;
 	initialized = true;
 	
 	isMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
