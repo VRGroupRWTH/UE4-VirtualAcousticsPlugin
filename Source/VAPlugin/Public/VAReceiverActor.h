@@ -18,8 +18,10 @@ enum EDir {
 
 UENUM()
 enum EAdress {
+	automatic,
 	localhost, 
-	Cave
+	Cave,
+	manual
 };
 
 
@@ -34,28 +36,32 @@ public:
 	AVAReceiverActor();
 
 	// Factor for global output Gain // TODO:
-	UPROPERTY(EditAnywhere, meta=(DisplayName = "Gain Factor [0,1] (not working yet)", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor [0,1] (not working yet)",	Category = "General Settigns",
+		ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 		float vGainFactor = 1.0f;
 	
-	// Choose Directivity File for Receiver
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity"))
-		TEnumAsByte<EDir> vDirectivity = EDir::DefaultHRIR;
-
 	// How many units in UE equal 1m in World
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale"),									Category = "General Settigns")
 		float vScale = 100.0f;
 
 	// Choose Where To use the Plugin (Important for IP Adress and Port)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase"))
-		TEnumAsByte<EAdress> vAdress = EAdress::localhost;
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase"),								Category = "Connection")
+		TEnumAsByte<EAdress> vAdress = EAdress::automatic;
 
 	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]", ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]",						Category = "Connection",
+		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
 		uint16 vPort = 12340;
 
+	// Choose Directivity File for Receiver
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity"),							Category = "Directivity")
+		TEnumAsByte<EDir> vDirectivity = EDir::DefaultHRIR;
+
 	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities"),	Category = "Directivity")
 		FString dirName = "default.ini";
+
+
 
 	// // Factor for global output Gain
 	// UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?"))
@@ -77,6 +83,7 @@ public:
 
 	TArray<AVAReflectionWall*> getReflectionWalls();
 
+	// virtual bool CanEditChange(const UProperty* InProperty) const;
 
 protected:
 	// Called when the game starts or when spawned

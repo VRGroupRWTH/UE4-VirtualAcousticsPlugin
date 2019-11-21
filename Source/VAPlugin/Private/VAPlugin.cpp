@@ -220,6 +220,7 @@ void FVAPluginModule::askForSettings(FString host, int port)
 	debugMode = true;
 	initialized = true;
 	
+	isMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
 	return;
 
 	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
@@ -240,7 +241,6 @@ void FVAPluginModule::askForSettings(FString host, int port)
 		debugMode = false;
 	}
 
-	isMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
 
 	initialized = true;
 }

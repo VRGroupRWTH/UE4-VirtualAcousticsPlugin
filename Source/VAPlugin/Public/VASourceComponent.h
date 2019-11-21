@@ -22,10 +22,10 @@
 
 UENUM()
 enum EMovement {
-	ObjectSpawnPoint,
-	MoveWithObject,
+	AttatchToBone,
 	OwnPosition,
-	AttatchToBone
+	ObjectSpawnPoint,
+	MoveWithObject
 };
 
 // struct used to get 
@@ -43,52 +43,57 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 
 
 	// In- or decrease Gain Offset 
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor",		Category = "General Settings", 
+		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
 		float vGainFactor = 1.0f;
 
 	// In- or decrease Gain Offset
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name",			Category = "General Settings"))
 		FString vSoundName = "Audiofiles/Bauer.wav";
 
 	// Loop sound?
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action",				Category = "General Settings"))
 		TEnumAsByte<EPlayAction> vAction = EPlayAction::Play;
 
 	// Loop sound?
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop",				Category = "General Settings"))
 		bool vLoop = false;
 
 	// Start at Second x
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Starting Sound at Second x"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]",	Category = "General Settings"))
 		float vDelay = 0.0f;
 
 	// Check if reflections should be considered
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Handle wall reflections?"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?",	Category = "General Settings"))
 		bool vHandleReflections = true;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings" ,CustomStructureParam = "Objects Spawn Point, Move With Object, Own Position (below)"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings",	Category = "General Settings", 
+		CustomStructureParam = "Attatch to a Bone, Own Position, At Object Spawn Point, Move With the Object"))
 		TEnumAsByte<EMovement> vMovement = EMovement::ObjectSpawnPoint;
 
 	// Manual Position (if used)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position",			Category = "Manual Pose"))		// CanEditChange used
 		FVector vPos = FVector(0, 0, 1.7);
 
 	// Manual Rotation (if used)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Rotation"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Rotation",			Category = "Manual Pose"))		// CanEditChange used
 		FRotator vRot = FRotator(0, 0, 0);
 
 	// Offset
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?",		Category = "Offset"))
+		bool vUseOffset = true;
+
+	// Offset
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Offset",			EditCondition = "vUseOffset"))
 		FVector vOffset = FVector(0, 0, 0);
 
 	// Offset
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Offset",			EditCondition = "vUseOffset"))
 		FRotator vOffsetRotation = FRotator(0, 90, 0);
 
-
 	// Name of Bone bound to
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name",			Category = "Attatch to bone")) // CanEditChange used
 		FName vBoneName = FName("CC_Base_Head");
 
 	// UPROPERTY(VisibleDefaultsOnly)
@@ -279,7 +284,7 @@ protected:
 
 	bool isMaster;
 
-
+	virtual bool CanEditChange(const UProperty* InProperty) const;
 
 public:	
 	// Called every frame

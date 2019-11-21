@@ -62,7 +62,8 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	soundSourceRepresentation->setVisibility(showCones);
 
 	if(handleReflections) {
-		for (auto wall : FVAPluginModule::getReflectionWalls())
+		TArray<AVAReflectionWall*> wallArray = FVAPluginModule::getReflectionWalls();
+		for (auto wall : wallArray)
 		{
 			std::string wallName(TCHAR_TO_UTF8(*wall->GetName()));
 			nameTmp = name + "_R_" + wallName;

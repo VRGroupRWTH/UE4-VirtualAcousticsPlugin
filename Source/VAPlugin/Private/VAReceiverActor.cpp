@@ -51,7 +51,8 @@ void AVAReceiverActor::BeginPlay()
 	tmpPos = new VAVec3();
 	tmpQuat = new VAQuat();
 
-
+	wallsInitialized = false;
+	
 	timeSinceUpdate = 0.0f;
 
 	controller = GetWorld()->GetFirstPlayerController();
@@ -84,9 +85,9 @@ void AVAReceiverActor::BeginPlay()
 			FVAPluginModule::resetServer();
 		}
 	
-	
 		// Initialize Receiver Actor
 		receiverID = FVAPluginModule::createNewSoundReceiver(this);
+	
 	}
 
 	// Initialize Walls for Sound Reflection
@@ -352,4 +353,31 @@ TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 	return reflectionWalls;
 }
 
+/* 
+bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
+{
+	const bool ParentVal = Super::CanEditChange(InProperty);
 
+	// Check manual Position
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vPos))
+	{
+		return vMovement == EMovement::OwnPosition;
+	}
+
+	// Check manual Rotation
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vRot))
+	{
+		return vMovement == EMovement::OwnPosition;
+	}
+
+	// Check Bone Name
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vBoneName))
+	{
+		return vMovement == EMovement::AttatchToBone;
+	}
+
+
+
+	return ParentVal;
+}
+*/
