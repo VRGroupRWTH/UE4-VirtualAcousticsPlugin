@@ -322,10 +322,10 @@ float AVAReceiverActor::getScale()
 
 FString AVAReceiverActor::getIPAdress()
 {
-	if (vAdress == EAdress::localhost) {
+	if (vAdressType == EAdress::localhost) {
 		return "localhost";
 	}
-	else if (vAdress == EAdress::Cave) {
+	else if (vAdressType == EAdress::Cave) {
 		return "10.0.1.240";
 	}
 
@@ -353,27 +353,34 @@ TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 	return reflectionWalls;
 }
 
-/* 
+
+/*
 bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
 
-	// Check manual Position
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vPos))
+	// Check manual Adress
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vAdress))
 	{
-		return vMovement == EMovement::OwnPosition;
+		return vAdressType == EAdress::manual;
 	}
 
-	// Check manual Rotation
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vRot))
+	// Check manual Port
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vPort))
 	{
-		return vMovement == EMovement::OwnPosition;
+		return vAdressType == EAdress::manual;
+	}
+
+	// Check Directivity Config
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vDirectivityByFileName))
+	{
+		return vDirectivity == EDir::manualFile;
 	}
 
 	// Check Bone Name
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vBoneName))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vDirectivityByPhoneme))
 	{
-		return vMovement == EMovement::AttatchToBone;
+		return vDirectivity == EDir::phoneme;
 	}
 
 
