@@ -284,8 +284,9 @@ protected:
 
 	bool isMaster;
 
+#if WITH_EDITOR
 	virtual bool CanEditChange(const UProperty* InProperty) const;
-
+#endif
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

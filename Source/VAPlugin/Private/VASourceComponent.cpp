@@ -285,7 +285,7 @@ float UVASourceComponent::getSoundTimeOffset() {
 	return vDelay;
 }
 
-
+#if WITH_EDITOR
 bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
@@ -312,3 +312,4 @@ bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
 
 	return ParentVal;
 }
+#endif

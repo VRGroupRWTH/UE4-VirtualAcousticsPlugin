@@ -354,7 +354,7 @@ TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 }
 
 
-
+#if WITH_EDITOR
 bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 {
 	// const bool ParentVal = Super::CanEditChange(InProperty);
@@ -387,4 +387,4 @@ bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 
 	return true;
 }
-
+#endif

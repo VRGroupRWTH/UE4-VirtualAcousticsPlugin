@@ -147,8 +147,9 @@ protected:
 	void initializeWalls();
 
 
-
+#if WITH_EDITOR
 	virtual bool CanEditChange(const UProperty* InProperty) const;
+#endif
 
 	bool trash;
 
