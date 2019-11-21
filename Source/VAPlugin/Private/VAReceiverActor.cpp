@@ -354,10 +354,10 @@ TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 }
 
 
-/*
+
 bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 {
-	const bool ParentVal = Super::CanEditChange(InProperty);
+	// const bool ParentVal = Super::CanEditChange(InProperty);
 
 	// Check manual Adress
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vAdress))
@@ -385,6 +385,6 @@ bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 
 
 
-	return ParentVal;
+	return true;
 }
-*/
+

@@ -148,7 +148,7 @@ protected:
 
 
 
-	// virtual bool CanEditChange(const UProperty* InProperty) const;
+	virtual bool CanEditChange(const UProperty* InProperty) const;
 
 	bool trash;
 
