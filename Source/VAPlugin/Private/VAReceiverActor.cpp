@@ -27,6 +27,7 @@ AVAReceiverActor::AVAReceiverActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	wallsInitialized = false;
 
 }
 
@@ -89,11 +90,10 @@ void AVAReceiverActor::BeginPlay()
 	}
 
 	// Initialize Walls for Sound Reflection
-	TArray<AActor*> wallsA;
-	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
-	for (AActor* actor : wallsA) {
-		reflectionWalls.Add((AVAReflectionWall*)actor);
+	if (!initializeWalls) {
+		initializeWalls();
 	}
+
 	// FVAPluginModule::initializeWalls(walls);
 
 	// // Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
@@ -118,6 +118,16 @@ void AVAReceiverActor::BeginPlay()
 	// FVAPluginModule::readDirFile(dirName);
 
 	// OnDestroyed.AddDynamic(this, WhenDestroyed);
+}
+
+void AVAReceiverActor::initializeWalls()
+{
+	TArray<AActor*> wallsA;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
+	for (AActor* actor : wallsA) {
+		reflectionWalls.Add((AVAReflectionWall*)actor);
+	}
+	wallsInitialized = true;
 }
 
 // Called every frame
@@ -336,6 +346,9 @@ VADirectivity* AVAReceiverActor::getDirectvityByPhoneme(FString phoneme)
 
 TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 {
+	if (!wallsInitialized) {
+		initializeWalls();
+	}
 	return reflectionWalls;
 }
 
