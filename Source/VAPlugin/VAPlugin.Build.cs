@@ -147,7 +147,7 @@ public class VAPlugin : ModuleRules
             PrivateRuntimeLibraryPaths.Add(RuntimeLibraryPath);
             PublicLibraryPaths.Add(RuntimeLibraryPath);
 
-            foreach (string FilePath in Directory.EnumerateFiles(RuntimeLibraryPath, "*.so", SearchOption.AllDirectories))
+            foreach (string FilePath in Directory.EnumerateFiles(RuntimeLibraryPath, "*.so*", SearchOption.AllDirectories))
             {
                 PublicAdditionalLibraries.Add(FilePath);
                 RuntimeDependencies.Add(FilePath);
