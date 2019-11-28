@@ -14,8 +14,8 @@ VASoundSourceReflection::VASoundSourceReflection(
 {
 	showCones = parentSource->getVisibility();
 
-	pos = FVAPluginModule::computeReflectedPos(wall, pos);
-	rot = FVAPluginModule::computeReflectedRot(wall, rot);
+	pos = VAUtils::computeReflectedPos(wall, pos);
+	rot = VAUtils::computeReflectedRot(wall, rot);
 
 	if (FVAPluginModule::getIsMaster()) {
 		soundSourceID = FVAPluginModule::createNewSoundSource(sBufferID, name, pos, rot, gainFactor);
@@ -37,15 +37,10 @@ VASoundSourceReflection::VASoundSourceReflection(
 
 }
 
-void VASoundSourceReflection::setPos()
-{
-	// setPos(parentSource->getPos());
-	return;
-}
 
 void VASoundSourceReflection::setPos(FVector pos_)
 {
-	pos = FVAPluginModule::computeReflectedPos(wall, pos_);
+	pos = VAUtils::computeReflectedPos(wall, pos_);
 
 	if (FVAPluginModule::getIsMaster()) {
 		FVAPluginModule::setSoundSourcePos(soundSourceID, pos);
@@ -56,15 +51,10 @@ void VASoundSourceReflection::setPos(FVector pos_)
 	}
 }
 
-void VASoundSourceReflection::setRot()
-{
-	//setRot(parentSource->getRot());
-	return;
-}
 
 void VASoundSourceReflection::setRot(FRotator rot_)
 {
-	rot = FVAPluginModule::computeReflectedRot(wall, rot_);
+	rot = VAUtils::computeReflectedRot(wall, rot_);
 
 	if (FVAPluginModule::getIsMaster()) {
 		FVAPluginModule::setSoundSourceRot(soundSourceID, rot);
@@ -77,10 +67,26 @@ void VASoundSourceReflection::setRot(FRotator rot_)
 
 void VASoundSourceReflection::setVisibility(bool vis_)
 {
+	showCones = vis_;
 	soundSourceRepresentation->setVisibility(vis_);
 }
 
 void VASoundSourceReflection::setDirectivity(VADirectivity* dir)
 {
 	FVAPluginModule::setSoundSourceDirectivity(soundSourceID, dir->getID());
+}
+
+FVector VASoundSourceReflection::getPos()
+{
+	return pos;
+}
+
+FRotator VASoundSourceReflection::getRot()
+{
+	return rot;
+}
+
+int VASoundSourceReflection::getSoundSourceID()
+{
+	return soundSourceID;
 }

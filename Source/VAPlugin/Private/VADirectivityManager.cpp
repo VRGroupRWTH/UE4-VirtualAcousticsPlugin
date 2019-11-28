@@ -32,7 +32,7 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 	FConfigFile* config = GConfig->FindConfigFile(config_file_name);
 
 	if (config == nullptr) {
-		VAUtils::logStuff(FString("(VADirectivityManager()) - Unable to load directivity config file") + config_file_name);
+		VAUtils::logStuff(FString("[VADirectivityManager::readConfigFile()] - Unable to load directivity config file") + config_file_name);
 		return;
 	}
 

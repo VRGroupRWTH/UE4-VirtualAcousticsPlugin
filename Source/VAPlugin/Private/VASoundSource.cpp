@@ -73,10 +73,6 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	}
 }
 
-void VASoundSource::setPos()
-{
-	setPos(parentComponent->getPosition());
-}
 
 void VASoundSource::setPos(FVector pos_)
 {
@@ -101,10 +97,6 @@ void VASoundSource::setPos(FVector pos_)
 	}
 }
 
-void VASoundSource::setRot()
-{
-	setRot(parentComponent->getRotation());
-}
 
 void VASoundSource::setRot(FRotator rot_)
 {
@@ -229,7 +221,17 @@ void VASoundSource::playSoundFromSecond(float time)
 }
 
 
-// EPlayAction VASoundSource::getPlayAction()
-// {
-// 	return EPlayAction::Play;
-// }
+FVector VASoundSource::getPos()
+{
+	return pos;
+}
+
+FRotator VASoundSource::getRot()
+{
+	return rot;
+}
+
+int VASoundSource::getSoundSourceID()
+{
+	return soundSourceID;
+}

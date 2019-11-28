@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "VASoundSourceRepresentation.h"
 #include "VASoundSourceBaseClass.h"
 #include "VASoundSourceReflection.h"
 #include "VASourceComponent.h"
@@ -10,7 +11,7 @@
 
 class UVASourceComponent;
 
-class VASoundSource : public VASoundSourceBaseClass
+class VASoundSource // : public VASoundSourceBaseClass
 {
 public:
 	VASoundSource();
@@ -22,20 +23,20 @@ public:
 	// 	bool loop = false, float soundOffset = 0.0f, 
 	// 	bool handleReflections = true);
 
-	virtual void setPos();
-	virtual void setPos(FVector pos_);
+	void setPos(FVector pos_);
+	FVector getPos();
 
-	virtual void setRot();
-	virtual void setRot(FRotator rot_);
+	void setRot(FRotator rot_);
+	FRotator getRot();
 
+	void setVisibility(bool vis_);
+	bool getVisibility();
 
-	virtual void setVisibility(bool vis_);
-	virtual bool getVisibility();
-
-	virtual void setDirectivity(VADirectivity* dir);
+	void setDirectivity(VADirectivity* dir);
 	
 	UVASourceComponent* getParentComponent();
 
+	int getSoundSourceID();
 
 	void setPlayAction(int action_);
 	void setSoundTime(float time);
@@ -49,6 +50,19 @@ public:
 
 
 private: 
+
+	FVector pos;
+
+	FRotator rot;
+
+
+	int soundSourceID;
+
+	AVASoundSourceRepresentation* soundSourceRepresentation;
+
+	std::string soundSourceName;
+
+	bool showCones;
 	TArray<VASoundSourceReflection*> reflections;
 
 	UVASourceComponent* parentComponent;

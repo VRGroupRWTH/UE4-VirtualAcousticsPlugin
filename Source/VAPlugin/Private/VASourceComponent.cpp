@@ -59,58 +59,6 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 }
 
 
-
-
-bool UVASourceComponent::sendSoundData()
-{
-	/*
-	if (alreadySent) {
-		VAUtils::logStuff("Send Sound data for multiple times");
-		return false;
-	}
-
-	alreadySent = true;
-
-	FVector pos;
-	FRotator rot;
-
-	pos = getPosition();
-	rot = getRotation();
-
-	
-	// int vActionP;
-	// switch (vAction)
-	// {
-	// 	case EPlayAction::Play :
-	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_PLAY;
-	// 		break;
-	// 
-	// 	case EPlayAction::Pause :
-	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_PAUSE;
-	// 		break;
-	// 
-	// 	case EPlayAction::Stop :
-	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
-	// 		break;
-	// 
-	// 	default: 
-	// 		vActionP = IVAInterface::VA_PLAYBACK_ACTION_STOP;
-	// }
-	
-
-	VAUtils::logStuff(FString("pos for ini: " + pos.ToString()));
-
-	// soundID = FVAPluginModule::initializeSound(vSoundName, pos, rot, vGainOffset, vLoop, vDelay, vActionP);
-	// soundID = FVAPluginModule::initializeSoundWithReflections(vSoundName, pos, rot, vGainFactor * vGainFactor, vLoop, vDelay, IVAInterface::VA_PLAYBACK_ACTION_STOP, this);
-
-
-	// VASoundSource* a = new VASoundSource();
-	soundSource = new VASoundSource(this);
-	return true;
-	*/
-	return false;
-}
-
 void UVASourceComponent::initialize()
 {
 	ownerActor = GetOwner();
@@ -132,11 +80,14 @@ void UVASourceComponent::initialize()
 	}
 	
 	soundSource = new VASoundSource(this);
-	// soundSource->setVisibility(FVAPluginModule::isInDebugMode());
 
 	initialized = true;
 
 }
+
+// ****************************************************************** // 
+// ******* Interface Sound ****************************************** //
+// ****************************************************************** //
 
 void UVASourceComponent::playSound()
 {
@@ -158,56 +109,39 @@ void UVASourceComponent::pauseSound()
 	soundSource->pauseSound();
 }
 
-/*
-void UVASourceComponent::updatePosition(FVector pos, FRotator rot)
-{
-	soundSource->setPos(pos);
-	soundSource->setRot(rot);
-}
-*/
 
-void UVASourceComponent::setSoundSourcePosition(FVector pos) {
-	soundSource->setPos(pos);
-}
-
-void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
-	soundSource->setRot(rot);
-}
-
+// ****************************************************************** // 
+// ******* Sound Pose *********************************************** //
+// ****************************************************************** //
 
 FVector UVASourceComponent::getPosition()
 {
 	FVector pos; 
 	switch (vMovement) {
 		case EMovement::MoveWithObject:
-			VAUtils::logStuff("getPos: MoveWithObject");
-			pos = ownerActor->GetTransform().GetLocation() + vOffset;
+			pos = ownerActor->GetTransform().GetLocation();
 			break;
 
 		case EMovement::ObjectSpawnPoint:
-			VAUtils::logStuff("getPos: ObjectSpawnPoint");
-			pos = spawnPosition + vOffset;
+			pos = spawnPosition;
 			break;
 
 		case EMovement::OwnPosition:
-			VAUtils::logStuff("getPos: OwnPosition");
-			pos = vPos + vOffset;
+			pos = vPos;
 			break;
 
 		case EMovement::AttatchToBone:
-			VAUtils::logStuff("getPos: AttatchToBone");
-			// if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
-			// 	VAUtils::logStuff(FString("Could not find vBoneName in getPosition"));
-			// 	break;
-			// }
-			pos = skeletal_mesh_component->GetSocketLocation(vBoneName) + vOffset;
+			pos = skeletal_mesh_component->GetSocketLocation(vBoneName);
 			break;
 		
 		default:
 			pos = FVector::ZeroVector;
-			VAUtils::logStuff("getPos: default");
-			VAUtils::logStuff(FString("default: in getPosition"));
+			VAUtils::logStuff(FString("[UVASourceComponent::getPosition()]: default"));
 			break;
+	}
+
+	if (vUseOffset) {
+		pos = pos + vOffsetPosition;
 	}
 
 	return pos;
@@ -218,35 +152,46 @@ FRotator UVASourceComponent::getRotation()
 	FRotator rot;
 	switch (vMovement) {
 	case EMovement::MoveWithObject:
-		rot = ownerActor->GetTransform().GetRotation().Rotator() + vOffsetRotation;
+		rot = ownerActor->GetTransform().GetRotation().Rotator();
 		break;
 
 	case EMovement::ObjectSpawnPoint:
-		rot = spawnRotation + vOffsetRotation;
+		rot = spawnRotation;
 		break;
 
 	case EMovement::OwnPosition:
-		rot = vRot + vOffsetRotation;
+		rot = vRot;
 		break;
 
 	case EMovement::AttatchToBone:
-		// if (!skeletal_mesh_component->DoesSocketExist(vBoneName)) {
-		// 	VAUtils::logStuff(FString("Could not find vBoneName in getRotation"));
-		// 	break;
-		// }
-		rot = skeletal_mesh_component->GetSocketRotation(vBoneName) + vOffsetRotation;
+		rot = skeletal_mesh_component->GetSocketRotation(vBoneName);
 		break;
 
 	default:
-		VAUtils::logStuff(FString("default: in getRotation"));
+		VAUtils::logStuff(FString("[UVASourceComponent::getRotation()]: default"));
 		rot = FRotator::ZeroRotator;
 		break;
 	}
 
+	if (vUseOffset) {
+		rot = rot + vOffsetRotation;
+	}
 
 	return rot;
 }
 
+void UVASourceComponent::setSoundSourcePosition(FVector pos) {
+	soundSource->setPos(pos);
+}
+
+void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
+	soundSource->setRot(rot);
+}
+
+
+// ****************************************************************** // 
+// ******* Sound Settings ******************************************* //
+// ****************************************************************** //
 
 void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 {
@@ -254,19 +199,19 @@ void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 	soundSource->setDirectivity(dir);
 }
 
-
-bool UVASourceComponent::getVisibility()
-{
-	return FVAPluginModule::isInDebugMode();
-}
-
 void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
 	soundSource->setVisibility(vis);
 }
 
-FString UVASourceComponent::getFileName() {
-	return vSoundName;
+
+// ****************************************************************** // 
+// ******* Getter Functions ***************************************** //
+// ****************************************************************** //
+
+bool UVASourceComponent::getVisibility()
+{
+	return FVAPluginModule::isInDebugMode();
 }
 
 bool UVASourceComponent::getHandleReflections() {
@@ -284,6 +229,15 @@ float UVASourceComponent::getGainFactor() {
 float UVASourceComponent::getSoundTimeOffset() {
 	return vDelay;
 }
+
+FString UVASourceComponent::getFileName() {
+	return vSoundName;
+}
+
+
+// ****************************************************************** // 
+// ******* Blueprint Settings *************************************** //
+// ****************************************************************** //
 
 #if WITH_EDITOR
 bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const

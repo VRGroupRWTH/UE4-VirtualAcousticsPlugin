@@ -86,7 +86,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 
 	// Offset
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Offset",			EditCondition = "vUseOffset"))
-		FVector vOffset = FVector(0, 0, 0);
+		FVector vOffsetPosition = FVector(0, 0, 0);
 
 	// Offset
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Offset",			EditCondition = "vUseOffset"))
@@ -96,29 +96,11 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name",			Category = "Attatch to bone")) // CanEditChange used
 		FName vBoneName = FName("CC_Base_Head");
 
-	// UPROPERTY(VisibleDefaultsOnly)
-	// 	class USceneComponent* sceneComp;
-	// 
-	// UPROPERTY(VisibleDefaultsOnly)
-	// 	TMap<AVAReflectionWall*, class UStaticMeshComponent*> coneMeshMap;
-
-	//UPROPERTY(VisibleDefaultsOnly)
-	//	TMap<AVAReflectionWall*, class UStaticMeshComponent*> sphereMeshMapBig;
-	//
-	//UPROPERTY(VisibleDefaultsOnly)
-	//	TMap<AVAReflectionWall*, class UStaticMeshComponent*> sphereMeshMapSmall;
-
-	// Manual Rotation (if used)
-	// UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation"))
-	// 	bool vOffsetRot = false;
-
-
 
 public:	
 	// Sets default values for this component's properties
 	UVASourceComponent();
 
-	bool sendSoundData();
 
 	// initialize Sound Source // 
 	UFUNCTION(BlueprintCallable)

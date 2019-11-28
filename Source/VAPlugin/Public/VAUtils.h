@@ -25,7 +25,6 @@ public:
 
 	// ++ Open Message Box with Text. bool error expresses whether to use excl. marks ++ //
 	static void openMessageBox(FString text, bool error = false);
-	static void openMessageBoxV(FString text, bool error = false);
 	static FString addExclamationMarkInChar(FString text);
 
 	// ++ Checking LibraryHandle ++ //
@@ -47,6 +46,10 @@ public:
 
 	static bool rotateFRotator(FRotator& rot);
 	static bool rotateFVec(FVector& vec);
+
+	static FVector computeReflectedPos(AVAReflectionWall* wall, FVector pos);
+	static FRotator computeReflectedRot(AVAReflectionWall* wall, FRotator rot);
+
 
 	static bool scaleVAVec(VAVec3& vecVA, float scale);
 

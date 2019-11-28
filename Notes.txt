@@ -38,10 +38,6 @@ Sound Component soundOffset --> soundTimeOffset
 catch bei directivity ist falsch
 
 
-Reflektion Bestimmung in Wall rein 
-
-View Mode
-
 Receiver Actor getReflectionWalls()
 
 Component Interface Functions check if is master (play, pause, stop etc)
@@ -58,3 +54,18 @@ Source, Reflection, Base setPos() & setRot() (ohne param)
 
 TODO: Set Input for Debug Mode
 Set Walls to static ?!
+
+
+Check all includes
+
+VAPlugin::REMAKE
+
+/* 	enum PlaybackAction
+	{
+		VA_PLAYBACK_ACTION_NONE = -1,	//!< No action
+		VA_PLAYBACK_ACTION_STOP = 0,	//!< Stop playback
+		VA_PLAYBACK_ACTION_PAUSE = 1,	//!< Pause playback
+		VA_PLAYBACK_ACTION_PLAY = 2,	//!< Start/resume playback	
+	};
+*/
+

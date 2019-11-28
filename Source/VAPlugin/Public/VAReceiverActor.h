@@ -6,7 +6,10 @@
 
 #include "VADirectivityManager.h"
 
-#include "CoreMinimal.h"
+#include "Cluster/IDisplayClusterClusterManager.h"		// For Events
+#include "Cluster/DisplayClusterClusterEvent.h"			// For Events
+
+#include "CoreMinimal.h"								// For Events
 #include "GameFramework/Actor.h"
 #include "VAReceiverActor.generated.h"
 
@@ -45,6 +48,10 @@ public:
 	// How many units in UE equal 1m in World
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale",									Category = "General Settigns"))
 		float vScale = 100.0f;
+
+	// Check if should ask for debug Mode?
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?",					Category = "General Settigns"))
+		bool vAskForDebugMode = true;
 
 	// Choose Where To use the Plugin (Important for IP Adress and Port)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase",								Category = "Connection"))
@@ -93,20 +100,18 @@ public:
 	// return IP Adress as FString TODO wie sonst?
 	FString getIPAdress();
 
+	int getPort();
+
 	static VADirectivity* getDirectvityByPhoneme(FString phoneme);
 
 	TArray<AVAReflectionWall*> getReflectionWalls();
+
+	void runOnAllNodes(FString command);
 
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	// // Called when the game starts or when spawned
-	// virtual void EndPlay() override;
-
-	// UFUNCTION()
-	// 	void WhenDestroyed();
 
 	virtual void BeginDestroy() override;
 
@@ -124,6 +129,9 @@ protected:
 
 	// var used to measure time since last update
 	float timeSinceUpdate;
+
+	// tmp Var to do some experiments
+	float totalTime;
 
 	// Tmp Var
 	FVector		tmpPosF;
@@ -145,6 +153,16 @@ protected:
 	bool wallsInitialized;
 
 	void initializeWalls();
+
+
+	// Event Listener Delegate
+	FOnClusterEventListener ClusterEventListenerDelegate;
+
+	// Called on cluster Event emission
+	void HandleClusterEvent(const FDisplayClusterClusterEvent& Event);
+
+	// "Compiler"
+	void handleClusterCommand(FString command);
 
 
 #if WITH_EDITOR

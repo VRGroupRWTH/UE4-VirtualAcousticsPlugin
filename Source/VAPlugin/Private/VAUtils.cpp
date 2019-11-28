@@ -31,11 +31,7 @@ void VAUtils::openMessageBox(FString text, bool error)
 	//FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(text)));
 }
 
-void VAUtils::openMessageBoxV(FString text, bool error)
-{
-	if (M_VERBOSE)
-		openMessageBox(text, error);
-}
+
 
 FString VAUtils::addExclamationMarkInChar(FString text)
 {
@@ -69,11 +65,9 @@ FString VAUtils::addExclamationMarkInChar(FString text)
 bool VAUtils::checkLibraryHandle(void* LibraryHandle)
 {
 	if (LibraryHandle) {
-		openMessageBoxV("Handle OK");
 		return true;
 	}
 	else {
-		openMessageBox("Handle not OK", true);
 		return false;
 	}
 }
@@ -163,6 +157,37 @@ bool VAUtils::rotateFVec(FVector & vec)
 	// X = Y // Y = Z // Z = -X
 	vec = FVector(vec.Y, vec.Z, -vec.X);
 	return true;
+}
+
+FVector VAUtils::computeReflectedPos(AVAReflectionWall* wall, FVector pos)
+{
+	FVector n = wall->getNormalVec();
+	float d = wall->getD();
+	float t = d - FVector::DotProduct(n, pos);
+
+	return (pos + 2.0 * t * n);
+}
+
+
+FRotator VAUtils::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
+{
+	FVector pos1, pos2, pos1_, pos2_, n, tmp, dir;
+
+	n = wall->getNormalVec();
+
+	dir = rot.Vector();
+
+	pos1 = wall->getSupportVec() + (1000 * n);
+	pos2 = pos1 + (500 * dir);
+
+	pos1_ = computeReflectedPos(wall, pos1);
+	pos2_ = computeReflectedPos(wall, pos2);
+
+	tmp = pos2_ - pos1_;
+
+	// return FRotator(0, 0, 0);
+	return tmp.Rotation();
+
 }
 
 bool VAUtils::scaleVAVec(VAVec3 & vecVA, float scale)
