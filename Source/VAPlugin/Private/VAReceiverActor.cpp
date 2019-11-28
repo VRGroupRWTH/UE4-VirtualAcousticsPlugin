@@ -168,9 +168,14 @@ void AVAReceiverActor::Tick(float DeltaTime)
 		timeSinceUpdate = 0.0f;
 	}
 
-	if (totalTime > 8.0f) {
-		runOnAllNodes("debugMode = false");
-		timeSinceUpdate = -100000.0f;
+	if (totalTime > 2.0f) {
+		if (FVAPluginModule::getDebugMode()) {
+			runOnAllNodes("debugMode = false");
+		}
+		else {
+			runOnAllNodes("debugMode = true");
+		}
+		totalTime = 0.0f;
 	}
 }
 
@@ -183,19 +188,17 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 {
 	controller->GetPlayerViewPoint(tmpPosF, tmpRotF);
 
-	FString text = "Position of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
-	text.Append(FString::FromInt(tmpPosF.X)).Append("/").Append(FString::FromInt(tmpPosF.Y)).Append("/").Append(FString::FromInt(tmpPosF.Z));
-	VAUtils::logStuff(text);
-
-	text = "Rotation of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
-	text.Append(FString::FromInt(tmpRotF.Roll)).Append("/").Append(FString::FromInt(tmpRotF.Pitch)).Append("/").Append(FString::FromInt(tmpRotF.Yaw));
-	
-	VAUtils::logStuff(text);
+	// FString text = "Position of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
+	// text.Append(FString::FromInt(tmpPosF.X)).Append("/").Append(FString::FromInt(tmpPosF.Y)).Append("/").Append(FString::FromInt(tmpPosF.Z));
+	// VAUtils::logStuff(text);
+	// 
+	// text = "Rotation of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
+	// text.Append(FString::FromInt(tmpRotF.Roll)).Append("/").Append(FString::FromInt(tmpRotF.Pitch)).Append("/").Append(FString::FromInt(tmpRotF.Yaw));
+	// 
+	// VAUtils::logStuff(text);
 
 	FVAPluginModule::setSoundReceiverPosition(receiverID, tmpPosF);
 	FVAPluginModule::setSoundReceiverRotation(receiverID, tmpRotF);
-
-	// FVAPluginModule::updateReceiverPos(tmpPosF, tmpRotF);
 
 	return false;
 }
@@ -395,6 +398,8 @@ void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent & Ev
 
 void AVAReceiverActor::handleClusterCommand(FString command)
 {
+	VAUtils::logStuff("Cluster Command " + command + " received");
+
 	if (command == "useVA = false") {
 		FVAPluginModule::setUseVA(false);
 	}

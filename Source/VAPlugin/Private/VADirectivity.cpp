@@ -30,6 +30,9 @@ VADirectivity::VADirectivity(FString fileName, TArray<FString> phonemes_)
 		UE_LOG(LogTemp, Warning, TEXT("   Directivity file %s cannot be found!"), *fileName);
 		return;
 	}
+	
+	VAUtils::logStuff("created new VADirectivity");
+	
 }
 
 

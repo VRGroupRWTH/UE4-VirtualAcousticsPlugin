@@ -80,7 +80,7 @@ public:
 
 	// Factor for global output Gain
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities",		Category = "Directivity Manager"))
-		FString dirName = "default.ini";
+		FString dirName = "VADir_default.ini";
 
 
 

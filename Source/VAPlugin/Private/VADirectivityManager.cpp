@@ -1,4 +1,7 @@
 #include "VADirectivityManager.h"
+
+#include "VAUtils.h"
+
 #include "Core.h"
 #include "Interfaces/IPluginManager.h"
 
@@ -22,8 +25,12 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 	configFileName = configFileName_;
 
 	// Read config File
-	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
-	FString dir = FPaths::Combine(*BaseDir, TEXT("config/directivities/"));
+	// FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
+	// FString dir = FPaths::Combine(*BaseDir, TEXT("config/directivities/"));
+
+	FString RelativePath = FPaths::ProjectContentDir();
+	FString dir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*RelativePath) + "Study/";
+
 	FString config_file_name = dir + configFileName;
 
 	GConfig->UnloadFile(config_file_name);
@@ -32,9 +39,11 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 	FConfigFile* config = GConfig->FindConfigFile(config_file_name);
 
 	if (config == nullptr) {
-		VAUtils::logStuff(FString("[VADirectivityManager::readConfigFile()] - Unable to load directivity config file") + config_file_name);
+		VAUtils::logStuff(FString("[VADirectivityManager::readConfigFile()] - Unable to load directivity config file: ") + config_file_name);
 		return;
 	}
+	VAUtils::logStuff(FString("[VADirectivityManager::readConfigFile()] - Config file loaded: ") + config_file_name);
+
 
 	FString listSymbol, mapToSymbol;
 	config->GetString(TEXT("DirectivityMapping"), TEXT("listSymbol"), listSymbol);
@@ -82,6 +91,13 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 		// 	UE_LOG(LogTemp, Warning, TEXT("   Directivity file %s cannot be found!"), tmp_fileName);
 		// 	continue;
 		// }
+
+		FString output = "Mapping from: ";
+		for (auto p : tmp_phonemes) {
+			output.Append(p + ",");
+		}
+		output.Append(" --> " + tmp_fileName);
+		VAUtils::logStuff(output);
 
 		VADirectivity* tmpDir = new VADirectivity(tmp_fileName, tmp_phonemes);
 		directivities.Add(tmpDir);
