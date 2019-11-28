@@ -464,7 +464,7 @@ int FVAPluginModule::createNewDirectivity(FString fileName)
 	}
 	catch (CVAException& e)
 	{
-		e;
+		processExeption("FVAPluginModule::setSoundSourceRot()", FString(e.ToString().c_str()));
 		// if (&e == nullptr)
 		// {
 		// }
