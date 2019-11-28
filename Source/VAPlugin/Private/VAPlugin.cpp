@@ -173,6 +173,10 @@ void FVAPluginModule::askForSettings(FString host, int port, bool askForDebugMod
 
 	isMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
 
+	if (!isMaster) {
+		return;
+	}
+
 	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
 	if (ret == EAppReturnType::Type::Yes) {
 		useVA = true;

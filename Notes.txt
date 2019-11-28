@@ -60,6 +60,10 @@ Check all includes
 
 VAPlugin::REMAKE
 
+
+
+Funktion für Server Löschung: pVA->Finalize();
+
 /* 	enum PlaybackAction
 	{
 		VA_PLAYBACK_ACTION_NONE = -1,	//!< No action

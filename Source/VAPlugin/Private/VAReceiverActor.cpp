@@ -44,8 +44,20 @@ void AVAReceiverActor::BeginPlay()
 	// Ask if used or not
 	FVAPluginModule::askForSettings(getIPAdress(), getPort(), vAskForDebugMode);
 
-	if (!FVAPluginModule::getUseVA()) {
+	
+	if (FVAPluginModule::getUseVA()) {
+		runOnAllNodes("useVA = true");
+	}
+	else {
+		runOnAllNodes("useVA = false");
 		return;
+	}
+
+	if (FVAPluginModule::getDebugMode()) {
+		runOnAllNodes("debugMode = true");
+	}
+	else {
+		runOnAllNodes("debugMode = false");
 	}
 
 	// General stuff 
@@ -399,8 +411,10 @@ void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent & Ev
 void AVAReceiverActor::handleClusterCommand(FString command)
 {
 	VAUtils::logStuff("Cluster Command " + command + " received");
-
-	if (command == "useVA = false") {
+	if (command == "useVA = true") {
+		FVAPluginModule::setUseVA(true);
+	}
+	else if (command == "useVA = false") {
 		FVAPluginModule::setUseVA(false);
 	}
 	else if (command == "debugMode = true") {
