@@ -9,19 +9,18 @@
 #define VABASE_STATIC
 #define VA_STATIC
 
-
-// #pragma warning(disable:5038) //disable initilization order warning
-#include "VA.h"
-#include "VANet.h"
-// #pragma warning(default:5038)
-
 #include "VAUtils.h"
 #include "VAReflectionWall.h"
 
 
-
+//forward declarations:
 class AVAReceiverActor;
 class UVASourceComponent;
+class CVAException;
+class IVANetClient;
+class IVAInterface;
+class VAQuat;
+class VAVec3;
 
 class FVAPluginModule : public IModuleInterface
 {

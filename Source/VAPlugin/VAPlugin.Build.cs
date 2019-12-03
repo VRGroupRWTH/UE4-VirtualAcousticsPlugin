@@ -34,7 +34,6 @@ public class VAPlugin : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "DisplayCluster", 
-                "DisplayClusterInput",
                 "DisplayClusterExtensions",
                 "InputCore"
 

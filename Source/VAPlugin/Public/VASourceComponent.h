@@ -28,7 +28,6 @@ enum EMovement {
 	MoveWithObject
 };
 
-// struct used to get 
 UENUM(BlueprintType)
 enum EPlayAction {
 	Play,
@@ -41,7 +40,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-
+public:
 	// In- or decrease Gain Offset 
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor",		Category = "General Settings", 
 		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
@@ -97,7 +96,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 		FName vBoneName = FName("CC_Base_Head");
 
 
-public:	
+
 	// Sets default values for this component's properties
 	UVASourceComponent();
 

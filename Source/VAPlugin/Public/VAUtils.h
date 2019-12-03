@@ -5,10 +5,9 @@
 #include "Modules/ModuleManager.h"
 #include "VASourceComponent.h"
 
-// #pragma warning(disable:5038) //disable initilization order warning
-#include "VA.h"
-#include "VANet.h"
-// #pragma warning(default:5038)
+//forward declarations:
+class VAQuat;
+class VAVec3;
 
 class VAUtils
 {
