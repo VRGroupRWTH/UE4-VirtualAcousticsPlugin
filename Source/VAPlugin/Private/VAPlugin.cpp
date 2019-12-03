@@ -40,8 +40,8 @@ void* FVAPluginModule::LibraryHandleVistaInterProcComm;
 
 // Vars for setting of usage
 bool FVAPluginModule::initialized	= false;
-bool FVAPluginModule::useVA			= false;
-bool FVAPluginModule::debugMode		= false;
+bool FVAPluginModule::useVA			= true;
+bool FVAPluginModule::debugMode		= true;
 bool FVAPluginModule::isMaster		= false;
 
 // Interface Classes to Server 
@@ -65,16 +65,14 @@ VAVec3* FVAPluginModule::tmpVec = new VAVec3();
 
 void FVAPluginModule::processExeption(FString location, CVAException e)
 {
-	useVA = false;
-	FString exp = FString(e.ToString().c_str());
-	UE_LOG(LogTemp, Error, TEXT("Error in [%s] with error: %s"), *location, *exp);
+	processExeption(location, FString(e.ToString().c_str()));
 }
 
 void FVAPluginModule::processExeption(FString location, FString exp)
 {
-	useVA = false;
-	VAUtils::openMessageBox("In processExeption!!");
-	UE_LOG(LogTemp, Error, TEXT("Error in [%s] with error: %s"), *location, *exp);
+	FString output = " in [";
+	output.Append(location).Append("] with error: ").Append(exp);
+	VAUtils::logStuff(output, true);
 }
 
 bool FVAPluginModule::isMasterAndUsed()
@@ -146,18 +144,7 @@ void FVAPluginModule::StartupModule()
 
 void FVAPluginModule::ShutdownModule()
 {
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
-
-	if (!isMasterAndUsed()) {
-		return;
-	}
-	
-	if (pVANet != nullptr) {
-		if (pVANet->IsConnected()) {
-			pVANet->Disconnect();
-		}
-	}
+	disconnectServer();
 
 #if PLATFORM_WINDOWS
 	FPlatformProcess::FreeDllHandle(LibraryHandleNet);
@@ -218,23 +205,23 @@ bool FVAPluginModule::checkLibraryHandles()
 	}
 	else {
 		if (!LibraryHandleNet) {
-			VAUtils::logStuff("could not load Net");
+			VAUtils::logStuff("could not load Net", true);
 		}
 
 		if (!LibraryHandleBase) {
-			VAUtils::logStuff("could not load Base");
+			VAUtils::logStuff("could not load Base", true);
 		}
 
 		if (!LibraryHandleVistaAspects) {
-			VAUtils::logStuff("could not load Vista Aspects");
+			VAUtils::logStuff("could not load Vista Aspects", true);
 		}
 
 		if (!LibraryHandleVistaBase) {
-			VAUtils::logStuff("could not load Vista Base");
+			VAUtils::logStuff("could not load Vista Base", true);
 		}
 
 		if (!LibraryHandleVistaInterProcComm) {
-			VAUtils::logStuff("could not load Vista InterProcComm");
+			VAUtils::logStuff("could not load Vista InterProcComm", true);
 		}
 		return false;
 	}
@@ -276,7 +263,7 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 	}
 	catch (CVAException& e) {
 		useVA = false;
-		processExeption("connectServer()", FString(e.ToString().c_str()));
+		processExeption("FVAPluginModule::connectServer()", FString(e.ToString().c_str()));
 
 		return false;
 	}
@@ -289,13 +276,13 @@ bool FVAPluginModule::resetServer()
 	if (!getIsMaster() || !isConnected() || !getUseVA()) {
 		return false;
 	}
-	
 	try {
+		VAUtils::logStuff("Resetting Server now...");
 		pVA->Reset();
 	}
 	catch (CVAException& e) {
 		useVA = false;
-		processExeption("resetServer()", FString(e.ToString().c_str()));
+		processExeption("FVAPluginModule::resetServer()", FString(UTF8_TO_TCHAR(e.ToString().c_str())));
 
 		return false;
 	}
@@ -317,10 +304,28 @@ bool FVAPluginModule::isConnected()
 		return pVANet->IsConnected();
 	}
 	catch (CVAException& e) {
+		useVA = false;
 		processExeption("FVAPluginModule::isConnected() ", FString(e.ToString().c_str()));
 		return false;
 	}
 
+}
+
+bool FVAPluginModule::disconnectServer()
+{
+	if (!isConnected()) {
+		return true;
+	}
+	return true;
+	VAUtils::logStuff("[FVAPluginModule::disconnectServer()] Disconnecting now");
+	pVA->Finalize();
+
+	if (pVANet != nullptr) {
+		if (pVANet->IsConnected()) {
+			pVANet->Disconnect();
+		}
+	}
+	return true;
 }
 
 
@@ -472,7 +477,7 @@ int FVAPluginModule::createNewDirectivity(FString fileName)
 	}
 	catch (CVAException& e)
 	{
-		processExeption("FVAPluginModule::setSoundSourceRot()", FString(e.ToString().c_str()));
+		processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()) + " (" + fileName + ")");
 		// if (&e == nullptr)
 		// {
 		// }
@@ -491,11 +496,11 @@ bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
 	}
 	catch (CVAException& e)
 	{
-		if (&e == nullptr)
-		{
-		}
+		processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()));
+		// if (&e == nullptr)
+		// {
+		// }
 
-		//processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()));
 		return false;
 	}
 }

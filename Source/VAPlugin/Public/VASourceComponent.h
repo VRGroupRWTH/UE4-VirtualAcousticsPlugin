@@ -19,6 +19,13 @@
 
 #include "VASourceComponent.generated.h"
 
+// struct used to input Directivity via Variable in UE4 Editor
+UENUM()
+enum EDir {
+	DefaultHRIR,
+	manualFile,
+	phoneme
+};
 
 UENUM()
 enum EMovement {
@@ -96,6 +103,21 @@ public:
 		FName vBoneName = FName("CC_Base_Head");
 
 
+	// Choose Directivity File for Receiver
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity",		Category = "Directivity"))
+		TEnumAsByte<EDir> vDirectivity = EDir::DefaultHRIR;
+
+	// Factor for global output Gain
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name",	Category = "Directivity"))		// CanEditChange used
+		FString vDirectivityByFileName = "$(DefaultHRIR)";
+
+	// Factor for global output Gain
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by phoneme",		Category = "Directivity"))		// CanEditChange used
+		FString vDirectivityByPhoneme = "";
+
+
+
+
 
 	// Sets default values for this component's properties
 	UVASourceComponent();
@@ -121,30 +143,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void pauseSound();
 
-// 	// Update Position // 
-// 	UFUNCTION(BlueprintCallable)
-// 		void updatePosition(FVector vec, FRotator rot);
-
-// 	// Plays Sound With Reflections // 
-// 	UFUNCTION(BlueprintCallable)
-// 		void playSoundWithReflections();
-// 
-//  	// Plays Sound starting at second x With Reflections // 
-//  	UFUNCTION(BlueprintCallable)
-//  		void playSoundFromSecondWithReflections(float time);
-// 
-// 	// Pauses Sound With Reflections //
-// 	UFUNCTION(BlueprintCallable)
-// 		void stopSoundWithReflections();
-// 
-// 	// Stops Sound With Reflections //
-// 	UFUNCTION(BlueprintCallable)
-// 		void pauseSoundWithReflections();
-// 
-// 	// Update Position With Reflections // 
-// 	UFUNCTION(BlueprintCallable)
-// 		void updatePositionWithReflections(FVector vec, FRotator rot);
-
 	// returns the Position minding its setting for location //
 	UFUNCTION(BlueprintCallable)
 		FVector getPosition();
@@ -152,31 +150,6 @@ public:
 	// returns the Roatation minding its setting for rotation // 
 	UFUNCTION(BlueprintCallable)
 		FRotator getRotation();
-
-// 	// set directivity of sound source with reflections // 
-// 	UFUNCTION(BlueprintCallable)
-// 		bool setDirectivityWithReflections_Phoneme(FString phoneme);
-// 
-// 	// set directivity of sound source with reflections // 
-// 	UFUNCTION(BlueprintCallable)
-// 		bool setDirectivity_Phoneme(FString phoneme);
-
-// 	// set directivity of sound source with reflections // 
-// 	UFUNCTION(BlueprintCallable)
-// 		bool setReflectedSourceRepresentation(AVAReflectionWall *wall, FVector pos, FRotator rot);
-// 
-// 	// set directivity of sound source with reflections // 
-// 	UFUNCTION(BlueprintCallable)
-// 		bool setSourceRepresentation();
-
-// 	// sets visibility of sound source representation // 
-// 	UFUNCTION(BlueprintCallable)
-// 		bool setReflectedSourceReprVisibility(AVAReflectionWall *wall, bool visibility);
-// 
-// 	// sets visibility of sound source representation // 
-// 	UFUNCTION(BlueprintCallable)
-// 		bool setSourceReprVisibility(bool visibility);
-
 
 
 
@@ -199,7 +172,6 @@ public:
 
 	void setSoundSourcePosition(FVector pos);
 	void setSoundSourceRotation(FRotator rot);
-
 
 
 

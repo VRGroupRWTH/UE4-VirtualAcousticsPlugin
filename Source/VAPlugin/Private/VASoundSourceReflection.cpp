@@ -21,7 +21,7 @@ VASoundSourceReflection::VASoundSourceReflection(
 		soundSourceID = FVAPluginModule::createNewSoundSource(sBufferID, name, pos, rot, gainFactor);
 		if (soundSourceID == -1)
 		{
-			VAUtils::logStuff("Error initializing soundSource in VASoundSourceReflection()");
+			VAUtils::logStuff("[VASoundSourceReflection::VASoundSourceReflection(...)] Error initializing soundSource in VASoundSourceReflection()", true);
 			return;
 		}
 	}

@@ -2,10 +2,12 @@
 
 #include "VAPlugin.h"
 
+#include <string.h>
 
-VADirectivity::VADirectivity() 
-	: dirID(-1)
+
+VADirectivity::VADirectivity(FString fileName)
 {
+	dirID = FVAPluginModule::createNewDirectivity(fileName);
 
 }
 
@@ -27,7 +29,8 @@ VADirectivity::VADirectivity(FString fileName, TArray<FString> phonemes_)
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
 	if (dirID == -1) {
-		UE_LOG(LogTemp, Warning, TEXT("   Directivity file %s cannot be found!"), *fileName);
+		FString output = "[VADirectivity::VADirectivity(FString fileName, TArray<FString> phonemes_)] Directivity file " + fileName + " cannot be found!";
+		VAUtils::logStuff(output, true);
 		return;
 	}
 	
@@ -47,12 +50,17 @@ void VADirectivity::addPhoneme(FString phoneme)
 }
 
 void VADirectivity::logInfo() {
-	FString output = "";
+	FString output = " [Info]  Directivity for: ";
+	
+	if (phonemes.Num() == 0) {
+		VAUtils::logStuff("Dir has no phonemes");
+	}
+	
 	for (auto entry : phonemes) {
 		output.Append(*entry).Append(",");
 	}
 	output.RemoveAt(output.Len() - 1, 1, true);
-	UE_LOG(LogTemp, Warning, TEXT(" [Info]  Directivity for: "), *output);
+	VAUtils::logStuff(output);
 }
 
 bool VADirectivity::containsPhoneme(FString phoneme)

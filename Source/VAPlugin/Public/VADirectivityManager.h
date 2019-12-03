@@ -19,6 +19,9 @@ public:
 	bool isValid();
 
 	void printDirMapping();
+
+	static VADirectivity* getDefaultReceiverDirectivity();
+	static VADirectivity* getDefaultSourceDirectivity();
 	
 private:
 	TArray<VADirectivity*> directivities;
@@ -26,5 +29,8 @@ private:
 	VADirectivity* defaultDir;
 
 	FString configFileName;
+
+	static VADirectivity* defaultReceiverDirectivity;
+	static VADirectivity* defaultSourceDirectivity;
 
 };

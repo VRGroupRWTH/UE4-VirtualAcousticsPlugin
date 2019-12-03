@@ -2,6 +2,7 @@
 
 #include "VASourceComponent.h"
 #include "VASoundSource.h"
+#include "VAReceiverActor.h"
 
 // Sets default values for this component's properties
 UVASourceComponent::UVASourceComponent() {
@@ -78,8 +79,25 @@ void UVASourceComponent::initialize()
 			vMovement = EMovement::MoveWithObject;
 		}
 	}
-	
+
 	soundSource = new VASoundSource(this);
+
+	switch (vDirectivity) {
+		case EDir::DefaultHRIR : 
+			soundSource->setDirectivity(new VADirectivity(FString("$(DefaultHRIR)")));
+			break;
+
+		case EDir::manualFile :
+			soundSource->setDirectivity(new VADirectivity(vDirectivityByFileName));
+			break;
+
+		case EDir::phoneme :
+			soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme));
+
+
+	}
+	
+	VAUtils::logStuff("SoundSourceComponent initialized successfully");
 
 	initialized = true;
 
@@ -195,14 +213,21 @@ void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
 
 void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 {
-	VADirectivity* dir = AVAReceiverActor::getDirectvityByPhoneme(phoneme);
-	soundSource->setDirectivity(dir);
+	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(phoneme));
 }
 
 void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
 	soundSource->setVisibility(vis);
 }
+
+
+
+// ****************************************************************** // 
+// ******* Directivity stuff **************************************** //
+// ****************************************************************** //
+
+
 
 
 // ****************************************************************** // 
@@ -262,6 +287,17 @@ bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
 		return vMovement == EMovement::AttatchToBone;
 	}
 
+	// Check Directivity Config
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vDirectivityByFileName))
+	{
+		return vDirectivity == EDir::manualFile;
+	}
+
+	// Check Bone Name
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vDirectivityByPhoneme))
+	{
+		return vDirectivity == EDir::phoneme;
+	}
 
 
 	return ParentVal;

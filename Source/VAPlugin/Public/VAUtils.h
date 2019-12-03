@@ -5,6 +5,8 @@
 #include "Modules/ModuleManager.h"
 #include "VASourceComponent.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(VALog, Log, All);
+
 //forward declarations:
 class VAQuat;
 class VAVec3;
@@ -52,7 +54,7 @@ public:
 
 	static bool scaleVAVec(VAVec3& vecVA, float scale);
 
-	static void logStuff(FString text);
+	static void logStuff(FString text, bool error = false);
 
 	static int EPlayActionToVAAction(EPlayAction action);
 

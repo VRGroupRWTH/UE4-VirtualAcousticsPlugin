@@ -13,7 +13,7 @@
 #include "VANet.h"
 // #pragma warning(default:5038)
 
-
+DEFINE_LOG_CATEGORY(VALog);
 
 void VAUtils::openMessageBox(FString text, bool error)
 {
@@ -201,9 +201,14 @@ bool VAUtils::scaleVAVec(VAVec3 & vecVA, float scale)
 	return true;
 }
 
-void VAUtils::logStuff(FString text)
+void VAUtils::logStuff(FString text, bool error)
 {
-	UE_LOG(LogTemp, Error, TEXT("[MSchmeling] : %s"), *text);
+	if (error) {
+		UE_LOG(VALog, Error, TEXT("%s"), *text);
+	}
+	else {
+		UE_LOG(VALog, Log, TEXT("%s"), *text);
+	}
 }
 
 int VAUtils::EPlayActionToVAAction(EPlayAction action)

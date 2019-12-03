@@ -5,7 +5,7 @@
 class VADirectivity
 {
 public:
-	VADirectivity();
+	VADirectivity(FString fileName);
 	VADirectivity(int dirID_, TArray<FString> phonemes);
 	VADirectivity(FString fileName, FString phoneme);
 	VADirectivity(FString fileName, TArray<FString> phonemes);

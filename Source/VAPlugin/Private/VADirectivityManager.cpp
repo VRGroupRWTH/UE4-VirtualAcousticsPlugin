@@ -5,6 +5,9 @@
 #include "Core.h"
 #include "Interfaces/IPluginManager.h"
 
+VADirectivity* VADirectivityManager::defaultReceiverDirectivity = nullptr;
+VADirectivity* VADirectivityManager::defaultSourceDirectivity = nullptr;
+
 VADirectivityManager::VADirectivityManager()
 	: configFileName("")
 {
@@ -109,6 +112,9 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 
 	}
 
+	defaultReceiverDirectivity = new VADirectivity(FString("$(DefaultHRIR)"));
+	defaultSourceDirectivity   = new VADirectivity(FString("$(HumanDir)"));
+
 }
 
 VADirectivity* VADirectivityManager::getDirectivityByPhoneme(FString phoneme)
@@ -118,8 +124,9 @@ VADirectivity* VADirectivityManager::getDirectivityByPhoneme(FString phoneme)
 			return entry;
 		}
 	}
+	FString output = "[VADirectivityManager::getDirectivityByPhoneme()] Directivity for phoneme " + phoneme + " cannot be found!";
+	VAUtils::logStuff(output, true);
 
-	UE_LOG(LogTemp, Warning, TEXT("   Directivity for phoneme %s could not be found!"), *phoneme);
 	return defaultDir;
 }
 
@@ -133,5 +140,24 @@ void VADirectivityManager::printDirMapping()
 	for (auto entry : directivities) {
 		entry->logInfo();
 	}
+}
+
+VADirectivity * VADirectivityManager::getDefaultReceiverDirectivity()
+{
+	if (defaultReceiverDirectivity == nullptr) {
+		defaultReceiverDirectivity = new VADirectivity(FString("$(DefaultHRIR)"));
+	}
+
+	return defaultReceiverDirectivity;
+}
+
+VADirectivity * VADirectivityManager::getDefaultSourceDirectivity()
+{
+	if (defaultSourceDirectivity == nullptr) {
+		defaultSourceDirectivity = new VADirectivity(FString("$(HumanDir)"));
+	}
+
+	defaultSourceDirectivity = new VADirectivity(FString("$(HumanDir)"));
+	return defaultSourceDirectivity;
 }
 

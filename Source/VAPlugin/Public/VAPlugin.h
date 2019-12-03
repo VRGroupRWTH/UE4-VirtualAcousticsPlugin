@@ -71,6 +71,9 @@ public:
     // check if VA Server is connected //
     static bool isConnected();
 
+	// Disconnect from VA Server 
+	static bool disconnectServer();
+
    
 
 
@@ -124,6 +127,7 @@ public:
 	static bool getIsMaster();
 	static AVAReceiverActor* getReceiverActor();
 	static TArray<AVAReflectionWall*> getReflectionWalls();
+	
 
 protected:
 

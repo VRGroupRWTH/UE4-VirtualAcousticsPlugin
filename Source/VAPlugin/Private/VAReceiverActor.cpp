@@ -15,13 +15,11 @@
 
 #include "VirtualRealityPawn.h"
 
-
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 
-// bool AVAReceiverActor::vDebugMode;
 
-VADirectivityManager AVAReceiverActor::dirManager;
+AVAReceiverActor* AVAReceiverActor::currentReceiverActor;
 
 // Sets default values
 AVAReceiverActor::AVAReceiverActor()
@@ -41,23 +39,22 @@ void AVAReceiverActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	FVAPluginModule::setReceiverActor(this);
+
+	currentReceiverActor = this;
+
 	// Ask if used or not
 	FVAPluginModule::askForSettings(getIPAdress(), getPort(), vAskForDebugMode);
 
-	
-	if (FVAPluginModule::getUseVA()) {
-		runOnAllNodes("useVA = true");
-	}
-	else {
-		runOnAllNodes("useVA = false");
-		return;
-	}
-
-	if (FVAPluginModule::getDebugMode()) {
-		runOnAllNodes("debugMode = true");
-	}
-	else {
-		runOnAllNodes("debugMode = false");
+	if (FVAPluginModule::getIsMaster()) {
+		if (FVAPluginModule::getUseVA()) {
+			runOnAllNodes("useVA = true");
+		}
+		else {
+			runOnAllNodes("useVA = false");
+			return;
+		}
 	}
 
 	// General stuff 
@@ -85,16 +82,12 @@ void AVAReceiverActor::BeginPlay()
 	FVAPluginModule::setScale(vScale);
 	
 
-	isMaster = FVAPluginModule::getIsMaster();
-
 	if (!FVAPluginModule::getUseVA()) {
 		return;
 	}
 
-	if (isMaster) {
+	if (FVAPluginModule::getIsMaster()) {
 		if (!FVAPluginModule::isConnected()) {
-			// Connect to VA Server
-			// FVAPluginModule::initializeServer(adresse, vPort);
 			FVAPluginModule::connectServer(getIPAdress(), getPort());
 		}
 		else {
@@ -103,6 +96,10 @@ void AVAReceiverActor::BeginPlay()
 	
 	
 	}
+
+	// Initialize the dirManager
+	dirManager.readConfigFile(dirName);
+	
 	// Initialize Receiver Actor
 	receiverID = FVAPluginModule::createNewSoundReceiver(this);
 
@@ -111,10 +108,6 @@ void AVAReceiverActor::BeginPlay()
 		initializeWalls();
 	}
 
-	// FVAPluginModule::initializeWalls(walls);
-
-	// // Initialize Sounds that could not have been processed earlier because of the missing connection to the VA Server
-	// FVAPluginModule::processSoundQueue();
 
 	// Handle all sound Sources
 	TArray<AActor*> actorsA;
@@ -128,7 +121,14 @@ void AVAReceiverActor::BeginPlay()
 		}
 	}
 
-	dirManager.readConfigFile(dirName);
+	if (FVAPluginModule::getIsMaster()) {
+		if (FVAPluginModule::getDebugMode()) {
+			runOnAllNodes("debugMode = true");
+		}
+		else {
+			runOnAllNodes("debugMode = false");
+		}
+	}
 
 }
 
@@ -163,7 +163,7 @@ void AVAReceiverActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!FVAPluginModule::getUseVA() || !isMaster) {
+	if (!FVAPluginModule::getUseVA() || !FVAPluginModule::getIsMaster()) {
 		return;
 	}
 
@@ -175,7 +175,6 @@ void AVAReceiverActor::Tick(float DeltaTime)
 		// FVAPluginModule::setSoundReceiverPosition(receiverID, FVector(100,0,0));
 		// FVAPluginModule::setSoundReceiverRotation(receiverID, FRotator(0,0,0));
 		updateRealWorldPosition();
-		trash = FVAPluginModule::getUseVA();
 
 		timeSinceUpdate = 0.0f;
 	}
@@ -200,15 +199,6 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 {
 	controller->GetPlayerViewPoint(tmpPosF, tmpRotF);
 
-	// FString text = "Position of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
-	// text.Append(FString::FromInt(tmpPosF.X)).Append("/").Append(FString::FromInt(tmpPosF.Y)).Append("/").Append(FString::FromInt(tmpPosF.Z));
-	// VAUtils::logStuff(text);
-	// 
-	// text = "Rotation of Receiver (id: " + FString::FromInt(receiverID) + ") is: ";
-	// text.Append(FString::FromInt(tmpRotF.Roll)).Append("/").Append(FString::FromInt(tmpRotF.Pitch)).Append("/").Append(FString::FromInt(tmpRotF.Yaw));
-	// 
-	// VAUtils::logStuff(text);
-
 	FVAPluginModule::setSoundReceiverPosition(receiverID, tmpPosF);
 	FVAPluginModule::setSoundReceiverRotation(receiverID, tmpRotF);
 
@@ -217,7 +207,7 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 
 bool AVAReceiverActor::updateRealWorldPosition()
 {
-	if (!FVAPluginModule::isMasterAndUsed()) {
+	if (!(FVAPluginModule::getIsMaster() && FVAPluginModule::getUseVA())) {
 		return false;
 	}
 	
@@ -317,7 +307,7 @@ FString AVAReceiverActor::getIPAdress()
 			
 	}
 
-	VAUtils::logStuff("Error in AVAReceiverActor::getIPAdress()");
+	VAUtils::logStuff("Error in AVAReceiverActor::getIPAdress()", true);
 
 	return FString("localhost");
 }
@@ -338,7 +328,7 @@ int AVAReceiverActor::getPort()
 			break;
 	}
 
-	VAUtils::logStuff("Error in AVAReceiverActor::getPort()");
+	VAUtils::logStuff("Error in AVAReceiverActor::getPort()", true);
 
 	return 12340;
 }
@@ -361,22 +351,7 @@ VADirectivity* AVAReceiverActor::getDirectvityByPhoneme(FString phoneme)
 	return dirManager.getDirectivityByPhoneme(phoneme);
 }
 
-std::string AVAReceiverActor::getDirectivity()
-{
-	std::string sDirect;
 
-	switch (vDirectivity)
-	{
-		case DefaultHRIR:
-			sDirect = "$(DefaultHRIR)";
-			break;
-		default:
-			sDirect = "$(DefaultHRIR)";
-			break;
-	}
-	
-	return sDirect;
-}
 
 
 // ****************************************************************** // 
@@ -391,15 +366,22 @@ void AVAReceiverActor::runOnAllNodes(FString command)
 		if (Manager->IsStandalone()) {
 			//in standalone (e.g., desktop editor play) cluster events are not executed....
 			handleClusterCommand(command);
+			VAUtils::logStuff("Cluster Command " + command + " ran localy");
 		}
 		else {
 			// else create a cluster event to react to
 			FDisplayClusterClusterEvent cluster_event;
 			cluster_event.Name = command;
 			Manager->EmitClusterEvent(cluster_event, true);
+			VAUtils::logStuff("Cluster Command " + command + " sent");
 		}
 	}
 
+}
+
+AVAReceiverActor* AVAReceiverActor::getCurrentReceiverActor()
+{
+	return currentReceiverActor;
 }
 
 void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent & Event)
@@ -450,17 +432,7 @@ bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 		return vAdressType == EAdress::manual;
 	}
 
-	// Check Directivity Config
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vDirectivityByFileName))
-	{
-		return vDirectivity == EDir::manualFile;
-	}
 
-	// Check Bone Name
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vDirectivityByPhoneme))
-	{
-		return vDirectivity == EDir::phoneme;
-	}
 
 
 

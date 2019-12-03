@@ -73,3 +73,7 @@ Funktion für Server Löschung: pVA->Finalize();
 	};
 */
 
+void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot) 
+
+PluginModule::resetServer return true;
+PluginModule::disconnect

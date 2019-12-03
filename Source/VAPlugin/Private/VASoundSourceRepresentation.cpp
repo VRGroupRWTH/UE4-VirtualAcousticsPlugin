@@ -46,7 +46,9 @@ bool AVASoundSourceRepresentation::setRot(FRotator rot)
 
 bool AVASoundSourceRepresentation::setVisibility(bool visibility)
 {
-	sphereMesh->SetVisibility(visibility);
+	if (sphereMesh != nullptr) {
+		sphereMesh->SetVisibility(visibility);
+	}
 	// sphereMesh->SetVisibility(true);
 	return true;
 }

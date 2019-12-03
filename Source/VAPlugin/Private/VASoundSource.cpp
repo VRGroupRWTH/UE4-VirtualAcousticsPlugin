@@ -41,14 +41,14 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 		sBufferID = FVAPluginModule::createNewBuffer(fileName, loop, soundTimeOffset);
 		if (sBufferID == "")
 		{
-			VAUtils::logStuff("Error initializing Buffer in VASoundSource()");
+			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing Buffer", true);
 			return;
 		}
 	
 		soundSourceID = FVAPluginModule::createNewSoundSource(sBufferID, name, pos, rot, gainFactor);
 		if (soundSourceID == -1)
 		{
-			VAUtils::logStuff("Error initializing soundSource in VASoundSource()");
+			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource", true);
 			return;
 		}
 	}
@@ -129,7 +129,7 @@ void VASoundSource::setVisibility(bool vis_)
 	
 	soundSourceRepresentation->setVisibility(showCones);
 
-	if (handleReflections) {
+	if (handleReflections && reflections.Num() != 0) {
 		for (auto ref : reflections) {
 			ref->setVisibility(showCones);
 		}
@@ -141,7 +141,7 @@ bool VASoundSource::getVisibility()
 	return showCones;
 }
 
-void VASoundSource::setDirectivity(VADirectivity * dir)
+void VASoundSource::setDirectivity(VADirectivity* dir)
 {
 	directivity = dir;
 

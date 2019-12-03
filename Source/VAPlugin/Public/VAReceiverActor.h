@@ -13,13 +13,7 @@
 #include "GameFramework/Actor.h"
 #include "VAReceiverActor.generated.h"
 
-// struct used to input Directivity via Variable in UE4 Editor
-UENUM()
-enum EDir { 
-	DefaultHRIR,
-	manualFile, 
-	phoneme
-}; 
+
 
 UENUM()
 enum EAdress {
@@ -66,33 +60,13 @@ public:
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
 		uint16 vPort = 12340;
 
-	// Choose Directivity File for Receiver
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity",							Category = "Directivity"))
-		TEnumAsByte<EDir> vDirectivity = EDir::DefaultHRIR;
-
-	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name",				Category = "Directivity"))
-		FString vDirectivityByFileName = "$(DefaultHRIR)";
-
-	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by phoneme",					Category = "Directivity"))
-		FString vDirectivityByPhoneme = "";
-
 	// Factor for global output Gain
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities",		Category = "Directivity Manager"))
 		FString dirName = "VADir_default.ini";
 
 
 
-	// // Factor for global output Gain
-	// UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?"))
-	// 	static bool vDebugMode;
 
-	// return directivity x in form: $(x)
-	std::string getDirectivity();
-	
-	// return Offset
-	// float getGainFactor();
 
 	// return Scale
 	float getScale();
@@ -102,11 +76,13 @@ public:
 
 	int getPort();
 
-	static VADirectivity* getDirectvityByPhoneme(FString phoneme);
+	VADirectivity* getDirectvityByPhoneme(FString phoneme);
 
 	TArray<AVAReflectionWall*> getReflectionWalls();
 
 	void runOnAllNodes(FString command);
+
+	static AVAReceiverActor* getCurrentReceiverActor();
 
 
 protected:
@@ -140,13 +116,12 @@ protected:
 	VAVec3*		tmpPos;
 	VAQuat*		tmpQuat;
 
-	bool isMaster;
 
 	int receiverID;
 
 	// STUFF AFTER CHANGE
 
-	static VADirectivityManager dirManager;
+	VADirectivityManager dirManager;
 
 	TArray<AVAReflectionWall*> reflectionWalls;
 
@@ -169,7 +144,7 @@ protected:
 	virtual bool CanEditChange(const UProperty* InProperty) const;
 #endif
 
-	bool trash;
+	static AVAReceiverActor* currentReceiverActor;
 
 public:	
 	// Called every frame
