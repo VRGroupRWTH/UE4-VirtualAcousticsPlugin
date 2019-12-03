@@ -18,6 +18,10 @@
 // #include "IDisplayCluster.h"
 // #include "IDisplayClusterClusterManager.h"
 
+// #pragma warning(disable:5038) //disable initilization order warning
+#include "VA.h"
+#include "VANet.h"
+// #pragma warning(default:5038)
 
 #include "VAReceiverActor.h"
 #include "VASourceComponent.h"

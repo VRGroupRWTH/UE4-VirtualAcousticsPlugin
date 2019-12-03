@@ -6,9 +6,13 @@
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
 #include "VAPlugin.h"
-//#include "VA.h"
-//#include "VANet.h"
 //#include "VistaBase/VistaTimeUtils.h"
+
+// #pragma warning(disable:5038) //disable initilization order warning
+#include "VA.h"
+#include "VANet.h"
+// #pragma warning(default:5038)
+
 
 
 void VAUtils::openMessageBox(FString text, bool error)
