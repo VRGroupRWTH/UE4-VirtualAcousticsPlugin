@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "VASoundSourceRepresentation.h"
 #include "VASoundSourceBaseClass.h"
 #include "VAReflectionWall.h"
