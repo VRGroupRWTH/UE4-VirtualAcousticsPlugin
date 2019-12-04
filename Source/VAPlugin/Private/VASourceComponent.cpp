@@ -203,7 +203,9 @@ FRotator UVASourceComponent::getRotation()
 	}
 
 	if (vUseOffset) {
-		rot = rot + vOffsetRotation;
+		FQuat quat(rot);
+		quat = quat * FQuat(vOffsetRotation);
+		rot = FRotator(quat);
 	}
 
 	return rot;
