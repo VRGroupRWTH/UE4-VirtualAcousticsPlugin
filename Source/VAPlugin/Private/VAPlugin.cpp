@@ -527,7 +527,7 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 	try {
 
 		int iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
-		int iHRIR = pVA->CreateDirectivityFromFile("$(DefaultHRIR)");
+		int iHRIR = VADirectivityManager::getDefaultReceiverDirectivity()->getID();
 		pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 		return iSoundReceiverID;
 	}

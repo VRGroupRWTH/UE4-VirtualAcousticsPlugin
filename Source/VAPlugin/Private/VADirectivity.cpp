@@ -5,39 +5,35 @@
 #include <string.h>
 
 
-VADirectivity::VADirectivity(FString fileName)
+VADirectivity::VADirectivity(FString fileName_) : 
+	fileName(fileName_)
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
 
 }
 
-VADirectivity::VADirectivity(int dirID_, TArray<FString> phonemes_)
-	: dirID(dirID_), phonemes(phonemes_)
-{
 
-}
-
-VADirectivity::VADirectivity(FString fileName, FString phoneme)
+VADirectivity::VADirectivity(FString fileName_, FString phoneme) : 
+	fileName(fileName_)
 {
 	TArray<FString> tmp;
 	tmp.Add(phoneme);
 	VADirectivity(fileName, tmp);
 }
 
-VADirectivity::VADirectivity(FString fileName, TArray<FString> phonemes_)
-	: phonemes(phonemes_)
+VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) : 
+	fileName(fileName_), phonemes(phonemes_)
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
 	if (dirID == -1) {
-		FString output = "[VADirectivity::VADirectivity(FString fileName, TArray<FString> phonemes_)] Directivity file " + fileName + " cannot be found!";
-		VAUtils::logStuff(output, true);
+		// FString output = "[VADirectivity::VADirectivity(FString fileName, TArray<FString> phonemes_)] Directivity file " + fileName + " cannot be found!";
+		// VAUtils::logStuff(output, true);
 		return;
 	}
 	
 	VAUtils::logStuff("created new VADirectivity");
 	
 }
-
 
 int VADirectivity::getID()
 {
@@ -47,6 +43,13 @@ int VADirectivity::getID()
 void VADirectivity::addPhoneme(FString phoneme)
 {
 	phonemes.Add(phoneme);
+}
+
+void VADirectivity::addPhoneme(TArray<FString> phoneme)
+{
+	for (auto tmp : phoneme) {
+		addPhoneme(tmp);
+	}
 }
 
 void VADirectivity::logInfo() {
@@ -71,6 +74,11 @@ bool VADirectivity::containsPhoneme(FString phoneme)
 bool VADirectivity::isValid()
 {
 	return dirID != -1;
+}
+
+FString VADirectivity::getFileName()
+{
+	return fileName;
 }
 /*
 */

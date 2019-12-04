@@ -27,6 +27,13 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 	directivities.Empty();
 	configFileName = configFileName_;
 
+	defaultReceiverDirectivity = new VADirectivity(FString("$(DefaultHRIR)"));
+	defaultSourceDirectivity   = new VADirectivity(FString("$(HumanDir)"));
+
+	directivities.Add(defaultReceiverDirectivity);
+	directivities.Add(defaultSourceDirectivity);
+
+
 	// Read config File
 	// FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
 	// FString dir = FPaths::Combine(*BaseDir, TEXT("config/directivities/"));
@@ -102,8 +109,16 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 		output.Append(" --> " + tmp_fileName);
 		VAUtils::logStuff(output);
 
-		VADirectivity* tmpDir = new VADirectivity(tmp_fileName, tmp_phonemes);
-		directivities.Add(tmpDir);
+		VADirectivity* tmpDir = getDirectivityByFileName(tmp_fileName);
+
+		// If there is no Dir from that file
+		if (tmpDir == nullptr) {
+			tmpDir = new VADirectivity(tmp_fileName, tmp_phonemes);
+			directivities.Add(tmpDir);
+		}
+		else { // If there already is an existing Dir with that file
+			tmpDir->addPhoneme(tmp_phonemes);
+		}
 
 		// If it is the default directivity
 		if (tmp_phonemes.Contains("default")) {
@@ -112,9 +127,14 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 
 	}
 
-	defaultReceiverDirectivity = new VADirectivity(FString("$(DefaultHRIR)"));
-	defaultSourceDirectivity   = new VADirectivity(FString("$(HumanDir)"));
 
+
+}
+
+void VADirectivityManager::reset()
+{
+	delete defaultReceiverDirectivity, defaultSourceDirectivity, defaultDir;
+	directivities.Empty();
 }
 
 VADirectivity* VADirectivityManager::getDirectivityByPhoneme(FString phoneme)
@@ -125,7 +145,23 @@ VADirectivity* VADirectivityManager::getDirectivityByPhoneme(FString phoneme)
 		}
 	}
 	FString output = "[VADirectivityManager::getDirectivityByPhoneme()] Directivity for phoneme " + phoneme + " cannot be found!";
-	VAUtils::logStuff(output, true);
+	VAUtils::logStuff(output);
+
+	return defaultDir;
+}
+
+VADirectivity* VADirectivityManager::getDirectivityByFileName(FString fileName_)
+{
+	for (auto entry : directivities) {
+		if (entry->getFileName() == fileName_) {
+			FString output = "[VADirectivityManager::getDirectivityByFileName()] Directivity from file " + fileName_ + " was found!";
+			VAUtils::logStuff(output);
+
+			return entry;
+		}
+	}
+	FString output = "[VADirectivityManager::getDirectivityByFileName()] Directivity from file " + fileName_ + " cannot be found!";
+	VAUtils::logStuff(output);
 
 	return defaultDir;
 }
@@ -157,7 +193,6 @@ VADirectivity * VADirectivityManager::getDefaultSourceDirectivity()
 		defaultSourceDirectivity = new VADirectivity(FString("$(HumanDir)"));
 	}
 
-	defaultSourceDirectivity = new VADirectivity(FString("$(HumanDir)"));
 	return defaultSourceDirectivity;
 }
 

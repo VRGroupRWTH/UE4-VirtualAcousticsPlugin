@@ -84,15 +84,24 @@ void UVASourceComponent::initialize()
 
 	switch (vDirectivity) {
 		case EDir::DefaultHRIR : 
-			soundSource->setDirectivity(new VADirectivity(FString("$(DefaultHRIR)")));
+			soundSource->setDirectivity(VADirectivityManager::getDefaultSourceDirectivity());
 			break;
 
 		case EDir::manualFile :
-			soundSource->setDirectivity(new VADirectivity(vDirectivityByFileName));
+			// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme);
+			// soundSource->setDirectivity(new VADirectivity(vDirectivityByFileName));
 			break;
 
 		case EDir::phoneme :
-			soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme));
+			// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme);
+			// 
+			// if (tmp != nullptr) {
+			// 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme));
+			// }
+			// else {
+			// 	
+			// }
+			break;
 
 
 	}

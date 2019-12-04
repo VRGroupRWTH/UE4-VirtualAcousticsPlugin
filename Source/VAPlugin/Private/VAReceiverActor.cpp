@@ -135,7 +135,10 @@ void AVAReceiverActor::BeginPlay()
 void AVAReceiverActor::BeginDestroy()
 {
 	Super::BeginDestroy();
+	
 	FVAPluginModule::resetServer();
+
+	dirManager.reset();
 
 	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
 	if (ClusterManager && ClusterEventListenerDelegate.IsBound())

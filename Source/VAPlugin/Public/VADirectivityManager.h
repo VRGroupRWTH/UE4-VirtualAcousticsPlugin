@@ -14,7 +14,11 @@ public:
 
 	void readConfigFile(FString configFileName_);
 
+
+	void reset();
+
 	VADirectivity* getDirectivityByPhoneme(FString phoneme);
+	VADirectivity* getDirectivityByFileName(FString fileName_);
 
 	bool isValid();
 
