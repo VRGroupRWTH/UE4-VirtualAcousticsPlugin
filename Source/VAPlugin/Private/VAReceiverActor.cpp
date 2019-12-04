@@ -229,47 +229,19 @@ bool AVAReceiverActor::updateRealWorldPosition()
 		return false;
 	}
 
-	FString name_shutter = "shutter_glasses";
-	FVector  shutter; 
-	FRotator shutterRot;
-	
-	FString name_origin = "cave_origin";
-	FVector  origin;
-	FRotator originRot;
+	auto head = vr_pawn->GetHeadComponent();
+	auto origin = vr_pawn->GetTrackingOriginComponent();
 
-	UClass* component_class = UDisplayClusterSceneComponent::StaticClass();
-
-	auto parent_vec = vr_pawn->GetComponentsByClass(component_class);
-	bool suc1 = false;
-	bool suc2 = false;
-
-	for (auto parent : parent_vec) {
-		if (parent->GetName() == FString(name_shutter)) {
-			auto tmp = dynamic_cast<USceneComponent*>(parent);
-			
-			shutter = tmp->GetComponentLocation();
-			shutterRot = tmp->GetComponentRotation();
-			suc1 = true;
-		}
-		else if (parent->GetName() == FString(name_origin)) {
-			auto tmp = dynamic_cast<USceneComponent*>(parent);
-
-			origin = tmp->GetComponentLocation();
-			originRot = tmp->GetComponentRotation();
-			suc2 = true;
-		}
-	}
-
-	// check if both is found
-	if (!(suc1 && suc2)) {
+	if (!head || !origin)
 		return false;
-	}
 
 	// calculate positions
-	FVector pos = shutter - origin;
-	FRotator rot = shutterRot - originRot;
+	FVector pos = head->GetComponentLocation() - origin->GetComponentLocation();
+	FRotator rot = head->GetComponentRotation() - origin->GetComponentRotation();
+	FQuat quat = origin->GetComponentQuat().Inverse() * head->GetComponentQuat();
 
-	// VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "RL rot: " + rot.ToString()));
+	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, TEXT("RL pos: " + pos.ToString() + "  RL rot: " + rot.RotateVector(FVector(1,0,0)).ToString()+ "  RL quat: "+quat.RotateVector(FVector(1, 0, 0)).ToString()));
+	//VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "  RL rot: " + rot.ToString()));
 	
     return FVAPluginModule::setSoundReceiverRealWorldPose(receiverID, pos, rot);
 }
