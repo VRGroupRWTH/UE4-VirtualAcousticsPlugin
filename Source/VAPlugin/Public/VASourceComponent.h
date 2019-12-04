@@ -55,7 +55,7 @@ public:
 
 	// In- or decrease Gain Offset
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name",			Category = "General Settings"))
-		FString vSoundName = "Audiofiles/Bauer.wav";
+		FString vSoundName = "WelcomeToVA.wav";
 
 	// Loop sound?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action",				Category = "General Settings"))

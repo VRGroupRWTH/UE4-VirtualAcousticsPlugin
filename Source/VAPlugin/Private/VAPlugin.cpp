@@ -73,6 +73,7 @@ void FVAPluginModule::processExeption(FString location, FString exp)
 	FString output = " in [";
 	output.Append(location).Append("] with error: ").Append(exp);
 	VAUtils::logStuff(output, true);
+	VAUtils::openMessageBox(output, true);
 }
 
 bool FVAPluginModule::isMasterAndUsed()
