@@ -133,7 +133,10 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 
 void VADirectivityManager::reset()
 {
-	delete defaultReceiverDirectivity, defaultSourceDirectivity, defaultDir;
+	defaultReceiverDirectivity 	 = nullptr;
+	defaultSourceDirectivity 	 = nullptr;
+	defaultDir					 = nullptr;
+	
 	directivities.Empty();
 }
 
