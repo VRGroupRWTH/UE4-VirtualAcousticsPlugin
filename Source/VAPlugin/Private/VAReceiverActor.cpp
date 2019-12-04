@@ -79,14 +79,15 @@ void AVAReceiverActor::BeginPlay()
 		ClusterManager->AddClusterEventListener(ClusterEventListenerDelegate);
 	}
 
-	FVAPluginModule::setScale(vScale);
-	
-
 	if (!FVAPluginModule::getUseVA()) {
 		return;
 	}
 
+
 	if (FVAPluginModule::getIsMaster()) {
+
+		FVAPluginModule::setScale(vScale);
+
 		if (!FVAPluginModule::isConnected()) {
 			FVAPluginModule::connectServer(getIPAdress(), getPort());
 		}
@@ -94,14 +95,12 @@ void AVAReceiverActor::BeginPlay()
 			FVAPluginModule::resetServer();
 		}
 	
+		// Initialize the dirManager
+		dirManager.readConfigFile(dirName);
 	
+		// Initialize Receiver Actor
+		receiverID = FVAPluginModule::createNewSoundReceiver(this);
 	}
-
-	// Initialize the dirManager
-	dirManager.readConfigFile(dirName);
-	
-	// Initialize Receiver Actor
-	receiverID = FVAPluginModule::createNewSoundReceiver(this);
 
 	// Initialize Walls for Sound Reflection
 	if (!wallsInitialized) {
@@ -114,12 +113,15 @@ void AVAReceiverActor::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AActor::StaticClass(), actorsA);
 	
 	UVASourceComponent* tmp;
+
 	for (AActor* actor : actorsA) {
 		tmp = dynamic_cast<UVASourceComponent*> (actor->GetComponentByClass(UVASourceComponent::StaticClass()));
 		if (tmp != nullptr) {
 			tmp->initialize();
 		}
 	}
+
+
 
 	if (FVAPluginModule::getIsMaster()) {
 		if (FVAPluginModule::getDebugMode()) {

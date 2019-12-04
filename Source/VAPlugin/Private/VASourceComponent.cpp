@@ -82,28 +82,30 @@ void UVASourceComponent::initialize()
 
 	soundSource = new VASoundSource(this);
 
-	switch (vDirectivity) {
-		case EDir::DefaultHRIR : 
-			soundSource->setDirectivity(VADirectivityManager::getDefaultSourceDirectivity());
-			break;
+	if (FVAPluginModule::getIsMaster()) {
+		switch (vDirectivity) {
+			case EDir::DefaultHRIR : 
+				soundSource->setDirectivity(VADirectivityManager::getDefaultSourceDirectivity());
+				break;
 
-		case EDir::manualFile :
-			// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme);
-			// soundSource->setDirectivity(new VADirectivity(vDirectivityByFileName));
-			break;
+			case EDir::manualFile :
+				// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme);
+				// soundSource->setDirectivity(new VADirectivity(vDirectivityByFileName));
+				break;
 
-		case EDir::phoneme :
-			// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme);
-			// 
-			// if (tmp != nullptr) {
-			// 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme));
-			// }
-			// else {
-			// 	
-			// }
-			break;
-
-
+			case EDir::phoneme :
+				// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme);
+				// 
+				// if (tmp != nullptr) {
+				// 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(vDirectivityByPhoneme));
+				// }
+				// else {
+				// 	
+				// }
+				break;
+			default:
+				break;
+		}
 	}
 	
 	VAUtils::logStuff("SoundSourceComponent initialized successfully");
