@@ -336,6 +336,11 @@ bool FVAPluginModule::disconnectServer()
 
 std::string FVAPluginModule::createNewBuffer(std::string soundFileName, bool loop, float soundOffset)
 {
+	if (!isConnected()) {
+		return "";
+	}
+
+
 	std::string sSignalSourceID;
 
 	try
@@ -357,6 +362,10 @@ std::string FVAPluginModule::createNewBuffer(std::string soundFileName, bool loo
 
 bool FVAPluginModule::setSoundBufferAction(std::string sBufferID, EPlayAction action)
 {
+	if (!isConnected()) {
+		return false;
+	}
+
 	try
 	{
 		pVA->SetSignalSourceBufferPlaybackAction(sBufferID, VAUtils::EPlayActionToVAAction(action));
@@ -372,6 +381,10 @@ bool FVAPluginModule::setSoundBufferAction(std::string sBufferID, EPlayAction ac
 
 bool FVAPluginModule::setSoundBufferTime(std::string sBufferID, float time)
 {
+	if (!isConnected()) {
+		return false;
+	}
+
 	try
 	{
 		pVA->SetSignalSourceBufferPlaybackPosition(sBufferID, time);
@@ -393,6 +406,10 @@ bool FVAPluginModule::setSoundBufferTime(std::string sBufferID, float time)
 int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name,
 	FVector soundPos, FRotator soundRot, float gainFactor)
 {
+	if (!isConnected()) {
+		return -1;
+	}
+
 	soundPos = VAUtils::toVACoordinateSystem(soundPos);
 	soundRot = VAUtils::toVACoordinateSystem(soundRot);
 
@@ -425,6 +442,10 @@ int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name
 
 bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
 {
+	if (!isConnected()) {
+		return false;
+	}
+
 	pos = VAUtils::toVACoordinateSystem(pos);
 	
 	VAUtils::fVecToVAVec3(pos, *tmpVec);
@@ -445,6 +466,10 @@ bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
 
 bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 {
+	if (!isConnected()) {
+		return false;
+	}
+
 	rot = VAUtils::toVACoordinateSystem(rot);
 
 	FQuat fQuat = rot.Quaternion();
@@ -471,6 +496,10 @@ bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 
 int FVAPluginModule::createNewDirectivity(FString fileName)
 {
+	if (!isConnected()) {
+		return -1;
+	}
+
 	try
 	{
 		std::string dir(TCHAR_TO_UTF8(*fileName));
@@ -490,6 +519,10 @@ int FVAPluginModule::createNewDirectivity(FString fileName)
 
 bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
 {
+	if (!isConnected()) {
+		return false;
+	}
+
 	try
 	{
 		pVA->SetSoundSourceDirectivity(soundSourceID, dirID);
@@ -515,11 +548,7 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 {
 	receiverActor = actor;
 
-	if (!isMaster) {
-		return -1;
-	}
-
-	if (pVA == nullptr) {
+	if (!isConnected() || !isMaster) {
 		return -1;
 	}
 
@@ -540,7 +569,7 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 
 bool FVAPluginModule::setSoundReceiverDirectivity(int soundReceiverID, int dirID)
 {
-	if (pVA == nullptr) {
+	if (!isConnected()) {
 		return false;
 	}
 
@@ -556,7 +585,7 @@ bool FVAPluginModule::setSoundReceiverDirectivity(int soundReceiverID, int dirID
 
 bool FVAPluginModule::setSoundReceiverPosition(int soundReceiverID, FVector pos)
 {
-	if (pVA == nullptr) {
+	if (!isConnected()) {
 		return false;
 	}
 
@@ -577,7 +606,7 @@ bool FVAPluginModule::setSoundReceiverPosition(int soundReceiverID, FVector pos)
 
 bool FVAPluginModule::setSoundReceiverRotation(int soundReceiverID, FRotator rot)
 {
-	if (pVA == nullptr) {
+	if (!isConnected()) {
 		return false;
 	}
 
@@ -603,7 +632,7 @@ bool FVAPluginModule::setSoundReceiverRotation(int soundReceiverID, FRotator rot
 
 bool FVAPluginModule::setSoundReceiverRealWorldPose(int soundReceiverID, FVector pos, FRotator rot)
 {
-	if (pVA == nullptr) {
+	if (!isConnected()) {
 		return false;
 	}
 
