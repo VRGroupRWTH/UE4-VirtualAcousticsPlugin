@@ -30,7 +30,6 @@ enum EDir {
 UENUM()
 enum EMovement {
 	AttatchToBone,
-	OwnPosition,
 	ObjectSpawnPoint,
 	MoveWithObject
 };
@@ -48,71 +47,62 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// In- or decrease Gain Offset 
+	// In- or decrease Gain Factor (linear to power)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor",		Category = "General Settings", 
 		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
 		float vGainFactor = 1.0f;
 
-	// In- or decrease Gain Offset
+	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name",			Category = "General Settings"))
 		FString vSoundName = "WelcomeToVA.wav";
 
-	// Whatsup
+	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action",				Category = "General Settings"))
 		TEnumAsByte<EPlayAction> vAction = EPlayAction::Play;
 
-	// Loop sound?
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop",				Category = "General Settings"))
-		bool vLoop = false;
-
-	// Start at Second x
+	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]",	Category = "General Settings"))
 		float vDelay = 0.0f;
 
-	// Check if reflections should be considered
+	// Check if the sound should be played back in a loop
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop",				Category = "General Settings"))
+		bool vLoop = false;
+
+	// Check if reflections by walls should be considered
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?",	Category = "General Settings"))
 		bool vHandleReflections = true;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings",	Category = "General Settings", 
-		CustomStructureParam = "Attatch to a Bone, Own Position, At Object Spawn Point, Move With the Object"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings",	Category = "Position", 
+		CustomStructureParam = "Attatch to a Bone, At Object Spawn Point, Move With the Object"))
 		TEnumAsByte<EMovement> vMovement = EMovement::ObjectSpawnPoint;
 
-	// Manual Position (if used)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position",			Category = "Manual Pose"))		
-		FVector vPos = FVector(0, 0, 1.7);
-
-	// Manual Rotation (if used)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Rotation",			Category = "Manual Pose"))		
-		FRotator vRot = FRotator(0, 0, 0);
-
-	// Offset
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?",		Category = "Offset"))
+	// Use the manual Offset for the position?
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?",		Category = "Position"))
 		bool vUseOffset = true;
 
-	// Offset
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Offset",			EditCondition = "vUseOffset"))
+	// Offset in Position
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Position",			EditCondition = "vUseOffset"))
 		FVector vOffsetPosition = FVector(0, 0, 0);
 
-	// Offset
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Offset",			EditCondition = "vUseOffset"))
+	// Offset in Rotation
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Position",			EditCondition = "vUseOffset"))
 		FRotator vOffsetRotation = FRotator(0, 90, 0);
 
-	// Name of Bone bound to
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name",			Category = "Attatch to bone")) // CanEditChange used
+	// Name of Bone bound to if Position is set to "Attatch to a Bone"
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name",			Category = "Position")) 
 		FName vBoneName = FName("CC_Base_Head");
 
-
-	// Choose Directivity File for Receiver
+	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity",		Category = "Directivity"))
 		TEnumAsByte<EDir> vDirectivity = EDir::DefaultHRIR;
 
-	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name",	Category = "Directivity"))		// CanEditChange used
+	// File Name of the Directivity that sould be used
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name",	Category = "Directivity"))		
 		FString vDirectivityByFileName = "$(DefaultHRIR)";
 
-	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by phoneme",		Category = "Directivity"))		// CanEditChange used
+	// Directivity that is used by a specific phoneme (see Receiver Actor Directivity Manager)
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by phoneme",		Category = "Directivity"))		
 		FString vDirectivityByPhoneme = "";
 
 

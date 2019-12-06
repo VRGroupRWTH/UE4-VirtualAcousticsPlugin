@@ -42,20 +42,20 @@ public:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?",					Category = "General Settigns"))
 		bool vAskForDebugMode = true;
 
-	// Choose Where To use the Plugin (Important for IP Adress and Port)
+	// Choose how to connect to the Server (automatic: build with windows connect with localhost:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase",								Category = "Connection"))
 		TEnumAsByte<EAdress> vAdressType = EAdress::automatic;
 
-	// Factor for global output Gain
+	// IP Adress for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress",								Category = "Connection"))		// CanEditChange used
 		FString vAdress = "10.0.1.240";
 
-	// Factor for global output Gain
+	// Port for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]",						Category = "Connection",		// CanEditChange used
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
 		uint16 vPort = 12340;
 
-	// Factor for global output Gain
+	// File name of the Directivity mapping file
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities",		Category = "Directivity Manager"))
 		FString dirName = "VADir_default.ini";
 

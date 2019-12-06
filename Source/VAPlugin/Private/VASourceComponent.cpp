@@ -155,10 +155,6 @@ FVector UVASourceComponent::getPosition()
 			pos = spawnPosition;
 			break;
 
-		case EMovement::OwnPosition:
-			pos = vPos;
-			break;
-
 		case EMovement::AttatchToBone:
 			pos = skeletal_mesh_component->GetSocketLocation(vBoneName);
 			break;
@@ -186,10 +182,6 @@ FRotator UVASourceComponent::getRotation()
 
 	case EMovement::ObjectSpawnPoint:
 		rot = spawnRotation;
-		break;
-
-	case EMovement::OwnPosition:
-		rot = vRot;
 		break;
 
 	case EMovement::AttatchToBone:
@@ -281,18 +273,6 @@ FString UVASourceComponent::getFileName() {
 bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
-
-	// Check manual Position
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vPos))
-	{
-		return vMovement == EMovement::OwnPosition;
-	}
-
-	// Check manual Rotation
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vRot))
-	{
-		return vMovement == EMovement::OwnPosition;
-	}
 
 	// Check Bone Name
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, vBoneName))
