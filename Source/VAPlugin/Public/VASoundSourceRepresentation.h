@@ -17,11 +17,9 @@ public:
 	// Sets default values for this actor's properties
 	AVASoundSourceRepresentation();
 
-	UPROPERTY(VisibleDefaultsOnly)
-		USphereComponent* sphereComp;
+	USphereComponent* sphereComp;
 
-	UPROPERTY(VisibleDefaultsOnly)
-		UStaticMeshComponent* sphereMesh;
+	UStaticMeshComponent* sphereMesh;
 
 	bool setPos(FVector pos);
 

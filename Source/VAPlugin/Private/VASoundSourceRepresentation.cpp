@@ -18,12 +18,13 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 	sphereComp->bHiddenInGame = true;
 	sphereComp->Mobility = EComponentMobility::Movable;
 	RootComponent = sphereComp;
-
+	
 	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	sphereMesh->AttachTo(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
 	if (SphereMeshAsset.Succeeded()) {
 		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
+		// sphereMesh->AttachTo(RootComponent);
+		sphereMesh->SetupAttachment(RootComponent);
 		sphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
 		sphereMesh->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
