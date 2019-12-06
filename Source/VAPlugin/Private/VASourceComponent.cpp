@@ -1,8 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "VASourceComponent.h"
-#include "VASoundSource.h"
 #include "VAReceiverActor.h"
+#include "VAPlugin.h"
+
+/*
+#include "CoreMinimal.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "Array.h"
+#include "Components/SkeletalMeshComponent.h"
+*/
 
 // Sets default values for this component's properties
 UVASourceComponent::UVASourceComponent() {
@@ -78,6 +86,11 @@ void UVASourceComponent::initialize()
 			VAUtils::openMessageBox("Error: Could not find bone, using MoveWithObject instead.");
 			vMovement = EMovement::MoveWithObject;
 		}
+	}
+
+	if (vMovement == EMovement::ObjectSpawnPoint) {
+		spawnPosition = ownerActor->GetTransform().GetLocation();
+		spawnRotation = ownerActor->GetTransform().GetRotation().Rotator();
 	}
 
 	soundSource = new VASoundSource(this);

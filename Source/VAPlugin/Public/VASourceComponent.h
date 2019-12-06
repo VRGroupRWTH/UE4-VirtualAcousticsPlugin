@@ -2,20 +2,7 @@
 
 #pragma once
 
-#include "VADefines.h"
-#include "VADirectivityManager.h"
-#include "VASoundSource.h"
-
-#include "VAPlugin.h"
-#include "VAReflectionWall.h"
-#include "VASoundSourceRepresentation.h"
-#include "CoreMinimal.h"
-#include "Array.h"
-#include "Components/ActorComponent.h"
-
-#include "Components/SphereComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "VASoundSource.h"								// From VA
 
 #include "VASourceComponent.generated.h"
 
@@ -213,10 +200,6 @@ protected:
 	// 	TMap<AVAReflectionWall*, AVASoundSourceRepresentation*> sourceReprMap;
 
 
-
-
-	// NEUES ZEUG //
-	AVASoundSourceRepresentation* sourceRepr;
 	
 	VASoundSource* soundSource;
 

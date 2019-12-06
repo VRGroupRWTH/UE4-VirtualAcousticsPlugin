@@ -1,7 +1,10 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "VAUtils.h"
-#include "VADefines.h"
+
+#include "VAReflectionWall.h"
+#include "VASourceComponent.h"
+
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"

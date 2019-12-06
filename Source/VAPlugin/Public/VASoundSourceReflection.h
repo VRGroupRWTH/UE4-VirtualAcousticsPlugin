@@ -8,6 +8,7 @@
 #include "VASoundSourceBaseClass.h"
 #include "VAReflectionWall.h"
 #include "VASoundSource.h"
+#include "VADirectivity.h"
 
 
 class VASoundSource;

@@ -2,6 +2,10 @@
 // what's up?
 
 #include "VAReceiverActor.h"
+
+#include "VAPlugin.h"
+#include "VAUtils.h"
+
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "VADefines.h"
@@ -56,10 +60,6 @@ void AVAReceiverActor::BeginPlay()
 			return;
 		}
 	}
-
-	// General stuff 
-	tmpPos = new VAVec3();
-	tmpQuat = new VAQuat();
 
 	wallsInitialized = false;
 	

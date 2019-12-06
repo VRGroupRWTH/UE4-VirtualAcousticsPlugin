@@ -3,18 +3,19 @@
 #pragma once
 
 #include "Modules/ModuleManager.h"
-#include "Components/SphereComponent.h"
+
+
+#include "VAUtils.h"
 
 #define VANET_STATIC
 #define VABASE_STATIC
 #define VA_STATIC
 
-#include "VAUtils.h"
-#include "VAReflectionWall.h"
 
 
 //forward declarations:
 class AVAReceiverActor;
+class AVAReflectionWall;
 class UVASourceComponent;
 class CVAException;
 class IVANetClient;

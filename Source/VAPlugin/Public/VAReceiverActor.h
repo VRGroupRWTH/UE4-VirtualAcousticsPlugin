@@ -2,17 +2,17 @@
 
 #pragma once
 
-#include "VAPlugin.h"
 
 #include "VADirectivityManager.h"
 
 #include "Cluster/IDisplayClusterClusterManager.h"		// For Events
 #include "Cluster/DisplayClusterClusterEvent.h"			// For Events
-
 #include "CoreMinimal.h"								// For Events
-#include "GameFramework/Actor.h"
+
 #include "VAReceiverActor.generated.h"
 
+// Foreward declarations
+class AVAReflectionWall;
 
 
 UENUM()
@@ -108,8 +108,6 @@ protected:
 	FVector		tmpPosF;
 	FRotator	tmpRotF;
 	FQuat		tmpQuatF;
-	VAVec3*		tmpPos;
-	VAQuat*		tmpQuat;
 
 
 	int receiverID;
