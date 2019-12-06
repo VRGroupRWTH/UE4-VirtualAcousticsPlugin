@@ -185,6 +185,7 @@ void AVAReceiverActor::Tick(float DeltaTime)
 		timeSinceUpdate = 0.0f;
 	}
 
+	/*
 	if (totalTime > 2.0f) {
 		if (FVAPluginModule::getDebugMode()) {
 			runOnAllNodes("debugMode = false");
@@ -194,6 +195,7 @@ void AVAReceiverActor::Tick(float DeltaTime)
 		}
 		totalTime = 0.0f;
 	}
+	*/	
 }
 
 
