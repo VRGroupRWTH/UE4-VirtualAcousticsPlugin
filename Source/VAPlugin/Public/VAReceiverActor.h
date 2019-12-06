@@ -33,11 +33,6 @@ class VAPLUGIN_API AVAReceiverActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AVAReceiverActor();
-
-	// Factor for global output Gain // TODO:
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor [0,1] (not working yet)",	Category = "General Settigns",
-		ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
-		float vGainFactor = 1.0f;
 	
 	// How many units in UE equal 1m in World
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale",									Category = "General Settigns"))

@@ -57,7 +57,7 @@ public:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name",			Category = "General Settings"))
 		FString vSoundName = "WelcomeToVA.wav";
 
-	// Loop sound?
+	// Whatsup
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action",				Category = "General Settings"))
 		TEnumAsByte<EPlayAction> vAction = EPlayAction::Play;
 
@@ -79,11 +79,11 @@ public:
 		TEnumAsByte<EMovement> vMovement = EMovement::ObjectSpawnPoint;
 
 	// Manual Position (if used)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position",			Category = "Manual Pose"))		// CanEditChange used
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position",			Category = "Manual Pose"))		
 		FVector vPos = FVector(0, 0, 1.7);
 
 	// Manual Rotation (if used)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Rotation",			Category = "Manual Pose"))		// CanEditChange used
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Rotation",			Category = "Manual Pose"))		
 		FRotator vRot = FRotator(0, 0, 0);
 
 	// Offset
