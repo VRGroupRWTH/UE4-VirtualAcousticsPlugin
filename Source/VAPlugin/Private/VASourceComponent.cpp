@@ -133,21 +133,37 @@ void UVASourceComponent::initialize()
 
 void UVASourceComponent::playSound()
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->playSound();
 }
 
 void UVASourceComponent::playSoundFromSecond(float time)
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->playSoundFromSecond(time);
 }
 
 void UVASourceComponent::stopSound()
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->stopSound();
 }
 
 void UVASourceComponent::pauseSound()
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->pauseSound();
 }
 
@@ -217,10 +233,16 @@ FRotator UVASourceComponent::getRotation()
 }
 
 void UVASourceComponent::setSoundSourcePosition(FVector pos) {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setPos(pos);
 }
 
 void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setRot(rot);
 }
 
@@ -231,11 +253,17 @@ void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
 
 void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(phoneme));
 }
 
 void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setVisibility(vis);
 }
 
