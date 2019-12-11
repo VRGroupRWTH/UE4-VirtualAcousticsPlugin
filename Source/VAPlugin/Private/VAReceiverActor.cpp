@@ -214,11 +214,7 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 }
 
 bool AVAReceiverActor::updateRealWorldPosition()
-{
-	if (!(FVAPluginModule::getIsMaster() && FVAPluginModule::getUseVA())) {
-		return false;
-	}
-	
+{	
 	auto world = GetWorld();
 	if  (world == nullptr) {
 		return false;
@@ -241,14 +237,17 @@ bool AVAReceiverActor::updateRealWorldPosition()
 		return false;
 
 	// calculate positions
-	FVector pos = head->GetComponentLocation() - origin->GetComponentLocation();
-	FRotator rot = head->GetComponentRotation() - origin->GetComponentRotation();
-	FQuat quat = origin->GetComponentQuat().Inverse() * head->GetComponentQuat();
+	FQuat inverseOriginRot = origin->GetComponentQuat().Inverse();
+	FVector pos = inverseOriginRot.RotateVector(head->GetComponentLocation() - origin->GetComponentLocation());
+	FQuat quat = inverseOriginRot * head->GetComponentQuat();
 
-	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, TEXT("RL pos: " + pos.ToString() + "  RL rot: " + rot.RotateVector(FVector(1,0,0)).ToString()+ "  RL quat: "+quat.RotateVector(FVector(1, 0, 0)).ToString()));
-	//VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "  RL rot: " + rot.ToString()));
+	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, TEXT("RL pos: " + pos.ToString() + "  RL forward: "+quat.RotateVector(FVector(1, 0, 0)).ToString()));
 	
-    return FVAPluginModule::setSoundReceiverRealWorldPose(receiverID, pos, rot);
+	if (!(FVAPluginModule::getIsMaster() && FVAPluginModule::getUseVA())) {
+		return false;
+	}
+	
+    return FVAPluginModule::setSoundReceiverRealWorldPose(receiverID, pos, quat.Rotator());
 }
 
 
