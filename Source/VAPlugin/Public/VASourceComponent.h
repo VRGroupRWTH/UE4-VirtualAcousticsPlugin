@@ -143,6 +143,9 @@ public:
 		void setDirectivityByPhoneme(FString phoneme);
 
 	UFUNCTION(BlueprintCallable)
+		void setDirectivityByFileName(FString fileName);
+
+	UFUNCTION(BlueprintCallable)
 		void setSoundSourceVisibility(bool vis_);
 
 	UFUNCTION(BlueprintCallable)

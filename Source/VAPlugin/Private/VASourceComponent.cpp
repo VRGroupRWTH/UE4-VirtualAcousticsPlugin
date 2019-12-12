@@ -263,6 +263,14 @@ void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(phoneme));
 }
 
+void UVASourceComponent::setDirectivityByFileName(FString fileName)
+{
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
+	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(fileName));
+}
+
 void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
   if (!FVAPluginModule::getUseVA()) {

@@ -6,16 +6,16 @@ VASoundSourceReflection::VASoundSourceReflection(
 	AVAReflectionWall* wall_, 
 	std::string sBufferID,
 	std::string name,
-	FVector pos,
-	FRotator rot, 
+	FVector pos_,
+	FRotator rot_, 
 	float gainFactor) :
 	parentSource(parentSource_), 
 	wall(wall_)
 {
 	showCones = parentSource->getVisibility();
 
-	pos = VAUtils::computeReflectedPos(wall, pos);
-	rot = VAUtils::computeReflectedRot(wall, rot);
+	pos = VAUtils::computeReflectedPos(wall, pos_);
+	rot = VAUtils::computeReflectedRot(wall, rot_);
 
 	if (FVAPluginModule::getIsMaster()) {
 		soundSourceID = FVAPluginModule::createNewSoundSource(sBufferID, name, pos, rot, gainFactor);
