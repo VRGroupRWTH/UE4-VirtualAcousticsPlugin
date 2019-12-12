@@ -382,6 +382,24 @@ bool FVAPluginModule::setSoundBufferAction(std::string sBufferID, EPlayAction ac
 	}
 }
 
+int FVAPluginModule::getSoundBufferAction(std::string sBufferID) 
+{
+	if (!isConnected()) {
+		return -2;
+	}
+
+	try
+	{
+		int state = pVA->GetSignalSourceBufferPlaybackState(sBufferID);	
+		return state;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::getSoundBufferAction()", FString(e.ToString().c_str()));
+		return -2;
+	}
+}
+
 bool FVAPluginModule::setSoundBufferTime(std::string sBufferID, float time)
 {
 	if (!isConnected()) {

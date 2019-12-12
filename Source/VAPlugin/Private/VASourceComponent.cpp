@@ -151,6 +151,12 @@ void UVASourceComponent::pauseSound()
 }
 
 
+EPlayAction UVASourceComponent::getPlayState()
+{
+	int state = soundSource->getPlayState();
+	return VAUtils::VAActionToEPlayAction(state);
+}
+
 // ****************************************************************** // 
 // ******* Sound Pose *********************************************** //
 // ****************************************************************** //

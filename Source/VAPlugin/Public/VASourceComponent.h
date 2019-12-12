@@ -128,6 +128,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FRotator getRotation();
 
+	// returns the Play Sate in form of a EPlayAction // 
+	UFUNCTION(BlueprintCallable)
+		EPlayAction getPlayState();
+
 
 
 

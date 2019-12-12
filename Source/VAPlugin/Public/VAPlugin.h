@@ -83,25 +83,26 @@ public:
 
 	static std::string createNewBuffer(std::string soundFileName, bool loop = false, float soundOffset = 0.0f);
 	static bool setSoundBufferAction(std::string sBufferID, EPlayAction action);
+	static int  getSoundBufferAction(std::string sBufferID);
 	static bool setSoundBufferTime(std::string sBufferID, float time);
 
 
 	// ******* Sound Sources ******* //
 
-	static int createNewSoundSource(std::string bufferID, std::string name, FVector pos = FVector(0,0,0), FRotator rot = FRotator(0,0,0), float gainFactor = 1.0f);
+	static int  createNewSoundSource(std::string bufferID, std::string name, FVector pos = FVector(0,0,0), FRotator rot = FRotator(0,0,0), float gainFactor = 1.0f);
 	static bool setSoundSourcePos(int soundSourceID, FVector pos);
 	static bool setSoundSourceRot(int soundSourceID, FRotator rot);
 
 
 	// ******* Directivities ******* //
 
-	static int createNewDirectivity(FString fileName);
+	static int  createNewDirectivity(FString fileName);
 	static bool setSoundSourceDirectivity(int soundSourceID, int dirID);
 
 
 	// ******* Sound Receiver ******* //
 
-	static int createNewSoundReceiver(AVAReceiverActor* actor);
+	static int  createNewSoundReceiver(AVAReceiverActor* actor);
 	static bool setSoundReceiverDirectivity(int soundReceiverID, int dirID);
 	static bool setSoundReceiverPosition(int soundReceiverID, FVector pos);
 	static bool setSoundReceiverRotation(int soundReceiverID, FRotator rot);

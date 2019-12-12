@@ -121,17 +121,6 @@ void AVAReceiverActor::BeginPlay()
 		}
 	}
 
-
-	/*
-	if (FVAPluginModule::getIsMaster()) {
-		if (FVAPluginModule::getDebugMode()) {
-			runOnAllNodes("debugMode = true");
-		}
-		else {
-			runOnAllNodes("debugMode = false");
-		}
-	}
-	*/
 	if (FVAPluginModule::getIsMaster()) {
 		if (FVAPluginModule::getDebugMode()) {
 			runOnAllNodes("debugMode = true");

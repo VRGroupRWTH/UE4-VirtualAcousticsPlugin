@@ -57,7 +57,7 @@ public:
 	static void logStuff(FString text, bool error = false);
 
 	static int EPlayActionToVAAction(EPlayAction action);
-
+	static EPlayAction VAActionToEPlayAction(int action);
 
 	/*
 	static bool getViewingPos(FVector* vec, FQuat* quat);
