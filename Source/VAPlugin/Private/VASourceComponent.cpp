@@ -78,7 +78,7 @@ void UVASourceComponent::initialize()
 	
 	if (movementSetting == EMovement::AttatchToBone) {
 		if (skeletal_mesh_component != nullptr 
-			&& skeletal_mesh_component->DoesSocketExist(boneName)) {
+			&& skeletal_mesh_component->DoesSocketExist(FName(*boneName))) {
 			VAUtils::logStuff("Bone detected.");
 		}
 		else {
@@ -123,7 +123,6 @@ void UVASourceComponent::initialize()
 	VAUtils::logStuff("SoundSourceComponent initialized successfully");
 
 	initialized = true;
-
 }
 
 // ****************************************************************** // 
@@ -190,7 +189,7 @@ FVector UVASourceComponent::getPosition()
 			break;
 
 		case EMovement::AttatchToBone:
-			pos = skeletal_mesh_component->GetSocketLocation(boneName);
+			pos = skeletal_mesh_component->GetSocketLocation(FName(*boneName));
 			break;
 		
 		default:
@@ -219,7 +218,7 @@ FRotator UVASourceComponent::getRotation()
 		break;
 
 	case EMovement::AttatchToBone:
-		rot = skeletal_mesh_component->GetSocketRotation(boneName);
+		rot = skeletal_mesh_component->GetSocketRotation(FName(*boneName));
 		break;
 
 	default:
@@ -235,20 +234,6 @@ FRotator UVASourceComponent::getRotation()
 	}
 
 	return rot;
-}
-
-void UVASourceComponent::setSoundSourcePosition(FVector pos) {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
-	soundSource->setPos(pos);
-}
-
-void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
-	soundSource->setRot(rot);
 }
 
 
@@ -271,6 +256,23 @@ void UVASourceComponent::setSoundSourceVisibility(bool vis)
   }
 	soundSource->setVisibility(vis);
 }
+
+void UVASourceComponent::setGainFactor(float gainFactor_)
+{
+	VAUtils::logStuff("UVASourceComponent::setGainFactor not working yet!!", true);
+	return;
+}
+
+void UVASourceComponent::setSoundFile(FString soundFile_)
+{
+	soundFile = soundFile_;
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+	soundSource->setNewSound(soundFile);	
+}
+
 
 
 
@@ -307,7 +309,7 @@ float UVASourceComponent::getSoundTimeOffset() {
 }
 
 FString UVASourceComponent::getFileName() {
-	return soundName;
+	return soundFile;
 }
 
 

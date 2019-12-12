@@ -41,7 +41,7 @@ public:
 
 	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name",			Category = "General Settings"))
-		FString soundName = "WelcomeToVA.wav";
+		FString soundFile = "WelcomeToVA.wav";
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action",				Category = "General Settings"))
@@ -78,7 +78,7 @@ public:
 
 	// Name of Bone bound to if Position is set to "Attatch to a Bone"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name",			Category = "Position")) 
-		FName boneName = FName("CC_Base_Head");
+		FString boneName = "CC_Base_Head";
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity",		Category = "Directivity"))
@@ -100,7 +100,7 @@ public:
 	UVASourceComponent();
 
 
-	// initialize Sound Source // 
+	// initialize Sound Source with the settings set // 
 	UFUNCTION(BlueprintCallable)
 		void initialize();
 
@@ -120,6 +120,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void pauseSound();
 
+// 	UFUNCTION(BlueprintCallable)										 // TODO! 
+// 		void muteSound();												 // TODO! 
+// 																		 // TODO! 
+// 	UFUNCTION(BlueprintCallable)										 // TODO! 
+// 		void unmuteSound();
+
+
 	// returns the Position minding its setting for location //
 	UFUNCTION(BlueprintCallable)
 		FVector getPosition();
@@ -132,26 +139,46 @@ public:
 	UFUNCTION(BlueprintCallable)
 		EPlayAction getPlayState();
 
+	UFUNCTION(BlueprintCallable)
+		void setDirectivityByPhoneme(FString phoneme);
+
+	UFUNCTION(BlueprintCallable)
+		void setSoundSourceVisibility(bool vis_);
+
+	UFUNCTION(BlueprintCallable)
+		void setGainFactor(float gainFactor_);
+	
+	UFUNCTION(BlueprintCallable)
+		void setSoundFile(FString soundFile_);
+	
+// 	UFUNCTION(BlueprintCallable)
+// 		void setLoop(bool loop_);
+// 	
+// 	UFUNCTION(BlueprintCallable)
+// 		void setUsePoseOffset(bool usePoseOffset_);
+// 	
+// 	UFUNCTION(BlueprintCallable)
+// 		void setOffsetPosition(FVector pos_);
+// 	
+// 	UFUNCTION(BlueprintCallable)
+// 		void setOffsetRotation(FRotator rot_);
+// 	
+// 	UFUNCTION(BlueprintCallable)
+// 		void setBoneName(FString boneName_);
 
 
 
-	FString getFileName();
 
-	bool getHandleReflections();
-	bool getLoop();
+
 
 	float getGainFactor();
 	float getSoundTimeOffset();
-
-	void setDirectivityByPhoneme(FString phoneme);
+	
+	FString getFileName();
 
 	bool getVisibility();
-	void setSoundSourceVisibility(bool vis);
-
-	void setSoundSourcePosition(FVector pos);
-	void setSoundSourceRotation(FRotator rot);
-
-
+	bool getHandleReflections();
+	bool getLoop();
 
 protected:
 	// Called when the game starts

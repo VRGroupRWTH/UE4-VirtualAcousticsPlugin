@@ -337,7 +337,7 @@ bool FVAPluginModule::disconnectServer()
 // ******* Sound Buffer ********************************************* //
 // ****************************************************************** //
 
-std::string FVAPluginModule::createNewBuffer(std::string soundFileName, bool loop, float soundOffset)
+std::string FVAPluginModule::createNewBuffer(FString soundFileName, bool loop, float soundOffset)
 {
 	if (!isConnected()) {
 		return "";
@@ -346,10 +346,12 @@ std::string FVAPluginModule::createNewBuffer(std::string soundFileName, bool loo
 
 	std::string sSignalSourceID;
 
+	std::string fileName(TCHAR_TO_UTF8(*soundFileName));
+
 	try
 	{
-		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundFileName);
-		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
+		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(fileName);
+		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundFile); // DELETED HERE
 		pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
 		pVA->SetSignalSourceBufferPlaybackPosition(sSignalSourceID, soundOffset);
 		pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, 0);
@@ -442,15 +444,15 @@ int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name
 
 	try
 	{
-		int iSoundSourceID = pVA->CreateSoundSource(name);
-		pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
+		int soundSourceID = pVA->CreateSoundSource(name);
+		pVA->SetSoundSourcePose(soundSourceID, *tmpVec, *tmpQuat);
 
-		float power = pVA->GetSoundSourceSoundPower(iSoundSourceID) * gainFactor;
-		pVA->SetSoundSourceSoundPower(iSoundSourceID, power);
+		float power = pVA->GetSoundSourceSoundPower(soundSourceID) * gainFactor;
+		pVA->SetSoundSourceSoundPower(soundSourceID, power);
 
-		pVA->SetSoundSourceSignalSource(iSoundSourceID, bufferID);
+		pVA->SetSoundSourceSignalSource(soundSourceID, bufferID);
 
-		return iSoundSourceID;
+		return soundSourceID;
 
 	}
 	catch (CVAException& e)
@@ -506,6 +508,24 @@ bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 	catch (CVAException& e)
 	{
 		processExeption("FVAPluginModule::setSoundSourceRot()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setNewBufferForSoundSource(int soundSourceID, std::string bufferID)
+{
+	if (!isConnected()) {
+		return false;
+	}
+
+	try
+	{
+		pVA->SetSoundSourceSignalSource(soundSourceID, bufferID);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setNewBufferForSoundSource()", FString(e.ToString().c_str()));
 		return false;
 	}
 }

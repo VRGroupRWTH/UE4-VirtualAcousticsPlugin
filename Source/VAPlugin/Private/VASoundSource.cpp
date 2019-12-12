@@ -40,7 +40,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	std::string nameTmp;
 
 	if (FVAPluginModule::getIsMaster()) {
-		sBufferID = FVAPluginModule::createNewBuffer(fileName, loop, soundTimeOffset);
+		sBufferID = FVAPluginModule::createNewBuffer(parentComponent->getFileName(), loop, soundTimeOffset);
 		if (sBufferID == "")
 		{
 			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing Buffer", true);
@@ -226,6 +226,21 @@ void VASoundSource::playSoundFromSecond(float time)
 int VASoundSource::getPlayState()
 {
 	return FVAPluginModule::getSoundBufferAction(sBufferID);
+}
+
+void VASoundSource::setNewSound(FString soundFile_)
+{
+	// stop 
+	stopSound();
+
+	// create new buffer
+	std::string newBufferID = FVAPluginModule::createNewBuffer(soundFile_);
+
+	// link buffer
+	FVAPluginModule::setNewBufferForSoundSource(soundSourceID, newBufferID);
+	for (auto iter : reflections) {
+		FVAPluginModule::setNewBufferForSoundSource(iter->getSoundSourceID(), newBufferID);
+	}
 }
 
 

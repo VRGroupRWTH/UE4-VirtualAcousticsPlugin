@@ -49,6 +49,10 @@ public:
 	int getPlayState();
 
 
+	// new functions for runtime usage
+	void setNewSound(FString soundFile_);
+
+
 private: 
 
 	FVector pos;
