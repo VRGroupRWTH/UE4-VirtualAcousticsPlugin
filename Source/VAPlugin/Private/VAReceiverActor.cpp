@@ -59,6 +59,13 @@ void AVAReceiverActor::BeginPlay()
 			runOnAllNodes("useVA = false");
 			return;
 		}
+
+		if (FVAPluginModule::getDebugMode()) {
+			runOnAllNodes("debugMode = true");
+		}
+		else {
+			runOnAllNodes("debugMode = false");
+		}
 	}
 
 	wallsInitialized = false;
