@@ -253,8 +253,10 @@ EPlayAction VAUtils::VAActionToEPlayAction(int action)
 
 	switch (action)
 	{
-	case 0:
 	case -1:
+		logStuff("[VAUtils::VAActionToEPlayAction]: Detected no action as Play State, transfering to Stop");
+		return EPlayAction::Stop;
+	case 0:
 		return EPlayAction::Stop;
 		break;
 	case 1:
