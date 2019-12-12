@@ -118,7 +118,9 @@ protected:
 
 	TArray<AVAReflectionWall*> reflectionWalls;
 
-	bool wallsInitialized;
+	bool initialized = false;
+
+	bool wallsInitialized = false;
 
 	void initializeWalls();
 

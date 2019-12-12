@@ -43,7 +43,6 @@ void AVAReceiverActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	FVAPluginModule::setReceiverActor(this);
 
 	currentReceiverActor = this;
@@ -129,6 +128,8 @@ void AVAReceiverActor::BeginPlay()
 			runOnAllNodes("debugMode = false");
 		}
 	}
+
+	initialized = true;
 }
 
 void AVAReceiverActor::BeginDestroy()
@@ -145,6 +146,8 @@ void AVAReceiverActor::BeginDestroy()
 		ClusterManager->RemoveClusterEventListener(ClusterEventListenerDelegate);
 	}
 }
+
+
 
 void AVAReceiverActor::initializeWalls()
 {
@@ -249,6 +252,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 // ****************************************************************** // 
 // ******* Getter Functions ***************************************** //
 // ****************************************************************** //
+
 
 float AVAReceiverActor::getScale()
 {

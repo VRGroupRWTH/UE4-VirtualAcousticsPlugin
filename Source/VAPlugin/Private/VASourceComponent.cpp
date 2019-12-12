@@ -23,8 +23,22 @@ UVASourceComponent::UVASourceComponent() {
 // Called when the game starts
 void UVASourceComponent::BeginPlay() {
 	Super::BeginPlay();
-	initialized = false;
-	firstTick = true;
+
+
+	TArray<AActor*> recActors;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), recActors);
+
+	for (AActor* iter : recActors) {
+		// if there is an ReceiverActor in the Szene
+		if (dynamic_cast<AVAReceiverActor*> (iter) != nullptr) {
+			VAUtils::logStuff("[UVASourceComponent::BeginPlay()]: AVAReceiver found");
+			return;
+		}
+	}
+
+	// else spawn one
+	VAUtils::logStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values");
+	AVAReceiverActor* recActor = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
 }
 
 

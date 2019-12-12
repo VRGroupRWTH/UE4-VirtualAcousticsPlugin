@@ -188,11 +188,11 @@ protected:
 	AActor* ownerActor;
 
 	// Check if it is the first tick //
-	bool firstTick;
+	bool firstTick = true;
     
 
 	// if sound source has run BeginPlay() //
-	bool initialized;
+	bool initialized = false;
 
 	// The actual VA Sound Source
 	VASoundSource* soundSource;
