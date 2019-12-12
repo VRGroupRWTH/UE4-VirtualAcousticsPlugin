@@ -43,7 +43,7 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	if (firstTick && isMaster) {
 		timeSinceUpdate = 1.0f;
 		if (vAction == EPlayAction::Play) {
-			soundSource->playSound();
+			soundSource->playSoundFromSecond(vDelay);
 		}
 	}
 	firstTick = false;

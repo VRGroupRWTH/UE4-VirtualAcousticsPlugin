@@ -350,9 +350,9 @@ std::string FVAPluginModule::createNewBuffer(std::string soundFileName, bool loo
 	{
 		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundFileName);
 		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
-		// pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, VAUtils::EPlayActionToVAAction(action));
 		pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
 		pVA->SetSignalSourceBufferPlaybackPosition(sSignalSourceID, soundOffset);
+		pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, 0);
 
 		return sSignalSourceID;
 	}

@@ -1,5 +1,6 @@
 #include "VASoundSource.h"
 
+#include "VASourceComponent.h"
 
 int VASoundSource::counter = 0;
 
@@ -215,6 +216,7 @@ void VASoundSource::playSoundFromSecond(float time)
 	if (!FVAPluginModule::getIsMaster()) {
 		return;
 	}
+	
 
 	setSoundTime(time);
 	playSound();
