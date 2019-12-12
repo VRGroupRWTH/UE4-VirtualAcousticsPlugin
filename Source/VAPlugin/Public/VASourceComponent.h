@@ -37,60 +37,60 @@ public:
 	// In- or decrease Gain Factor (linear to power)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor",		Category = "General Settings", 
 		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
-		float vGainFactor = 1.0f;
+		float gainFactor = 1.0f;
 
 	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name",			Category = "General Settings"))
-		FString vSoundName = "WelcomeToVA.wav";
+		FString soundName = "WelcomeToVA.wav";
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action",				Category = "General Settings"))
-		TEnumAsByte<EPlayAction> vAction = EPlayAction::Play;
+		TEnumAsByte<EPlayAction> startingPlayAction = EPlayAction::Play;
 
 	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]",	Category = "General Settings"))
-		float vDelay = 0.0f;
+		float startingTime = 0.0f;
 
 	// Check if the sound should be played back in a loop
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop",				Category = "General Settings"))
-		bool vLoop = false;
+		bool loop = false;
 
 	// Check if reflections by walls should be considered
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?",	Category = "General Settings"))
-		bool vHandleReflections = true;
+		bool handleReflections = true;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings",	Category = "Position", 
 		CustomStructureParam = "Attatch to a Bone, At Object Spawn Point, Move With the Object"))
-		TEnumAsByte<EMovement> vMovement = EMovement::ObjectSpawnPoint;
+		TEnumAsByte<EMovement> movementSetting = EMovement::ObjectSpawnPoint;
 
 	// Use the manual Offset for the position?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?",		Category = "Position"))
-		bool vUseOffset = true;
+		bool usePoseOffset = true;
 
 	// Offset in Position
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Position",			EditCondition = "vUseOffset", MakeEditWidget = true))
-		FVector vOffsetPosition = FVector(0, 0, 0);
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Position",			EditCondition = "usePoseOffset", MakeEditWidget = true))
+		FVector offsetPosition = FVector(0, 0, 0);
 
 	// Offset in Rotation
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Position",			EditCondition = "vUseOffset", MakeEditWidget = true))
-		FRotator vOffsetRotation = FRotator(0, 90, 0);
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Position",			EditCondition = "usePoseOffset", MakeEditWidget = true))
+		FRotator offsetRotation = FRotator(0, 90, 0);
 
 	// Name of Bone bound to if Position is set to "Attatch to a Bone"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name",			Category = "Position")) 
-		FName vBoneName = FName("CC_Base_Head");
+		FName boneName = FName("CC_Base_Head");
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity",		Category = "Directivity"))
-		TEnumAsByte<EDir> vDirectivity = EDir::DefaultHRIR;
+		TEnumAsByte<EDir> directivitySetting = EDir::DefaultHRIR;
 
 	// File Name of the Directivity that sould be used
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name",	Category = "Directivity"))		
-		FString vDirectivityByFileName = "$(DefaultHRIR)";
+		FString directivityByFileName = "$(DefaultHRIR)";
 
 	// Directivity that is used by a specific phoneme (see Receiver Actor Directivity Manager)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by phoneme",		Category = "Directivity"))		
-		FString vDirectivityByPhoneme = "";
+		FString directivityByPhoneme = "";
 
 
 
@@ -130,9 +130,6 @@ public:
 
 
 
-	// NEUE SACHEN FÜR ÄNDERUNG
-
-
 
 	FString getFileName();
 
@@ -159,56 +156,29 @@ protected:
     // Link to Owner Actor //
 	AActor* ownerActor;
 
-    // Sound ID, used to identify Sound at VA Server //
-	int soundID;
-    
-    // // Check if Sound is started, used to start at different time //
-	// bool started;
-
 	// Check if it is the first tick //
 	bool firstTick;
-
-	// Check if Sound data is already sent // 
-	bool alreadySent;
     
-    // Check time // 
-	float timer;
-
-	// // name of face_bone // 
-	// FName face_bone_name;
-
-	// skeletal_mesh
-	USkeletalMeshComponent* skeletal_mesh_component;
-
-	// // root component
-	// USphereComponent* root_component;
 
 	// if sound source has run BeginPlay() //
 	bool initialized;
 
-	// Map of all cones that have to be placed at their position
-	// TMap<AVAReflectionWall*, FTransform> conesTodo;
-
-
-	// UPROPERTY(VisibleDefaultsOnly)
-	// 	class USphereComponent *sphereComp;
-	// 
-	// UPROPERTY(VisibleDefaultsOnly)
-	// 	TMap<AVAReflectionWall*, class UStaticMeshComponent*> coneMeshMap;
-	// 
-	// UPROPERTY(VisibleDefaultsOnly)
-	// 	TMap<AVAReflectionWall*, AVASoundSourceRepresentation*> sourceReprMap;
-
-
-	
+	// The actual VA Sound Source
 	VASoundSource* soundSource;
 
+	// To adapt update rate
+	float timeSinceUpdate;
+
+	// Spawn Pos & Rot. Used if ObjectSpawnPoint is selected
 	FVector spawnPosition;
 	FRotator spawnRotation;
 
-	float timeSinceUpdate;
+	// skeletal_mesh, used if AttatchToBone is selected
+	USkeletalMeshComponent* skeletal_mesh_component;
 
-	bool isMaster;
+    // Check time // 
+	float timer;
+
 
 #if WITH_EDITOR
 	virtual bool CanEditChange(const UProperty* InProperty) const;
