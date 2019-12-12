@@ -11,7 +11,7 @@
 
 class UVASourceComponent;
 
-class VASoundSource // : public VASoundSourceBaseClass
+class VASoundSource 
 {
 public:
 	VASoundSource();
@@ -45,8 +45,8 @@ public:
 	void stopSound();
 	void pauseSound();
 	void playSoundFromSecond(float time);
-	// EPlayAction getPlayAction();
 
+	int getPlayState();
 
 
 private: 

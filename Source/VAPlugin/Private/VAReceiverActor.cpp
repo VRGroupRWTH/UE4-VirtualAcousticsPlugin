@@ -49,7 +49,7 @@ void AVAReceiverActor::BeginPlay()
 	currentReceiverActor = this;
 
 	// Ask if used or not
-	FVAPluginModule::askForSettings(getIPAdress(), getPort(), vAskForDebugMode);
+	FVAPluginModule::askForSettings(getIPAdress(), getPort(), askForDebugMode);
 
 	if (FVAPluginModule::getIsMaster()) {
 		if (FVAPluginModule::getUseVA()) {
@@ -86,7 +86,7 @@ void AVAReceiverActor::BeginPlay()
 
 	if (FVAPluginModule::getIsMaster()) {
 
-		FVAPluginModule::setScale(vScale);
+		FVAPluginModule::setScale(worldScale);
 
 		if (!FVAPluginModule::isConnected()) {
 			FVAPluginModule::connectServer(getIPAdress(), getPort());
@@ -96,7 +96,7 @@ void AVAReceiverActor::BeginPlay()
 		}
 	
 		// Initialize the dirManager
-		dirManager.readConfigFile(dirName);
+		dirManager.readConfigFile(dirMappingFileName);
 	
 		// Initialize Receiver Actor
 		receiverID = FVAPluginModule::createNewSoundReceiver(this);
@@ -121,8 +121,6 @@ void AVAReceiverActor::BeginPlay()
 		}
 	}
 
-
-	/*
 	if (FVAPluginModule::getIsMaster()) {
 		if (FVAPluginModule::getDebugMode()) {
 			runOnAllNodes("debugMode = true");
@@ -131,8 +129,6 @@ void AVAReceiverActor::BeginPlay()
 			runOnAllNodes("debugMode = false");
 		}
 	}
-	*/
-
 }
 
 void AVAReceiverActor::BeginDestroy()
@@ -256,13 +252,13 @@ bool AVAReceiverActor::updateRealWorldPosition()
 
 float AVAReceiverActor::getScale()
 {
-	return vScale;
+	return worldScale;
 }
 
 FString AVAReceiverActor::getIPAdress()
 {
 
-	switch (vAdressType)
+	switch (adressSetting)
 	{
 		case EAdress::automatic :
 #if PLATFORM_WINDOWS
@@ -278,7 +274,7 @@ FString AVAReceiverActor::getIPAdress()
 			return FString("localhost");
 			break;
 		case EAdress::manual :
-			return vAdress;
+			return serverIPAdress;
 			break;
 		default :
 			break;
@@ -292,7 +288,7 @@ FString AVAReceiverActor::getIPAdress()
 
 int AVAReceiverActor::getPort()
 {
-	switch (vAdressType)
+	switch (adressSetting)
 	{
 		case EAdress::automatic : 
 		case EAdress::Cave :
@@ -300,7 +296,7 @@ int AVAReceiverActor::getPort()
 			return 12340;
 			break;
 		case EAdress::manual:
-			return vPort;
+			return serverPort;
 			break;
 		default:
 			break;
@@ -399,15 +395,15 @@ bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 	// const bool ParentVal = Super::CanEditChange(InProperty);
 
 	// Check manual Adress
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vAdress))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, serverIPAdress))
 	{
-		return vAdressType == EAdress::manual;
+		return adressSetting == EAdress::manual;
 	}
 
 	// Check manual Port
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, vPort))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, serverPort))
 	{
-		return vAdressType == EAdress::manual;
+		return adressSetting == EAdress::manual;
 	}
 
 

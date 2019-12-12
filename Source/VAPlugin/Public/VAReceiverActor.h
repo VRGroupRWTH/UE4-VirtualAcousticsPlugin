@@ -36,28 +36,28 @@ public:
 	
 	// How many units in UE equal 1m in World
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale",									Category = "General Settigns"))
-		float vScale = 100.0f;
+		float worldScale = 100.0f;
 
 	// Check if should ask for debug Mode?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?",					Category = "General Settigns"))
-		bool vAskForDebugMode = true;
+		bool askForDebugMode = true;
 
 	// Choose how to connect to the Server (automatic: build with windows connect with localhost:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase",								Category = "Connection"))
-		TEnumAsByte<EAdress> vAdressType = EAdress::automatic;
+		TEnumAsByte<EAdress> adressSetting = EAdress::automatic;
 
 	// IP Adress for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress",								Category = "Connection"))		// CanEditChange used
-		FString vAdress = "10.0.1.240";
+		FString serverIPAdress = "10.0.1.240";
 
 	// Port for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]",						Category = "Connection",		// CanEditChange used
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
-		uint16 vPort = 12340;
+		uint16 serverPort = 12340;
 
 	// File name of the Directivity mapping file
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities",		Category = "Directivity Manager"))
-		FString dirName = "VADir_default.ini";
+		FString dirMappingFileName = "VADir_default.ini";
 
 
 

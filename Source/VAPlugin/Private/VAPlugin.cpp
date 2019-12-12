@@ -350,9 +350,9 @@ std::string FVAPluginModule::createNewBuffer(std::string soundFileName, bool loo
 	{
 		sSignalSourceID = pVA->CreateSignalSourceBufferFromFile(soundFileName);
 		// const std::string sSignalSourceID = "hallo"; // = pVA->CreateSignalSourceBufferFromFile(soundName); // DELETED HERE
-		// pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, VAUtils::EPlayActionToVAAction(action));
 		pVA->SetSignalSourceBufferLooping(sSignalSourceID, loop);
 		pVA->SetSignalSourceBufferPlaybackPosition(sSignalSourceID, soundOffset);
+		pVA->SetSignalSourceBufferPlaybackAction(sSignalSourceID, 0);
 
 		return sSignalSourceID;
 	}
@@ -379,6 +379,24 @@ bool FVAPluginModule::setSoundBufferAction(std::string sBufferID, EPlayAction ac
 	{
 		processExeption("FVAPluginModule::setSoundSourceAction()", FString(e.ToString().c_str()));
 		return false;
+	}
+}
+
+int FVAPluginModule::getSoundBufferAction(std::string sBufferID) 
+{
+	if (!isConnected()) {
+		return -2;
+	}
+
+	try
+	{
+		int state = pVA->GetSignalSourceBufferPlaybackState(sBufferID);	
+		return state;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::getSoundBufferAction()", FString(e.ToString().c_str()));
+		return -2;
 	}
 }
 

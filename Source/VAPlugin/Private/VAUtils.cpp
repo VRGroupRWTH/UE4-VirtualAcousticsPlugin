@@ -236,9 +236,39 @@ int VAUtils::EPlayActionToVAAction(EPlayAction action)
 		return 2;
 		break;
 	default:
-		return -1;
+		break;
 	}
 	return -1;
+}
+
+EPlayAction VAUtils::VAActionToEPlayAction(int action)
+{
+	// enum PlaybackAction
+	// {
+	// 	VA_PLAYBACK_ACTION_NONE = -1,	//!< No action
+	// 	VA_PLAYBACK_ACTION_STOP = 0,	//!< Stop playback
+	// 	VA_PLAYBACK_ACTION_PAUSE = 1,	//!< Pause playback
+	// 	VA_PLAYBACK_ACTION_PLAY = 2,	//!< Start/resume playback	
+	// };
+
+	switch (action)
+	{
+	case 0:
+	case -1:
+		return EPlayAction::Stop;
+		break;
+	case 1:
+		return EPlayAction::Pause;
+		break;
+	case 2:
+		return EPlayAction::Play;
+		break;
+	default:
+		break;
+	}
+
+	logStuff("[VAUtils::VAActionToEPlayAction(int action)]: VAAction cannot be transverted", true);
+	return EPlayAction::Stop;
 }
 
 

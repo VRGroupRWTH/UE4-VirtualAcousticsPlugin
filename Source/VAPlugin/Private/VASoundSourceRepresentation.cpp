@@ -19,6 +19,12 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 	sphereComp->Mobility = EComponentMobility::Movable;
 	RootComponent = sphereComp;
 	
+	// *** 
+	// FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
+	// FString path = FPaths::Combine(*BaseDir, TEXT("Content/Shape_Cone.Shape_Cone"));
+
+	
+
 	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone"));
 	if (SphereMeshAsset.Succeeded()) {
