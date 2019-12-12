@@ -210,11 +210,12 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 }
 
 bool AVAReceiverActor::updateRealWorldPosition()
-{
+{	
+
 	if (!(FVAPluginModule::getIsMaster() && FVAPluginModule::getUseVA())) {
 		return false;
 	}
-	
+
 	auto world = GetWorld();
 	if  (world == nullptr) {
 		return false;
@@ -223,7 +224,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	auto player_controller = world->GetFirstPlayerController();
 	if  (player_controller == nullptr) {
 		return false;
-}
+	}
 
 	auto vr_pawn = dynamic_cast<AVirtualRealityPawn*>(player_controller->AcknowledgedPawn);
 	if  (vr_pawn == nullptr) {
@@ -237,14 +238,11 @@ bool AVAReceiverActor::updateRealWorldPosition()
 		return false;
 
 	// calculate positions
-	FVector pos = head->GetComponentLocation() - origin->GetComponentLocation();
-	FRotator rot = head->GetComponentRotation() - origin->GetComponentRotation();
-	FQuat quat = origin->GetComponentQuat().Inverse() * head->GetComponentQuat();
-
-	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, TEXT("RL pos: " + pos.ToString() + "  RL rot: " + rot.RotateVector(FVector(1,0,0)).ToString()+ "  RL quat: "+quat.RotateVector(FVector(1, 0, 0)).ToString()));
-	//VAUtils::logStuff(FString("RL pos: " + pos.ToString() + "  RL rot: " + rot.ToString()));
+	FQuat inverseOriginRot = origin->GetComponentQuat().Inverse();
+	FVector pos = inverseOriginRot.RotateVector(head->GetComponentLocation() - origin->GetComponentLocation());
+	FQuat quat = inverseOriginRot * head->GetComponentQuat();
 	
-    return FVAPluginModule::setSoundReceiverRealWorldPose(receiverID, pos, rot);
+	return FVAPluginModule::setSoundReceiverRealWorldPose(receiverID, pos, quat.Rotator());
 }
 
 

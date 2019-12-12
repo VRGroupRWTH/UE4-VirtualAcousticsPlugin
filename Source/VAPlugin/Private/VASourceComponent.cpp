@@ -17,14 +17,14 @@ UVASourceComponent::UVASourceComponent() {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	initialized = false;
-	firstTick = true;
 }
 
 
 // Called when the game starts
 void UVASourceComponent::BeginPlay() {
 	Super::BeginPlay();
+	initialized = false;
+	firstTick = true;
 }
 
 
@@ -132,21 +132,37 @@ void UVASourceComponent::initialize()
 
 void UVASourceComponent::playSound()
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->playSound();
 }
 
 void UVASourceComponent::playSoundFromSecond(float time)
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->playSoundFromSecond(time);
 }
 
 void UVASourceComponent::stopSound()
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->stopSound();
 }
 
 void UVASourceComponent::pauseSound()
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
+
 	soundSource->pauseSound();
 }
 
@@ -222,10 +238,16 @@ FRotator UVASourceComponent::getRotation()
 }
 
 void UVASourceComponent::setSoundSourcePosition(FVector pos) {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setPos(pos);
 }
 
 void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setRot(rot);
 }
 
@@ -236,11 +258,17 @@ void UVASourceComponent::setSoundSourceRotation(FRotator rot) {
 
 void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(phoneme));
 }
 
 void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
+  if (!FVAPluginModule::getUseVA()) {
+    return;
+  }
 	soundSource->setVisibility(vis);
 }
 

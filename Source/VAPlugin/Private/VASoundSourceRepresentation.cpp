@@ -26,9 +26,7 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 	
 
 	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
-	// static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("F:/Work/Unreal Projects/DynDir422_2/Plugins/va-unreal-plugin/Content/Shape_Cone.Shape_Cone"));
-	
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone"));
 	if (SphereMeshAsset.Succeeded()) {
 		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
 		// sphereMesh->AttachTo(RootComponent);
