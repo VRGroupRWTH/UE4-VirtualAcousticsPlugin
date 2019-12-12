@@ -257,10 +257,10 @@ FRotator UVASourceComponent::getRotation()
 
 void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
-	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(phoneme));
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
+	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(phoneme));
 }
 
 void UVASourceComponent::setDirectivityByFileName(FString fileName)

@@ -324,14 +324,14 @@ TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 // ******* Directivity Handling ************************************* //
 // ****************************************************************** //
 
-VADirectivity* AVAReceiverActor::getDirectvityByPhoneme(FString phoneme)
+VADirectivity* AVAReceiverActor::getDirectivityByPhoneme(FString phoneme)
 {
 	return dirManager.getDirectivityByPhoneme(phoneme);
 }
 
 VADirectivity* AVAReceiverActor::getDirectivityByFileName(FString fileName)
 {
-	return dirManager.getDirectivityByPhoneme(fileName);
+	return dirManager.getDirectivityByFileName(fileName);
 }
 
 

@@ -71,7 +71,7 @@ public:
 
 	int getPort();
 
-	VADirectivity* getDirectvityByPhoneme(FString phoneme);
+	VADirectivity* getDirectivityByPhoneme(FString phoneme);
 	VADirectivity* getDirectivityByFileName(FString fileName);
 
 	TArray<AVAReflectionWall*> getReflectionWalls();
