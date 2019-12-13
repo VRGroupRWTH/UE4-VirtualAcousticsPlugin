@@ -28,8 +28,6 @@ class FVAPluginModule : public IModuleInterface
 public:
 
 	// REMAKE!!!
-    // check if is Master and VA Server should be used // 
-	static bool isMasterAndUsed();
 
 	// process / output CVAException //
 	static void processExeption(FString location, CVAException e);

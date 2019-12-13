@@ -79,10 +79,10 @@ void FVAPluginModule::processExeption(FString location, FString exp)
 	VAUtils::openMessageBox(output, true);
 }
 
-bool FVAPluginModule::isMasterAndUsed()
-{
-	return (isMaster && useVA);
-}
+// bool FVAPluginModule::isMasterAndUsed()
+// {
+// 	return (isMaster && useVA);
+// }
 
 bool FVAPluginModule::isInDebugMode()
 {

@@ -22,7 +22,7 @@ void VAUtils::openMessageBox(FString text, bool error)
 {
 	//char* text;
 
-	if (!FVAPluginModule::isMasterAndUsed()) {
+	if (!FVAPluginModule::getIsMaster()) {
 		return;
 	}
 	
