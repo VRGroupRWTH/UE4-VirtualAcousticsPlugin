@@ -1,7 +1,7 @@
 #include "VADirectivity.h"
 
 #include "VAPlugin.h"
-
+#include "VADirectivityManager.h"
 
 #include <string.h>
 
@@ -10,7 +10,15 @@ VADirectivity::VADirectivity(FString fileName_) :
 	fileName(fileName_)
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
+	if (dirID == -1) {
+		VAUtils::logStuff("[VADirectivity::VADirectivity()] Directivity file " + fileName + " cannot be found! Using default Directivity instead");
+		dirID = VADirectivityManager::getDefaultSourceDirectivity()->getID();
+		valid = false;
+		return;
+	}
 
+	valid = true;
+	VAUtils::logStuff("created new VADirectivity");
 }
 
 
@@ -25,14 +33,7 @@ VADirectivity::VADirectivity(FString fileName_, FString phoneme) :
 VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) : 
 	fileName(fileName_), phonemes(phonemes_)
 {
-	dirID = FVAPluginModule::createNewDirectivity(fileName);
-	if (dirID == -1) {
-		// FString output = "[VADirectivity::VADirectivity(FString fileName, TArray<FString> phonemes_)] Directivity file " + fileName + " cannot be found!";
-		// VAUtils::logStuff(output, true);
-		return;
-	}
-	
-	VAUtils::logStuff("created new VADirectivity");
+	VADirectivity(fileName);
 	
 }
 
@@ -74,7 +75,7 @@ bool VADirectivity::containsPhoneme(FString phoneme)
 
 bool VADirectivity::isValid()
 {
-	return dirID != -1;
+	return valid;
 }
 
 FString VADirectivity::getFileName()

@@ -147,8 +147,7 @@ VADirectivity* VADirectivityManager::getDirectivityByPhoneme(FString phoneme)
 			return entry;
 		}
 	}
-	FString output = "[VADirectivityManager::getDirectivityByPhoneme()] Directivity for phoneme " + phoneme + " cannot be found!";
-	VAUtils::logStuff(output);
+	VAUtils::logStuff("[VADirectivityManager::getDirectivityByPhoneme()] Directivity for phoneme " + phoneme + " cannot be found! Using defaultDir");
 
 	return defaultDir;
 }
@@ -163,8 +162,11 @@ VADirectivity* VADirectivityManager::getDirectivityByFileName(FString fileName_)
 			return entry;
 		}
 	}
-	FString output = "[VADirectivityManager::getDirectivityByFileName()] Directivity from file " + fileName_ + " cannot be found!";
-	VAUtils::logStuff(output);
+	VAUtils::logStuff("[VADirectivityManager::getDirectivityByFileName()] Directivity from file " + fileName_ + " cannot be found! Creating one now...");
+
+	VADirectivity* tmpDir = new VADirectivity(fileName_);
+	directivities.Add(tmpDir);
+	
 
 	return defaultDir;
 }

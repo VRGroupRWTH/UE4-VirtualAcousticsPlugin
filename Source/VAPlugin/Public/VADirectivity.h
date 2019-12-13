@@ -31,5 +31,6 @@ private:
 	int dirID;
 	FString fileName;
 	TArray<FString> phonemes;
+	bool valid;
 
 };

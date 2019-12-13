@@ -114,20 +114,13 @@ void UVASourceComponent::initialize()
 				break;
 
 			case EDir::manualFile :
-				// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(directivityByPhoneme);
-				// soundSource->setDirectivity(new VADirectivity(directivityByFileName));
+				soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(directivityByFileName));
 				break;
 
 			case EDir::phoneme :
-				// VADirectivity* tmp = AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(directivityByPhoneme);
-				// 
-				// if (tmp != nullptr) {
-				// 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectvityByPhoneme(directivityByPhoneme));
-				// }
-				// else {
-				// 	
-				// }
+				soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(directivityByPhoneme));
 				break;
+
 			default:
 				break;
 		}
