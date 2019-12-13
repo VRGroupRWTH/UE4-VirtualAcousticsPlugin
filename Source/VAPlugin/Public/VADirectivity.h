@@ -7,7 +7,6 @@
 class VADirectivity
 {
 
-
 public:
 	VADirectivity(FString fileName_);
 	VADirectivity(FString fileName_, FString phoneme);

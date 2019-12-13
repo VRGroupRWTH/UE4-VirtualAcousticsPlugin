@@ -149,7 +149,13 @@ VADirectivity* VADirectivityManager::getDirectivityByPhoneme(FString phoneme)
 	}
 	VAUtils::logStuff("[VADirectivityManager::getDirectivityByPhoneme()] Directivity for phoneme " + phoneme + " cannot be found! Using defaultDir");
 
-	return defaultDir;
+	// If there is a default Directivity from ini file
+	if (defaultDir != nullptr) {
+		return defaultDir;
+	}
+	
+	// else use default Directivity from Server
+	return defaultSourceDirectivity;
 }
 
 VADirectivity* VADirectivityManager::getDirectivityByFileName(FString fileName_)
