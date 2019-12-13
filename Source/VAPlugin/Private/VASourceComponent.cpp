@@ -24,7 +24,6 @@ UVASourceComponent::UVASourceComponent() {
 void UVASourceComponent::BeginPlay() {
 	Super::BeginPlay();
 
-
 	TArray<AActor*> recActors;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), recActors);
 

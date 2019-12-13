@@ -69,11 +69,11 @@ public:
 		bool usePoseOffset = true;
 
 	// Offset in Position
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Position",			EditCondition = "usePoseOffset", MakeEditWidget = true))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Position",			EditCondition = "usePoseOffset"))
 		FVector offsetPosition = FVector(0, 0, 0);
 
 	// Offset in Rotation
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Position",			EditCondition = "usePoseOffset", MakeEditWidget = true))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Position",			EditCondition = "usePoseOffset"))
 		FRotator offsetRotation = FRotator(0, 90, 0);
 
 	// Name of Bone bound to if Position is set to "Attatch to a Bone"
