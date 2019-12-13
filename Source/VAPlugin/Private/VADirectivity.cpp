@@ -1,13 +1,36 @@
 #include "VADirectivity.h"
 
-#include "VAPlugin.h"
-#include "VADirectivityManager.h"
+#include "Containers/UnrealString.h"			// FString
+#include "Containers/Array.h"					// TArray
 
-#include <string.h>
+#include "VAPlugin.h"							// For Server
+#include "VADirectivityManager.h"				// For default Directivity
 
 
 VADirectivity::VADirectivity(FString fileName_) : 
 	fileName(fileName_)
+{
+	createNewDirectivity();
+}
+
+
+VADirectivity::VADirectivity(FString fileName_, FString phoneme) :
+	fileName(fileName_)
+{
+	TArray<FString> tmp;
+	tmp.Add(phoneme);
+	phonemes = tmp;
+
+	createNewDirectivity();
+}
+
+VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) : 
+	fileName(fileName_), phonemes(phonemes_)
+{
+	createNewDirectivity();
+}
+
+void VADirectivity::createNewDirectivity()
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
 	if (dirID == -1) {
@@ -19,22 +42,6 @@ VADirectivity::VADirectivity(FString fileName_) :
 
 	valid = true;
 	VAUtils::logStuff("created new VADirectivity");
-}
-
-
-VADirectivity::VADirectivity(FString fileName_, FString phoneme) : 
-	fileName(fileName_)
-{
-	TArray<FString> tmp;
-	tmp.Add(phoneme);
-	VADirectivity(fileName, tmp);
-}
-
-VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) : 
-	fileName(fileName_), phonemes(phonemes_)
-{
-	VADirectivity(fileName);
-	
 }
 
 int VADirectivity::getID()
@@ -82,5 +89,6 @@ FString VADirectivity::getFileName()
 {
 	return fileName;
 }
+
 /*
 */

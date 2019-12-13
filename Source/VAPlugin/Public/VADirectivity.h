@@ -3,7 +3,6 @@
 #pragma once
 
 
-
 class VADirectivity
 {
 
@@ -26,7 +25,9 @@ public:
 
 	FString getFileName();
 
-private:
+protected:
+	void createNewDirectivity();
+
 	int dirID;
 	FString fileName;
 	TArray<FString> phonemes;

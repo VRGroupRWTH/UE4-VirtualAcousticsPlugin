@@ -81,7 +81,7 @@ void FVAPluginModule::processExeption(FString location, FString exp)
 
 bool FVAPluginModule::isMasterAndUsed()
 {
-	return (IDisplayCluster::Get().GetClusterMgr()!= nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster() && useVA);
+	return (isMaster && useVA);
 }
 
 bool FVAPluginModule::isInDebugMode()
@@ -240,7 +240,7 @@ bool FVAPluginModule::checkLibraryHandles()
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
 
-	if (!isMasterAndUsed()) {
+	if (!isMaster || !useVA) {
 		return false;
 	}
 
@@ -280,6 +280,7 @@ bool FVAPluginModule::resetServer()
 	if (!getIsMaster() || !isConnected() || !getUseVA()) {
 		return false;
 	}
+
 	try {
 		VAUtils::logStuff("Resetting Server now...");
 		pVA->Reset();
@@ -296,11 +297,11 @@ bool FVAPluginModule::resetServer()
 
 bool FVAPluginModule::isConnected()
 {
-	if (!isMasterAndUsed()) {
+	if (!isMaster || !useVA) {
 		return false;
 	}
 
-	if (pVANet == nullptr) {
+	if (pVANet == nullptr || pVA == nullptr) {
 		return false;
 	}
 

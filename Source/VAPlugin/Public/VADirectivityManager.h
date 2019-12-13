@@ -4,8 +4,6 @@
 
 #include "VADirectivity.h"
 
-class VADirectivity;
-
 class VADirectivityManager
 {
 public:
