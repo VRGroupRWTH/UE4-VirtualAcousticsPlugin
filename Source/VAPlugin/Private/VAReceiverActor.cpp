@@ -28,10 +28,7 @@ AVAReceiverActor* AVAReceiverActor::currentReceiverActor;
 // Sets default values
 AVAReceiverActor::AVAReceiverActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	wallsInitialized = false;
-
 }
 
 
@@ -177,24 +174,10 @@ void AVAReceiverActor::Tick(float DeltaTime)
 
 	if (timeSinceUpdate > (1.0f / 30.0f)) {
 		updateVirtualWorldPosition();
-		// FVAPluginModule::setSoundReceiverPosition(receiverID, FVector(100,0,0));
-		// FVAPluginModule::setSoundReceiverRotation(receiverID, FRotator(0,0,0));
 		updateRealWorldPosition();
 
 		timeSinceUpdate = 0.0f;
 	}
-
-	/*
-	if (totalTime > 2.0f) {
-		if (FVAPluginModule::getDebugMode()) {
-			runOnAllNodes("debugMode = false");
-		}
-		else {
-			runOnAllNodes("debugMode = true");
-		}
-		totalTime = 0.0f;
-	}
-	*/	
 }
 
 

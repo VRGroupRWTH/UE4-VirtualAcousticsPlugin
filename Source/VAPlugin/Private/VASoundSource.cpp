@@ -9,15 +9,6 @@ VASoundSource::VASoundSource() {
 
 }
 
-/*
-VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
-	parentComponent(parentComponent_)
-{
-	// TODO
-}
-
-*/
-
 VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	parentComponent(parentComponent_)
 {
@@ -79,10 +70,6 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 void VASoundSource::setPos(FVector pos_)
 {
 	pos = pos_;
-
-	// FString text = "Setting Position of Source (id: " + FString::FromInt(soundSourceID) + "): ";
-	// text.Append(FString::FromInt(pos.X)).Append("/").Append(FString::FromInt(pos.Y)).Append("/").Append(FString::FromInt(pos.Z));
-	// VAUtils::logStuff(text);
 	
 	if (showCones) {
 		soundSourceRepresentation->setPos(pos);
@@ -103,11 +90,6 @@ void VASoundSource::setPos(FVector pos_)
 void VASoundSource::setRot(FRotator rot_)
 {
 	rot = rot_;
-
-	// FString text = "Setting Rotation of Source (id: " + FString::FromInt(soundSourceID) + "): ";
-	// text.Append(FString::FromInt(rot.Roll)).Append("/").Append(FString::FromInt(rot.Pitch)).Append("/").Append(FString::FromInt(rot.Yaw));
-	// VAUtils::logStuff(text);
-
 	
 	if (FVAPluginModule::getIsMaster()) {
 		FVAPluginModule::setSoundSourceRot(soundSourceID, rot);
@@ -241,6 +223,8 @@ void VASoundSource::setNewSound(FString soundFile_)
 	for (auto iter : reflections) {
 		FVAPluginModule::setNewBufferForSoundSource(iter->getSoundSourceID(), newBufferID);
 	}
+
+	// TODO: delete buffer?
 }
 
 

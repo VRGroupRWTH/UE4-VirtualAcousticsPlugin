@@ -12,30 +12,38 @@
 AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
 	sphereComp->bHiddenInGame = true;
 	sphereComp->Mobility = EComponentMobility::Movable;
 	RootComponent = sphereComp;
-	
-	// *** 
-	// FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
-	// FString path = FPaths::Combine(*BaseDir, TEXT("Content/Shape_Cone.Shape_Cone"));
 
-	
 
 	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone"));
 	if (SphereMeshAsset.Succeeded()) {
 		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
-		// sphereMesh->AttachTo(RootComponent);
 		sphereMesh->SetupAttachment(RootComponent);
 		sphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
 		sphereMesh->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
 	setVisibility(false);
+
+}
+
+
+void AVASoundSourceRepresentation::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+// TURNED OFF IN CONSTRUCTOR!
+void AVASoundSourceRepresentation::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 
 }
 
@@ -56,21 +64,6 @@ bool AVASoundSourceRepresentation::setVisibility(bool visibility)
 	if (sphereMesh != nullptr) {
 		sphereMesh->SetVisibility(visibility);
 	}
-	// sphereMesh->SetVisibility(true);
 	return true;
-}
-
-// Called when the game starts or when spawned
-void AVASoundSourceRepresentation::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AVASoundSourceRepresentation::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 

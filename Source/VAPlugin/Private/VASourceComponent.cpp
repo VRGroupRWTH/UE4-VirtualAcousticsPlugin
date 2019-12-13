@@ -14,8 +14,6 @@
 
 // Sets default values for this component's properties
 UVASourceComponent::UVASourceComponent() {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
@@ -66,14 +64,9 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	if ((movementSetting == EMovement::AttatchToBone || movementSetting == EMovement::MoveWithObject) && 
 		timeSinceUpdate > (1.0f / 30.0f)) {
-
-		// Checks himself if only updating graphical (in every node, not just master) or send information
 		
 		soundSource->setPos(getPosition());
 		soundSource->setRot(getRotation());
-		
-		// soundSource->setPos(FVector(0, 0, 0));
-		// soundSource->setRot(FRotator(0, 0, 0));
 
 		timeSinceUpdate = 0.0f;
 	}
@@ -137,36 +130,36 @@ void UVASourceComponent::initialize()
 
 void UVASourceComponent::playSound()
 {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
+    if (!FVAPluginModule::getUseVA()) {
+		return;
+    }
 
 	soundSource->playSound();
 }
 
 void UVASourceComponent::playSoundFromSecond(float time)
 {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
 
 	soundSource->playSoundFromSecond(time);
 }
 
 void UVASourceComponent::stopSound()
 {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
 
 	soundSource->stopSound();
 }
 
 void UVASourceComponent::pauseSound()
 {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+    }
 
 	soundSource->pauseSound();
 }
@@ -174,8 +167,7 @@ void UVASourceComponent::pauseSound()
 
 EPlayAction UVASourceComponent::getPlayState()
 {
-	int state = soundSource->getPlayState();
-	return VAUtils::VAActionToEPlayAction(state);
+	return VAUtils::VAActionToEPlayAction(soundSource->getPlayState());
 }
 
 // ****************************************************************** // 
@@ -247,22 +239,6 @@ FRotator UVASourceComponent::getRotation()
 // ******* Sound Settings ******************************************* //
 // ****************************************************************** //
 
-void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
-{
-	if (!FVAPluginModule::getUseVA()) {
-		return;
-	}
-	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(phoneme));
-}
-
-void UVASourceComponent::setDirectivityByFileName(FString fileName)
-{
-	if (!FVAPluginModule::getUseVA()) {
-		return;
-	}
-	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(fileName));
-}
-
 void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
   if (!FVAPluginModule::getUseVA()) {
@@ -294,6 +270,21 @@ void UVASourceComponent::setSoundFile(FString soundFile_)
 // ******* Directivity stuff **************************************** //
 // ****************************************************************** //
 
+void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
+{
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
+	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(phoneme));
+}
+
+void UVASourceComponent::setDirectivityByFileName(FString fileName)
+{
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
+	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(fileName));
+}
 
 
 

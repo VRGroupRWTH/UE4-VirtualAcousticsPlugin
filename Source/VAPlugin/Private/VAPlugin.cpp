@@ -79,11 +79,6 @@ void FVAPluginModule::processExeption(FString location, FString exp)
 	VAUtils::openMessageBox(output, true);
 }
 
-// bool FVAPluginModule::isMasterAndUsed()
-// {
-// 	return (isMaster && useVA);
-// }
-
 bool FVAPluginModule::isInDebugMode()
 {
 	return debugMode;
@@ -97,15 +92,9 @@ bool FVAPluginModule::isInDebugMode()
 
 void FVAPluginModule::StartupModule()
 {
-	// http://www.virtualacoustics.org/overview.html // 
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	
-	// setViewMode();
-
 	VAVec3 vec;
 
 	// ++ Get Paths of DLL Handles ++ //
-	//FString LibraryPath;
 	FString BaseDir = IPluginManager::Get().FindPlugin("VAPlugin")->GetBaseDir();
 	FString pathNet, pathBase, pathVistaAspects, pathVistaBase, pathVistaInterProcComm;
 
@@ -140,7 +129,7 @@ void FVAPluginModule::StartupModule()
 	pathVistaBase			=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.so"));
 	pathVistaInterProcComm	=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.so"));
 	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.so"));
-#endif
+#endif // PLATFORM_LINUX
 
 
 
