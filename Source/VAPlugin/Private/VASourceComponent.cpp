@@ -76,6 +76,11 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UVASourceComponent::initialize()
 {
+
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
+
 	ownerActor = GetOwner();
 	firstTick = true;
 
