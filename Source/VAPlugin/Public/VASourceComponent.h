@@ -23,9 +23,9 @@ enum EMovement {
 
 UENUM(BlueprintType)
 enum EPlayAction {
-	Play,
-	Pause,
-	Stop
+	Stop = 0,
+	Pause = 1,
+	Play = 2
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
