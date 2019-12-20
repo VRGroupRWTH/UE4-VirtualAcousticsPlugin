@@ -149,7 +149,7 @@ UVASourceComponent* VASoundSource::getParentComponent()
 
 void VASoundSource::setPlayAction(int action_)
 {
-	if (action == action_ || !FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster() || getPlayState() == action_) {
 		return;
 	}
 
