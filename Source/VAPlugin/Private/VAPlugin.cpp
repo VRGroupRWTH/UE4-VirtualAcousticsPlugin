@@ -711,11 +711,11 @@ void FVAPluginModule::setDebugMode(bool debugMode_)
 
 	TArray<AActor*> actorsA;
 	UGameplayStatics::GetAllActorsOfClass(receiverActor->GetWorld(), AActor::StaticClass(), actorsA);
-	UVASourceComponent* tmp;
+
 	for (AActor* actor : actorsA) {
-		tmp = dynamic_cast<UVASourceComponent*> (actor->GetComponentByClass(UVASourceComponent::StaticClass()));
-		if (tmp != nullptr) {
-			tmp->setSoundSourceVisibility(debugMode);
+		TArray<UActorComponent*> VA_components = actor->GetComponentsByClass(UVASourceComponent::StaticClass());
+		for (UActorComponent* VA_component : VA_components) {
+			Cast<UVASourceComponent>(VA_component)->setSoundSourceVisibility(debugMode);
 		}
 	}
 }
