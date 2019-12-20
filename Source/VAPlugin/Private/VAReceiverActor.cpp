@@ -107,13 +107,11 @@ void AVAReceiverActor::BeginPlay()
 	// Handle all sound Sources
 	TArray<AActor*> actorsA;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AActor::StaticClass(), actorsA);
-	
-	UVASourceComponent* tmp;
 
 	for (AActor* actor : actorsA) {
-		tmp = dynamic_cast<UVASourceComponent*> (actor->GetComponentByClass(UVASourceComponent::StaticClass()));
-		if (tmp != nullptr) {
-			tmp->initialize();
+		TArray<UActorComponent*> VASourceComponents = actor->GetComponentsByClass(UVASourceComponent::StaticClass());
+		for (UActorComponent* component : VASourceComponents){
+			Cast<UVASourceComponent>(component)->initialize();
 		}
 	}
 
