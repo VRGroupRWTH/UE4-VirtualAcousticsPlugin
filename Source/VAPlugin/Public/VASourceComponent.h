@@ -33,7 +33,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+protected:
 
 	// Having AVAReceiverActor as friend to be able to call the initialize function from AVAReceiverActor::BeginPlay()
 	friend class AVAReceiverActor;
@@ -98,6 +98,10 @@ public:
 
 
 
+	// Check if is Muted
+	bool muted = false;
+
+public:
 
 
 	// Sets default values for this component's properties
@@ -105,6 +109,7 @@ public:
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 
 	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
@@ -131,8 +136,6 @@ public:
 		void muteSound(bool mute = true);
 
 
-
-
 	// returns the Position minding its setting for location //
 	UFUNCTION(BlueprintCallable)
 		FVector getPosition();
@@ -141,50 +144,83 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FRotator getRotation();
 
+	// sets the Directivity by the phoneme set up in the ini file
 	UFUNCTION(BlueprintCallable)
 		void setDirectivityByPhoneme(FString phoneme);
 
+	// sets the Directivity by a file Name
 	UFUNCTION(BlueprintCallable)
 		void setDirectivityByFileName(FString fileName);
 
+	// gets the file name of the current direcitivity 
+	UFUNCTION(BlueprintCallable)
+		FString getDirectivityFileName();
+
+	
+	// Sets the visibility of the sound Sound source (used for Debug mode)
 	UFUNCTION(BlueprintCallable)
 		void setSoundSourceVisibility(bool vis_);
 
-	UFUNCTION(BlueprintCallable)
-		void setGainFactor(float gainFactor_);
-	
+	// // sets the Gain Factor for the sound source  [0...1]						// TODO!! 
+	// UFUNCTION(BlueprintCallable)													// TODO!! 
+	// 	void setGainFactor(float gainFactor_);										// TODO!! 
+
+	// returns the Gain Factor for the sound source [0...1]						
+	UFUNCTION(BlueprintCallable)												
+		float getGainFactor();															
+
+	// If its a different file than the current, it sets a new Sound for the sound source
 	UFUNCTION(BlueprintCallable)
 		void setSoundFile(FString soundFile_);
 	
- 	UFUNCTION(BlueprintCallable)
- 		void setLoop(bool loop_);
- 	
- 	UFUNCTION(BlueprintCallable)
- 		void setUsePoseOffset(bool usePoseOffset_);
- 	
- 	UFUNCTION(BlueprintCallable)
- 		void setOffsetPosition(FVector pos_);
- 	
- 	UFUNCTION(BlueprintCallable)
- 		void setOffsetRotation(FRotator rot_);
- 	
- 	UFUNCTION(BlueprintCallable)
- 		void setBoneName(FString boneName_);
+	// Returns the file name of the current sound playe back
+	UFUNCTION(BlueprintCallable)
+		FString getSoundFile();
+	
 
+	// Sets if the sound source should loop the file
+	UFUNCTION(BlueprintCallable)
+		void setLoop(bool loop_);
+
+	// returns whether the sound is looping
+	UFUNCTION(BlueprintCallable)
+		bool getLoop();
+
+	
+	// Sets the Movement setting (AttatchToBone, ObjectSpawnPoint, MoveWithObject)
 	UFUNCTION(BlueprintCallable)
 		void setMovementSetting(EMovement movementSetting_);
 
+	// Sets whether to use Pose Offset
+ 	UFUNCTION(BlueprintCallable)
+ 		void setUsePoseOffset(bool usePoseOffset_);
+ 	
+	// Changes the Offset for the Position
+ 	UFUNCTION(BlueprintCallable)
+ 		void setOffsetPosition(FVector pos_);
+ 	
+	// Changes the Offset for the Rotation
+ 	UFUNCTION(BlueprintCallable)
+ 		void setOffsetRotation(FRotator rot_);
+ 	
+ 	// Changes the Bone the Sound source is attatched to. If the new bone is found, set MovementSetting to AttatchToBone. Else use old settings
+	UFUNCTION(BlueprintCallable)
+		void setBoneName(FString boneName_);
+
+	// Returns the name of the bone the sound is attatched
+	UFUNCTION(BlueprintCallable)
+		FString getBoneName();
 
 
 
-	float getGainFactor();
-	float getSoundTimeOffset();
-	
-	FString getFileName();
 
-	bool getVisibility();
+
+
+	float getSoundTimeOffset();															  // TODO!!
+																						  
+																						  // TODO!!
+	bool getVisibility();																  // TODO!!
 	bool getHandleReflections();
-	bool getLoop();
 
 protected:
 	// Called when the game starts
@@ -193,37 +229,41 @@ protected:
 	// initialize Sound Source with the settings set // 
 	void initialize();
 
-	// Checks if has access to server
-	bool hasAccess();
 
     // Link to Owner Actor //
 	AActor* ownerActor;
 
+	// The actual VA Sound Source
+	VASoundSource* soundSource = nullptr;
+
+	// skeletal_mesh, used if AttatchToBone is selected
+	USkeletalMeshComponent* skeletal_mesh_component;
+	
+	
 	// Check if it is the first tick //
 	bool firstTick = true;
     
 	// if sound source has initialized //
 	bool initialized = false;
 
-	// The actual VA Sound Source
-	VASoundSource* soundSource;
-
 	// To adapt update rate
 	float timeSinceUpdate;
+	
+	
+	// Checks if has access to server
+	bool hasAccess();
 
+
+	
 	// Spawn Pos & Rot. Used if ObjectSpawnPoint is selected
 	FVector spawnPosition;
 	FRotator spawnRotation;
-
-	// skeletal_mesh, used if AttatchToBone is selected
-	USkeletalMeshComponent* skeletal_mesh_component;
-
-    // Check time // 
+	   
+	
+	// Check time // 
 	float timer;
 
 
-
-	bool muted = false;
 
 
 #if WITH_EDITOR

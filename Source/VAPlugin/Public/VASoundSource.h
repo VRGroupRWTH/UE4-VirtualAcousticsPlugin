@@ -33,6 +33,7 @@ public:
 	bool getVisibility();
 
 	void setDirectivity(VADirectivity* dir);
+	VADirectivity* getDirectivity();
 	
 	UVASourceComponent* getParentComponent();
 

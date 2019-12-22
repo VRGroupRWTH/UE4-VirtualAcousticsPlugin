@@ -26,12 +26,12 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	pos = parentComponent->getPosition();
 	rot = parentComponent->getRotation();
 
-	std::string fileName(TCHAR_TO_UTF8(*parentComponent->getFileName()));
+	std::string fileName(TCHAR_TO_UTF8(*parentComponent->getSoundFile()));
 	std::string name = "SoundSource";
 	std::string nameTmp;
 
 	if (FVAPluginModule::getIsMaster()) {
-		sBufferID = FVAPluginModule::createNewBuffer(parentComponent->getFileName(), loop, soundTimeOffset);
+		sBufferID = FVAPluginModule::createNewBuffer(parentComponent->getSoundFile(), loop, soundTimeOffset);
 		if (sBufferID == "")
 		{
 			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing Buffer", true);
@@ -141,6 +141,12 @@ void VASoundSource::setDirectivity(VADirectivity* dir)
 		}
 	}
 }
+
+VADirectivity* VASoundSource::getDirectivity()
+{
+	return directivity;
+}
+
 
 UVASourceComponent* VASoundSource::getParentComponent()
 {

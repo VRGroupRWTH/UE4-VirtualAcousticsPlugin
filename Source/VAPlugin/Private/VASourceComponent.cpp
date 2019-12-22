@@ -108,10 +108,10 @@ void UVASourceComponent::initialize()
 		}
 	}
 
-	if (movementSetting == EMovement::ObjectSpawnPoint) {
-		spawnPosition = ownerActor->GetTransform().GetLocation();
-		spawnRotation = ownerActor->GetTransform().GetRotation().Rotator();
-	}
+	
+	spawnPosition = ownerActor->GetTransform().GetLocation();
+	spawnRotation = ownerActor->GetTransform().GetRotation().Rotator();
+	
 
 	soundSource = new VASoundSource(this);
 
@@ -280,18 +280,18 @@ FRotator UVASourceComponent::getRotation()
 
 void UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
-  if (!FVAPluginModule::getUseVA()) {
-    return;
-  }
+	if (!FVAPluginModule::getUseVA()) {
+		return;
+	}
 	soundSource->setVisibility(vis);
 }
 
-void UVASourceComponent::setGainFactor(float gainFactor_)
-{
-	// TODO: setGainFactor
-	VAUtils::logStuff("UVASourceComponent::setGainFactor not working yet!!", true);
-	return;
-}
+// void UVASourceComponent::setGainFactor(float gainFactor_)
+// {
+// 	// TODO: setGainFactor
+// 	VAUtils::logStuff("UVASourceComponent::setGainFactor not working yet!!", true);
+// 	return;
+// }
 
 void UVASourceComponent::setSoundFile(FString soundFile_)
 {
@@ -310,7 +310,8 @@ void UVASourceComponent::setSoundFile(FString soundFile_)
 	soundSource->setNewSound(soundFile);	
 }
 
-void UVASourceComponent::setLoop(bool loop_) 
+
+void UVASourceComponent::setLoop(bool loop_)
 {
 	// If this setting is already set properly
 	if (loop == loop_) {
@@ -325,6 +326,7 @@ void UVASourceComponent::setLoop(bool loop_)
 
 	soundSource->setLoop(loop);
 }
+
 
 void UVASourceComponent::setUsePoseOffset(bool usePoseOffset_) 
 {
@@ -397,6 +399,7 @@ void UVASourceComponent::setBoneName(FString boneName_)
 	}
 }
 
+
 void UVASourceComponent::setMovementSetting(EMovement movementSetting_)
 {
 	// If this setting is already set properly
@@ -436,7 +439,6 @@ void UVASourceComponent::setDirectivityByFileName(FString fileName)
 }
 
 
-
 // ****************************************************************** // 
 // ******* Getter Functions ***************************************** //
 // ****************************************************************** //
@@ -450,10 +452,6 @@ bool UVASourceComponent::getHandleReflections() {
 	return handleReflections;
 }
 
-bool UVASourceComponent::getLoop() {
-	return loop;
-}
-
 float UVASourceComponent::getGainFactor() {
 	return gainFactor;
 }
@@ -462,10 +460,32 @@ float UVASourceComponent::getSoundTimeOffset() {
 	return startingTime;
 }
 
-FString UVASourceComponent::getFileName() {
-	return soundFile;
+FString UVASourceComponent::getBoneName()
+{
+	if (movementSetting != EMovement::AttatchToBone) {
+		VAUtils::logStuff("[UVASourceComponent::getBoneName()]: Movement is not set to AttatchToBone..");
+	}
+	return boneName;
 }
 
+FString UVASourceComponent::getDirectivityFileName()
+{
+	if (soundSource != nullptr) {
+		return soundSource->getDirectivity()->getFileName();
+	}
+
+	return "";
+}
+
+bool UVASourceComponent::getLoop()
+{
+	return loop;
+}
+
+FString UVASourceComponent::getSoundFile()
+{
+	return soundFile;
+}
 
 // ****************************************************************** // 
 // ******* Blueprint Settings *************************************** //
