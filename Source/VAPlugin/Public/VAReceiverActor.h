@@ -30,9 +30,8 @@ class VAPLUGIN_API AVAReceiverActor : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	AVAReceiverActor();
+protected:	
+
 	
 	// How many units in UE equal 1m in World
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale",									Category = "General Settigns"))
@@ -60,8 +59,10 @@ public:
 		FString dirMappingFileName = "VADir_default.ini";
 
 
+public:
 
-
+	// Sets default values for this actor's properties
+	AVAReceiverActor();
 
 	// return Scale
 	float getScale();

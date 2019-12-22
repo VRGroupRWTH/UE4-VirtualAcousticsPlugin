@@ -33,7 +33,7 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+protected:
 
 	// Having AVAReceiverActor as friend to be able to call the initialize function from AVAReceiverActor::BeginPlay()
 	friend class AVAReceiverActor;
@@ -99,7 +99,7 @@ public:
 
 
 
-
+public:
 
 	// Sets default values for this component's properties
 	UVASourceComponent();
