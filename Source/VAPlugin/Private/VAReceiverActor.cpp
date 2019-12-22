@@ -300,6 +300,11 @@ TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 	return reflectionWalls;
 }
 
+bool AVAReceiverActor::isInitialized()
+{
+	return initialized;
+}
+
 
 // ****************************************************************** // 
 // ******* Directivity Handling ************************************* //

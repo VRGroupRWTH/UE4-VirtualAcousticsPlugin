@@ -80,12 +80,16 @@ public:
 
 	static AVAReceiverActor* getCurrentReceiverActor();
 
+	bool isInitialized();
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void BeginDestroy() override;
+
+	void initialize();
 
 	// Updates the Virtual World Position of the Player // 
 	bool updateVirtualWorldPosition();

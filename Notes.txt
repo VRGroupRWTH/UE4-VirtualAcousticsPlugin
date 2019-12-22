@@ -73,6 +73,16 @@ Funktion für Server Löschung: pVA->Finalize();
 	};
 */
 
+
+enum EPlayAction {
+	Stop = 0,
+	Pause = 1,
+	Play = 2
+};
+Check that!
+
+
+
 void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot) 
 
 PluginModule::resetServer return true;

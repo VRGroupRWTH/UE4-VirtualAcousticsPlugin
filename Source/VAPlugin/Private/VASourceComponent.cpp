@@ -24,18 +24,28 @@ void UVASourceComponent::BeginPlay() {
 
 	TArray<AActor*> recActors;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), recActors);
+	AVAReceiverActor* tmp = nullptr;
 
 	for (AActor* iter : recActors) {
 		// if there is an ReceiverActor in the Szene
-		if (dynamic_cast<AVAReceiverActor*> (iter) != nullptr) {
+		tmp = dynamic_cast<AVAReceiverActor*> (iter);
+		if (tmp != nullptr) {
 			VAUtils::logStuff("[UVASourceComponent::BeginPlay()]: AVAReceiver found");
-			return;
+			break;
 		}
 	}
 
-	// else spawn one
-	VAUtils::logStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values");
-	AVAReceiverActor* recActor = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
+	// If no Rec Actor found spawn one with default parameters
+	if (tmp == nullptr) {
+	 	VAUtils::logStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values");
+		tmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
+	}
+
+	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
+	if (tmp->isInitialized() && !initialized) {
+		initialize();
+	}
+
 }
 
 
@@ -77,7 +87,7 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 void UVASourceComponent::initialize()
 {
 
-	if (!FVAPluginModule::getUseVA()) {
+	if (!FVAPluginModule::getUseVA() || initialized) {
 		return;
 	}
 
@@ -168,7 +178,6 @@ void UVASourceComponent::pauseSound()
 
 	soundSource->pauseSound();
 }
-
 
 EPlayAction UVASourceComponent::getPlayState()
 {

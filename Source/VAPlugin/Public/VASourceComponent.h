@@ -34,6 +34,10 @@ class VAPLUGIN_API UVASourceComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+
+	// Having AVAReceiverActor as friend to be able to call the initialize function from AVAReceiverActor::BeginPlay()
+	friend class AVAReceiverActor;
+
 	// In- or decrease Gain Factor (linear to power)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor",		Category = "General Settings", 
 		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
@@ -99,10 +103,8 @@ public:
 	// Sets default values for this component's properties
 	UVASourceComponent();
 
-
-	// initialize Sound Source with the settings set // 
-	UFUNCTION(BlueprintCallable)
-		void initialize();
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
@@ -187,6 +189,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+
+	// initialize Sound Source with the settings set // 
+	void initialize();
+
     // Link to Owner Actor //
 	AActor* ownerActor;
 
@@ -194,7 +200,7 @@ protected:
 	bool firstTick = true;
     
 
-	// if sound source has run BeginPlay() //
+	// if sound source has initialized //
 	bool initialized = false;
 
 	// The actual VA Sound Source
@@ -215,11 +221,9 @@ protected:
 
 
 #if WITH_EDITOR
+	// Function to improve settings displayed in Editor, can only be used in editor mode
 	virtual bool CanEditChange(const UProperty* InProperty) const;
 #endif
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 		
 };
