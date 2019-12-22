@@ -92,6 +92,8 @@ public:
 	static bool setSoundSourcePos(int soundSourceID, FVector pos);
 	static bool setSoundSourceRot(int soundSourceID, FRotator rot);
 	static bool setNewBufferForSoundSource(int soundSourceID, std::string bufferID);
+	static bool setSoundSourceMuted(int soundSourceID, bool muted);
+
 
 	// ******* Directivities ******* //
 

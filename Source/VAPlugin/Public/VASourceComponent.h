@@ -122,11 +122,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void pauseSound();
 
-// 	UFUNCTION(BlueprintCallable)										 // TODO! 
-// 		void muteSound();												 // TODO! 
-// 																		 // TODO! 
-// 	UFUNCTION(BlueprintCallable)										 // TODO! 
-// 		void unmuteSound();
+	// returns the Play Sate in form of a EPlayAction // 
+	UFUNCTION(BlueprintCallable)
+		EPlayAction getPlayState();
+
+	// Mutes sound // 
+	UFUNCTION(BlueprintCallable)
+		void muteSound(bool mute = true);
+
+
 
 
 	// returns the Position minding its setting for location //
@@ -136,10 +140,6 @@ public:
 	// returns the Roatation minding its setting for rotation // 
 	UFUNCTION(BlueprintCallable)
 		FRotator getRotation();
-
-	// returns the Play Sate in form of a EPlayAction // 
-	UFUNCTION(BlueprintCallable)
-		EPlayAction getPlayState();
 
 	UFUNCTION(BlueprintCallable)
 		void setDirectivityByPhoneme(FString phoneme);
@@ -158,20 +158,21 @@ public:
 	
  	UFUNCTION(BlueprintCallable)
  		void setLoop(bool loop_);
-// 	
-// 	UFUNCTION(BlueprintCallable)
-// 		void setUsePoseOffset(bool usePoseOffset_);
-// 	
-// 	UFUNCTION(BlueprintCallable)
-// 		void setOffsetPosition(FVector pos_);
-// 	
-// 	UFUNCTION(BlueprintCallable)
-// 		void setOffsetRotation(FRotator rot_);
-// 	
-// 	UFUNCTION(BlueprintCallable)
-// 		void setBoneName(FString boneName_);
+ 	
+ 	UFUNCTION(BlueprintCallable)
+ 		void setUsePoseOffset(bool usePoseOffset_);
+ 	
+ 	UFUNCTION(BlueprintCallable)
+ 		void setOffsetPosition(FVector pos_);
+ 	
+ 	UFUNCTION(BlueprintCallable)
+ 		void setOffsetRotation(FRotator rot_);
+ 	
+ 	UFUNCTION(BlueprintCallable)
+ 		void setBoneName(FString boneName_);
 
-
+	UFUNCTION(BlueprintCallable)
+		void setMovementSetting(EMovement movementSetting_);
 
 
 
@@ -189,9 +190,11 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-
 	// initialize Sound Source with the settings set // 
 	void initialize();
+
+	// Checks if has access to server
+	bool hasAccess();
 
     // Link to Owner Actor //
 	AActor* ownerActor;
@@ -199,7 +202,6 @@ protected:
 	// Check if it is the first tick //
 	bool firstTick = true;
     
-
 	// if sound source has initialized //
 	bool initialized = false;
 
@@ -218,6 +220,10 @@ protected:
 
     // Check time // 
 	float timer;
+
+
+
+	bool muted = false;
 
 
 #if WITH_EDITOR

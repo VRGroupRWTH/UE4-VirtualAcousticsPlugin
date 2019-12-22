@@ -139,31 +139,37 @@ void UVASourceComponent::initialize()
 	initialized = true;
 }
 
+bool UVASourceComponent::hasAccess()
+{
+	return 	(initialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster());
+}
+
+
 // ****************************************************************** // 
 // ******* Interface Sound ****************************************** //
 // ****************************************************************** //
 
 void UVASourceComponent::playSound()
 {
-    if (!FVAPluginModule::getUseVA()) {
+	if (!hasAccess()) {
 		return;
-    }
+	}
 
 	soundSource->playSound();
 }
 
 void UVASourceComponent::playSoundFromSecond(float time)
 {
-	if (!FVAPluginModule::getUseVA()) {
+	if (!hasAccess()) {
 		return;
-	}
+    }
 
 	soundSource->playSoundFromSecond(time);
 }
 
 void UVASourceComponent::stopSound()
 {
-	if (!FVAPluginModule::getUseVA()) {
+	if (!hasAccess()) {
 		return;
 	}
 
@@ -172,17 +178,36 @@ void UVASourceComponent::stopSound()
 
 void UVASourceComponent::pauseSound()
 {
-	if (!FVAPluginModule::getUseVA()) {
+	if (!hasAccess()) {
 		return;
-    }
+	}
 
 	soundSource->pauseSound();
 }
 
 EPlayAction UVASourceComponent::getPlayState()
 {
+	if (!hasAccess()) {
+		return EPlayAction::Stop;
+	}
+
 	return VAUtils::VAActionToEPlayAction(soundSource->getPlayState());
 }
+
+void UVASourceComponent::muteSound(bool mute_)
+{
+	if (muted == mute_) {
+		return;
+	}
+
+	if (!hasAccess()) {
+		return;
+	}
+
+	soundSource->muteSound(muted);
+}
+
+
 
 // ****************************************************************** // 
 // ******* Sound Pose *********************************************** //
@@ -285,8 +310,8 @@ void UVASourceComponent::setSoundFile(FString soundFile_)
 	soundSource->setNewSound(soundFile);	
 }
 
-void UVASourceComponent::setLoop(bool loop_) {
-
+void UVASourceComponent::setLoop(bool loop_) 
+{
 	// If this setting is already set properly
 	if (loop == loop_) {
 		return;
@@ -298,8 +323,95 @@ void UVASourceComponent::setLoop(bool loop_) {
 		return;
 	}
 
-
 	soundSource->setLoop(loop);
+}
+
+void UVASourceComponent::setUsePoseOffset(bool usePoseOffset_) 
+{
+	// If this setting is already set properly
+	if (usePoseOffset == usePoseOffset_) {
+		return;
+	}
+	
+	usePoseOffset = usePoseOffset_;
+	
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return;
+	}
+	
+	soundSource->setPos(getPosition());
+	soundSource->setRot(getRotation());
+}
+
+void UVASourceComponent::setOffsetPosition(FVector pos_) 
+{
+	// If this setting is already set properly
+	if (offsetPosition == pos_) {
+		return;
+	}
+
+	offsetPosition = pos_;
+
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+	soundSource->setPos(getPosition());
+}
+
+void UVASourceComponent::setOffsetRotation(FRotator rot_)
+{
+	// If this setting is already set properly
+	if (offsetRotation == rot_) {
+		return;
+	}
+
+	offsetRotation = rot_;
+
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+	soundSource->setRot(getRotation());
+}
+
+void UVASourceComponent::setBoneName(FString boneName_)
+{
+	// If this setting is already set properly
+	if (boneName == boneName_) {
+		return;
+	}
+
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+	// Check if the bone exists
+	if (skeletal_mesh_component != nullptr
+		&& skeletal_mesh_component->DoesSocketExist(FName(*boneName_))) {
+		boneName = boneName_;
+		movementSetting = EMovement::AttatchToBone;
+	}
+	else {
+		VAUtils::openMessageBox("[UVASourceComponent::setBoneName(FString)]: Could not find new bone, using old settings instead.");
+	}
+}
+
+void UVASourceComponent::setMovementSetting(EMovement movementSetting_)
+{
+	// If this setting is already set properly
+	if (movementSetting == movementSetting_) {
+		return;
+	}
+
+	movementSetting = movementSetting_;
+
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+	soundSource->setPos(getPosition());
+	soundSource->setRot(getRotation());
 }
 
 

@@ -539,6 +539,25 @@ bool FVAPluginModule::setNewBufferForSoundSource(int soundSourceID, std::string 
 	}
 }
 
+bool FVAPluginModule::setSoundSourceMuted(int soundSourceID, bool muted)
+{
+	if (!isConnected()) {
+		return false;
+	}
+
+	try
+	{
+		pVA->SetSoundSourceMuted(soundSourceID, muted);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setSoundSourceMuted()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+
 
 // ****************************************************************** // 
 // ******* Directivities ******************************************** //

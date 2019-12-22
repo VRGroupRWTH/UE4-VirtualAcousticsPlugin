@@ -47,6 +47,8 @@ public:
 	void pauseSound();
 	void playSoundFromSecond(float time);
 
+	void muteSound(bool muted_ = true);
+
 	int getPlayState();
 
 

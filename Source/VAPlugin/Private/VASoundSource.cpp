@@ -219,6 +219,16 @@ int VASoundSource::getPlayState()
 	return FVAPluginModule::getSoundBufferAction(sBufferID);
 }
 
+void VASoundSource::muteSound(bool muted_)
+{
+	FVAPluginModule::setSoundSourceMuted(soundSourceID, muted_);
+
+	for (auto iter : reflections) {
+		FVAPluginModule::setSoundSourceMuted(iter->getSoundSourceID(), muted_);
+	}
+}
+
+
 void VASoundSource::setNewSound(FString soundFile_)
 {
 	// stop 
