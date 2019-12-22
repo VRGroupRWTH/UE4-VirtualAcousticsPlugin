@@ -30,7 +30,6 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
 	setVisibility(false);
-
 }
 
 

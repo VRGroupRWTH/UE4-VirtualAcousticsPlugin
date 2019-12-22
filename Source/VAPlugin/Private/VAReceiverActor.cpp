@@ -329,7 +329,7 @@ void AVAReceiverActor::readDirMappingFile(FString fileName)
 
 	dirMappingFileName = fileName;
 	dirManager.reset();
-	dirManager.readConfigFile(fileName);
+	dirManager.readConfigFile(dirMappingFileName);
 }
 
 
