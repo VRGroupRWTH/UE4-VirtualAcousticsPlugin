@@ -81,7 +81,7 @@ enum EPlayAction {
 };
 Check that!
 
-
+void UVASourceComponent::setGainFactor(float gainFactor_)
 
 void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot) 
 

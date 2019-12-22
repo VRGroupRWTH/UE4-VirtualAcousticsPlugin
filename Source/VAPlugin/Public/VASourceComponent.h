@@ -156,8 +156,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void setSoundFile(FString soundFile_);
 	
-// 	UFUNCTION(BlueprintCallable)
-// 		void setLoop(bool loop_);
+ 	UFUNCTION(BlueprintCallable)
+ 		void setLoop(bool loop_);
 // 	
 // 	UFUNCTION(BlueprintCallable)
 // 		void setUsePoseOffset(bool usePoseOffset_);

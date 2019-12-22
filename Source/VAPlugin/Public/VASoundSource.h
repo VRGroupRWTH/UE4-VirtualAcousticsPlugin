@@ -40,6 +40,7 @@ public:
 
 	void setPlayAction(int action_);
 	void setSoundTime(float time);
+	void setLoop(bool loop);
 
 	void playSound();
 	void stopSound();

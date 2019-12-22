@@ -83,6 +83,7 @@ public:
 	static bool	setSoundBufferAction(std::string sBufferID, EPlayAction action);
 	static int  getSoundBufferAction(std::string sBufferID);
 	static bool setSoundBufferTime(std::string sBufferID, float time);
+	static bool setSoundBufferLoop(std::string sBufferID, bool loop);
 	
 
 	// ******* Sound Sources ******* //

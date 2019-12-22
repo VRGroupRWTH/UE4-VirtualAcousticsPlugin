@@ -263,13 +263,21 @@ void UVASourceComponent::setSoundSourceVisibility(bool vis)
 
 void UVASourceComponent::setGainFactor(float gainFactor_)
 {
+	// TODO: setGainFactor
 	VAUtils::logStuff("UVASourceComponent::setGainFactor not working yet!!", true);
 	return;
 }
 
 void UVASourceComponent::setSoundFile(FString soundFile_)
 {
+	// If already playing back that sound File
+	if (soundFile == soundFile_) {
+		soundSource->stopSound();
+		return;
+	}
+
 	soundFile = soundFile_;
+	
 	if (!initialized || !FVAPluginModule::getIsMaster()) {
 		return;
 	}
@@ -277,7 +285,22 @@ void UVASourceComponent::setSoundFile(FString soundFile_)
 	soundSource->setNewSound(soundFile);	
 }
 
+void UVASourceComponent::setLoop(bool loop_) {
 
+	// If this setting is already set properly
+	if (loop == loop_) {
+		return;
+	}
+
+	loop = loop_;
+
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+
+	soundSource->setLoop(loop);
+}
 
 
 // ****************************************************************** // 

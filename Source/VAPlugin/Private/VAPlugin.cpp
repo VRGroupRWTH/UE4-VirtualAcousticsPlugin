@@ -411,6 +411,25 @@ bool FVAPluginModule::setSoundBufferTime(std::string sBufferID, float time)
 	}
 }
 
+bool FVAPluginModule::setSoundBufferLoop(std::string sBufferID, bool loop)
+{
+	if (!isConnected()) {
+		return false;
+	}
+
+	try
+	{
+		pVA->SetSignalSourceBufferLooping(sBufferID, loop);
+
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setSoundBufferLoop()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
 
 // ****************************************************************** // 
 // ******* Sound Sources ******************************************** //

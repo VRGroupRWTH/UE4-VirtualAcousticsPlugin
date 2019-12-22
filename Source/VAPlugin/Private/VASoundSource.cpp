@@ -167,6 +167,15 @@ void VASoundSource::setSoundTime(float time)
 	FVAPluginModule::setSoundBufferTime(sBufferID, time);
 }
 
+void VASoundSource::setLoop(bool loop)
+{
+	if (!FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+	FVAPluginModule::setSoundBufferLoop(sBufferID, loop);
+}
+
 void VASoundSource::playSound()
 {
 	if (!FVAPluginModule::getIsMaster()) {
