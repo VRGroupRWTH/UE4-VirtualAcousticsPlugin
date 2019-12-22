@@ -25,6 +25,8 @@ public:
 	static VADirectivity* getDefaultReceiverDirectivity();
 	static VADirectivity* getDefaultSourceDirectivity();
 	
+	FString getFileName();
+
 private:
 	TArray<VADirectivity*> directivities;
 

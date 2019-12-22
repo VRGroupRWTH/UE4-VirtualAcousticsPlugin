@@ -20,10 +20,9 @@ VADirectivityManager::VADirectivityManager(FString configFileName_)
 }
 
 
-void VADirectivityManager::readConfigFile(FString configFileName_) {
+void VADirectivityManager::readConfigFile(FString configFileName_) 
+{
 
-	/*
-	*/
 	directivities.Empty();
 	configFileName = configFileName_;
 
@@ -133,6 +132,8 @@ void VADirectivityManager::readConfigFile(FString configFileName_) {
 
 void VADirectivityManager::reset()
 {
+	// TODO: delete all directivities from the server
+
 	defaultReceiverDirectivity 	 = nullptr;
 	defaultSourceDirectivity 	 = nullptr;
 	defaultDir					 = nullptr;
@@ -176,6 +177,12 @@ VADirectivity* VADirectivityManager::getDirectivityByFileName(FString fileName_)
 
 	return defaultDir;
 }
+
+FString VADirectivityManager::getFileName()
+{
+	return configFileName;
+}
+
 
 bool VADirectivityManager::isValid()
 {

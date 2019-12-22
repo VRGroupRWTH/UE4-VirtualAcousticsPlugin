@@ -320,7 +320,17 @@ VADirectivity* AVAReceiverActor::getDirectivityByFileName(FString fileName)
 	return dirManager.getDirectivityByFileName(fileName);
 }
 
+void AVAReceiverActor::readDirMappingFile(FString fileName) 
+{
+	if (dirManager.getFileName() == fileName || dirMappingFileName == fileName) {
+		VAUtils::logStuff("[AVAReceiverActor::readDirMappingFile()]: file already loaded");
+		return;
+	}
 
+	dirMappingFileName = fileName;
+	dirManager.reset();
+	dirManager.readConfigFile(fileName);
+}
 
 
 

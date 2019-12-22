@@ -83,14 +83,14 @@ public:
 
 	bool isInitialized();
 
+	UFUNCTION(BlueprintCallable)
+		void readDirMappingFile(FString fileName);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void BeginDestroy() override;
-
-	void initialize();
 
 	// Updates the Virtual World Position of the Player // 
 	bool updateVirtualWorldPosition();

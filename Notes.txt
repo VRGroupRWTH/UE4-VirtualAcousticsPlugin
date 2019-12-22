@@ -90,3 +90,5 @@ PluginModule::disconnect
 
 
 Sound Source Component GainFactor
+
+void VADirectivityManager::reset() - delete all directivities from VA Server
