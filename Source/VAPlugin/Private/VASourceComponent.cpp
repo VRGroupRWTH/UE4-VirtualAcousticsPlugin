@@ -41,10 +41,10 @@ void UVASourceComponent::BeginPlay() {
 		tmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
 	}
 
-	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
-	if (tmp->isInitialized() && !initialized) {
-		initialize();
-	}
+// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
+if (tmp->isInitialized() && !initialized) {
+	initialize();
+}
 
 }
 
@@ -72,9 +72,9 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	timeSinceUpdate += DeltaTime;
 
-	if ((movementSetting == EMovement::AttatchToBone || movementSetting == EMovement::MoveWithObject) && 
+	if ((movementSetting == EMovement::AttatchToBone || movementSetting == EMovement::MoveWithObject) &&
 		timeSinceUpdate > (1.0f / 30.0f)) {
-		
+
 		soundSource->setPos(getPosition());
 		soundSource->setRot(getRotation());
 
@@ -96,9 +96,9 @@ void UVASourceComponent::initialize()
 
 
 	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*> (ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
-	
+
 	if (movementSetting == EMovement::AttatchToBone) {
-		if (skeletal_mesh_component != nullptr 
+		if (skeletal_mesh_component != nullptr
 			&& skeletal_mesh_component->DoesSocketExist(FName(*boneName))) {
 			VAUtils::logStuff("Bone detected.");
 		}
@@ -108,32 +108,32 @@ void UVASourceComponent::initialize()
 		}
 	}
 
-	
+
 	spawnPosition = ownerActor->GetTransform().GetLocation();
 	spawnRotation = ownerActor->GetTransform().GetRotation().Rotator();
-	
+
 
 	soundSource = new VASoundSource(this);
 
 	if (FVAPluginModule::getIsMaster()) {
 		switch (directivitySetting) {
-			case EDir::DefaultHRIR : 
-				soundSource->setDirectivity(VADirectivityManager::getDefaultSourceDirectivity());
-				break;
+		case EDir::DefaultHRIR:
+			soundSource->setDirectivity(VADirectivityManager::getDefaultSourceDirectivity());
+			break;
 
-			case EDir::manualFile :
-				soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(directivityByFileName));
-				break;
+		case EDir::manualFile:
+			soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(directivityByFileName));
+			break;
 
-			case EDir::phoneme :
-				soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(directivityByPhoneme));
-				break;
+		case EDir::phoneme:
+			soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(directivityByPhoneme));
+			break;
 
-			default:
-				break;
+		default:
+			break;
 		}
 	}
-	
+
 	VAUtils::logStuff("SoundSourceComponent initialized successfully");
 
 	initialized = true;
@@ -141,7 +141,11 @@ void UVASourceComponent::initialize()
 
 bool UVASourceComponent::hasAccess()
 {
-	return 	(initialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster());
+	if (initialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster()) {
+		return true;
+	}
+	VAUtils::openMessageBox("Could not get Access!!", true);
+	return 	false;
 }
 
 
