@@ -49,7 +49,7 @@ public:
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action",				Category = "General Settings"))
-		TEnumAsByte<EPlayAction> startingPlayAction = EPlayAction::Play;
+		TEnumAsByte<EPlayAction> startingPlayAction = EPlayAction::Stop;
 
 	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]",	Category = "General Settings"))
