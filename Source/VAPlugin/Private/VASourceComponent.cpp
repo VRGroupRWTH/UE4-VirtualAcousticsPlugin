@@ -141,11 +141,7 @@ void UVASourceComponent::initialize()
 
 bool UVASourceComponent::hasAccess()
 {
-	if (initialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster()) {
-		return true;
-	}
-	VAUtils::openMessageBox("Could not get Access!!", true);
-	return 	false;
+	return (initialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster());
 }
 
 
