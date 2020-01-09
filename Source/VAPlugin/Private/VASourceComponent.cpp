@@ -297,7 +297,8 @@ void UVASourceComponent::setSoundFile(FString soundFile_)
 {
 	// If already playing back that sound File
 	if (soundFile == soundFile_) {
-		soundSource->stopSound();
+		if(hasAccess())
+			soundSource->stopSound();
 		return;
 	}
 
