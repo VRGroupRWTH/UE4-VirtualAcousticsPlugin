@@ -385,6 +385,8 @@ void UVASourceComponent::setBoneName(FString boneName_)
 		return;
 	}
 
+	boneName = boneName_;
+
 	if (!initialized || !FVAPluginModule::getIsMaster()) {
 		return;
 	}
