@@ -599,7 +599,7 @@ bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
 	}
 	catch (CVAException& e)
 	{
-		processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()));
+		processExeption("FVAPluginModule::setSoundSourceDirectivity()", FString(e.ToString().c_str()));
 		// if (&e == nullptr)
 		// {
 		// }
