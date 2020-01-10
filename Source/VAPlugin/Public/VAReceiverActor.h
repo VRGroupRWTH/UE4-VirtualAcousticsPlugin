@@ -56,7 +56,7 @@ protected:
 
 	// File name of the Directivity mapping file
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities",		Category = "Directivity Manager"))
-		FString dirMappingFileName = "VADir_default.ini";
+		FString dirMappingFileName = "Study/VADir_default.ini";
 
 
 public:

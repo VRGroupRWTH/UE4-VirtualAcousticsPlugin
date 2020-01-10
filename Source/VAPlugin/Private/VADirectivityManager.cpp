@@ -38,7 +38,7 @@ void VADirectivityManager::readConfigFile(FString configFileName_)
 	// FString dir = FPaths::Combine(*BaseDir, TEXT("config/directivities/"));
 
 	FString RelativePath = FPaths::ProjectContentDir();
-	FString dir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*RelativePath) + "Study/";
+	FString dir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*RelativePath);
 
 	FString config_file_name = dir + configFileName;
 
