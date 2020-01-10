@@ -427,17 +427,27 @@ void UVASourceComponent::setMovementSetting(EMovement movementSetting_)
 
 void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
 {
-	if (!FVAPluginModule::getUseVA()) {
+
+	directivitySetting = EDir::phoneme;
+	directivityByPhoneme = phoneme;
+
+	if (!hasAccess()) {
 		return;
 	}
+
 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(phoneme));
 }
 
 void UVASourceComponent::setDirectivityByFileName(FString fileName)
 {
-	if (!FVAPluginModule::getUseVA()) {
+	
+	directivitySetting = EDir::manualFile;
+	directivityByFileName = fileName;
+
+	if (!hasAccess()) {
 		return;
 	}
+
 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(fileName));
 }
 
