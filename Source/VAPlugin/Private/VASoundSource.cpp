@@ -249,6 +249,8 @@ void VASoundSource::setNewSound(FString soundFile_)
 		FVAPluginModule::setNewBufferForSoundSource(iter->getSoundSourceID(), newBufferID);
 	}
 
+	sBufferID = newBufferID;
+
 	// TODO: delete buffer?
 }
 
