@@ -171,9 +171,14 @@ VADirectivity* VADirectivityManager::getDirectivityByFileName(FString fileName_)
 	}
 	VAUtils::logStuff("[VADirectivityManager::getDirectivityByFileName()] Directivity from file " + fileName_ + " cannot be found! Creating one now...");
 
-	VADirectivity* tmpDir = new VADirectivity(fileName_);
-	directivities.Add(tmpDir);
-	
+	VADirectivity* new_directivity = new VADirectivity(fileName_);
+	if (new_directivity != nullptr) {
+		directivities.Add(new_directivity);
+		return new_directivity;
+	}
+	else {
+		VAUtils::logStuff("[VADirectivityManager::getDirectivityByFileName()] Directivity from file " + fileName_ + " cannot be created!");
+	}
 
 	return defaultDir;
 }
