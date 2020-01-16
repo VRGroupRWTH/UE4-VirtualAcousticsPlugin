@@ -6,6 +6,7 @@
 #include "VASoundSourceBaseClass.h"
 #include "VASoundSourceReflection.h"
 #include "VASourceComponent.h"
+#include "VASignalBufferManager.h"
 
 // #include <string>
 
@@ -54,17 +55,21 @@ public:
 
 
 	// new functions for runtime usage
-	void setNewSound(FString soundFile_);
+	bool setNewSound(FString soundFile_);
+
+	bool loadNewSound(FString soundFile_);
 
 
 private: 
 
 	FVector pos;
-
 	FRotator rot;
 
 
 	int soundSourceID;
+
+	VASignalBufferManager bufferManager;
+	VASignalBuffer* activeBuffer;
 
 	AVASoundSourceRepresentation* soundSourceRepresentation;
 
@@ -77,16 +82,12 @@ private:
 
 	VADirectivity* directivity;
 
-	std::string sBufferID;
-
 	bool playing;
 
-	int action;
 
 	static int counter;
 	
 	bool handleReflections;
-	bool loop;
 	float gainFactor;
 	float soundTimeOffset;
 

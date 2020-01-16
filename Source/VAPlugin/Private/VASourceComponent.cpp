@@ -293,22 +293,31 @@ void UVASourceComponent::setSoundSourceVisibility(bool vis)
 // 	return;
 // }
 
-void UVASourceComponent::setSoundFile(FString soundFile_)
+bool UVASourceComponent::loadSoundFile(FString soundFile_)
+{
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return false;
+	}
+
+	return soundSource->loadNewSound(soundFile);
+}
+
+bool UVASourceComponent::setSoundFile(FString soundFile_)
 {
 	// If already playing back that sound File
 	if (soundFile == soundFile_) {
 		if(hasAccess())
 			soundSource->stopSound();
-		return;
+		return false;
 	}
 
 	soundFile = soundFile_;
 	
 	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return;
+		return false;
 	}
 
-	soundSource->setNewSound(soundFile);	
+	return soundSource->setNewSound(soundFile);	
 }
 
 

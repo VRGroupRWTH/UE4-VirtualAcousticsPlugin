@@ -1,9 +1,7 @@
+
 #include "VAHRIRManager.h"
 
 #include "VAUtils.h"
-
-#include "Core.h"
-#include "Interfaces/IPluginManager.h"
 
 VAHRIR* VAHRIRManager::defaultHRIR = nullptr;
 

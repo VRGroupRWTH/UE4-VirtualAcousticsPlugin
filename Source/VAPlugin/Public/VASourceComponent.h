@@ -166,9 +166,13 @@ public:
 	UFUNCTION(BlueprintCallable)												
 		float getGainFactor();															
 
+	// Preloading sound file for later use
+	UFUNCTION(BlueprintCallable)
+		bool loadSoundFile(FString soundFile_);
+
 	// If its a different file than the current, it sets a new Sound for the sound source
 	UFUNCTION(BlueprintCallable)
-		void setSoundFile(FString soundFile_);
+		bool setSoundFile(FString soundFile_);
 	
 	// Returns the file name of the current sound playe back
 	UFUNCTION(BlueprintCallable)

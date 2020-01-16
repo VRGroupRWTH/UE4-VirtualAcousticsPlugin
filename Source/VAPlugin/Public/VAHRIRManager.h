@@ -1,4 +1,4 @@
-// Class to manage all the Directivities
+// Class to manage all the HRIR
 
 #pragma once
 

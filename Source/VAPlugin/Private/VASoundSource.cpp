@@ -14,12 +14,12 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 {
 
 	playing = false;
-	action = EPlayAction::Stop;
+	EPlayAction action = EPlayAction::Stop;
 
 	showCones = FVAPluginModule::isInDebugMode();
 
 	handleReflections = parentComponent->getHandleReflections();
-	loop = parentComponent->getLoop();
+	bool loop = parentComponent->getLoop();
 	gainFactor = parentComponent->getGainFactor();
 	soundTimeOffset = parentComponent->getSoundTimeOffset();
 
@@ -31,14 +31,26 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	std::string nameTmp;
 
 	if (FVAPluginModule::getIsMaster()) {
-		sBufferID = FVAPluginModule::createNewBuffer(parentComponent->getSoundFile(), loop, soundTimeOffset);
-		if (sBufferID == "")
+
+		activeBuffer = bufferManager.getBufferByFileName(parentComponent->getSoundFile());
+
+		if (activeBuffer == nullptr)
 		{
 			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing Buffer", true);
 			return;
 		}
-	
-		soundSourceID = FVAPluginModule::createNewSoundSource(sBufferID, name, pos, rot, gainFactor);
+
+		// Only Change if necessary
+		if (loop) {
+			activeBuffer->setLoop(loop);
+		}
+
+		// Only Change if necessary
+		if (soundTimeOffset > 0.0f) {
+			activeBuffer->setSoundTimeOffset(soundTimeOffset);
+		}
+
+		soundSourceID = FVAPluginModule::createNewSoundSource(activeBuffer->getID(), name, pos, rot, gainFactor);
 		if (soundSourceID == -1)
 		{
 			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource", true);
@@ -61,7 +73,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 			std::string wallName(TCHAR_TO_UTF8(*wall->GetName()));
 			nameTmp = name + "_R_" + wallName;
 
-			reflections.Add(new VASoundSourceReflection(this, wall, sBufferID, nameTmp, pos, rot, gainFactor));
+			reflections.Add(new VASoundSourceReflection(this, wall, activeBuffer->getID(), nameTmp, pos, rot, gainFactor));
 		}
 	}
 }
@@ -153,15 +165,14 @@ UVASourceComponent* VASoundSource::getParentComponent()
 	return parentComponent;
 }
 
-void VASoundSource::setPlayAction(int action_)
+void VASoundSource::setPlayAction(int action)
 {
-	if (!FVAPluginModule::getIsMaster() || getPlayState() == action_) {
+	if (!FVAPluginModule::getIsMaster() || getPlayState() == action) {
 		return;
 	}
 
-	action = action_;
+	activeBuffer->setSoundBufferAction(action);
 	
-	FVAPluginModule::setSoundBufferAction(sBufferID, static_cast<EPlayAction>(action));
 }
 
 void VASoundSource::setSoundTime(float time)
@@ -170,7 +181,7 @@ void VASoundSource::setSoundTime(float time)
 		return;
 	}
 
-	FVAPluginModule::setSoundBufferTime(sBufferID, time);
+	activeBuffer->setSoundTimeOffset(time);
 }
 
 void VASoundSource::setLoop(bool loop)
@@ -178,8 +189,7 @@ void VASoundSource::setLoop(bool loop)
 	if (!FVAPluginModule::getIsMaster()) {
 		return;
 	}
-
-	FVAPluginModule::setSoundBufferLoop(sBufferID, loop);
+	activeBuffer->setLoop(loop);
 }
 
 void VASoundSource::playSound()
@@ -222,7 +232,7 @@ void VASoundSource::playSoundFromSecond(float time)
 
 int VASoundSource::getPlayState()
 {
-	return FVAPluginModule::getSoundBufferAction(sBufferID);
+	return activeBuffer->getSoundBufferAction();
 }
 
 void VASoundSource::muteSound(bool muted_)
@@ -235,25 +245,46 @@ void VASoundSource::muteSound(bool muted_)
 }
 
 
-void VASoundSource::setNewSound(FString soundFile_)
+bool VASoundSource::setNewSound(FString soundFile_)
 {
+	// create new buffer
+	VASignalBuffer* tmp_buffer = bufferManager.getBufferByFileName(soundFile_);
+
+	// Check if is valid
+	if (tmp_buffer == nullptr) {
+		VAUtils::logStuff("[VASoundSource::setNewSound()] Buffer from file " + soundFile_ + " was loaded incorrectly!");
+		return false;
+	}
+	
 	// stop 
 	stopSound();
 
-	// create new buffer
-	std::string newBufferID = FVAPluginModule::createNewBuffer(soundFile_);
+	// If the same Buffer is already loaded only stop sound (prev)
+	if (tmp_buffer == activeBuffer) {
+		return true;
+	}
 
-	// link buffer
+	std::string newBufferID = tmp_buffer->getID();
+
+	// Link to source buffer
 	FVAPluginModule::setNewBufferForSoundSource(soundSourceID, newBufferID);
 	for (auto iter : reflections) {
 		FVAPluginModule::setNewBufferForSoundSource(iter->getSoundSourceID(), newBufferID);
 	}
 
-	sBufferID = newBufferID;
+	activeBuffer = tmp_buffer;
 
-	// TODO: delete buffer?
+	return true;
 }
 
+bool VASoundSource::loadNewSound(FString soundFile_)
+{
+	VASignalBuffer* tmp_buffer = bufferManager.getBufferByFileName(soundFile_);
+	if (tmp_buffer != nullptr) {
+		return true;
+	}
+	return false;
+}
 
 FVector VASoundSource::getPos()
 {
