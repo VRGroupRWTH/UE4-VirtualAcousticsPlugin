@@ -118,7 +118,7 @@ void UVASourceComponent::initialize()
 	if (FVAPluginModule::getIsMaster()) {
 		switch (directivitySetting) {
 		case EDir::DefaultHRIR:
-			soundSource->setDirectivity(VADirectivityManager::getDefaultSourceDirectivity());
+			soundSource->setDirectivity(VADirectivityManager::getDefaultDirectivity());
 			break;
 
 		case EDir::manualFile:

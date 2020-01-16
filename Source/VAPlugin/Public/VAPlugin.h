@@ -101,10 +101,15 @@ public:
 	static bool setSoundSourceDirectivity(int soundSourceID, int dirID);
 
 
+	// ******* HRIR ******* //
+
+	static int  createNewHRIR(FString fileName);
+	static bool setSoundReceiverHRIR(int soundReceiverID, int hrirID);
+
+
 	// ******* Sound Receiver ******* //
 
 	static int  createNewSoundReceiver(AVAReceiverActor* actor);
-	static bool setSoundReceiverDirectivity(int soundReceiverID, int dirID);
 	static bool setSoundReceiverPosition(int soundReceiverID, FVector pos);
 	static bool setSoundReceiverRotation(int soundReceiverID, FRotator rot);
 

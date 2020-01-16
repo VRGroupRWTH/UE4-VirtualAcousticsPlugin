@@ -4,6 +4,7 @@
 
 
 #include "VADirectivityManager.h"
+#include "VAHRIRManager.h"
 
 #include "Cluster/IDisplayClusterClusterManager.h"		// For Events
 #include "Cluster/DisplayClusterClusterEvent.h"			// For Events
@@ -64,6 +65,13 @@ public:
 	// Sets default values for this actor's properties
 	AVAReceiverActor();
 
+	UFUNCTION(BlueprintCallable)
+		void readDirMappingFile(FString fileName);
+
+	// Sets Receiver HRIR by File Name
+	UFUNCTION(BlueprintCallable)
+		void setHRIRByFileName(FString fileName);
+	
 	// return Scale
 	float getScale();
 
@@ -82,9 +90,6 @@ public:
 	static AVAReceiverActor* getCurrentReceiverActor();
 
 	bool isInitialized();
-
-	UFUNCTION(BlueprintCallable)
-		void readDirMappingFile(FString fileName);
 
 protected:
 	// Called when the game starts or when spawned
@@ -121,6 +126,7 @@ protected:
 	// STUFF AFTER CHANGE
 
 	VADirectivityManager dirManager;
+	VAHRIRManager	    hrirManager;
 
 	TArray<AVAReflectionWall*> reflectionWalls;
 

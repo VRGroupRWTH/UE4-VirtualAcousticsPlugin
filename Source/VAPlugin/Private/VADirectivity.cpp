@@ -30,12 +30,13 @@ VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) :
 	createNewDirectivity();
 }
 
+
 void VADirectivity::createNewDirectivity()
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
 	if (dirID == -1) {
 		VAUtils::logStuff("[VADirectivity::VADirectivity()] Directivity file " + fileName + " cannot be found! Using default Directivity instead");
-		dirID = VADirectivityManager::getDefaultSourceDirectivity()->getID();
+		dirID = VADirectivityManager::getDefaultDirectivity()->getID();
 		valid = false;
 		return;
 	}
@@ -89,6 +90,3 @@ FString VADirectivity::getFileName()
 {
 	return fileName;
 }
-
-/*
-*/

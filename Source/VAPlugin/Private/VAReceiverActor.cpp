@@ -91,11 +91,15 @@ void AVAReceiverActor::BeginPlay()
 			FVAPluginModule::resetServer();
 		}
 	
-		// Initialize the dirManager
-		dirManager.readConfigFile(dirMappingFileName);
-	
 		// Initialize Receiver Actor
 		receiverID = FVAPluginModule::createNewSoundReceiver(this);
+		
+		// Initialize the dirManager
+		dirManager.reset();
+		dirManager.readConfigFile(dirMappingFileName);
+
+		// Initialize the hrirManager
+		hrirManager.reset();
 	}
 
 	// Initialize Walls for Sound Reflection
@@ -134,6 +138,7 @@ void AVAReceiverActor::BeginDestroy()
 	FVAPluginModule::resetServer();
 
 	dirManager.reset();
+	hrirManager.reset();
 
 	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
 	if (ClusterManager && ClusterEventListenerDelegate.IsBound())
@@ -307,7 +312,7 @@ bool AVAReceiverActor::isInitialized()
 
 
 // ****************************************************************** // 
-// ******* Directivity Handling ************************************* //
+// ******* Directivity / HRIR Handling ****************************** //
 // ****************************************************************** //
 
 VADirectivity* AVAReceiverActor::getDirectivityByPhoneme(FString phoneme)
@@ -330,6 +335,11 @@ void AVAReceiverActor::readDirMappingFile(FString fileName)
 	dirMappingFileName = fileName;
 	dirManager.reset();
 	dirManager.readConfigFile(dirMappingFileName);
+}
+
+void AVAReceiverActor::setHRIRByFileName(FString fileName)
+{
+	FVAPluginModule::setSoundReceiverHRIR(receiverID, hrirManager.getHRIRByFileName(fileName)->getID());
 }
 
 

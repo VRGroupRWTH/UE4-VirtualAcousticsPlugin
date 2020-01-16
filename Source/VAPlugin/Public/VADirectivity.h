@@ -11,6 +11,7 @@ public:
 	VADirectivity(FString fileName_, FString phoneme);
 	VADirectivity(FString fileName_, TArray<FString> phonemes);
 
+
 	void addPhoneme(FString phoneme);
 	void addPhoneme(TArray<FString> phoneme);
 	

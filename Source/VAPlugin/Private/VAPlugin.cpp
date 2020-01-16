@@ -461,6 +461,8 @@ int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name
 
 		pVA->SetSoundSourceSignalSource(soundSourceID, bufferID);
 
+		pVA->SetSoundSourceDirectivity(soundSourceID, VADirectivityManager::getDefaultDirectivity()->getID());
+
 		return soundSourceID;
 
 	}
@@ -577,11 +579,6 @@ int FVAPluginModule::createNewDirectivity(FString fileName)
 	catch (CVAException& e)
 	{
 		processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()) + " (" + fileName + ")");
-		// if (&e == nullptr)
-		// {
-		// }
-
-		//processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()));
 		return -1;
 	}
 }
@@ -600,14 +597,49 @@ bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
 	catch (CVAException& e)
 	{
 		processExeption("FVAPluginModule::setSoundSourceDirectivity()", FString(e.ToString().c_str()));
-		// if (&e == nullptr)
-		// {
-		// }
 
 		return false;
 	}
 }
 
+// ****************************************************************** // 
+// ******* HRIR ***************************************************** //
+// ****************************************************************** //
+
+int FVAPluginModule::createNewHRIR(FString fileName)
+{
+	if (!isConnected()) {
+		return -1;
+	}
+
+	try
+	{
+		std::string dir(TCHAR_TO_UTF8(*fileName));
+		return pVA->CreateDirectivityFromFile(dir);
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::createNewHRIR()", FString(e.ToString().c_str()) + " (" + fileName + ")");
+		return -1;
+	}
+}
+
+
+bool FVAPluginModule::setSoundReceiverHRIR(int soundReceiverID, int hrirID)
+{
+	if (!isConnected()) {
+		return false;
+	}
+
+	try {
+		pVA->SetSoundReceiverDirectivity(soundReceiverID, hrirID);
+		return true;
+	}
+	catch (CVAException& e) {
+		processExeption("FVAPluginModule::setSoundReceiverDirectivity()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
 
 // ****************************************************************** // 
 // ******* Sound Receiver ******************************************* //
@@ -626,7 +658,7 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 	try {
 
 		int iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
-		int iHRIR = VADirectivityManager::getDefaultReceiverDirectivity()->getID();
+		int iHRIR = VAHRIRManager::getDefaultHRIR()->getID();
 		pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 		return iSoundReceiverID;
 	}
@@ -636,21 +668,6 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 	}
 }
 
-bool FVAPluginModule::setSoundReceiverDirectivity(int soundReceiverID, int dirID)
-{
-	if (!isConnected()) {
-		return false;
-	}
-
-	try {
-		pVA->SetSoundReceiverDirectivity(soundReceiverID, dirID);
-		return true;
-	}
-	catch (CVAException& e) {
-		processExeption("FVAPluginModule::setSoundReceiverDirectivity()", FString(e.ToString().c_str()));
-		return false;
-	}
-}
 
 bool FVAPluginModule::setSoundReceiverPosition(int soundReceiverID, FVector pos)
 {

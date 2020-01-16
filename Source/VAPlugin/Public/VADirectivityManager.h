@@ -8,12 +8,12 @@ class VADirectivityManager
 {
 public:
 	VADirectivityManager();
-	VADirectivityManager(FString configFileName_);
-
-	void readConfigFile(FString configFileName_);
-
+	~VADirectivityManager();
 
 	void reset();
+	
+	void readConfigFile(FString configFileName_);
+
 
 	VADirectivity* getDirectivityByPhoneme(FString phoneme);
 	VADirectivity* getDirectivityByFileName(FString fileName_);
@@ -22,19 +22,17 @@ public:
 
 	void printDirMapping();
 
-	static VADirectivity* getDefaultReceiverDirectivity();
-	static VADirectivity* getDefaultSourceDirectivity();
+	static VADirectivity* getDefaultDirectivity();
 	
 	FString getFileName();
 
 private:
 	TArray<VADirectivity*> directivities;
 
-	VADirectivity* defaultDir;
 
 	FString configFileName;
 
-	static VADirectivity* defaultReceiverDirectivity;
-	static VADirectivity* defaultSourceDirectivity;
+	// Default Directivity, can be overloaded by config file
+	static VADirectivity* defaultDirectivity;
 
 };
