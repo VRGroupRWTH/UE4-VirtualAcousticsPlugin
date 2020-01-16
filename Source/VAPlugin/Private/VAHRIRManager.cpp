@@ -28,6 +28,7 @@ void VAHRIRManager::reset()
 	defaultHRIR = new VAHRIR(FString("$(DefaultHRIR)"));
 
 	hrirs.Empty();
+	hrirs.Add(defaultHRIR);
 }
 
 

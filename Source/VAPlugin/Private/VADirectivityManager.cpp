@@ -31,6 +31,7 @@ void VADirectivityManager::reset()
 	defaultDirectivity = new VADirectivity(FString("$(HumanDir)"));
 	
 	directivities.Empty();
+	directivities.Add(defaultDirectivity);
 }
 
 void VADirectivityManager::readConfigFile(FString configFileName_) 
