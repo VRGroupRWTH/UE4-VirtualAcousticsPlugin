@@ -35,8 +35,7 @@ void VADirectivity::createNewDirectivity()
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
 	if (dirID == -1) {
-		VAUtils::logStuff("[VADirectivity::createNewDirectivity()] Directivity file " + fileName + " cannot be found! Using default Directivity instead");
-		dirID = VADirectivityManager::getDefaultDirectivity()->getID();
+		VAUtils::logStuff("[VADirectivity::createNewDirectivity()] Directivity file " + fileName + " cannot be found!");
 		valid = false;
 		return;
 	}
