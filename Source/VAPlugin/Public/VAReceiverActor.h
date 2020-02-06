@@ -5,7 +5,7 @@
 
 #include "VADirectivityManager.h"
 #include "VAHRIRManager.h"
-
+#include "GameFramework/Actor.h"
 #include "Cluster/IDisplayClusterClusterManager.h"		// For Events
 #include "Cluster/DisplayClusterClusterEvent.h"			// For Events
 #include "CoreMinimal.h"								// For Events
@@ -42,7 +42,7 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?",					Category = "General Settigns"))
 		bool askForDebugMode = true;
 
-	// Choose how to connect to the Server (automatic: build with windows connect with localhost:12340, build with linux connect to cave)
+	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase",								Category = "Connection"))
 		TEnumAsByte<EAdress> adressSetting = EAdress::automatic;
 
@@ -58,6 +58,19 @@ protected:
 	// File name of the Directivity mapping file
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities",		Category = "Directivity Manager"))
 		FString dirMappingFileName = "Study/VADir_default.ini";
+
+	// Port for remote VAServer starting
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Remote VAServer Start Port [0, 65535]", Category = "Connection",		// CanEditChange used
+		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
+		uint16 remoteVAStarterPort = 41578;
+
+	// Check if the system should try to start the VAServer automatically
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Try to start VAServer automatically?", Category = "General Settigns"))
+		bool askForAutomaticRemoteVAStart = true;
+
+	// Which version should be started automatically
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Which VAServer version should be started, configurable in the Config of the VAServer Launcher", Category = "General Settigns"))
+		FString whichVAServerVersionToStart = TEXT("2018.a");
 
 
 public:

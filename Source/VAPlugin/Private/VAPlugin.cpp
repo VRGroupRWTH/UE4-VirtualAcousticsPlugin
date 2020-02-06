@@ -10,10 +10,13 @@
 #include "Interfaces/IPluginManager.h"
 
 #include "Cluster/IDisplayClusterClusterManager.h"
+#include "Containers/UnrealString.h"
 #include "Game/IDisplayClusterGameManager.h"
 #include "Input/IDisplayClusterInputManager.h"
 #include "IDisplayCluster.h"
 
+#include "Editor.h"
+#include "Networking.h"
 #include "Engine.h"
 
 
@@ -60,6 +63,8 @@ float FVAPluginModule::scale = 100.0f;
 // tmp Var for easier usage
 VAQuat* FVAPluginModule::tmpQuat = new VAQuat();
 VAVec3* FVAPluginModule::tmpVec = new VAVec3();
+
+FSocket* FVAPluginModule::VAServerLauncherSocket = nullptr;
 
 
 // ****************************************************************** // 
@@ -130,9 +135,30 @@ void FVAPluginModule::StartupModule()
 	pathVistaInterProcComm	=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.so"));
 	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.so"));
 #endif // PLATFORM_LINUX
+	
+	initialized = false;
+	useVA = true;
+	debugMode = true;
+	isMaster = false;
 
+	FEditorDelegates::BeginPIE.AddRaw(this, &FVAPluginModule::BeginSession);
+	FEditorDelegates::EndPIE.AddRaw(this, &FVAPluginModule::EndSession);
+}
 
+void FVAPluginModule::BeginSession(const bool something)
+{
+	initialized = false;
+	useVA = true;
+	debugMode = true;
+	isMaster = false;
+}
 
+void FVAPluginModule::EndSession(const bool something)
+{
+	if (VAServerLauncherSocket != nullptr) {
+		VAServerLauncherSocket->Close();
+		VAServerLauncherSocket = nullptr;
+	}
 }
 
 void FVAPluginModule::ShutdownModule()
@@ -147,9 +173,14 @@ void FVAPluginModule::ShutdownModule()
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaInterProcComm);
 #endif // PLATFORM_WINDOWS
 
+	if (VAServerLauncherSocket != nullptr) {
+		VAServerLauncherSocket->Close();
+		VAServerLauncherSocket = nullptr;
+	}
+
 }
 
-void FVAPluginModule::askForSettings(FString host, int port, bool askForDebugMode)
+void FVAPluginModule::askForSettings(FString host, int port, bool askForDebugMode, bool askForUseVA)
 {
 	if (initialized == true) {
 		return;
@@ -161,15 +192,17 @@ void FVAPluginModule::askForSettings(FString host, int port, bool askForDebugMod
 		return;
 	}
 
-	EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
-	if (ret == EAppReturnType::Type::Yes) {
-		useVA = true;
-	}
-	else {
-		useVA = false;
-		debugMode = false;
-		initialized = true;
-		return;
+	if (askForUseVA) {
+		EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
+		if (ret == EAppReturnType::Type::Yes) {
+			useVA = true;
+		}
+		else {
+			useVA = false;
+			debugMode = false;
+			initialized = true;
+			return;
+		}
 	}
 	
 
@@ -310,6 +343,12 @@ bool FVAPluginModule::disconnectServer()
 	if (!isConnected()) {
 		return true;
 	}
+
+	if (VAServerLauncherSocket != nullptr) {
+		VAServerLauncherSocket->Close();
+		VAServerLauncherSocket = nullptr;
+	}
+	
 	return true;
 	VAUtils::logStuff("[FVAPluginModule::disconnectServer()] Disconnecting now");
 	pVA->Finalize();
@@ -319,6 +358,96 @@ bool FVAPluginModule::disconnectServer()
 			pVANet->Disconnect();
 		}
 	}
+	return true;
+}
+
+bool FVAPluginModule::remoteStartVAServer(const FString& Host, const int Port, const FString& VersionName)
+{
+	isMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
+
+	if (!isMaster)
+		return false;
+
+	if(VAServerLauncherSocket!=nullptr)
+	{
+		return true;
+	}
+	
+	VAUtils::logStuff("Try to remotely start the VAServer at address "+Host+":"+FString::FromInt(Port)+" for version: "+VersionName);
+
+
+	//Connect
+	const FString SocketName(TEXT("VAServerStarterConnection"));
+	VAServerLauncherSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, SocketName, false);
+
+	TSharedPtr<FInternetAddr> InternetAddress = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
+	bool ValidIP;
+	InternetAddress->SetIp(*Host, ValidIP);
+	InternetAddress->SetPort(Port);
+	if (!ValidIP) {
+		VAUtils::logStuff("Error: The Ip cannot be parsed!");
+		return false;
+	}
+
+	if(VAServerLauncherSocket == nullptr || !VAServerLauncherSocket->Connect(*InternetAddress))
+	{
+		VAUtils::logStuff("Error: Cannot connect to Launcher!");
+		return false;
+	}
+	VAUtils::logStuff("Successfully connected to Launcher");
+
+	//Send requested version
+	TArray<uint8> RequestData;
+	for (TCHAR character : VersionName.GetCharArray())
+	{
+		uint8 byte = static_cast<uint8>(character);
+		if (byte != 0) {
+			RequestData.Add(static_cast<uint8>(character));
+		}
+	}
+	int BytesSend = 0;
+	VAServerLauncherSocket->Send(RequestData.GetData(), RequestData.Num(), BytesSend);
+	VAUtils::logStuff("Send "+FString::FromInt(BytesSend)+" bytes to the VAServer Launcher, with version name: "+ VersionName +" Waiting for answer....");
+
+	//Receive response
+	const int32 BufferSize = 16;
+	int32 BytesRead = 0;
+	uint8 Response[16];
+	if (VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead) && BytesRead==1)
+	{
+		switch (Response[0]) {
+		case 'g':
+			VAUtils::logStuff("Received go from launcher, VAServer seems to be correctly started.");
+			break;
+		case 'n':
+			VAUtils::openMessageBox("VAServer cannot be launched, invalid VAServer binary file or cannot be found", true);
+			VAServerLauncherSocket = nullptr;
+			return false;
+		case 'i':
+			VAUtils::openMessageBox("VAServer cannot be launched, invalid file entry in the config", true);
+			VAServerLauncherSocket = nullptr;
+			return false;
+		case 'a':
+			VAUtils::openMessageBox("VAServer was aborted", true);
+			VAServerLauncherSocket = nullptr;
+			return false;
+		case 'f':
+			VAUtils::openMessageBox("VAServer cannot be launched, requested version \""+VersionName+"\" is not available/specified", true);
+			VAServerLauncherSocket = nullptr;
+			return false;
+		default:
+			VAUtils::openMessageBox("Unexpected response from VAServer Launcher: " + Response[0], true);
+			VAServerLauncherSocket = nullptr;
+			return false;
+		}
+	}
+	else
+	{
+		VAUtils::logStuff("Error while receiving response from VAServer Launcher");
+		VAServerLauncherSocket = nullptr;
+		return false;
+	}
+
 	return true;
 }
 

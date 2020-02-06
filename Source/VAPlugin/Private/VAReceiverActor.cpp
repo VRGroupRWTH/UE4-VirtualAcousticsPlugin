@@ -44,8 +44,11 @@ void AVAReceiverActor::BeginPlay()
 
 	currentReceiverActor = this;
 
+	//try to start (remote) VAServer automatically
+	const bool StartedVAServer = FVAPluginModule::remoteStartVAServer(getIPAdress(), remoteVAStarterPort, whichVAServerVersionToStart);
+
 	// Ask if used or not
-	FVAPluginModule::askForSettings(getIPAdress(), getPort(), askForDebugMode);
+	FVAPluginModule::askForSettings(getIPAdress(), getPort(), askForDebugMode, !StartedVAServer);
 
 	if (FVAPluginModule::getIsMaster()) {
 		if (FVAPluginModule::getUseVA()) {
@@ -252,7 +255,7 @@ FString AVAReceiverActor::getIPAdress()
 	{
 		case EAdress::automatic :
 #if PLATFORM_WINDOWS
-			return FString("localhost");
+			return FString("127.0.0.1");
 #else
 			return FString("10.0.1.240");
 #endif
@@ -261,7 +264,7 @@ FString AVAReceiverActor::getIPAdress()
 			return FString("10.0.1.240");
 			break;
 		case EAdress::localhost :
-			return FString("localhost");
+			return FString("127.0.0.1");
 			break;
 		case EAdress::manual :
 			return serverIPAdress;
@@ -273,7 +276,7 @@ FString AVAReceiverActor::getIPAdress()
 
 	VAUtils::logStuff("Error in AVAReceiverActor::getIPAdress()", true);
 
-	return FString("localhost");
+	return FString("127.0.0.1");
 }
 
 int AVAReceiverActor::getPort()

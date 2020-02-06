@@ -35,8 +35,10 @@ public class VAPlugin : ModuleRules
                 "Engine",
                 "DisplayCluster", 
                 "DisplayClusterExtensions",
-                "InputCore"
-
+                "InputCore",
+                "Sockets",
+                "Networking",
+                "UnrealEd"
                 //,
                 //"VALibrary"
 				// ... add other public dependencies that you statically link with here ...

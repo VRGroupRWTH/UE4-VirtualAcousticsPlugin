@@ -6,6 +6,7 @@
 
 
 #include "VAUtils.h"
+#include "Sockets.h"
 
 #define VANET_STATIC
 #define VABASE_STATIC
@@ -50,7 +51,7 @@ public:
 	virtual void ShutdownModule() override;
 
 	// Askes whether to use the VA Server and / or the debug mode
-	static void askForSettings(FString host = "unknown", int port = 0, bool askForDebugMode = true);
+	static void askForSettings(FString host = "unknown", int port = 0, bool askForDebugMode = true, bool askForUseVA=true);
 
 	// Check if all Library Handles are well initialized //
 	static bool checkLibraryHandles();
@@ -73,7 +74,11 @@ public:
 	// Disconnect from VA Server 
 	static bool disconnectServer();
 
-   
+	//Remote Start VAServer
+	static bool remoteStartVAServer(const FString &host = "localhost", const int port = 41578, const FString &version_name=TEXT("2018.a"));
+
+	void BeginSession(const bool something);
+	void EndSession(const bool something);
 
 
 
@@ -148,7 +153,7 @@ protected:
 	static void*	LibraryHandleVistaInterProcComm;
 
 
-	// Library Handles for dll loading of VA Classes
+	// States of the plugin
 	static bool initialized;						// To check if its already initialized
 	static bool useVA;								// bool if VA is used 
 	static bool debugMode;							// bool if is in Debug Mode
@@ -172,4 +177,9 @@ protected:
 	static VAQuat* tmpQuat;
 	static VAVec3* tmpVec;
 
+	//Socket connection to the VAServer Launcher, has to be held open until the program ends
+	static FSocket* VAServerLauncherSocket;
+
 };
+
+
