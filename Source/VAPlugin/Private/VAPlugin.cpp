@@ -140,9 +140,10 @@ void FVAPluginModule::StartupModule()
 	useVA = true;
 	debugMode = true;
 	isMaster = false;
-
+#if WITH_EDITOR
 	FEditorDelegates::BeginPIE.AddRaw(this, &FVAPluginModule::BeginSession);
 	FEditorDelegates::EndPIE.AddRaw(this, &FVAPluginModule::EndSession);
+#endif
 }
 
 void FVAPluginModule::BeginSession(const bool something)
