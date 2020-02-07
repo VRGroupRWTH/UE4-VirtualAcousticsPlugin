@@ -436,7 +436,7 @@ bool FVAPluginModule::remoteStartVAServer(const FString& Host, const int Port, c
 			VAServerLauncherSocket = nullptr;
 			return false;
 		default:
-			VAUtils::openMessageBox("Unexpected response from VAServer Launcher: " + Response[0], true);
+			VAUtils::openMessageBox("Unexpected response from VAServer Launcher: " + FString(reinterpret_cast<char*>(&Response[0])), true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		}
