@@ -15,10 +15,12 @@
 #include "Input/IDisplayClusterInputManager.h"
 #include "IDisplayCluster.h"
 
-#include "Editor.h"
 #include "Networking.h"
 #include "Engine.h"
 
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
 
 
 // #include "IDisplayCluster.h"
