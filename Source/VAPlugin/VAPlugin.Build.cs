@@ -37,8 +37,7 @@ public class VAPlugin : ModuleRules
                 "DisplayClusterExtensions",
                 "InputCore",
                 "Sockets",
-                "Networking",
-                "UnrealEd"
+                "Networking"
                 //,
                 //"VALibrary"
 				// ... add other public dependencies that you statically link with here ...
@@ -49,6 +48,7 @@ public class VAPlugin : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
+                "UnrealEd"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
