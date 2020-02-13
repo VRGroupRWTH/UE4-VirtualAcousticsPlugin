@@ -593,7 +593,7 @@ int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name
 
 		pVA->SetSoundSourceSignalSource(soundSourceID, bufferID);
 
-		pVA->SetSoundSourceDirectivity(soundSourceID, VADirectivityManager::getDefaultDirectivity()->getID());
+		// pVA->SetSoundSourceDirectivity(soundSourceID, VADirectivityManager::getDefaultDirectivity()->getID());
 
 		return soundSourceID;
 

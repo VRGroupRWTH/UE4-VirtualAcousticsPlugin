@@ -11,7 +11,8 @@ UENUM()
 enum EDir {
 	DefaultHRIR,
 	manualFile,
-	phoneme
+	phoneme,
+	none
 };
 
 UENUM()
@@ -70,7 +71,7 @@ protected:
 
 	// Use the manual Offset for the position?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?",		Category = "Position"))
-		bool usePoseOffset = true;
+		bool usePoseOffset = false;
 
 	// Offset in Position
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset",				Category = "Position",			EditCondition = "usePoseOffset"))
@@ -78,7 +79,7 @@ protected:
 
 	// Offset in Rotation
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation",	Category = "Position",			EditCondition = "usePoseOffset"))
-		FRotator offsetRotation = FRotator(0, 90, 0);
+		FRotator offsetRotation = FRotator(0, 0, 0);
 
 	// Name of Bone bound to if Position is set to "Attatch to a Bone"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name",			Category = "Position")) 
@@ -86,7 +87,7 @@ protected:
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity",		Category = "Directivity"))
-		TEnumAsByte<EDir> directivitySetting = EDir::DefaultHRIR;
+		TEnumAsByte<EDir> directivitySetting = EDir::none;
 
 	// File Name of the Directivity that sould be used
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name",	Category = "Directivity"))		
