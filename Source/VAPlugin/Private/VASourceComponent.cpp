@@ -444,7 +444,7 @@ void UVASourceComponent::setDirectivityByMapping(FString phoneme)
 		return;
 	}
 
-	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(phoneme));
+	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByMapping(phoneme));
 }
 
 void UVASourceComponent::setDirectivityByFileName(FString fileName)
