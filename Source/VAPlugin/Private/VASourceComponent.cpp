@@ -126,7 +126,7 @@ void UVASourceComponent::initialize()
 			break;
 
 		case EDir::phoneme:
-			soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByPhoneme(directivityByPhoneme));
+			soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByMapping(directivityByMapping));
 			break;
 
 		default:
@@ -434,11 +434,11 @@ void UVASourceComponent::setMovementSetting(EMovement movementSetting_)
 // ******* Directivity stuff **************************************** //
 // ****************************************************************** //
 
-void UVASourceComponent::setDirectivityByPhoneme(FString phoneme)
+void UVASourceComponent::setDirectivityByMapping(FString phoneme)
 {
 
 	directivitySetting = EDir::phoneme;
-	directivityByPhoneme = phoneme;
+	directivityByMapping = phoneme;
 
 	if (!hasAccess()) {
 		return;
@@ -531,7 +531,7 @@ bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
 	}
 
 	// Check Bone Name
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, directivityByPhoneme))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, directivityByMapping))
 	{
 		return directivitySetting == EDir::phoneme;
 	}

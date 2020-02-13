@@ -318,7 +318,7 @@ bool AVAReceiverActor::isInitialized()
 // ******* Directivity / HRIR Handling ****************************** //
 // ****************************************************************** //
 
-VADirectivity* AVAReceiverActor::getDirectivityByPhoneme(FString phoneme)
+VADirectivity* AVAReceiverActor::getDirectivityByMapping(FString phoneme)
 {
 	return dirManager.getDirectivityByPhoneme(phoneme);
 }

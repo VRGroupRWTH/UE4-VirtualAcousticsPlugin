@@ -95,7 +95,7 @@ protected:
 
 	// Directivity that is used by a specific phoneme (see Receiver Actor Directivity Manager)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Phoneme Directivity from config",		Category = "Directivity"))		
-		FString directivityByPhoneme = "";
+		FString directivityByMapping = "";
 
 
 
@@ -144,7 +144,7 @@ public:
 
 	// sets the Directivity by the phoneme set up in the ini file
 	UFUNCTION(BlueprintCallable)
-		void setDirectivityByPhoneme(FString phoneme);
+		void setDirectivityByMapping(FString phoneme);
 
 	// sets the Directivity by a file Name
 	UFUNCTION(BlueprintCallable)
