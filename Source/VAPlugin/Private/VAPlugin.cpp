@@ -574,14 +574,13 @@ int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name
 		return -1;
 	}
 
-	soundPos = VAUtils::toVACoordinateSystem(soundPos);
-	soundRot = VAUtils::toVACoordinateSystem(soundRot);
+	soundPos = VAUtils::toVACoordinateSystem(soundPos, scale);
+	VAUtils::fVecToVAVec3(soundPos, *tmpVec);
 
+	soundRot = VAUtils::toVACoordinateSystem(soundRot);
 	FQuat fQuat = soundRot.Quaternion();
 	VAUtils::fQuatToVAQuat(fQuat, *tmpQuat);
 
-	VAUtils::fVecToVAVec3(soundPos, *tmpVec);
-	VAUtils::scaleVAVec(*tmpVec, scale);
 
 	try
 	{
@@ -611,12 +610,14 @@ bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
 	if (!isConnected()) {
 		return false;
 	}
-
-	pos = VAUtils::toVACoordinateSystem(pos);
 	
-	VAUtils::fVecToVAVec3(pos, *tmpVec);
-	VAUtils::scaleVAVec(*tmpVec, scale);
+	VAUtils::logStuff(FString("SoundSou: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString::SanitizeFloat(pos.Z)));
 
+	pos = VAUtils::toVACoordinateSystem(pos, scale);
+	VAUtils::fVecToVAVec3(pos, *tmpVec);
+
+	
+	
 	try
 	{
 		pVA->SetSoundSourcePosition(soundSourceID, *tmpVec);
@@ -635,9 +636,10 @@ bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 	if (!isConnected()) {
 		return false;
 	}
+	
+	VAUtils::logStuff(FString("Sou Angl: R: " + FString::SanitizeFloat(rot.Roll) + " - P: " + FString::SanitizeFloat(rot.Pitch) + " - Y: " + FString::SanitizeFloat(rot.Yaw)));
 
 	rot = VAUtils::toVACoordinateSystem(rot);
-
 	FQuat fQuat = rot.Quaternion();
 	VAUtils::fQuatToVAQuat(fQuat, *tmpQuat);
 
@@ -687,6 +689,24 @@ bool FVAPluginModule::setSoundSourceMuted(int soundSourceID, bool muted)
 	catch (CVAException& e)
 	{
 		processExeption("FVAPluginModule::setSoundSourceMuted()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
+bool FVAPluginModule::setSoundSourcePower(int soundSourceID, float power)
+{
+	if (!isConnected()) {
+		return false;
+	}
+
+	try
+	{
+		pVA->SetSoundSourceSoundPower(soundSourceID, power);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		processExeption("FVAPluginModule::setSoundSourcePower()", FString(e.ToString().c_str()));
 		return false;
 	}
 }
@@ -806,11 +826,13 @@ bool FVAPluginModule::setSoundReceiverPosition(int soundReceiverID, FVector pos)
 	if (!isConnected()) {
 		return false;
 	}
+	
+	VAUtils::logStuff(FString("Receiver: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString::SanitizeFloat(pos.Z)));
 
-	VAUtils::rotateFVec(pos);
-
+	pos = VAUtils::toVACoordinateSystem(pos, scale);
 	VAUtils::fVecToVAVec3(pos, *tmpVec);
-	VAUtils::scaleVAVec(*tmpVec, scale);
+
+	
 
 	try {
 		pVA->SetSoundReceiverPosition(soundReceiverID, *tmpVec);
@@ -828,8 +850,9 @@ bool FVAPluginModule::setSoundReceiverRotation(int soundReceiverID, FRotator rot
 		return false;
 	}
 
-	VAUtils::rotateFRotator(rot);
+	VAUtils::logStuff(FString("Rec Angl: R: " + FString::SanitizeFloat(rot.Roll) + " - P: " + FString::SanitizeFloat(rot.Pitch) + " - Y: " + FString::SanitizeFloat(rot.Yaw)));
 
+	rot = VAUtils::toVACoordinateSystem(rot);
 	FQuat quat = rot.Quaternion();
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 
@@ -853,17 +876,18 @@ bool FVAPluginModule::setSoundReceiverRealWorldPose(int soundReceiverID, FVector
 	if (!isConnected()) {
 		return false;
 	}
+	
+	VAUtils::logStuff(FString("RL World: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString::SanitizeFloat(pos.Z)));
 
-	VAUtils::rotateFVec(pos);
-	VAUtils::rotateFRotator(rot);
-
-	FQuat quat = rot.Quaternion();
-
+	pos = VAUtils::toVACoordinateSystem(pos, scale);
 	VAUtils::fVecToVAVec3(pos, *tmpVec);
+	
+	rot = VAUtils::toVACoordinateSystem(rot);
+	FQuat quat = rot.Quaternion();
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 
-	VAUtils::scaleVAVec(*tmpVec, scale);
 
+	
 	try {
 		pVA->SetSoundReceiverRealWorldPose(soundReceiverID, *tmpVec, *tmpQuat);
 		return true;

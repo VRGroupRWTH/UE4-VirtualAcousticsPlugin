@@ -55,7 +55,7 @@ bool AVASoundSourceRepresentation::setPos(FVector pos)
 bool AVASoundSourceRepresentation::setRot(FRotator rot)
 {
 	FQuat quat(rot);
-	quat = quat * FQuat(FRotator(90,0,0));
+	quat = quat * FQuat(FRotator(0,0,0));
 	rot = FRotator(quat);
 	sphereComp->SetWorldRotation(rot);
 	return true;

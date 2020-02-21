@@ -44,6 +44,8 @@ public:
 	void setSoundTime(float time);
 	void setLoop(bool loop);
 
+	void setPower(float power);
+
 	void playSound();
 	void stopSound();
 	void pauseSound();

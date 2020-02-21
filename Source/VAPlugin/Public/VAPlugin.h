@@ -98,6 +98,7 @@ public:
 	static bool setSoundSourceRot(int soundSourceID, FRotator rot);
 	static bool setNewBufferForSoundSource(int soundSourceID, std::string bufferID);
 	static bool setSoundSourceMuted(int soundSourceID, bool muted);
+	static bool setSoundSourcePower(int soundSourceID, float power);
 
 
 	// ******* Directivities ******* //

@@ -56,6 +56,9 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource", true);
 			return;
 		}
+
+		FVAPluginModule::setSoundSourcePower(soundSourceID, parentComponent->getSoundPower());
+
 	}
 
 	// Show graphical representation
@@ -192,6 +195,19 @@ void VASoundSource::setLoop(bool loop)
 	activeBuffer->setLoop(loop);
 }
 
+void VASoundSource::setPower(float power)
+{
+	if (!FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
+	FVAPluginModule::setSoundSourcePower(soundSourceID, power);
+
+	for (auto iter : reflections) {
+		FVAPluginModule::setSoundSourcePower(iter->getSoundSourceID(), power);
+	}
+}
+
 void VASoundSource::playSound()
 {
 	if (!FVAPluginModule::getIsMaster()) {
@@ -232,11 +248,19 @@ void VASoundSource::playSoundFromSecond(float time)
 
 int VASoundSource::getPlayState()
 {
+	if (!FVAPluginModule::getIsMaster()) {
+		return -1;
+	}
+
 	return activeBuffer->getSoundBufferAction();
 }
 
 void VASoundSource::muteSound(bool muted_)
 {
+	if (!FVAPluginModule::getIsMaster()) {
+		return;
+	}
+
 	FVAPluginModule::setSoundSourceMuted(soundSourceID, muted_);
 
 	for (auto iter : reflections) {

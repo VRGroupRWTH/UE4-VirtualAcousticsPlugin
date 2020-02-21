@@ -41,10 +41,10 @@ void UVASourceComponent::BeginPlay() {
 		tmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
 	}
 
-// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
-if (tmp->isInitialized() && !initialized) {
-	initialize();
-}
+	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
+	if (tmp->isInitialized() && !initialized) {
+		//initialize();
+	}
 
 }
 
@@ -306,18 +306,37 @@ bool UVASourceComponent::setSoundFile(FString soundFile_)
 {
 	// If already playing back that sound File
 	if (soundFile == soundFile_) {
-		if(hasAccess())
+		if (hasAccess())
 			soundSource->stopSound();
 		return false;
 	}
 
 	soundFile = soundFile_;
-	
+
 	if (!initialized || !FVAPluginModule::getIsMaster()) {
 		return false;
 	}
 
-	return soundSource->setNewSound(soundFile);	
+	return soundSource->setNewSound(soundFile);
+}
+
+
+bool UVASourceComponent::setSoundPower(float power)
+{
+	// If already playing back that sound File
+	if (soundPower == power) {
+		return true;
+	}
+
+	soundPower = power;
+
+	if (!initialized || !FVAPluginModule::getIsMaster()) {
+		return false;
+	}
+
+	soundSource->setPower(power);
+
+	return true;
 }
 
 
@@ -507,6 +526,11 @@ bool UVASourceComponent::getLoop()
 FString UVASourceComponent::getSoundFile()
 {
 	return soundFile;
+}
+
+float UVASourceComponent::getSoundPower()
+{
+	return soundPower;
 }
 
 // ****************************************************************** // 

@@ -61,8 +61,13 @@ protected:
 		bool loop = false;
 
 	// Check if reflections by walls should be considered
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?",	Category = "General Settings"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?", Category = "General Settings"))
 		bool handleReflections = true;
+
+	// Check if reflections by walls should be considered
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Power", Category = "General Settings",
+		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
+		float soundPower = 0.0316227749f;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings",	Category = "Position", 
@@ -178,7 +183,14 @@ public:
 	// Returns the file name of the current sound playe back
 	UFUNCTION(BlueprintCallable)
 		FString getSoundFile();
-	
+
+	// Returns the file name of the current sound playe back
+	UFUNCTION(BlueprintCallable)
+		bool setSoundPower(float power);
+
+	// Returns the file name of the current sound playe back
+	UFUNCTION(BlueprintCallable)
+		float getSoundPower();
 
 	// Sets if the sound source should loop the file
 	UFUNCTION(BlueprintCallable)

@@ -89,8 +89,11 @@ bool VAUtils::fVecToVAVec3(FVector& VecF, VAVec3& VecVA)
 	return true;
 }
 
-bool VAUtils::fVecToVAVec3Rot(FVector& vecF, VAVec3& vecVA)
+
+FVector VAUtils::toVACoordinateSystem(FVector vecF, float scale)
 {
+	// https://www.google.com/imgres?imgurl=https%3A%2F%2Fi.stack.imgur.com%2FIn6Ee.png&imgrefurl=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F31191752%2Fright-handed-euler-angles-xyz-to-left-handed-euler-angles-xyz&tbnid=JnhPiTTmhH_YaM&vet=12ahUKEwiX_vKzqt7nAhXVBFAKHaElBsEQMygCegUIARDTAQ..i&docid=XMAPpE84VLlJ5M&w=600&h=281&q=rotation%20transform%20left%20handed%20right%20handed&ved=2ahUKEwiX_vKzqt7nAhXVBFAKHaElBsEQMygCegUIARDTAQ
+	// OLD 
 	// ++ VA Server ++//   // ++ Unreal En ++//
 	//*****|y*********//   //*****|z****x****//
 	//*****|**********//   //*****|***/******//
@@ -98,24 +101,64 @@ bool VAUtils::fVecToVAVec3Rot(FVector& vecF, VAVec3& vecVA)
 	//*****0----------//   //*****0----------//
 	//****/***********//   //****************//
 	//**z/************//   //****************//
+	// return FVector(vecF.Y, vecF.Z, -vecF.X);
+	
+	// NEW
+	// ++ VA Server ++//   // ++ Unreal En ++//
+	//*****|yP********//   //*****|zY********//
+	//*****|**********//   //*****|**********//
+	//*****|********xR//   //*****|********xR//
+	//*****0----------//   //*****0----------//
+	//****/***********//   //****/***********//
+	//*zY/************//   //*yP/************//
+	// const float scale_ = 1 / (scale);
+	// return FVector(scale_ * vecF.X, scale_ * vecF.Z, scale_ * vecF.Y);
 
-	if (&vecF == NULL || &vecVA == NULL)
-		return false;
 
-	//VecVA.Set(-VecF.Z, VecF.X, VecF.Y);
-	vecVA.Set(vecF.Y, vecF.Z, -vecF.X);
-
-	return true;
-}
-
-FVector VAUtils::toVACoordinateSystem(FVector vecF)
-{
-	return FVector(vecF.Y, vecF.Z, -vecF.X);
+	// ++ VA Server ++//   // ++ Unreal En ++//
+	//*****|y****x****//   //*****|zY********//
+	//*****|***/******//   //*****|**********//
+	//*****|*/*******z//   //*****|********xR//
+	//*****0----------//   //*****0----------//
+	//****************//   //****/***********//
+	//****************//   //*yP/************//
+	const float scale_ = 1 / (scale);
+	return FVector(-scale_ * vecF.Y, scale_ * vecF.Z, scale_ * vecF.X);
 }
 
 FRotator VAUtils::toVACoordinateSystem(FRotator rotF)
 {
-	return FRotator(rotF.Yaw, -rotF.Roll, rotF.Pitch);
+	// OLD 
+	// ++ VA Server ++//   // ++ Unreal En ++//
+	//*****|y*********//   //*****|z****x****//
+	//*****|**********//   //*****|***/******//
+	//*****|*********x//   //*****|*/*******y//
+	//*****0----------//   //*****0----------//
+	//****/***********//   //****************//
+	//**z/************//   //****************//
+	// return FRotator(rotF.Yaw, -rotF.Roll, rotF.Pitch);
+	
+	// NEW
+	// ++ VA Server ++//   // ++ Unreal En ++//
+	//*****|yY********//   //*****|zY********//
+	//*****|**********//   //*****|**********//
+	//*****|********xP//   //*****|********xR//
+	//*****0----------//   //*****0----------//
+	//****/***********//   //****/***********//
+	//*zR/************//   //*yP/************//
+	// return FRotator(rotF.Pitch, rotF.Yaw, rotF.Roll);
+
+	// ++ VA Server ++//   // ++ Unreal En ++//
+	//*****|yY****xP**//   //*****|zY********//
+	//*****|***/******//   //*****|**********//
+	//*****|*/******zR//   //*****|********xR//
+	//*****0----------//   //*****0----------//
+	//****************//   //****/***********//
+	//****************//   //*yP/************//
+
+	// logStuff(FString("toVACoordinateSystem: R: " + FString::SanitizeFloat(rotF.Roll) + " - P: " + FString::SanitizeFloat(rotF.Pitch) + " - Y: " + FString::SanitizeFloat(rotF.Yaw)));
+	return FRotator(rotF.Pitch, -rotF.Yaw, -rotF.Roll);
+
 }
 
 bool VAUtils::fQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA)
@@ -128,43 +171,8 @@ bool VAUtils::fQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA)
 	return true;
 }
 
-bool VAUtils::fQuatToVAQuatRot(FQuat& QuatF, VAQuat& QuatVA)
-{
-	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|y*********//   //*****|z****x****//
-	//*****|**********//   //*****|***/******//
-	//*****|*********x//   //*****|*/*******y//
-	//*****0----------//   //*****0----------//
-	//****/***********//   //****************//
-	//**z/************//   //****************//
 
-	if (&QuatF == NULL || &QuatVA == NULL)
-		return false;
 
-	QuatVA.Set(QuatF.Z, -QuatF.X, -QuatF.Y, QuatF.W);
-
-	return true;
-}
-
-bool VAUtils::rotateFRotator(FRotator & rot)
-{
-	// X = Y // Y = Z // Z = -X
-	// rot1.Pitch = rot.Yaw;
-	// rot1.Yaw = -rot.Roll;
-	// rot1.Roll = rot.Pitch;
-
-	// FRotator rot1 = FRotator(rot.Yaw, -rot.Roll, rot.Pitch);
-
-	rot = FRotator(rot.Yaw, -rot.Roll, rot.Pitch);
-	return true;
-}
-
-bool VAUtils::rotateFVec(FVector & vec)
-{
-	// X = Y // Y = Z // Z = -X
-	vec = FVector(vec.Y, vec.Z, -vec.X);
-	return true;
-}
 
 FVector VAUtils::computeReflectedPos(AVAReflectionWall* wall, FVector pos)
 {
@@ -197,12 +205,6 @@ FRotator VAUtils::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
 
 }
 
-bool VAUtils::scaleVAVec(VAVec3 & vecVA, float scale)
-{
-	double scaleD = (double)scale;
-	vecVA.Set(vecVA.x / scaleD, vecVA.y / scaleD, vecVA.z / scaleD);
-	return true;
-}
 
 void VAUtils::logStuff(FString text, bool error)
 {
