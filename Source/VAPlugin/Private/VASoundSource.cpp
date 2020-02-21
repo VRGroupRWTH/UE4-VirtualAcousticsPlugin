@@ -76,7 +76,17 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 			std::string wallName(TCHAR_TO_UTF8(*wall->GetName()));
 			nameTmp = name + "_R_" + wallName;
 
-			reflections.Add(new VASoundSourceReflection(this, wall, activeBuffer->getID(), nameTmp, pos, rot, gainFactor));
+			std::string ActiveBufferName;
+			if(FVAPluginModule::getIsMaster())
+			{
+				ActiveBufferName = activeBuffer->getID();
+			}
+			else
+			{
+				ActiveBufferName = "BufferNameNotNeededOnSlave";
+			}
+
+			reflections.Add(new VASoundSourceReflection(this, wall, ActiveBufferName, nameTmp, pos, rot, gainFactor));
 		}
 	}
 }
