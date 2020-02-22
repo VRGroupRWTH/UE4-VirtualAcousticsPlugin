@@ -29,10 +29,10 @@ public:
 	static FString addExclamationMarkInChar(FString text);
 
 	// Checking LibraryHandle  //
-	static bool checkLibraryHandle(void* libraryHandle);
+	static bool checkLibraryHandle(void* LibraryHandle);
 
 	// Copy FVector* to VAVec3* //
-	static bool fVecToVAVec3(FVector& vecF, VAVec3& vecVA);
+	static bool fVecToVAVec3(FVector& VecF, VAVec3& VecVA);
 
 	// Copy FQuat* to QuatVA* //
 	static bool fQuatToVAQuat(FQuat& quatF, VAQuat& quatVA);
