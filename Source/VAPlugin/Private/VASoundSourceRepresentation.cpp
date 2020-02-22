@@ -26,7 +26,7 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
 		sphereMesh->SetupAttachment(RootComponent);
 		sphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
-		sphereMesh->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
+		sphereMesh->SetRelativeRotation(FRotator(0.0f, 90.0f, 90.0f));
 		sphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
 	setVisibility(false);

@@ -92,73 +92,46 @@ bool VAUtils::fVecToVAVec3(FVector& VecF, VAVec3& VecVA)
 
 FVector VAUtils::toVACoordinateSystem(FVector vecF, float scale)
 {
-	// https://www.google.com/imgres?imgurl=https%3A%2F%2Fi.stack.imgur.com%2FIn6Ee.png&imgrefurl=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F31191752%2Fright-handed-euler-angles-xyz-to-left-handed-euler-angles-xyz&tbnid=JnhPiTTmhH_YaM&vet=12ahUKEwiX_vKzqt7nAhXVBFAKHaElBsEQMygCegUIARDTAQ..i&docid=XMAPpE84VLlJ5M&w=600&h=281&q=rotation%20transform%20left%20handed%20right%20handed&ved=2ahUKEwiX_vKzqt7nAhXVBFAKHaElBsEQMygCegUIARDTAQ
-	// OLD 
 	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|y*********//   //*****|z****x****//
-	//*****|**********//   //*****|***/******//
-	//*****|*********x//   //*****|*/*******y//
-	//*****0----------//   //*****0----------//
+	//*****|yP********//   //*****|z****x****//
+	//*****|**********//   //*****|***/******//		  / forward
+	//*****|********xR//   //*****|*/*******y//		 /
+	//*****0----------//   //*****0----------//		/
 	//****/***********//   //****************//
-	//**z/************//   //****************//
-	// return FVector(vecF.Y, vecF.Z, -vecF.X);
-	
-	// NEW
-	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|yP********//   //*****|zY********//
-	//*****|**********//   //*****|**********//
-	//*****|********xR//   //*****|********xR//
-	//*****0----------//   //*****0----------//
-	//****/***********//   //****/***********//
-	//*zY/************//   //*yP/************//
-	// const float scale_ = 1 / (scale);
-	// return FVector(scale_ * vecF.X, scale_ * vecF.Z, scale_ * vecF.Y);
-
-
-	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|y****x****//   //*****|zY********//
-	//*****|***/******//   //*****|**********//
-	//*****|*/*******z//   //*****|********xR//
-	//*****0----------//   //*****0----------//
-	//****************//   //****/***********//
-	//****************//   //*yP/************//
+	//*zY/************//   //****************//
 	const float scale_ = 1 / (scale);
-	return FVector(-scale_ * vecF.Y, scale_ * vecF.Z, scale_ * vecF.X);
+	return FVector(scale_ * vecF.Y, scale_ * vecF.Z, -scale_ * vecF.X);
 }
 
 FRotator VAUtils::toVACoordinateSystem(FRotator rotF)
 {
-	// OLD 
 	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|y*********//   //*****|z****x****//
-	//*****|**********//   //*****|***/******//
-	//*****|*********x//   //*****|*/*******y//
-	//*****0----------//   //*****0----------//
+	//*****|yP********//   //*****|zY**xR****//
+	//*****|**/******//   //*****|**/*******//		  / forward
+	//*****|*/******xR//   //*****|*/******yP//		 /
+	//*****0----------//   //*****0----------//		/
 	//****/***********//   //****************//
-	//**z/************//   //****************//
-	// return FRotator(rotF.Yaw, -rotF.Roll, rotF.Pitch);
+	//*zY/************//   //****************//
+	//
+	//	https://gamedev.stackexchange.com/questions/157946/converting-a-quaternion-in-a-right-to-left-handed-coordinate-system
+	//
+	//			  Unreal			VAServer
+	//	forward		x					-z
+	//	up			z					y
+	//	right		y					x
+	//
+	//
+	//	All *(-1) due to changing direction
+	//Quaternion(
+	// 	-input.y,			(where VA x?)
+	// 	-input.z,			(where VA y?)
+	// 	input.x,			(where VA z?)
+	// 	input.w		
+	// )
 	
-	// NEW
-	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|yY********//   //*****|zY********//
-	//*****|**********//   //*****|**********//
-	//*****|********xP//   //*****|********xR//
-	//*****0----------//   //*****0----------//
-	//****/***********//   //****/***********//
-	//*zR/************//   //*yP/************//
-	// return FRotator(rotF.Pitch, rotF.Yaw, rotF.Roll);
-
-	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|yY****xP**//   //*****|zY********//
-	//*****|***/******//   //*****|**********//
-	//*****|*/******zR//   //*****|********xR//
-	//*****0----------//   //*****0----------//
-	//****************//   //****/***********//
-	//****************//   //*yP/************//
-
-	// logStuff(FString("toVACoordinateSystem: R: " + FString::SanitizeFloat(rotF.Roll) + " - P: " + FString::SanitizeFloat(rotF.Pitch) + " - Y: " + FString::SanitizeFloat(rotF.Yaw)));
-	return FRotator(rotF.Pitch, -rotF.Yaw, -rotF.Roll);
-
+	FQuat Quat = rotF.Quaternion();
+	FQuat Tmp = FQuat(-Quat.Y, -Quat.Z, Quat.X, Quat.W);
+	return Tmp.Rotator();
 }
 
 bool VAUtils::fQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA)
