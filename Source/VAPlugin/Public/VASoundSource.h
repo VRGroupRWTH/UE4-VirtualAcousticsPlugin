@@ -90,7 +90,7 @@ private:
 	static int counter;
 	
 	bool handleReflections;
-	float gainFactor;
+	float power;
 	float soundTimeOffset;
 
 	bool visibility;

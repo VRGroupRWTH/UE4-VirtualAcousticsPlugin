@@ -3,6 +3,8 @@
 #pragma once
 
 
+#include "Containers/UnrealString.h"			// FString
+
 class VADirectivity
 {
 
@@ -32,6 +34,5 @@ protected:
 	int dirID;
 	FString fileName;
 	TArray<FString> phonemes;
-	bool valid;
 
 };

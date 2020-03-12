@@ -365,7 +365,11 @@ void AVAReceiverActor::runOnAllNodes(FString command)
 			// else create a cluster event to react to
 			FDisplayClusterClusterEvent cluster_event;
 			cluster_event.Name = command;
+			cluster_event.Category = "VAPlugin";
+			cluster_event.Type = "command";
+			
 			Manager->EmitClusterEvent(cluster_event, true);
+			
 			VAUtils::logStuff("Cluster Command " + command + " sent");
 		}
 	}
@@ -379,8 +383,10 @@ AVAReceiverActor* AVAReceiverActor::getCurrentReceiverActor()
 
 void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent & Event)
 {
-	handleClusterCommand(Event.Name);
-
+	if (Event.Category == "VAPlugin" && Event.Type == "command")
+	{
+		handleClusterCommand(Event.Name);
+	}
 }
 
 void AVAReceiverActor::handleClusterCommand(FString command)

@@ -39,10 +39,6 @@ protected:
 	// Having AVAReceiverActor as friend to be able to call the initialize function from AVAReceiverActor::BeginPlay()
 	friend class AVAReceiverActor;
 
-	// In- or decrease Gain Factor (linear to power)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Gain Factor",		Category = "General Settings", 
-		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
-		float gainFactor = 1.0f;
 
 	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name",			Category = "General Settings"))
@@ -116,19 +112,19 @@ public:
 
 	// Plays Sound // 
 	UFUNCTION(BlueprintCallable)
-		void playSound();
+		bool playSound();
 
 	// Plays Sound from second // 
 	UFUNCTION(BlueprintCallable)
-		void playSoundFromSecond(float time);
+		bool playSoundFromSecond(float time);
 
 	// Pauses Sound //
 	UFUNCTION(BlueprintCallable)
-		void stopSound();
+		bool stopSound();
 
 	// Stops Sound //
 	UFUNCTION(BlueprintCallable)
-		void pauseSound();
+		bool pauseSound();
 
 	// returns the Play Sate in form of a EPlayAction // 
 	UFUNCTION(BlueprintCallable)
@@ -137,7 +133,6 @@ public:
 	// Mutes sound // 
 	UFUNCTION(BlueprintCallable)
 		void muteSound(bool mute = true);
-
 
 	// returns the Position minding its setting for location //
 	UFUNCTION(BlueprintCallable)
@@ -149,28 +144,19 @@ public:
 
 	// sets the Directivity by the phoneme set up in the ini file
 	UFUNCTION(BlueprintCallable)
-		void setDirectivityByMapping(FString phoneme);
+		bool setDirectivityByMapping(FString phoneme);
 
 	// sets the Directivity by a file Name
 	UFUNCTION(BlueprintCallable)
-		void setDirectivityByFileName(FString fileName);
+		bool setDirectivityByFileName(FString fileName);
 
 	// gets the file name of the current direcitivity 
 	UFUNCTION(BlueprintCallable)
 		FString getDirectivityFileName();
-
 	
 	// Sets the visibility of the sound Sound source (used for Debug mode)
 	UFUNCTION(BlueprintCallable)
-		void setSoundSourceVisibility(bool vis_);
-
-	// // sets the Gain Factor for the sound source  [0...1]						// TODO!! 
-	// UFUNCTION(BlueprintCallable)													// TODO!! 
-	// 	void setGainFactor(float gainFactor_);										// TODO!! 
-
-	// returns the Gain Factor for the sound source [0...1]						
-	UFUNCTION(BlueprintCallable)												
-		float getGainFactor();															
+		bool setSoundSourceVisibility(bool vis_);													
 
 	// Preloading sound file for later use
 	UFUNCTION(BlueprintCallable)
@@ -194,7 +180,7 @@ public:
 
 	// Sets if the sound source should loop the file
 	UFUNCTION(BlueprintCallable)
-		void setLoop(bool loop_);
+		bool setLoop(bool loop_);
 
 	// returns whether the sound is looping
 	UFUNCTION(BlueprintCallable)
@@ -203,23 +189,23 @@ public:
 	
 	// Sets the Movement setting (AttatchToBone, ObjectSpawnPoint, MoveWithObject)
 	UFUNCTION(BlueprintCallable)
-		void setMovementSetting(EMovement movementSetting_);
+		bool setMovementSetting(EMovement movementSetting_);
 
 	// Sets whether to use Pose Offset
  	UFUNCTION(BlueprintCallable)
- 		void setUsePoseOffset(bool usePoseOffset_);
+		bool setUsePoseOffset(bool usePoseOffset_);
  	
 	// Changes the Offset for the Position
  	UFUNCTION(BlueprintCallable)
- 		void setOffsetPosition(FVector pos_);
+		bool setOffsetPosition(FVector pos_);
  	
 	// Changes the Offset for the Rotation
  	UFUNCTION(BlueprintCallable)
- 		void setOffsetRotation(FRotator rot_);
+		bool setOffsetRotation(FRotator rot_);
  	
  	// Changes the Bone the Sound source is attatched to. If the new bone is found, set MovementSetting to AttatchToBone. Else use old settings
 	UFUNCTION(BlueprintCallable)
-		void setBoneName(FString boneName_);
+		bool setBoneName(FString boneName_);
 
 	// Returns the name of the bone the sound is attatched
 	UFUNCTION(BlueprintCallable)
@@ -265,7 +251,7 @@ protected:
 	
 	
 	// Checks if has access to server
-	bool hasAccess();
+	bool shouldSendCommand();
 
 
 	

@@ -20,7 +20,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 
 	handleReflections = parentComponent->getHandleReflections();
 	bool loop = parentComponent->getLoop();
-	gainFactor = parentComponent->getGainFactor();
+	power = parentComponent->getSoundPower();
 	soundTimeOffset = parentComponent->getSoundTimeOffset();
 
 	pos = parentComponent->getPosition();
@@ -50,7 +50,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 			activeBuffer->setSoundTimeOffset(soundTimeOffset);
 		}
 
-		soundSourceID = FVAPluginModule::createNewSoundSource(activeBuffer->getID(), name, pos, rot, gainFactor);
+		soundSourceID = FVAPluginModule::createNewSoundSource(activeBuffer->getID(), name, pos, rot, power);
 		if (soundSourceID == -1)
 		{
 			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource", true);
@@ -86,7 +86,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 				ActiveBufferName = "BufferNameNotNeededOnSlave";
 			}
 
-			reflections.Add(new VASoundSourceReflection(this, wall, ActiveBufferName, nameTmp, pos, rot, gainFactor));
+			reflections.Add(new VASoundSourceReflection(this, wall, ActiveBufferName, nameTmp, pos, rot, power));
 		}
 	}
 }

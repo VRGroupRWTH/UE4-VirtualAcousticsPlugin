@@ -19,11 +19,9 @@ void VAHRIR::createNewHRIR()
 	hrirID = FVAPluginModule::createNewHRIR(fileName);
 	if (hrirID == -1) {
 		VAUtils::logStuff("[VAHRIR::createNewHRIR()] HRIR file " + fileName + " cannot be found!");
-		valid = false;
 		return;
 	}
 
-	valid = true;
 	VAUtils::logStuff("created new VAHRIR");
 }
 
@@ -35,7 +33,7 @@ int VAHRIR::getID()
 
 bool VAHRIR::isValid()
 {
-	return valid;
+	return (hrirID != -1);
 }
 
 FString VAHRIR::getFileName()

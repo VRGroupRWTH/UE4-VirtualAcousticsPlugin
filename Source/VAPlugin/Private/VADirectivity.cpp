@@ -1,6 +1,5 @@
 #include "VADirectivity.h"
 
-#include "Containers/UnrealString.h"			// FString
 #include "Containers/Array.h"					// TArray
 
 #include "VAPlugin.h"							// For Server
@@ -36,11 +35,9 @@ void VADirectivity::createNewDirectivity()
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
 	if (dirID == -1) {
 		VAUtils::logStuff("[VADirectivity::createNewDirectivity()] Directivity file " + fileName + " cannot be found!");
-		valid = false;
 		return;
 	}
 
-	valid = true;
 	VAUtils::logStuff("created new VADirectivity");
 }
 
@@ -65,7 +62,7 @@ void VADirectivity::logInfo() {
 	FString output = " [Info]  Directivity for: ";
 	
 	if (phonemes.Num() == 0) {
-		VAUtils::logStuff("Dir has no phonemes");
+		VAUtils::logStuff("Directivity has no phonemes");
 	}
 	
 	for (auto entry : phonemes) {
@@ -82,7 +79,7 @@ bool VADirectivity::containsPhoneme(FString phoneme)
 
 bool VADirectivity::isValid()
 {
-	return valid;
+	return (dirID != -1);
 }
 
 FString VADirectivity::getFileName()

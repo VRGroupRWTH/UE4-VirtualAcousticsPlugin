@@ -43,7 +43,7 @@ void UVASourceComponent::BeginPlay() {
 
 	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
 	if (tmp->isInitialized() && !initialized) {
-		//initialize();
+		initialize();
 	}
 
 }
@@ -139,7 +139,7 @@ void UVASourceComponent::initialize()
 	initialized = true;
 }
 
-bool UVASourceComponent::hasAccess()
+bool UVASourceComponent::shouldSendCommand()
 {
 	return (initialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster());
 }
@@ -149,45 +149,53 @@ bool UVASourceComponent::hasAccess()
 // ******* Interface Sound ****************************************** //
 // ****************************************************************** //
 
-void UVASourceComponent::playSound()
+bool UVASourceComponent::playSound()
 {
-	if (!hasAccess()) {
-		return;
+	if (!shouldSendCommand()) {
+		return false;
 	}
 
 	soundSource->playSound();
+
+	return true;
 }
 
-void UVASourceComponent::playSoundFromSecond(float time)
+bool UVASourceComponent::playSoundFromSecond(float time)
 {
-	if (!hasAccess()) {
-		return;
-    }
+	if (!shouldSendCommand()) {
+		return false;
+	}
 
 	soundSource->playSoundFromSecond(time);
+
+	return true;
 }
 
-void UVASourceComponent::stopSound()
+bool UVASourceComponent::stopSound()
 {
-	if (!hasAccess()) {
-		return;
+	if (!shouldSendCommand()) {
+		return false;
 	}
 
 	soundSource->stopSound();
+	
+	return true;
 }
 
-void UVASourceComponent::pauseSound()
+bool UVASourceComponent::pauseSound()
 {
-	if (!hasAccess()) {
-		return;
+	if (!shouldSendCommand()) {
+		return false;
 	}
 
 	soundSource->pauseSound();
+
+	return true;
 }
 
 EPlayAction UVASourceComponent::getPlayState()
 {
-	if (!hasAccess()) {
+	if (!shouldSendCommand()) {
 		return EPlayAction::Stop;
 	}
 
@@ -196,11 +204,11 @@ EPlayAction UVASourceComponent::getPlayState()
 
 void UVASourceComponent::muteSound(bool mute_)
 {
-	if (muted == mute_) {
+	if (!shouldSendCommand()) {
 		return;
 	}
 
-	if (!hasAccess()) {
+	if (muted == mute_) {
 		return;
 	}
 
@@ -278,24 +286,22 @@ FRotator UVASourceComponent::getRotation()
 // ******* Sound Settings ******************************************* //
 // ****************************************************************** //
 
-void UVASourceComponent::setSoundSourceVisibility(bool vis)
+bool UVASourceComponent::setSoundSourceVisibility(bool vis)
 {
 	if (!FVAPluginModule::getUseVA()) {
-		return;
+		return false;
 	}
+	
 	soundSource->setVisibility(vis);
+
+	return true;
 }
 
-// void UVASourceComponent::setGainFactor(float gainFactor_)
-// {
-// 	// TODO: setGainFactor
-// 	VAUtils::logStuff("UVASourceComponent::setGainFactor not working yet!!", true);
-// 	return;
-// }
+
 
 bool UVASourceComponent::loadSoundFile(FString soundFile_)
 {
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
+	if (!shouldSendCommand()) {
 		return false;
 	}
 
@@ -304,18 +310,17 @@ bool UVASourceComponent::loadSoundFile(FString soundFile_)
 
 bool UVASourceComponent::setSoundFile(FString soundFile_)
 {
+	if (!shouldSendCommand()) {
+		return false;
+	}
+	
 	// If already playing back that sound File
 	if (soundFile == soundFile_) {
-		if (hasAccess())
-			soundSource->stopSound();
-		return false;
+		soundSource->stopSound();
+		return true;
 	}
 
 	soundFile = soundFile_;
-
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return false;
-	}
 
 	return soundSource->setNewSound(soundFile);
 }
@@ -323,6 +328,10 @@ bool UVASourceComponent::setSoundFile(FString soundFile_)
 
 bool UVASourceComponent::setSoundPower(float power)
 {
+	if (!shouldSendCommand()) {
+		return false;
+	}
+	
 	// If already playing back that sound File
 	if (soundPower == power) {
 		return true;
@@ -330,122 +339,135 @@ bool UVASourceComponent::setSoundPower(float power)
 
 	soundPower = power;
 
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return false;
-	}
-
 	soundSource->setPower(power);
 
 	return true;
 }
 
 
-void UVASourceComponent::setLoop(bool loop_)
+bool UVASourceComponent::setLoop(bool loop_)
 {
+	if (!shouldSendCommand()) {
+		return false;
+	}
+	
 	// If this setting is already set properly
 	if (loop == loop_) {
-		return;
+		return true;
 	}
 
 	loop = loop_;
 
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return;
-	}
 
 	soundSource->setLoop(loop);
+
+	return true;
 }
 
 
-void UVASourceComponent::setUsePoseOffset(bool usePoseOffset_) 
+bool UVASourceComponent::setUsePoseOffset(bool usePoseOffset_)
 {
+	if (!FVAPluginModule::getUseVA()) {
+		return false;
+	}
+
 	// If this setting is already set properly
 	if (usePoseOffset == usePoseOffset_) {
-		return;
+		return true;
 	}
 	
 	usePoseOffset = usePoseOffset_;
-	
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return;
-	}
-	
+
 	soundSource->setPos(getPosition());
 	soundSource->setRot(getRotation());
+
+	return true;
 }
 
-void UVASourceComponent::setOffsetPosition(FVector pos_) 
+bool UVASourceComponent::setOffsetPosition(FVector pos_) 
 {
+	if (!FVAPluginModule::getUseVA()) {
+		return false;
+	}
+
 	// If this setting is already set properly
 	if (offsetPosition == pos_) {
-		return;
+		return true;
 	}
 
 	offsetPosition = pos_;
 
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return;
-	}
-
 	soundSource->setPos(getPosition());
+
+	return true;
 }
 
-void UVASourceComponent::setOffsetRotation(FRotator rot_)
+bool UVASourceComponent::setOffsetRotation(FRotator rot_)
 {
+	if (!FVAPluginModule::getUseVA()) {
+		return false;
+	}
+	
 	// If this setting is already set properly
 	if (offsetRotation == rot_) {
-		return;
+		return true;
 	}
 
 	offsetRotation = rot_;
 
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return;
-	}
-
 	soundSource->setRot(getRotation());
+
+	return true;
 }
 
-void UVASourceComponent::setBoneName(FString boneName_)
+bool UVASourceComponent::setBoneName(FString boneName_)
 {
+	if (!FVAPluginModule::getUseVA()) {
+		return false;
+	}
+
 	// If this setting is already set properly
 	if (boneName == boneName_) {
-		return;
+		return true;
 	}
 
 	boneName = boneName_;
 
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return;
-	}
+
 
 	// Check if the bone exists
 	if (skeletal_mesh_component != nullptr
 		&& skeletal_mesh_component->DoesSocketExist(FName(*boneName_))) {
 		boneName = boneName_;
 		movementSetting = EMovement::AttatchToBone;
+		return true;
 	}
 	else {
 		VAUtils::openMessageBox("[UVASourceComponent::setBoneName(FString)]: Could not find new bone, using old settings instead.");
+		return false;
 	}
+
 }
 
 
-void UVASourceComponent::setMovementSetting(EMovement movementSetting_)
+bool UVASourceComponent::setMovementSetting(EMovement movementSetting_)
 {
+	if (!FVAPluginModule::getUseVA()) {
+		return false;
+	}
+
 	// If this setting is already set properly
 	if (movementSetting == movementSetting_) {
-		return;
+		return true;
 	}
 
 	movementSetting = movementSetting_;
 
-	if (!initialized || !FVAPluginModule::getIsMaster()) {
-		return;
-	}
 
 	soundSource->setPos(getPosition());
 	soundSource->setRot(getRotation());
+
+	return true;
 }
 
 
@@ -453,30 +475,32 @@ void UVASourceComponent::setMovementSetting(EMovement movementSetting_)
 // ******* Directivity stuff **************************************** //
 // ****************************************************************** //
 
-void UVASourceComponent::setDirectivityByMapping(FString phoneme)
+bool UVASourceComponent::setDirectivityByMapping(FString phoneme)
 {
+	if (!shouldSendCommand()) {
+		return false;
+	}
 
 	directivitySetting = EDir::phoneme;
 	directivityByMapping = phoneme;
 
-	if (!hasAccess()) {
-		return;
-	}
-
 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByMapping(phoneme));
+
+	return true;
 }
 
-void UVASourceComponent::setDirectivityByFileName(FString fileName)
+bool UVASourceComponent::setDirectivityByFileName(FString fileName)
 {
+	if (!shouldSendCommand()) {
+		return false;
+	}
 	
 	directivitySetting = EDir::manualFile;
 	directivityByFileName = fileName;
 
-	if (!hasAccess()) {
-		return;
-	}
-
 	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(fileName));
+
+	return true;
 }
 
 
@@ -491,10 +515,6 @@ bool UVASourceComponent::getVisibility()
 
 bool UVASourceComponent::getHandleReflections() {
 	return handleReflections;
-}
-
-float UVASourceComponent::getGainFactor() {
-	return gainFactor;
 }
 
 float UVASourceComponent::getSoundTimeOffset() {

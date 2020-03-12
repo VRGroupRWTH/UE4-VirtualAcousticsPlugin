@@ -568,7 +568,7 @@ bool FVAPluginModule::setSoundBufferLoop(std::string sBufferID, bool loop)
 // ****************************************************************** //
 
 int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name,
-	FVector soundPos, FRotator soundRot, float gainFactor)
+	FVector soundPos, FRotator soundRot, float power)
 {
 	if (!isConnected()) {
 		return -1;
@@ -585,15 +585,12 @@ int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name
 	try
 	{
 		int soundSourceID = pVA->CreateSoundSource(name);
+		
 		pVA->SetSoundSourcePose(soundSourceID, *tmpVec, *tmpQuat);
-
-		float power = pVA->GetSoundSourceSoundPower(soundSourceID) * gainFactor;
 		pVA->SetSoundSourceSoundPower(soundSourceID, power);
-
 		pVA->SetSoundSourceSignalSource(soundSourceID, bufferID);
 
-		// pVA->SetSoundSourceDirectivity(soundSourceID, VADirectivityManager::getDefaultDirectivity()->getID());
-
+		
 		return soundSourceID;
 
 	}
@@ -740,6 +737,11 @@ bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
 	if (!isConnected()) {
 		return false;
 	}
+	
+	if(dirID == -1)
+	{
+		VAUtils::logStuff("setSoundSourceDirectivity() - Directivity is not valid (id = -1)", true);
+	}
 
 	try
 	{
@@ -783,6 +785,11 @@ bool FVAPluginModule::setSoundReceiverHRIR(int soundReceiverID, int hrirID)
 		return false;
 	}
 
+	if (hrirID == -1)
+	{
+		VAUtils::logStuff("setSoundReceiverHRIR() - HRIR is not valid (id = -1)", true);
+	}
+	
 	try {
 		pVA->SetSoundReceiverDirectivity(soundReceiverID, hrirID);
 		return true;

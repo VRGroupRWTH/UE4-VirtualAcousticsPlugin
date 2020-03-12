@@ -21,6 +21,5 @@ protected:
 
 	int hrirID;
 	FString fileName;
-	bool valid;
 
 };
