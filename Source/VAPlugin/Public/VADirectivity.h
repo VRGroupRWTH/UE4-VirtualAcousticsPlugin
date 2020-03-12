@@ -7,7 +7,6 @@
 
 class VADirectivity
 {
-
 public:
 	VADirectivity(FString fileName_);
 	VADirectivity(FString fileName_, FString phoneme);
@@ -16,14 +15,14 @@ public:
 
 	void addPhoneme(FString phoneme);
 	void addPhoneme(TArray<FString> phoneme);
-	
+
 	int getID();
-	
+
 	void logInfo();
-	
+
 
 	bool containsPhoneme(FString phoneme);
-	
+
 	bool isValid();
 
 	FString getFileName();
@@ -34,5 +33,4 @@ protected:
 	int dirID;
 	FString fileName;
 	TArray<FString> phonemes;
-
 };

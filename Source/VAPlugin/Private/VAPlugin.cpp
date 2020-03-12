@@ -36,7 +36,6 @@
 #include "VistaBase/VistaTimeUtils.h"
 
 
-
 #define LOCTEXT_NAMESPACE "FVAPluginModule"
 
 // Library Handles for dll loading of VA Classes
@@ -47,10 +46,10 @@ void* FVAPluginModule::LibraryHandleVistaBase;
 void* FVAPluginModule::LibraryHandleVistaInterProcComm;
 
 // Vars for setting of usage
-bool FVAPluginModule::initialized	= false;
-bool FVAPluginModule::useVA			= true;
-bool FVAPluginModule::debugMode		= true;
-bool FVAPluginModule::isMaster		= false;
+bool FVAPluginModule::initialized = false;
+bool FVAPluginModule::useVA = true;
+bool FVAPluginModule::debugMode = true;
+bool FVAPluginModule::isMaster = false;
 
 // Interface Classes to Server 
 IVANetClient* FVAPluginModule::pVANet;
@@ -90,7 +89,6 @@ bool FVAPluginModule::isInDebugMode()
 {
 	return debugMode;
 }
- 
 
 
 // ****************************************************************** // 
@@ -107,20 +105,24 @@ void FVAPluginModule::StartupModule()
 
 #if PLATFORM_WINDOWS
 	//LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/VAPlugin/x64/Release/VABase.dll"));
-	pathBase				=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.dll"));
-	pathVistaAspects		=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.dll"));
-	pathVistaBase			=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.dll"));
-	pathVistaInterProcComm	=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.dll"));
-	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.dll"));
-	
-	
+	pathBase = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.dll"));
+	pathVistaAspects = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.dll"));
+	pathVistaBase = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.dll"));
+	pathVistaInterProcComm = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.dll"));
+	pathNet = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.dll"));
+
+
 	// ++ Load DLL Handles ++ // 
 	//ExampleLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
-	LibraryHandleBase				= !pathBase.IsEmpty()				? FPlatformProcess::GetDllHandle(*pathBase)					: nullptr;
-	LibraryHandleVistaBase			= !pathVistaBase.IsEmpty()			? FPlatformProcess::GetDllHandle(*pathVistaBase)			: nullptr;
-	LibraryHandleVistaAspects		= !pathVistaAspects.IsEmpty()		? FPlatformProcess::GetDllHandle(*pathVistaAspects)			: nullptr;
-	LibraryHandleVistaInterProcComm = !pathVistaInterProcComm.IsEmpty() ? FPlatformProcess::GetDllHandle(*pathVistaInterProcComm)	: nullptr;
-	LibraryHandleNet				= !pathNet.IsEmpty()				? FPlatformProcess::GetDllHandle(*pathNet)					: nullptr;
+	LibraryHandleBase = !pathBase.IsEmpty() ? FPlatformProcess::GetDllHandle(*pathBase) : nullptr;
+	LibraryHandleVistaBase = !pathVistaBase.IsEmpty() ? FPlatformProcess::GetDllHandle(*pathVistaBase) : nullptr;
+	LibraryHandleVistaAspects = !pathVistaAspects.IsEmpty()
+		                            ? FPlatformProcess::GetDllHandle(*pathVistaAspects)
+		                            : nullptr;
+	LibraryHandleVistaInterProcComm = !pathVistaInterProcComm.IsEmpty()
+		                                  ? FPlatformProcess::GetDllHandle(*pathVistaInterProcComm)
+		                                  : nullptr;
+	LibraryHandleNet = !pathNet.IsEmpty() ? FPlatformProcess::GetDllHandle(*pathNet) : nullptr;
 
 	// ++ Check Handles ++ //
 	if (!checkLibraryHandles())
@@ -137,7 +139,7 @@ void FVAPluginModule::StartupModule()
 	pathVistaInterProcComm	=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.so"));
 	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.so"));
 #endif // PLATFORM_LINUX
-	
+
 	initialized = false;
 	useVA = true;
 	debugMode = true;
@@ -158,7 +160,8 @@ void FVAPluginModule::BeginSession(const bool something)
 
 void FVAPluginModule::EndSession(const bool something)
 {
-	if (VAServerLauncherSocket != nullptr) {
+	if (VAServerLauncherSocket != nullptr)
+	{
 		VAServerLauncherSocket->Close();
 		VAServerLauncherSocket = nullptr;
 	}
@@ -171,54 +174,66 @@ void FVAPluginModule::ShutdownModule()
 #if PLATFORM_WINDOWS
 	FPlatformProcess::FreeDllHandle(LibraryHandleNet);
 	FPlatformProcess::FreeDllHandle(LibraryHandleBase);
-    FPlatformProcess::FreeDllHandle(LibraryHandleVistaAspects);
+	FPlatformProcess::FreeDllHandle(LibraryHandleVistaAspects);
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaBase);
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaInterProcComm);
 #endif // PLATFORM_WINDOWS
 
-	if (VAServerLauncherSocket != nullptr) {
+	if (VAServerLauncherSocket != nullptr)
+	{
 		VAServerLauncherSocket->Close();
 		VAServerLauncherSocket = nullptr;
 	}
-
 }
 
 void FVAPluginModule::askForSettings(FString host, int port, bool askForDebugMode, bool askForUseVA)
 {
-	if (initialized == true) {
+	if (initialized == true)
+	{
 		return;
 	}
 
 	isMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
 
-	if (!isMaster) {
+	if (!isMaster)
+	{
 		return;
 	}
 
-	if (askForUseVA) {
-		EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Use VA Server (" + host + ":" + FString::FromInt(port) + ")? If yes, make sure to have it switched on."));
-		if (ret == EAppReturnType::Type::Yes) {
+	if (askForUseVA)
+	{
+		EAppReturnType::Type ret = FMessageDialog::Open(EAppMsgType::YesNo,
+		                                                FText::FromString(
+			                                                "Use VA Server (" + host + ":" + FString::FromInt(port) +
+			                                                ")? If yes, make sure to have it switched on."));
+		if (ret == EAppReturnType::Type::Yes)
+		{
 			useVA = true;
 		}
-		else {
+		else
+		{
 			useVA = false;
 			debugMode = false;
 			initialized = true;
 			return;
 		}
 	}
-	
 
-	if (askForDebugMode) {
+
+	if (askForDebugMode)
+	{
 		EAppReturnType::Type retD = FMessageDialog::Open(EAppMsgType::YesNo, FText::FromString("Start in Debug mode?"));
-		if (retD == EAppReturnType::Type::Yes) {
+		if (retD == EAppReturnType::Type::Yes)
+		{
 			debugMode = true;
 		}
-		else {
+		else
+		{
 			debugMode = false;
 		}
 	}
-	else {
+	else
+	{
 		debugMode = false;
 	}
 
@@ -229,32 +244,35 @@ void FVAPluginModule::askForSettings(FString host, int port, bool askForDebugMod
 bool FVAPluginModule::checkLibraryHandles()
 {
 	if (LibraryHandleNet && LibraryHandleBase &&
-		LibraryHandleVistaAspects && LibraryHandleVistaBase && LibraryHandleVistaInterProcComm) {
+		LibraryHandleVistaAspects && LibraryHandleVistaBase && LibraryHandleVistaInterProcComm)
+	{
 		return true;
 	}
-	else {
-		if (!LibraryHandleNet) {
-			VAUtils::logStuff("could not load Net", true);
-		}
-
-		if (!LibraryHandleBase) {
-			VAUtils::logStuff("could not load Base", true);
-		}
-
-		if (!LibraryHandleVistaAspects) {
-			VAUtils::logStuff("could not load Vista Aspects", true);
-		}
-
-		if (!LibraryHandleVistaBase) {
-			VAUtils::logStuff("could not load Vista Base", true);
-		}
-
-		if (!LibraryHandleVistaInterProcComm) {
-			VAUtils::logStuff("could not load Vista InterProcComm", true);
-		}
-		return false;
+	if (!LibraryHandleNet)
+	{
+		VAUtils::logStuff("could not load Net", true);
 	}
 
+	if (!LibraryHandleBase)
+	{
+		VAUtils::logStuff("could not load Base", true);
+	}
+
+	if (!LibraryHandleVistaAspects)
+	{
+		VAUtils::logStuff("could not load Vista Aspects", true);
+	}
+
+	if (!LibraryHandleVistaBase)
+	{
+		VAUtils::logStuff("could not load Vista Base", true);
+	}
+
+	if (!LibraryHandleVistaInterProcComm)
+	{
+		VAUtils::logStuff("could not load Vista InterProcComm", true);
+	}
+	return false;
 }
 
 
@@ -264,24 +282,27 @@ bool FVAPluginModule::checkLibraryHandles()
 
 bool FVAPluginModule::connectServer(FString hostF, int port)
 {
-
-	if (!isMaster || !useVA) {
+	if (!isMaster || !useVA)
+	{
 		return false;
 	}
 
-	if (isConnected()) {
+	if (isConnected())
+	{
 		resetServer();
 		return true;
 	}
 
 	VAUtils::logStuff("Connecting to VAServer. Be sure to have it switched on");
 
-	try {
+	try
+	{
 		pVANet = IVANetClient::Create();
 
 		std::string host(TCHAR_TO_UTF8(*hostF));
 		pVANet->Initialize(host, port);
-		if (!pVANet->IsConnected()) {
+		if (!pVANet->IsConnected())
+		{
 			VAUtils::openMessageBox("Could not connect to VA Server", true);
 			useVA = false;
 			return false;
@@ -290,27 +311,31 @@ bool FVAPluginModule::connectServer(FString hostF, int port)
 		pVA = pVANet->GetCoreInstance();
 		pVA->Reset();
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		useVA = false;
 		processExeption("FVAPluginModule::connectServer()", FString(e.ToString().c_str()));
 
 		return false;
 	}
-	
+
 	return true;
 }
 
 bool FVAPluginModule::resetServer()
 {
-	if (!getIsMaster() || !isConnected() || !getUseVA()) {
+	if (!getIsMaster() || !isConnected() || !getUseVA())
+	{
 		return false;
 	}
 
-	try {
+	try
+	{
 		VAUtils::logStuff("Resetting Server now...");
 		pVA->Reset();
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		useVA = false;
 		processExeption("FVAPluginModule::resetServer()", FString(UTF8_TO_TCHAR(e.ToString().c_str())));
 
@@ -322,42 +347,49 @@ bool FVAPluginModule::resetServer()
 
 bool FVAPluginModule::isConnected()
 {
-	if (!isMaster || !useVA) {
+	if (!isMaster || !useVA)
+	{
 		return false;
 	}
 
-	if (pVANet == nullptr || pVA == nullptr) {
+	if (pVANet == nullptr || pVA == nullptr)
+	{
 		return false;
 	}
 
-	try {
+	try
+	{
 		return pVANet->IsConnected();
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		useVA = false;
 		processExeption("FVAPluginModule::isConnected() ", FString(e.ToString().c_str()));
 		return false;
 	}
-
 }
 
 bool FVAPluginModule::disconnectServer()
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return true;
 	}
 
-	if (VAServerLauncherSocket != nullptr) {
+	if (VAServerLauncherSocket != nullptr)
+	{
 		VAServerLauncherSocket->Close();
 		VAServerLauncherSocket = nullptr;
 	}
-	
+
 	return true;
 	VAUtils::logStuff("[FVAPluginModule::disconnectServer()] Disconnecting now");
 	pVA->Finalize();
 
-	if (pVANet != nullptr) {
-		if (pVANet->IsConnected()) {
+	if (pVANet != nullptr)
+	{
+		if (pVANet->IsConnected())
+		{
 			pVANet->Disconnect();
 		}
 	}
@@ -371,28 +403,32 @@ bool FVAPluginModule::remoteStartVAServer(const FString& Host, const int Port, c
 	if (!isMaster)
 		return false;
 
-	if(VAServerLauncherSocket!=nullptr)
+	if (VAServerLauncherSocket != nullptr)
 	{
 		return true;
 	}
-	
-	VAUtils::logStuff("Try to remotely start the VAServer at address "+Host+":"+FString::FromInt(Port)+" for version: "+VersionName);
+
+	VAUtils::logStuff(
+		"Try to remotely start the VAServer at address " + Host + ":" + FString::FromInt(Port) + " for version: " +
+		VersionName);
 
 
 	//Connect
 	const FString SocketName(TEXT("VAServerStarterConnection"));
-	VAServerLauncherSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, SocketName, false);
+	VAServerLauncherSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(
+		NAME_Stream, SocketName, false);
 
 	TSharedPtr<FInternetAddr> InternetAddress = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
 	bool ValidIP;
 	InternetAddress->SetIp(*Host, ValidIP);
 	InternetAddress->SetPort(Port);
-	if (!ValidIP) {
+	if (!ValidIP)
+	{
 		VAUtils::logStuff("Error: The Ip cannot be parsed!");
 		return false;
 	}
 
-	if(VAServerLauncherSocket == nullptr || !VAServerLauncherSocket->Connect(*InternetAddress))
+	if (VAServerLauncherSocket == nullptr || !VAServerLauncherSocket->Connect(*InternetAddress))
 	{
 		VAUtils::logStuff("Error: Cannot connect to Launcher!");
 		return false;
@@ -404,26 +440,31 @@ bool FVAPluginModule::remoteStartVAServer(const FString& Host, const int Port, c
 	for (TCHAR character : VersionName.GetCharArray())
 	{
 		uint8 byte = static_cast<uint8>(character);
-		if (byte != 0) {
+		if (byte != 0)
+		{
 			RequestData.Add(static_cast<uint8>(character));
 		}
 	}
 	int BytesSend = 0;
 	VAServerLauncherSocket->Send(RequestData.GetData(), RequestData.Num(), BytesSend);
-	VAUtils::logStuff("Send "+FString::FromInt(BytesSend)+" bytes to the VAServer Launcher, with version name: "+ VersionName +" Waiting for answer....");
+	VAUtils::logStuff(
+		"Send " + FString::FromInt(BytesSend) + " bytes to the VAServer Launcher, with version name: " + VersionName +
+		" Waiting for answer....");
 
 	//Receive response
 	const int32 BufferSize = 16;
 	int32 BytesRead = 0;
 	uint8 Response[16];
-	if (VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead) && BytesRead==1)
+	if (VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead) && BytesRead == 1)
 	{
-		switch (Response[0]) {
+		switch (Response[0])
+		{
 		case 'g':
 			VAUtils::logStuff("Received go from launcher, VAServer seems to be correctly started.");
 			break;
 		case 'n':
-			VAUtils::openMessageBox("VAServer cannot be launched, invalid VAServer binary file or cannot be found", true);
+			VAUtils::openMessageBox("VAServer cannot be launched, invalid VAServer binary file or cannot be found",
+			                        true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'i':
@@ -435,11 +476,14 @@ bool FVAPluginModule::remoteStartVAServer(const FString& Host, const int Port, c
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'f':
-			VAUtils::openMessageBox("VAServer cannot be launched, requested version \""+VersionName+"\" is not available/specified", true);
+			VAUtils::openMessageBox(
+				"VAServer cannot be launched, requested version \"" + VersionName + "\" is not available/specified",
+				true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		default:
-			VAUtils::openMessageBox("Unexpected response from VAServer Launcher: " + FString(reinterpret_cast<char*>(&Response[0])), true);
+			VAUtils::openMessageBox(
+				"Unexpected response from VAServer Launcher: " + FString(reinterpret_cast<char*>(&Response[0])), true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		}
@@ -461,7 +505,8 @@ bool FVAPluginModule::remoteStartVAServer(const FString& Host, const int Port, c
 
 std::string FVAPluginModule::createNewBuffer(FString soundFileName, bool loop, float soundOffset)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return "";
 	}
 
@@ -489,7 +534,8 @@ std::string FVAPluginModule::createNewBuffer(FString soundFileName, bool loop, f
 
 bool FVAPluginModule::setSoundBufferAction(std::string sBufferID, EPlayAction action)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
@@ -506,15 +552,16 @@ bool FVAPluginModule::setSoundBufferAction(std::string sBufferID, EPlayAction ac
 	}
 }
 
-int FVAPluginModule::getSoundBufferAction(std::string sBufferID) 
+int FVAPluginModule::getSoundBufferAction(std::string sBufferID)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return -2;
 	}
 
 	try
 	{
-		int state = pVA->GetSignalSourceBufferPlaybackState(sBufferID);	
+		int state = pVA->GetSignalSourceBufferPlaybackState(sBufferID);
 		return state;
 	}
 	catch (CVAException& e)
@@ -526,7 +573,8 @@ int FVAPluginModule::getSoundBufferAction(std::string sBufferID)
 
 bool FVAPluginModule::setSoundBufferTime(std::string sBufferID, float time)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
@@ -545,7 +593,8 @@ bool FVAPluginModule::setSoundBufferTime(std::string sBufferID, float time)
 
 bool FVAPluginModule::setSoundBufferLoop(std::string sBufferID, bool loop)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
@@ -568,9 +617,10 @@ bool FVAPluginModule::setSoundBufferLoop(std::string sBufferID, bool loop)
 // ****************************************************************** //
 
 int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name,
-	FVector soundPos, FRotator soundRot, float power)
+                                          FVector soundPos, FRotator soundRot, float power)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return -1;
 	}
 
@@ -585,36 +635,36 @@ int FVAPluginModule::createNewSoundSource(std::string bufferID, std::string name
 	try
 	{
 		int soundSourceID = pVA->CreateSoundSource(name);
-		
+
 		pVA->SetSoundSourcePose(soundSourceID, *tmpVec, *tmpQuat);
 		pVA->SetSoundSourceSoundPower(soundSourceID, power);
 		pVA->SetSoundSourceSignalSource(soundSourceID, bufferID);
 
-		
-		return soundSourceID;
 
+		return soundSourceID;
 	}
 	catch (CVAException& e)
 	{
 		processExeption("FVAPluginModule::createNewSoundSource()", FString(e.ToString().c_str()));
 		return -1;
 	}
-
 }
 
 bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
-	
-	VAUtils::logStuff(FString("SoundSou: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString::SanitizeFloat(pos.Z)));
+
+	VAUtils::logStuff(FString(
+		"SoundSou: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString
+		::SanitizeFloat(pos.Z)));
 
 	pos = VAUtils::toVACoordinateSystem(pos, scale);
 	VAUtils::fVecToVAVec3(pos, *tmpVec);
 
-	
-	
+
 	try
 	{
 		pVA->SetSoundSourcePosition(soundSourceID, *tmpVec);
@@ -630,11 +680,14 @@ bool FVAPluginModule::setSoundSourcePos(int soundSourceID, FVector pos)
 
 bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
-	
-	VAUtils::logStuff(FString("Sou Angl: R: " + FString::SanitizeFloat(rot.Roll) + " - P: " + FString::SanitizeFloat(rot.Pitch) + " - Y: " + FString::SanitizeFloat(rot.Yaw)));
+
+	VAUtils::logStuff(FString(
+		"Sou Angl: R: " + FString::SanitizeFloat(rot.Roll) + " - P: " + FString::SanitizeFloat(rot.Pitch) + " - Y: " +
+		FString::SanitizeFloat(rot.Yaw)));
 
 	rot = VAUtils::toVACoordinateSystem(rot);
 	FQuat fQuat = rot.Quaternion();
@@ -644,7 +697,7 @@ bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 	{
 		pVA->SetSoundSourceOrientation(soundSourceID, *tmpQuat);
 		// pVA->SetSoundSourcePose(iSoundSourceID, *tmpVec, *tmpQuat);
-		
+
 		return true;
 	}
 	catch (CVAException& e)
@@ -656,7 +709,8 @@ bool FVAPluginModule::setSoundSourceRot(int soundSourceID, FRotator rot)
 
 bool FVAPluginModule::setNewBufferForSoundSource(int soundSourceID, std::string bufferID)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
@@ -674,7 +728,8 @@ bool FVAPluginModule::setNewBufferForSoundSource(int soundSourceID, std::string 
 
 bool FVAPluginModule::setSoundSourceMuted(int soundSourceID, bool muted)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
@@ -692,7 +747,8 @@ bool FVAPluginModule::setSoundSourceMuted(int soundSourceID, bool muted)
 
 bool FVAPluginModule::setSoundSourcePower(int soundSourceID, float power)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
@@ -709,14 +765,14 @@ bool FVAPluginModule::setSoundSourcePower(int soundSourceID, float power)
 }
 
 
-
 // ****************************************************************** // 
 // ******* Directivities ******************************************** //
 // ****************************************************************** //
 
 int FVAPluginModule::createNewDirectivity(FString fileName)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return -1;
 	}
 
@@ -727,18 +783,20 @@ int FVAPluginModule::createNewDirectivity(FString fileName)
 	}
 	catch (CVAException& e)
 	{
-		processExeption("FVAPluginModule::createNewDirectivity()", FString(e.ToString().c_str()) + " (" + fileName + ")");
+		processExeption("FVAPluginModule::createNewDirectivity()",
+		                FString(e.ToString().c_str()) + " (" + fileName + ")");
 		return -1;
 	}
 }
 
 bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
-	
-	if(dirID == -1)
+
+	if (dirID == -1)
 	{
 		VAUtils::logStuff("setSoundSourceDirectivity() - Directivity is not valid (id = -1)", true);
 	}
@@ -762,7 +820,8 @@ bool FVAPluginModule::setSoundSourceDirectivity(int soundSourceID, int dirID)
 
 int FVAPluginModule::createNewHRIR(FString fileName)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return -1;
 	}
 
@@ -781,7 +840,8 @@ int FVAPluginModule::createNewHRIR(FString fileName)
 
 bool FVAPluginModule::setSoundReceiverHRIR(int soundReceiverID, int hrirID)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
@@ -789,12 +849,14 @@ bool FVAPluginModule::setSoundReceiverHRIR(int soundReceiverID, int hrirID)
 	{
 		VAUtils::logStuff("setSoundReceiverHRIR() - HRIR is not valid (id = -1)", true);
 	}
-	
-	try {
+
+	try
+	{
 		pVA->SetSoundReceiverDirectivity(soundReceiverID, hrirID);
 		return true;
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		processExeption("FVAPluginModule::setSoundReceiverDirectivity()", FString(e.ToString().c_str()));
 		return false;
 	}
@@ -808,20 +870,22 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 {
 	receiverActor = actor;
 
-	if (!isConnected() || !isMaster) {
+	if (!isConnected() || !isMaster)
+	{
 		return -1;
 	}
 
 	scale = receiverActor->getScale();
 
-	try {
-
+	try
+	{
 		int iSoundReceiverID = pVA->CreateSoundReceiver("VASoundReceiver");
 		int iHRIR = VAHRIRManager::getDefaultHRIR()->getID();
 		pVA->SetSoundReceiverDirectivity(iSoundReceiverID, iHRIR);
 		return iSoundReceiverID;
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		processExeption("FVAPluginModule::createNewSoundReceiver()", FString(e.ToString().c_str()));
 		return -1;
 	}
@@ -830,22 +894,26 @@ int FVAPluginModule::createNewSoundReceiver(AVAReceiverActor* actor)
 
 bool FVAPluginModule::setSoundReceiverPosition(int soundReceiverID, FVector pos)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
-	
-	VAUtils::logStuff(FString("Receiver: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString::SanitizeFloat(pos.Z)));
+
+	VAUtils::logStuff(FString(
+		"Receiver: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString
+		::SanitizeFloat(pos.Z)));
 
 	pos = VAUtils::toVACoordinateSystem(pos, scale);
 	VAUtils::fVecToVAVec3(pos, *tmpVec);
 
-	
 
-	try {
+	try
+	{
 		pVA->SetSoundReceiverPosition(soundReceiverID, *tmpVec);
 		return true;
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		processExeption("FVAPluginModule::setSoundReceiverPosition()", FString(e.ToString().c_str()));
 		return false;
 	}
@@ -853,21 +921,26 @@ bool FVAPluginModule::setSoundReceiverPosition(int soundReceiverID, FVector pos)
 
 bool FVAPluginModule::setSoundReceiverRotation(int soundReceiverID, FRotator rot)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
 
-	VAUtils::logStuff(FString("Rec Angl: R: " + FString::SanitizeFloat(rot.Roll) + " - P: " + FString::SanitizeFloat(rot.Pitch) + " - Y: " + FString::SanitizeFloat(rot.Yaw)));
+	VAUtils::logStuff(FString(
+		"Rec Angl: R: " + FString::SanitizeFloat(rot.Roll) + " - P: " + FString::SanitizeFloat(rot.Pitch) + " - Y: " +
+		FString::SanitizeFloat(rot.Yaw)));
 
 	rot = VAUtils::toVACoordinateSystem(rot);
 	FQuat quat = rot.Quaternion();
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 
-	try {
+	try
+	{
 		pVA->SetSoundReceiverOrientation(soundReceiverID, *tmpQuat);
 		return true;
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		processExeption("FVAPluginModule::setSoundReceiverRotation()", FString(e.ToString().c_str()));
 		return false;
 	}
@@ -880,26 +953,30 @@ bool FVAPluginModule::setSoundReceiverRotation(int soundReceiverID, FRotator rot
 
 bool FVAPluginModule::setSoundReceiverRealWorldPose(int soundReceiverID, FVector pos, FRotator rot)
 {
-	if (!isConnected()) {
+	if (!isConnected())
+	{
 		return false;
 	}
-	
-	VAUtils::logStuff(FString("RL World: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString::SanitizeFloat(pos.Z)));
+
+	VAUtils::logStuff(FString(
+		"RL World: X: " + FString::SanitizeFloat(pos.X) + " - Y: " + FString::SanitizeFloat(pos.Y) + " - Z: " + FString
+		::SanitizeFloat(pos.Z)));
 
 	pos = VAUtils::toVACoordinateSystem(pos, scale);
 	VAUtils::fVecToVAVec3(pos, *tmpVec);
-	
+
 	rot = VAUtils::toVACoordinateSystem(rot);
 	FQuat quat = rot.Quaternion();
 	VAUtils::fQuatToVAQuat(quat, *tmpQuat);
 
 
-	
-	try {
+	try
+	{
 		pVA->SetSoundReceiverRealWorldPose(soundReceiverID, *tmpVec, *tmpQuat);
 		return true;
 	}
-	catch (CVAException& e) {
+	catch (CVAException& e)
+	{
 		processExeption("setSoundReceiverRealWorldPose()", FString(e.ToString().c_str()));
 		return false;
 	}
@@ -910,11 +987,13 @@ bool FVAPluginModule::setSoundReceiverRealWorldPose(int soundReceiverID, FVector
 // ******* General Setter Functions ********************************* //
 // ****************************************************************** //
 
-void FVAPluginModule::setReceiverActor(AVAReceiverActor* actor) {
+void FVAPluginModule::setReceiverActor(AVAReceiverActor* actor)
+{
 	receiverActor = actor;
 }
 
-void FVAPluginModule::setScale(float scale_) {
+void FVAPluginModule::setScale(float scale_)
+{
 	scale = scale_;
 }
 
@@ -930,10 +1009,12 @@ void FVAPluginModule::setDebugMode(bool debugMode_)
 	TArray<AActor*> actorsA;
 	UGameplayStatics::GetAllActorsOfClass(receiverActor->GetWorld(), AActor::StaticClass(), actorsA);
 
-	for (AActor* actor : actorsA) {
+	for (AActor* actor : actorsA)
+	{
 		TArray<UActorComponent*> VA_components = actor->GetComponentsByClass(UVASourceComponent::StaticClass());
-		for (UActorComponent* VA_component : VA_components) {
-			Cast<UVASourceComponent>(VA_component)->setSoundSourceVisibility(debugMode);
+		for (UActorComponent* VA_component : VA_components)
+		{
+			Cast<UVASourceComponent>(VA_component)->SetSoundSourceVisibility(debugMode);
 		}
 	}
 }
@@ -950,7 +1031,8 @@ bool FVAPluginModule::getIsInitialized()
 
 bool FVAPluginModule::getUseVA()
 {
-	if (!initialized) {
+	if (!initialized)
+	{
 		askForSettings();
 	}
 
@@ -959,7 +1041,8 @@ bool FVAPluginModule::getUseVA()
 
 bool FVAPluginModule::getDebugMode()
 {
-	if (!initialized) {
+	if (!initialized)
+	{
 		askForSettings();
 	}
 
@@ -968,22 +1051,25 @@ bool FVAPluginModule::getDebugMode()
 
 bool FVAPluginModule::getIsMaster()
 {
-	if (!initialized) {
+	if (!initialized)
+	{
 		askForSettings();
 	}
 
 	return isMaster;
 }
 
-AVAReceiverActor* FVAPluginModule::getReceiverActor() {
+AVAReceiverActor* FVAPluginModule::getReceiverActor()
+{
 	return receiverActor;
 }
 
-TArray<AVAReflectionWall*> FVAPluginModule::getReflectionWalls() {
+TArray<AVAReflectionWall*> FVAPluginModule::getReflectionWalls()
+{
 	return receiverActor->getReflectionWalls();
 }
 
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FVAPluginModule, VAPlugin)

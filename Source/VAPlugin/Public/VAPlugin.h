@@ -13,7 +13,6 @@
 #define VA_STATIC
 
 
-
 //forward declarations:
 class AVAReceiverActor;
 class AVAReflectionWall;
@@ -39,61 +38,57 @@ public:
 	static bool isInDebugMode();
 
 
-
-
-
 	// ******* Initialization Functions ******* //
 
-    // Function called when Starting up the module //
-	virtual void StartupModule() override;
-    
-    // Function called when Shutting down the module //
-	virtual void ShutdownModule() override;
+	// Function called when Starting up the module //
+	void StartupModule() override;
+
+	// Function called when Shutting down the module //
+	void ShutdownModule() override;
 
 	// Askes whether to use the VA Server and / or the debug mode
-	static void askForSettings(FString host = "unknown", int port = 0, bool askForDebugMode = true, bool askForUseVA=true);
+	static void askForSettings(FString host = "unknown", int port = 0, bool askForDebugMode = true,
+	                           bool askForUseVA = true);
 
 	// Check if all Library Handles are well initialized //
 	static bool checkLibraryHandles();
 
 
-
-
-
 	// ******* General Server Functions ******* //
-    
-    // connect to Server (called by initializeServer) //
-	static bool connectServer	(FString host = "localhost", int port = 12340);
+
+	// connect to Server (called by initializeServer) //
+	static bool connectServer(FString host = "localhost", int port = 12340);
 
 	// reset Server //
 	static bool resetServer();
-    
-    // check if VA Server is connected //
-    static bool isConnected();
+
+	// check if VA Server is connected //
+	static bool isConnected();
 
 	// Disconnect from VA Server 
 	static bool disconnectServer();
 
 	//Remote Start VAServer
-	static bool remoteStartVAServer(const FString &host = "localhost", const int port = 41578, const FString &version_name=TEXT("2018.a"));
+	static bool remoteStartVAServer(const FString& host = "localhost", int port = 41578,
+	                                const FString& version_name = TEXT("2018.a"));
 
-	void BeginSession(const bool something);
-	void EndSession(const bool something);
-
+	void BeginSession(bool something);
+	void EndSession(bool something);
 
 
 	// ******* Sound Buffer ******* //
 
 	static std::string createNewBuffer(FString soundFileName, bool loop = false, float soundOffset = 0.0f);
-	static bool	setSoundBufferAction(std::string sBufferID, EPlayAction action);
-	static int  getSoundBufferAction(std::string sBufferID);
+	static bool setSoundBufferAction(std::string sBufferID, EPlayAction action);
+	static int getSoundBufferAction(std::string sBufferID);
 	static bool setSoundBufferTime(std::string sBufferID, float time);
 	static bool setSoundBufferLoop(std::string sBufferID, bool loop);
-	
+
 
 	// ******* Sound Sources ******* //
 
-	static int  createNewSoundSource(std::string bufferID, std::string name, FVector pos = FVector(0,0,0), FRotator rot = FRotator(0,0,0), float gainFactor = 1.0f);
+	static int createNewSoundSource(std::string bufferID, std::string name, FVector pos = FVector(0, 0, 0),
+	                                FRotator rot = FRotator(0, 0, 0), float gainFactor = 1.0f);
 	static bool setSoundSourcePos(int soundSourceID, FVector pos);
 	static bool setSoundSourceRot(int soundSourceID, FRotator rot);
 	static bool setNewBufferForSoundSource(int soundSourceID, std::string bufferID);
@@ -103,19 +98,19 @@ public:
 
 	// ******* Directivities ******* //
 
-	static int  createNewDirectivity(FString fileName);
+	static int createNewDirectivity(FString fileName);
 	static bool setSoundSourceDirectivity(int soundSourceID, int dirID);
 
 
 	// ******* HRIR ******* //
 
-	static int  createNewHRIR(FString fileName);
+	static int createNewHRIR(FString fileName);
 	static bool setSoundReceiverHRIR(int soundReceiverID, int hrirID);
 
 
 	// ******* Sound Receiver ******* //
 
-	static int  createNewSoundReceiver(AVAReceiverActor* actor);
+	static int createNewSoundReceiver(AVAReceiverActor* actor);
 	static bool setSoundReceiverPosition(int soundReceiverID, FVector pos);
 	static bool setSoundReceiverRotation(int soundReceiverID, FRotator rot);
 
@@ -141,32 +136,32 @@ public:
 	static bool getIsMaster();
 	static AVAReceiverActor* getReceiverActor();
 	static TArray<AVAReflectionWall*> getReflectionWalls();
-	
+
 
 protected:
 
 
 	// Library Handles for dll loading of VA Classes
-	static void*    LibraryHandleBase;
-	static void*	LibraryHandleNet;
-	static void*    LibraryHandleVistaBase;
-	static void*	LibraryHandleVistaAspects;
-	static void*	LibraryHandleVistaInterProcComm;
+	static void* LibraryHandleBase;
+	static void* LibraryHandleNet;
+	static void* LibraryHandleVistaBase;
+	static void* LibraryHandleVistaAspects;
+	static void* LibraryHandleVistaInterProcComm;
 
 
 	// States of the plugin
-	static bool initialized;						// To check if its already initialized
-	static bool useVA;								// bool if VA is used 
-	static bool debugMode;							// bool if is in Debug Mode
-	static bool isMaster;							// bool if its the master node 
-	
+	static bool initialized; // To check if its already initialized
+	static bool useVA; // bool if VA is used 
+	static bool debugMode; // bool if is in Debug Mode
+	static bool isMaster; // bool if its the master node 
+
 
 	// Interface Classes to Server 
-	static IVANetClient* pVANet;					// VA Net Client
-    static IVAInterface* pVA;						// VA Server Interface
-    
+	static IVANetClient* pVANet; // VA Net Client
+	static IVAInterface* pVA; // VA Server Interface
 
-    // Link to the current receiver actor 
+
+	// Link to the current receiver actor 
 	static AVAReceiverActor* receiverActor;
 
 
@@ -180,7 +175,4 @@ protected:
 
 	//Socket connection to the VAServer Launcher, has to be held open until the program ends
 	static FSocket* VAServerLauncherSocket;
-
 };
-
-

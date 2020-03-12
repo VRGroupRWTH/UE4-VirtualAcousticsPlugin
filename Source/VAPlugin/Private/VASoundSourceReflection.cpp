@@ -2,14 +2,14 @@
 #include "VAPlugin.h"
 
 VASoundSourceReflection::VASoundSourceReflection(
-	VASoundSource *parentSource_, 
-	AVAReflectionWall* wall_, 
+	VASoundSource* parentSource_,
+	AVAReflectionWall* wall_,
 	std::string sBufferID,
 	std::string name,
 	FVector pos_,
-	FRotator rot_, 
+	FRotator rot_,
 	float gainFactor) :
-	parentSource(parentSource_), 
+	parentSource(parentSource_),
 	wall(wall_)
 {
 	showCones = parentSource->getVisibility();
@@ -17,24 +17,26 @@ VASoundSourceReflection::VASoundSourceReflection(
 	pos = VAUtils::computeReflectedPos(wall, pos_);
 	rot = VAUtils::computeReflectedRot(wall, rot_);
 
-	if (FVAPluginModule::getIsMaster()) {
+	if (FVAPluginModule::getIsMaster())
+	{
 		soundSourceID = FVAPluginModule::createNewSoundSource(sBufferID, name, pos, rot, gainFactor);
 		if (soundSourceID == -1)
 		{
-			VAUtils::logStuff("[VASoundSourceReflection::VASoundSourceReflection(...)] Error initializing soundSource in VASoundSourceReflection()", true);
+			VAUtils::logStuff(
+				"[VASoundSourceReflection::VASoundSourceReflection(...)] Error initializing soundSource in VASoundSourceReflection()",
+				true);
 			return;
 		}
 	}
 
 
-	soundSourceRepresentation = parentSource->getParentComponent()->GetWorld()->SpawnActor<AVASoundSourceRepresentation>(AVASoundSourceRepresentation::StaticClass());
-	
-	
+	soundSourceRepresentation = parentSource->getParentComponent()->GetWorld()->SpawnActor<AVASoundSourceRepresentation
+	>(AVASoundSourceRepresentation::StaticClass());
+
+
 	soundSourceRepresentation->setPos(pos);
 	soundSourceRepresentation->setRot(rot);
 	soundSourceRepresentation->setVisibility(showCones);
-
-
 }
 
 
@@ -42,11 +44,13 @@ void VASoundSourceReflection::setPos(FVector pos_)
 {
 	pos = VAUtils::computeReflectedPos(wall, pos_);
 
-	if (FVAPluginModule::getIsMaster()) {
+	if (FVAPluginModule::getIsMaster())
+	{
 		FVAPluginModule::setSoundSourcePos(soundSourceID, pos);
 	}
 
-	if (showCones) {
+	if (showCones)
+	{
 		soundSourceRepresentation->setPos(pos);
 	}
 }
@@ -56,11 +60,13 @@ void VASoundSourceReflection::setRot(FRotator rot_)
 {
 	rot = VAUtils::computeReflectedRot(wall, rot_);
 
-	if (FVAPluginModule::getIsMaster()) {
+	if (FVAPluginModule::getIsMaster())
+	{
 		FVAPluginModule::setSoundSourceRot(soundSourceID, rot);
 	}
 
-	if (showCones) {
+	if (showCones)
+	{
 		soundSourceRepresentation->setRot(rot);
 	}
 }

@@ -1,4 +1,3 @@
-
 #include "VAHRIRManager.h"
 
 #include "VAUtils.h"
@@ -15,12 +14,12 @@ VAHRIRManager::~VAHRIRManager()
 }
 
 
-
 void VAHRIRManager::reset()
 {
 	// TODO: delete all HRIR from the server
 
-	if (defaultHRIR != nullptr) {
+	if (defaultHRIR != nullptr)
+	{
 		delete defaultHRIR;
 	}
 	defaultHRIR = new VAHRIR(FString("$(DefaultHRIR)"));
@@ -33,9 +32,12 @@ void VAHRIRManager::reset()
 VAHRIR* VAHRIRManager::getHRIRByFileName(FString fileName_)
 {
 	// Find already existing HRIR
-	if (!hrirs.Num()) {
-		for (auto entry : hrirs) {
-			if (entry->getFileName() == fileName_) {
+	if (!hrirs.Num())
+	{
+		for (auto entry : hrirs)
+		{
+			if (entry->getFileName() == fileName_)
+			{
 				FString output = "[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " was found!";
 				VAUtils::logStuff(output);
 
@@ -43,35 +45,33 @@ VAHRIR* VAHRIRManager::getHRIRByFileName(FString fileName_)
 			}
 		}
 	}
-	
-	
-	VAUtils::logStuff("[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " cannot be found! Creating one now...");
+
+
+	VAUtils::logStuff(
+		"[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " cannot be found! Creating one now...");
 
 	// Create a new HRIR
 	VAHRIR* new_hrir = new VAHRIR(fileName_);
-	if (new_hrir != nullptr) {
+	if (new_hrir != nullptr)
+	{
 		FString output = "[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " is created!";
 		VAUtils::logStuff(output);
 		hrirs.Add(new_hrir);
 		return new_hrir;
 	}
-	else {
-		VAUtils::logStuff("[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " cannot be created!");
-	}
+	VAUtils::logStuff("[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " cannot be created!");
 
 	// Return Default HRIR
 	return defaultHRIR;
 }
 
 
-
-VAHRIR * VAHRIRManager::getDefaultHRIR()
+VAHRIR* VAHRIRManager::getDefaultHRIR()
 {
-	if (defaultHRIR == nullptr) {
+	if (defaultHRIR == nullptr)
+	{
 		defaultHRIR = new VAHRIR(FString("$(DefaultHRIR)"));
 	}
 
 	return defaultHRIR;
 }
-
-

@@ -22,15 +22,18 @@ void VAUtils::openMessageBox(FString text, bool error)
 {
 	//char* text;
 
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
-	
-	if (error) {
+
+	if (error)
+	{
 		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(addExclamationMarkInChar(text)));
 		//text = addExclamationMarkInChar(text);
 	}
-	else {
+	else
+	{
 		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(text));
 		//text = text_p;
 	}
@@ -39,16 +42,15 @@ void VAUtils::openMessageBox(FString text, bool error)
 }
 
 
-
 FString VAUtils::addExclamationMarkInChar(FString text)
 {
 	size_t len = text.Len();
 	//char* ret = new char[len + 21];
 	FString ret = FString("!!!!!");
 	ret.Append(text).Append("!!!!!");
-	
+
 	return ret;
-	
+
 	for (int i = 0; i < 10; i++)
 	{
 		ret[i] = '!';
@@ -71,17 +73,16 @@ FString VAUtils::addExclamationMarkInChar(FString text)
 
 bool VAUtils::checkLibraryHandle(void* LibraryHandle)
 {
-	if (LibraryHandle) {
+	if (LibraryHandle)
+	{
 		return true;
 	}
-	else {
-		return false;
-	}
+	return false;
 }
 
 bool VAUtils::fVecToVAVec3(FVector& VecF, VAVec3& VecVA)
 {
-	if (&VecF == NULL || &VecVA == 0)
+	if (&VecF == nullptr || &VecVA == nullptr)
 		return false;
 
 	VecVA.Set(VecF.X, VecF.Y, VecF.Z);
@@ -128,7 +129,7 @@ FRotator VAUtils::toVACoordinateSystem(FRotator rotF)
 	// 	input.x,			(where VA z?)
 	// 	input.w		
 	// )
-	
+
 	FQuat Quat = rotF.Quaternion();
 	FQuat Tmp = FQuat(-Quat.Y, -Quat.Z, Quat.X, Quat.W);
 	return Tmp.Rotator();
@@ -136,15 +137,13 @@ FRotator VAUtils::toVACoordinateSystem(FRotator rotF)
 
 bool VAUtils::fQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA)
 {
-	if (&QuatF == NULL || &QuatVA == NULL)
+	if (&QuatF == nullptr || &QuatVA == nullptr)
 		return false;
 
 	QuatVA.Set(QuatF.X, QuatF.Y, QuatF.Z, QuatF.W);
 
 	return true;
 }
-
-
 
 
 FVector VAUtils::computeReflectedPos(AVAReflectionWall* wall, FVector pos)
@@ -175,16 +174,17 @@ FRotator VAUtils::computeReflectedRot(AVAReflectionWall* wall, FRotator rot)
 
 	// return FRotator(0, 0, 0);
 	return tmp.Rotation();
-
 }
 
 
 void VAUtils::logStuff(FString text, bool error)
 {
-	if (error) {
+	if (error)
+	{
 		UE_LOG(VALog, Error, TEXT("%s"), *text);
 	}
-	else {
+	else
+	{
 		UE_LOG(VALog, Log, TEXT("%s"), *text);
 	}
 }
@@ -201,13 +201,13 @@ int VAUtils::EPlayActionToVAAction(EPlayAction action)
 
 	switch (action)
 	{
-	case EPlayAction::Stop:
+	case Stop:
 		return 0;
 		break;
-	case EPlayAction::Pause:
+	case Pause:
 		return 1;
 		break;
-	case EPlayAction::Play:
+	case Play:
 		return 2;
 		break;
 	default:
@@ -231,21 +231,18 @@ EPlayAction VAUtils::VAActionToEPlayAction(int action)
 	case -1:
 		logStuff("[VAUtils::VAActionToEPlayAction]: Detected no action as Play State, transfering to Stop");
 	case 0:
-		return EPlayAction::Stop;
+		return Stop;
 		break;
 	case 1:
-		return EPlayAction::Pause;
+		return Pause;
 		break;
 	case 2:
-		return EPlayAction::Play;
+		return Play;
 		break;
 	default:
 		break;
 	}
 
 	logStuff("[VAUtils::VAActionToEPlayAction(int action)]: VAAction cannot be transverted", true);
-	return EPlayAction::Stop;
+	return Stop;
 }
-
-
-

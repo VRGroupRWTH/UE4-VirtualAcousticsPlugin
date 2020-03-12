@@ -17,60 +17,65 @@ class AVAReflectionWall;
 
 
 UENUM()
-enum EAdress {
+enum EAdress
+{
 	automatic,
-	localhost, 
+	localhost,
 	Cave,
 	manual
 };
-
 
 
 UCLASS()
 class VAPLUGIN_API AVAReceiverActor : public AActor
 {
 	GENERATED_BODY()
-	
-protected:	
 
-	
+protected:
+
+
 	// How many units in UE equal 1m in World
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale",									Category = "General Settigns"))
-		float worldScale = 100.0f;
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale", Category = "General Settigns"))
+	float worldScale = 100.0f;
 
 	// Check if should ask for debug Mode?
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?",					Category = "General Settigns"))
-		bool askForDebugMode = true;
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?", Category = "General Settigns"))
+	bool askForDebugMode = true;
 
 	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase",								Category = "Connection"))
-		TEnumAsByte<EAdress> adressSetting = EAdress::automatic;
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase", Category = "Connection"))
+	TEnumAsByte<EAdress> adressSetting = automatic;
 
 	// IP Adress for manual input
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress",								Category = "Connection"))		// CanEditChange used
-		FString serverIPAdress = "10.0.1.240";
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress", Category = "Connection")) // CanEditChange used
+	FString serverIPAdress = "10.0.1.240";
 
 	// Port for manual input
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]",						Category = "Connection",		// CanEditChange used
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]", Category = "Connection", // CanEditChange used
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
-		uint16 serverPort = 12340;
+	uint16 serverPort = 12340;
 
 	// File name of the Directivity mapping file
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities",		Category = "Directivity Manager"))
-		FString dirMappingFileName = "Study/VADir_default.ini";
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities", Category = "Directivity Manager"
+	))
+	FString dirMappingFileName = "Study/VADir_default.ini";
 
 	// Port for remote VAServer starting
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Remote VAServer Start Port [0, 65535]", Category = "Connection",		// CanEditChange used
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Remote VAServer Start Port [0, 65535]", Category = "Connection",
+		// CanEditChange used
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
-		uint16 remoteVAStarterPort = 41578;
+	uint16 remoteVAStarterPort = 41578;
 
 	// Check if the system should try to start the VAServer automatically
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Try to start VAServer automatically?", Category = "General Settigns"))
-		bool askForAutomaticRemoteVAStart = true;
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Try to start VAServer automatically?", Category = "General Settigns")
+	)
+	bool askForAutomaticRemoteVAStart = true;
 
 	// Which version should be started automatically
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Which VAServer version should be started, configurable in the Config of the VAServer Launcher", Category = "General Settigns"))
-		FString whichVAServerVersionToStart = TEXT("2018.a");
+	UPROPERTY(EditAnywhere, meta = (DisplayName =
+		"Which VAServer version should be started, configurable in the Config of the VAServer Launcher", Category =
+		"General Settigns"))
+	FString whichVAServerVersionToStart = TEXT("2018.a");
 
 
 public:
@@ -79,12 +84,12 @@ public:
 	AVAReceiverActor();
 
 	UFUNCTION(BlueprintCallable)
-		void readDirMappingFile(FString fileName);
+	void readDirMappingFile(FString fileName);
 
 	// Sets Receiver HRIR by File Name
 	UFUNCTION(BlueprintCallable)
-		void setHRIRByFileName(FString fileName);
-	
+	void setHRIRByFileName(FString fileName);
+
 	// return Scale
 	float getScale();
 
@@ -106,9 +111,9 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
-	virtual void BeginDestroy() override;
+	void BeginDestroy() override;
 
 	// Updates the Virtual World Position of the Player // 
 	bool updateVirtualWorldPosition();
@@ -129,9 +134,9 @@ protected:
 	float totalTime;
 
 	// Tmp Var
-	FVector		tmpPosF;
-	FRotator	tmpRotF;
-	FQuat		tmpQuatF;
+	FVector tmpPosF;
+	FRotator tmpRotF;
+	FQuat tmpQuatF;
 
 
 	int receiverID;
@@ -139,7 +144,7 @@ protected:
 	// STUFF AFTER CHANGE
 
 	VADirectivityManager dirManager;
-	VAHRIRManager	    hrirManager;
+	VAHRIRManager hrirManager;
 
 	TArray<AVAReflectionWall*> reflectionWalls;
 
@@ -161,13 +166,12 @@ protected:
 
 
 #if WITH_EDITOR
-	virtual bool CanEditChange(const UProperty* InProperty) const;
+	bool CanEditChange(const UProperty* InProperty) const override;
 #endif
 
 	static AVAReceiverActor* currentReceiverActor;
 
-public:	
+public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	void Tick(float DeltaTime) override;
 };

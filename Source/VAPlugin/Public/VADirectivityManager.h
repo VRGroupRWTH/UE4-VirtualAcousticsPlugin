@@ -11,7 +11,7 @@ public:
 	~VADirectivityManager();
 
 	void reset();
-	
+
 	void readConfigFile(FString configFileName_);
 
 
@@ -23,7 +23,7 @@ public:
 	void printDirMapping();
 
 	static VADirectivity* getDefaultDirectivity();
-	
+
 	FString getFileName();
 
 private:
@@ -34,5 +34,4 @@ private:
 
 	// Default Directivity, can be overloaded by config file
 	static VADirectivity* defaultDirectivity;
-
 };

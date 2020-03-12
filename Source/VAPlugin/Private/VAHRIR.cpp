@@ -2,7 +2,7 @@
 
 // #include "Containers/UnrealString.h"			// FString
 // #include "Containers/Array.h"				// TArray
- 
+
 #include "VAPlugin.h"							// For Server
 #include "VAHRIRManager.h"				// For default Directivity
 
@@ -17,7 +17,8 @@ VAHRIR::VAHRIR(FString fileName_) :
 void VAHRIR::createNewHRIR()
 {
 	hrirID = FVAPluginModule::createNewHRIR(fileName);
-	if (hrirID == -1) {
+	if (hrirID == -1)
+	{
 		VAUtils::logStuff("[VAHRIR::createNewHRIR()] HRIR file " + fileName + " cannot be found!");
 		return;
 	}

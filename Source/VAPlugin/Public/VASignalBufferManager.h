@@ -14,6 +14,4 @@ public:
 
 private:
 	TArray<VASignalBuffer*> buffers;
-
-
 };

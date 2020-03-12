@@ -11,7 +11,7 @@
 // Sets default values
 AVAReflectionWall::AVAReflectionWall()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// normalVec = FVector(1, 0, 0);
@@ -19,7 +19,7 @@ AVAReflectionWall::AVAReflectionWall()
 	// d = 0;
 
 	alreadyComputed = false;
-	
+
 	planeComp = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
 	planeComp->InitBoxExtent(FVector(1, 100, 100));
 	planeComp->SetVisibility(true);
@@ -47,14 +47,12 @@ AVAReflectionWall::AVAReflectionWall()
 	// 	SphereMesh->SetWorldScale3D(FVector(0.8f));
 	// 	SphereMesh->SetVisibility(FVAPluginModule::isInDebugMode());
 	// }
-
-
-
 }
 
 FVector AVAReflectionWall::getNormalVec()
 {
-	if (!alreadyComputed) {
+	if (!alreadyComputed)
+	{
 		computePlaneData();
 	}
 	return normalVec;
@@ -62,7 +60,8 @@ FVector AVAReflectionWall::getNormalVec()
 
 FVector AVAReflectionWall::getSupportVec()
 {
-	if (!alreadyComputed) {
+	if (!alreadyComputed)
+	{
 		computePlaneData();
 	}
 	return supportVec;
@@ -70,7 +69,8 @@ FVector AVAReflectionWall::getSupportVec()
 
 float AVAReflectionWall::getD()
 {
-	if (!alreadyComputed) {
+	if (!alreadyComputed)
+	{
 		computePlaneData();
 	}
 	return d;
@@ -83,7 +83,6 @@ float AVAReflectionWall::getR()
 
 void AVAReflectionWall::computePlaneData()
 {
-	
 	// normalVec  = GetTransform().GetRotation().Rotator().Vector();
 	// supportVec = GetTransform().GetLocation();
 
@@ -95,9 +94,11 @@ void AVAReflectionWall::computePlaneData()
 
 
 	FString text = "AVAReflectionWall::computePlaneData() Info for wall: Normal vec: ";
-	text.Append(FString::FromInt(normalVec.X)).Append("/").Append(FString::FromInt(normalVec.Y)).Append("/").Append(FString::FromInt(normalVec.Z));
+	text.Append(FString::FromInt(normalVec.X)).Append("/").Append(FString::FromInt(normalVec.Y)).Append("/").Append(
+		FString::FromInt(normalVec.Z));
 	text.Append(" // normal rot: ");
-	text.Append(FString::FromInt(normalRot.Roll)).Append("/").Append(FString::FromInt(normalRot.Pitch)).Append("/").Append(FString::FromInt(normalRot.Yaw));
+	text.Append(FString::FromInt(normalRot.Roll)).Append("/").Append(FString::FromInt(normalRot.Pitch)).Append("/").
+	     Append(FString::FromInt(normalRot.Yaw));
 	VAUtils::logStuff(text, false);
 
 
@@ -117,8 +118,6 @@ void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot)
 	// SphereMesh->SetVisibility(FVAPluginModule::isInDebugMode());
 	//SphereMesh->SetRelativeLocation(pos);
 	//SphereMesh->Set
-
-	return;
 
 	// AStaticMeshActor *Mesh = nullptr;
 	// int counter = 0;
@@ -155,25 +154,21 @@ void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot)
 	// dirComp->InitSphereRadius(size / 4.0f);
 	// dirComp->SetWorldLocation(pos + size*rot.Vector());
 	// // dirComp->SetVisibility(true);
-
-	
 }
 
 // Called when the game starts or when spawned
 void AVAReflectionWall::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (!alreadyComputed) {
+
+	if (!alreadyComputed)
+	{
 		computePlaneData();
 	}
-
 }
 
 // Called every frame
 void AVAReflectionWall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-

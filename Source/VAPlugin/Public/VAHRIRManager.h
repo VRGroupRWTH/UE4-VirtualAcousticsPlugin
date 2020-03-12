@@ -13,12 +13,11 @@ public:
 	void reset();
 
 	VAHRIR* getHRIRByFileName(FString fileName_);
-	
+
 	static VAHRIR* getDefaultHRIR();
 
 private:
 	TArray<VAHRIR*> hrirs;
 
 	static VAHRIR* defaultHRIR;
-
 };

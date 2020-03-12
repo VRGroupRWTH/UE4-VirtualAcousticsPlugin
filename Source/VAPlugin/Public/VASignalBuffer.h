@@ -5,7 +5,6 @@
 
 class VASignalBuffer
 {
-
 public:
 	VASignalBuffer(FString fileName_);
 
@@ -15,7 +14,7 @@ public:
 	void setSoundTimeOffset(float soundTimeOffset);
 
 	void setSoundBufferAction(int action);
-	int  getSoundBufferAction();
+	int getSoundBufferAction();
 
 	std::string getID();
 	bool isValid();
@@ -28,5 +27,4 @@ protected:
 	FString fileName;
 	bool valid;
 	bool loop;
-
 };

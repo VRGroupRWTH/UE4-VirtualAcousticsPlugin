@@ -12,13 +12,13 @@
 
 class UVASourceComponent;
 
-class VASoundSource 
+class VASoundSource
 {
 public:
 	VASoundSource();
 
 	VASoundSource(UVASourceComponent* parentComponent_);
-	
+
 	// VASoundSource(UVASourceComponent* parentComponent_, FVector pos = FVector(), 
 	// 	FRotator rot = FRotator(), float gainFactor = 1.0f, 
 	// 	bool loop = false, float soundOffset = 0.0f, 
@@ -35,7 +35,7 @@ public:
 
 	void setDirectivity(VADirectivity* dir);
 	VADirectivity* getDirectivity();
-	
+
 	UVASourceComponent* getParentComponent();
 
 	int getSoundSourceID();
@@ -62,7 +62,7 @@ public:
 	bool loadNewSound(FString soundFile_);
 
 
-private: 
+private:
 
 	FVector pos;
 	FRotator rot;
@@ -88,11 +88,10 @@ private:
 
 
 	static int counter;
-	
+
 	bool handleReflections;
 	float power;
 	float soundTimeOffset;
 
 	bool visibility;
-
 };

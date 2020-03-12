@@ -47,9 +47,9 @@ void UVASourceComponent::BeginPlay()
 	}
 
 	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
-	if (tmp->isInitialized() && !initialized)
+	if (tmp->isInitialized() && !bInitialized)
 	{
-		initialize();
+		Initialize();
 	}
 }
 
@@ -65,20 +65,20 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		return;
 	}
 
-	if (!initialized)
+	if (!bInitialized)
 	{
 		VAUtils::openMessageBox("A Sound source is not initialized");
 	}
 
-	if (firstTick && FVAPluginModule::getIsMaster())
+	if (bFirstTick && FVAPluginModule::getIsMaster())
 	{
 		timeSinceUpdate = 1.0f;
 		if (startingPlayAction == Play)
 		{
-			soundSource->playSoundFromSecond(startingTime);
+			SoundSource->playSoundFromSecond(startingTime);
 		}
 	}
-	firstTick = false;
+	bFirstTick = false;
 
 
 	timeSinceUpdate += DeltaTime;
@@ -86,32 +86,32 @@ void UVASourceComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if ((movementSetting == AttatchToBone || movementSetting == MoveWithObject) &&
 		timeSinceUpdate > (1.0f / 30.0f))
 	{
-		soundSource->setPos(getPosition());
-		soundSource->setRot(getRotation());
+		SoundSource->setPos(GetPosition());
+		SoundSource->setRot(GetRotation());
 
 		timeSinceUpdate = 0.0f;
 	}
 }
 
 
-void UVASourceComponent::initialize()
+void UVASourceComponent::Initialize()
 {
-	if (!FVAPluginModule::getUseVA() || initialized)
+	if (!FVAPluginModule::getUseVA() || bInitialized)
 	{
 		return;
 	}
 
-	ownerActor = GetOwner();
-	firstTick = true;
+	OwnerActor = GetOwner();
+	bFirstTick = true;
 
 
-	skeletal_mesh_component = dynamic_cast<USkeletalMeshComponent*>(
-		ownerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+	SkeletalMeshComponent = dynamic_cast<USkeletalMeshComponent*>(
+		OwnerActor->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
 
 	if (movementSetting == AttatchToBone)
 	{
-		if (skeletal_mesh_component != nullptr
-			&& skeletal_mesh_component->DoesSocketExist(FName(*boneName)))
+		if (SkeletalMeshComponent != nullptr
+			&& SkeletalMeshComponent->DoesSocketExist(FName(*boneName)))
 		{
 			VAUtils::logStuff("Bone detected.");
 		}
@@ -123,27 +123,27 @@ void UVASourceComponent::initialize()
 	}
 
 
-	spawnPosition = ownerActor->GetTransform().GetLocation();
-	spawnRotation = ownerActor->GetTransform().GetRotation().Rotator();
+	spawnPosition = OwnerActor->GetTransform().GetLocation();
+	spawnRotation = OwnerActor->GetTransform().GetRotation().Rotator();
 
 
-	soundSource = new VASoundSource(this);
+	SoundSource = new VASoundSource(this);
 
 	if (FVAPluginModule::getIsMaster())
 	{
 		switch (directivitySetting)
 		{
 		case DefaultHRIR:
-			soundSource->setDirectivity(VADirectivityManager::getDefaultDirectivity());
+			SoundSource->setDirectivity(VADirectivityManager::getDefaultDirectivity());
 			break;
 
 		case manualFile:
-			soundSource->setDirectivity(
+			SoundSource->setDirectivity(
 				AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(directivityByFileName));
 			break;
 
 		case phoneme:
-			soundSource->setDirectivity(
+			SoundSource->setDirectivity(
 				AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByMapping(directivityByMapping));
 			break;
 
@@ -154,12 +154,12 @@ void UVASourceComponent::initialize()
 
 	VAUtils::logStuff("SoundSourceComponent initialized successfully");
 
-	initialized = true;
+	bInitialized = true;
 }
 
 bool UVASourceComponent::shouldSendCommand()
 {
-	return (initialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster());
+	return (bInitialized && FVAPluginModule::getUseVA() && FVAPluginModule::getIsMaster());
 }
 
 
@@ -167,65 +167,65 @@ bool UVASourceComponent::shouldSendCommand()
 // ******* Interface Sound ****************************************** //
 // ****************************************************************** //
 
-bool UVASourceComponent::playSound()
+bool UVASourceComponent::PlaySound()
 {
 	if (!shouldSendCommand())
 	{
 		return false;
 	}
 
-	soundSource->playSound();
+	SoundSource->playSound();
 
 	return true;
 }
 
-bool UVASourceComponent::playSoundFromSecond(float time)
+bool UVASourceComponent::PlaySoundFromSecond(float time)
 {
 	if (!shouldSendCommand())
 	{
 		return false;
 	}
 
-	soundSource->playSoundFromSecond(time);
+	SoundSource->playSoundFromSecond(time);
 
 	return true;
 }
 
-bool UVASourceComponent::stopSound()
+bool UVASourceComponent::StopSound()
 {
 	if (!shouldSendCommand())
 	{
 		return false;
 	}
 
-	soundSource->stopSound();
+	SoundSource->stopSound();
 
 	return true;
 }
 
-bool UVASourceComponent::pauseSound()
+bool UVASourceComponent::PauseSound()
 {
 	if (!shouldSendCommand())
 	{
 		return false;
 	}
 
-	soundSource->pauseSound();
+	SoundSource->pauseSound();
 
 	return true;
 }
 
-EPlayAction UVASourceComponent::getPlayState()
+EPlayAction UVASourceComponent::GetPlayState()
 {
 	if (!shouldSendCommand())
 	{
 		return Stop;
 	}
 
-	return VAUtils::VAActionToEPlayAction(soundSource->getPlayState());
+	return VAUtils::VAActionToEPlayAction(SoundSource->getPlayState());
 }
 
-void UVASourceComponent::muteSound(bool mute_)
+void UVASourceComponent::MuteSound(bool mute_)
 {
 	if (!shouldSendCommand())
 	{
@@ -237,7 +237,7 @@ void UVASourceComponent::muteSound(bool mute_)
 		return;
 	}
 
-	soundSource->muteSound(muted);
+	SoundSource->muteSound(muted);
 }
 
 
@@ -245,13 +245,13 @@ void UVASourceComponent::muteSound(bool mute_)
 // ******* Sound Pose *********************************************** //
 // ****************************************************************** //
 
-FVector UVASourceComponent::getPosition()
+FVector UVASourceComponent::GetPosition()
 {
 	FVector pos;
 	switch (movementSetting)
 	{
 	case MoveWithObject:
-		pos = ownerActor->GetTransform().GetLocation();
+		pos = OwnerActor->GetTransform().GetLocation();
 		break;
 
 	case ObjectSpawnPoint:
@@ -259,7 +259,7 @@ FVector UVASourceComponent::getPosition()
 		break;
 
 	case AttatchToBone:
-		pos = skeletal_mesh_component->GetSocketLocation(FName(*boneName));
+		pos = SkeletalMeshComponent->GetSocketLocation(FName(*boneName));
 		break;
 
 	default:
@@ -276,13 +276,13 @@ FVector UVASourceComponent::getPosition()
 	return pos;
 }
 
-FRotator UVASourceComponent::getRotation()
+FRotator UVASourceComponent::GetRotation()
 {
 	FRotator rot;
 	switch (movementSetting)
 	{
 	case MoveWithObject:
-		rot = ownerActor->GetTransform().GetRotation().Rotator();
+		rot = OwnerActor->GetTransform().GetRotation().Rotator();
 		break;
 
 	case ObjectSpawnPoint:
@@ -290,7 +290,7 @@ FRotator UVASourceComponent::getRotation()
 		break;
 
 	case AttatchToBone:
-		rot = skeletal_mesh_component->GetSocketRotation(FName(*boneName));
+		rot = SkeletalMeshComponent->GetSocketRotation(FName(*boneName));
 		break;
 
 	default:
@@ -314,30 +314,30 @@ FRotator UVASourceComponent::getRotation()
 // ******* Sound Settings ******************************************* //
 // ****************************************************************** //
 
-bool UVASourceComponent::setSoundSourceVisibility(bool vis)
+bool UVASourceComponent::SetSoundSourceVisibility(bool vis)
 {
 	if (!FVAPluginModule::getUseVA())
 	{
 		return false;
 	}
 
-	soundSource->setVisibility(vis);
+	SoundSource->setVisibility(vis);
 
 	return true;
 }
 
 
-bool UVASourceComponent::loadSoundFile(FString soundFile_)
+bool UVASourceComponent::LoadSoundFile(FString soundFile_)
 {
 	if (!shouldSendCommand())
 	{
 		return false;
 	}
 
-	return soundSource->loadNewSound(soundFile);
+	return SoundSource->loadNewSound(soundFile);
 }
 
-bool UVASourceComponent::setSoundFile(FString soundFile_)
+bool UVASourceComponent::SetSoundFile(FString soundFile_)
 {
 	if (!shouldSendCommand())
 	{
@@ -347,13 +347,13 @@ bool UVASourceComponent::setSoundFile(FString soundFile_)
 	// If already playing back that sound File
 	if (soundFile == soundFile_)
 	{
-		soundSource->stopSound();
+		SoundSource->stopSound();
 		return true;
 	}
 
 	soundFile = soundFile_;
 
-	return soundSource->setNewSound(soundFile);
+	return SoundSource->setNewSound(soundFile);
 }
 
 
@@ -372,7 +372,7 @@ bool UVASourceComponent::setSoundPower(float power)
 
 	soundPower = power;
 
-	soundSource->setPower(power);
+	SoundSource->setPower(power);
 
 	return true;
 }
@@ -394,7 +394,7 @@ bool UVASourceComponent::setLoop(bool loop_)
 	loop = loop_;
 
 
-	soundSource->setLoop(loop);
+	SoundSource->setLoop(loop);
 
 	return true;
 }
@@ -415,8 +415,8 @@ bool UVASourceComponent::setUsePoseOffset(bool usePoseOffset_)
 
 	usePoseOffset = usePoseOffset_;
 
-	soundSource->setPos(getPosition());
-	soundSource->setRot(getRotation());
+	SoundSource->setPos(GetPosition());
+	SoundSource->setRot(GetRotation());
 
 	return true;
 }
@@ -436,7 +436,7 @@ bool UVASourceComponent::setOffsetPosition(FVector pos_)
 
 	offsetPosition = pos_;
 
-	soundSource->setPos(getPosition());
+	SoundSource->setPos(GetPosition());
 
 	return true;
 }
@@ -456,7 +456,7 @@ bool UVASourceComponent::setOffsetRotation(FRotator rot_)
 
 	offsetRotation = rot_;
 
-	soundSource->setRot(getRotation());
+	SoundSource->setRot(GetRotation());
 
 	return true;
 }
@@ -478,8 +478,8 @@ bool UVASourceComponent::setBoneName(FString boneName_)
 
 
 	// Check if the bone exists
-	if (skeletal_mesh_component != nullptr
-		&& skeletal_mesh_component->DoesSocketExist(FName(*boneName_)))
+	if (SkeletalMeshComponent != nullptr
+		&& SkeletalMeshComponent->DoesSocketExist(FName(*boneName_)))
 	{
 		boneName = boneName_;
 		movementSetting = AttatchToBone;
@@ -507,8 +507,8 @@ bool UVASourceComponent::setMovementSetting(EMovement movementSetting_)
 	movementSetting = movementSetting_;
 
 
-	soundSource->setPos(getPosition());
-	soundSource->setRot(getRotation());
+	SoundSource->setPos(GetPosition());
+	SoundSource->setRot(GetRotation());
 
 	return true;
 }
@@ -518,7 +518,7 @@ bool UVASourceComponent::setMovementSetting(EMovement movementSetting_)
 // ******* Directivity stuff **************************************** //
 // ****************************************************************** //
 
-bool UVASourceComponent::setDirectivityByMapping(FString phoneme)
+bool UVASourceComponent::SetDirectivityByMapping(FString phoneme)
 {
 	if (!shouldSendCommand())
 	{
@@ -528,12 +528,12 @@ bool UVASourceComponent::setDirectivityByMapping(FString phoneme)
 	directivitySetting = EDir::phoneme;
 	directivityByMapping = phoneme;
 
-	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByMapping(phoneme));
+	SoundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByMapping(phoneme));
 
 	return true;
 }
 
-bool UVASourceComponent::setDirectivityByFileName(FString fileName)
+bool UVASourceComponent::SetDirectivityByFileName(FString fileName)
 {
 	if (!shouldSendCommand())
 	{
@@ -543,7 +543,7 @@ bool UVASourceComponent::setDirectivityByFileName(FString fileName)
 	directivitySetting = manualFile;
 	directivityByFileName = fileName;
 
-	soundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(fileName));
+	SoundSource->setDirectivity(AVAReceiverActor::getCurrentReceiverActor()->getDirectivityByFileName(fileName));
 
 	return true;
 }
@@ -577,11 +577,11 @@ FString UVASourceComponent::getBoneName()
 	return boneName;
 }
 
-FString UVASourceComponent::getDirectivityFileName()
+FString UVASourceComponent::GetDirectivityFileName()
 {
-	if (soundSource != nullptr)
+	if (SoundSource != nullptr)
 	{
-		return soundSource->getDirectivity()->getFileName();
+		return SoundSource->getDirectivity()->getFileName();
 	}
 
 	return "";
@@ -592,7 +592,7 @@ bool UVASourceComponent::getLoop()
 	return loop;
 }
 
-FString UVASourceComponent::getSoundFile()
+FString UVASourceComponent::GetSoundFile()
 {
 	return soundFile;
 }

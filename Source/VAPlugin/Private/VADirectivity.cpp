@@ -6,7 +6,7 @@
 #include "VADirectivityManager.h"				// For default Directivity
 
 
-VADirectivity::VADirectivity(FString fileName_) : 
+VADirectivity::VADirectivity(FString fileName_) :
 	fileName(fileName_)
 {
 	createNewDirectivity();
@@ -23,7 +23,7 @@ VADirectivity::VADirectivity(FString fileName_, FString phoneme) :
 	createNewDirectivity();
 }
 
-VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) : 
+VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) :
 	fileName(fileName_), phonemes(phonemes_)
 {
 	createNewDirectivity();
@@ -33,7 +33,8 @@ VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) :
 void VADirectivity::createNewDirectivity()
 {
 	dirID = FVAPluginModule::createNewDirectivity(fileName);
-	if (dirID == -1) {
+	if (dirID == -1)
+	{
 		VAUtils::logStuff("[VADirectivity::createNewDirectivity()] Directivity file " + fileName + " cannot be found!");
 		return;
 	}
@@ -53,19 +54,23 @@ void VADirectivity::addPhoneme(FString phoneme)
 
 void VADirectivity::addPhoneme(TArray<FString> phoneme)
 {
-	for (auto tmp : phoneme) {
+	for (auto tmp : phoneme)
+	{
 		addPhoneme(tmp);
 	}
 }
 
-void VADirectivity::logInfo() {
+void VADirectivity::logInfo()
+{
 	FString output = " [Info]  Directivity for: ";
-	
-	if (phonemes.Num() == 0) {
+
+	if (phonemes.Num() == 0)
+	{
 		VAUtils::logStuff("Directivity has no phonemes");
 	}
-	
-	for (auto entry : phonemes) {
+
+	for (auto entry : phonemes)
+	{
 		output.Append(*entry).Append(",");
 	}
 	output.RemoveAt(output.Len() - 1, 1, true);

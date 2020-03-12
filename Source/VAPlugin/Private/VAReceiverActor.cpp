@@ -45,58 +45,66 @@ void AVAReceiverActor::BeginPlay()
 	currentReceiverActor = this;
 
 	//try to start (remote) VAServer automatically
-	const bool StartedVAServer = FVAPluginModule::remoteStartVAServer(getIPAdress(), remoteVAStarterPort, whichVAServerVersionToStart);
+	const bool StartedVAServer = FVAPluginModule::remoteStartVAServer(getIPAdress(), remoteVAStarterPort,
+	                                                                  whichVAServerVersionToStart);
 
 	// Ask if used or not
 	FVAPluginModule::askForSettings(getIPAdress(), getPort(), askForDebugMode, !StartedVAServer);
 
-	if (FVAPluginModule::getIsMaster()) {
-		if (FVAPluginModule::getUseVA()) {
+	if (FVAPluginModule::getIsMaster())
+	{
+		if (FVAPluginModule::getUseVA())
+		{
 			runOnAllNodes("useVA = true");
 		}
-		else {
+		else
+		{
 			runOnAllNodes("useVA = false");
 			return;
 		}
 	}
 
 	wallsInitialized = false;
-	
+
 	timeSinceUpdate = 0.0f;
 	totalTime = 0.0f;
 
 
 	// Controller for vision // 
 	controller = GetWorld()->GetFirstPlayerController();
-	
+
 
 	// Cluster Stuff for Events //
 	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
 	if (ClusterManager && !ClusterEventListenerDelegate.IsBound())
 	{
-		ClusterEventListenerDelegate = FOnClusterEventListener::CreateUObject(this, &AVAReceiverActor::HandleClusterEvent);
+		ClusterEventListenerDelegate = FOnClusterEventListener::CreateUObject(
+			this, &AVAReceiverActor::HandleClusterEvent);
 		ClusterManager->AddClusterEventListener(ClusterEventListenerDelegate);
 	}
 
-	if (!FVAPluginModule::getUseVA()) {
+	if (!FVAPluginModule::getUseVA())
+	{
 		return;
 	}
 
 
-	if (FVAPluginModule::getIsMaster()) {
-
+	if (FVAPluginModule::getIsMaster())
+	{
 		FVAPluginModule::setScale(worldScale);
 
-		if (!FVAPluginModule::isConnected()) {
+		if (!FVAPluginModule::isConnected())
+		{
 			FVAPluginModule::connectServer(getIPAdress(), getPort());
 		}
-		else {
+		else
+		{
 			FVAPluginModule::resetServer();
 		}
-	
+
 		// Initialize Receiver Actor
 		receiverID = FVAPluginModule::createNewSoundReceiver(this);
-		
+
 		// Initialize the dirManager
 		dirManager.reset();
 		dirManager.readConfigFile(dirMappingFileName);
@@ -106,7 +114,8 @@ void AVAReceiverActor::BeginPlay()
 	}
 
 	// Initialize Walls for Sound Reflection
-	if (!wallsInitialized) {
+	if (!wallsInitialized)
+	{
 		initializeWalls();
 	}
 
@@ -115,18 +124,23 @@ void AVAReceiverActor::BeginPlay()
 	TArray<AActor*> actorsA;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AActor::StaticClass(), actorsA);
 
-	for (AActor* actor : actorsA) {
+	for (AActor* actor : actorsA)
+	{
 		TArray<UActorComponent*> VASourceComponents = actor->GetComponentsByClass(UVASourceComponent::StaticClass());
-		for (UActorComponent* component : VASourceComponents){
-			Cast<UVASourceComponent>(component)->initialize();
+		for (UActorComponent* component : VASourceComponents)
+		{
+			Cast<UVASourceComponent>(component)->Initialize();
 		}
 	}
 
-	if (FVAPluginModule::getIsMaster()) {
-		if (FVAPluginModule::getDebugMode()) {
+	if (FVAPluginModule::getIsMaster())
+	{
+		if (FVAPluginModule::getDebugMode())
+		{
 			runOnAllNodes("debugMode = true");
 		}
-		else {
+		else
+		{
 			runOnAllNodes("debugMode = false");
 		}
 	}
@@ -137,7 +151,7 @@ void AVAReceiverActor::BeginPlay()
 void AVAReceiverActor::BeginDestroy()
 {
 	Super::BeginDestroy();
-	
+
 	FVAPluginModule::resetServer();
 
 	dirManager.reset();
@@ -151,13 +165,13 @@ void AVAReceiverActor::BeginDestroy()
 }
 
 
-
 void AVAReceiverActor::initializeWalls()
 {
 	TArray<AActor*> wallsA;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReflectionWall::StaticClass(), wallsA);
-	for (AActor* actor : wallsA) {
-		reflectionWalls.Add((AVAReflectionWall*)actor);
+	for (AActor* actor : wallsA)
+	{
+		reflectionWalls.Add(static_cast<AVAReflectionWall*>(actor));
 	}
 	wallsInitialized = true;
 }
@@ -171,14 +185,16 @@ void AVAReceiverActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!FVAPluginModule::getUseVA() || !FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getUseVA() || !FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
 	timeSinceUpdate += DeltaTime;
 	totalTime += DeltaTime;
 
-	if (timeSinceUpdate > (1.0f / 30.0f)) {
+	if (timeSinceUpdate > (1.0f / 30.0f))
+	{
 		updateVirtualWorldPosition();
 		updateRealWorldPosition();
 
@@ -202,24 +218,27 @@ bool AVAReceiverActor::updateVirtualWorldPosition()
 }
 
 bool AVAReceiverActor::updateRealWorldPosition()
-{	
-
-	if (!(FVAPluginModule::getIsMaster() && FVAPluginModule::getUseVA())) {
+{
+	if (!(FVAPluginModule::getIsMaster() && FVAPluginModule::getUseVA()))
+	{
 		return false;
 	}
 
 	auto world = GetWorld();
-	if  (world == nullptr) {
+	if (world == nullptr)
+	{
 		return false;
 	}
 
 	auto player_controller = world->GetFirstPlayerController();
-	if  (player_controller == nullptr) {
+	if (player_controller == nullptr)
+	{
 		return false;
 	}
 
 	auto vr_pawn = dynamic_cast<AVirtualRealityPawn*>(player_controller->AcknowledgedPawn);
-	if  (vr_pawn == nullptr) {
+	if (vr_pawn == nullptr)
+	{
 		return false;
 	}
 
@@ -233,7 +252,7 @@ bool AVAReceiverActor::updateRealWorldPosition()
 	FQuat inverseOriginRot = origin->GetComponentQuat().Inverse();
 	FVector pos = inverseOriginRot.RotateVector(head->GetComponentLocation() - origin->GetComponentLocation());
 	FQuat quat = inverseOriginRot * head->GetComponentQuat();
-	
+
 	return FVAPluginModule::setSoundReceiverRealWorldPose(receiverID, pos, quat.Rotator());
 }
 
@@ -250,28 +269,26 @@ float AVAReceiverActor::getScale()
 
 FString AVAReceiverActor::getIPAdress()
 {
-
 	switch (adressSetting)
 	{
-		case EAdress::automatic :
+	case automatic:
 #if PLATFORM_WINDOWS
-			return FString("127.0.0.1");
+		return FString("127.0.0.1");
 #else
 			return FString("10.0.1.240");
 #endif
-			break;
-		case EAdress::Cave :
-			return FString("10.0.1.240");
-			break;
-		case EAdress::localhost :
-			return FString("127.0.0.1");
-			break;
-		case EAdress::manual :
-			return serverIPAdress;
-			break;
-		default :
-			break;
-			
+		break;
+	case Cave:
+		return FString("10.0.1.240");
+		break;
+	case localhost:
+		return FString("127.0.0.1");
+		break;
+	case manual:
+		return serverIPAdress;
+		break;
+	default:
+		break;
 	}
 
 	VAUtils::logStuff("Error in AVAReceiverActor::getIPAdress()", true);
@@ -283,16 +300,16 @@ int AVAReceiverActor::getPort()
 {
 	switch (adressSetting)
 	{
-		case EAdress::automatic : 
-		case EAdress::Cave :
-		case EAdress::localhost :
-			return 12340;
-			break;
-		case EAdress::manual:
-			return serverPort;
-			break;
-		default:
-			break;
+	case automatic:
+	case Cave:
+	case localhost:
+		return 12340;
+		break;
+	case manual:
+		return serverPort;
+		break;
+	default:
+		break;
 	}
 
 	VAUtils::logStuff("Error in AVAReceiverActor::getPort()", true);
@@ -302,7 +319,8 @@ int AVAReceiverActor::getPort()
 
 TArray<AVAReflectionWall*> AVAReceiverActor::getReflectionWalls()
 {
-	if (!wallsInitialized) {
+	if (!wallsInitialized)
+	{
 		initializeWalls();
 	}
 	return reflectionWalls;
@@ -328,9 +346,10 @@ VADirectivity* AVAReceiverActor::getDirectivityByFileName(FString fileName)
 	return dirManager.getDirectivityByFileName(fileName);
 }
 
-void AVAReceiverActor::readDirMappingFile(FString fileName) 
+void AVAReceiverActor::readDirMappingFile(FString fileName)
 {
-	if (dirManager.getFileName() == fileName || dirMappingFileName == fileName) {
+	if (dirManager.getFileName() == fileName || dirMappingFileName == fileName)
+	{
 		VAUtils::logStuff("[AVAReceiverActor::readDirMappingFile()]: file already loaded");
 		return;
 	}
@@ -346,7 +365,6 @@ void AVAReceiverActor::setHRIRByFileName(FString fileName)
 }
 
 
-
 // ****************************************************************** // 
 // ******* Cluster Stuff ******************************************** // 
 // ****************************************************************** //
@@ -356,24 +374,25 @@ void AVAReceiverActor::runOnAllNodes(FString command)
 	IDisplayClusterClusterManager* const Manager = IDisplayCluster::Get().GetClusterMgr();
 	if (Manager)
 	{
-		if (Manager->IsStandalone()) {
+		if (Manager->IsStandalone())
+		{
 			//in standalone (e.g., desktop editor play) cluster events are not executed....
 			handleClusterCommand(command);
 			VAUtils::logStuff("Cluster Command " + command + " ran localy");
 		}
-		else {
+		else
+		{
 			// else create a cluster event to react to
 			FDisplayClusterClusterEvent cluster_event;
 			cluster_event.Name = command;
 			cluster_event.Category = "VAPlugin";
 			cluster_event.Type = "command";
-			
+
 			Manager->EmitClusterEvent(cluster_event, true);
-			
+
 			VAUtils::logStuff("Cluster Command " + command + " sent");
 		}
 	}
-
 }
 
 AVAReceiverActor* AVAReceiverActor::getCurrentReceiverActor()
@@ -381,7 +400,7 @@ AVAReceiverActor* AVAReceiverActor::getCurrentReceiverActor()
 	return currentReceiverActor;
 }
 
-void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent & Event)
+void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent& Event)
 {
 	if (Event.Category == "VAPlugin" && Event.Type == "command")
 	{
@@ -392,22 +411,26 @@ void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent & Ev
 void AVAReceiverActor::handleClusterCommand(FString command)
 {
 	VAUtils::logStuff("Cluster Command " + command + " received");
-	if (command == "useVA = true") {
+	if (command == "useVA = true")
+	{
 		FVAPluginModule::setUseVA(true);
 	}
-	else if (command == "useVA = false") {
+	else if (command == "useVA = false")
+	{
 		FVAPluginModule::setUseVA(false);
 	}
-	else if (command == "debugMode = true") {
+	else if (command == "debugMode = true")
+	{
 		FVAPluginModule::setDebugMode(true);
 	}
-	else if (command == "debugMode = false") {
+	else if (command == "debugMode = false")
+	{
 		FVAPluginModule::setDebugMode(false);
 	}
-	else {
+	else
+	{
 		VAUtils::logStuff("Cluster Command " + command + " could not have been found.");
 	}
-
 }
 
 // ****************************************************************** // 
@@ -422,17 +445,14 @@ bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 	// Check manual Adress
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, serverIPAdress))
 	{
-		return adressSetting == EAdress::manual;
+		return adressSetting == manual;
 	}
 
 	// Check manual Port
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, serverPort))
 	{
-		return adressSetting == EAdress::manual;
+		return adressSetting == manual;
 	}
-
-
-
 
 
 	return true;

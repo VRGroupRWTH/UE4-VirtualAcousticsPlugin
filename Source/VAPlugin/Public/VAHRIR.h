@@ -5,12 +5,11 @@
 
 class VAHRIR
 {
-
 public:
 	VAHRIR(FString fileName_);
-	
+
 	int getID();
-	
+
 	bool isValid();
 
 	FString getFileName();
@@ -21,5 +20,4 @@ protected:
 
 	int hrirID;
 	FString fileName;
-
 };

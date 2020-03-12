@@ -13,13 +13,14 @@ class VAPLUGIN_API AVAReflectionWall : public AActor
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleDefaultsOnly, Category = ReflectionWall)
-		class UBoxComponent* planeComp;
-	
-	// In- or decrease Gain Offset 
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Reflection Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
-		float vR = 1;
+	class UBoxComponent* planeComp;
 
-public:	
+	// In- or decrease Gain Offset 
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Reflection Factor", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0"
+		, UIMax = "1.0"))
+	float vR = 1;
+
+public:
 	// Sets default values for this actor's properties
 	AVAReflectionWall();
 
@@ -43,7 +44,7 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 	// Normal Vector of Plane
 	FVector normalVec;
@@ -61,9 +62,7 @@ protected:
 	// UStaticMeshComponent* SphereMesh;
 
 
-
-public:	
+public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	void Tick(float DeltaTime) override;
 };

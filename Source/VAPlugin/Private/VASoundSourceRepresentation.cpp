@@ -11,7 +11,7 @@
 // Sets default values
 AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
@@ -22,7 +22,8 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 
 	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone"));
-	if (SphereMeshAsset.Succeeded()) {
+	if (SphereMeshAsset.Succeeded())
+	{
 		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
 		sphereMesh->SetupAttachment(RootComponent);
 		sphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
@@ -36,14 +37,12 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 void AVASoundSourceRepresentation::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // TURNED OFF IN CONSTRUCTOR!
 void AVASoundSourceRepresentation::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 bool AVASoundSourceRepresentation::setPos(FVector pos)
@@ -55,7 +54,7 @@ bool AVASoundSourceRepresentation::setPos(FVector pos)
 bool AVASoundSourceRepresentation::setRot(FRotator rot)
 {
 	FQuat quat(rot);
-	quat = quat * FQuat(FRotator(0,0,0));
+	quat = quat * FQuat(FRotator(0, 0, 0));
 	rot = FRotator(quat);
 	sphereComp->SetWorldRotation(rot);
 	return true;
@@ -63,9 +62,9 @@ bool AVASoundSourceRepresentation::setRot(FRotator rot)
 
 bool AVASoundSourceRepresentation::setVisibility(bool visibility)
 {
-	if (sphereMesh != nullptr) {
+	if (sphereMesh != nullptr)
+	{
 		sphereMesh->SetVisibility(visibility);
 	}
 	return true;
 }
-

@@ -11,7 +11,8 @@ VASignalBuffer::VASignalBuffer(FString fileName_) :
 
 void VASignalBuffer::setLoop(bool loop_)
 {
-	if (loop == loop_) {
+	if (loop == loop_)
+	{
 		return;
 	}
 

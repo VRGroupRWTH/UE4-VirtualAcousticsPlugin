@@ -5,16 +5,15 @@
 
 int VASoundSource::counter = 0;
 
-VASoundSource::VASoundSource() {
-
+VASoundSource::VASoundSource()
+{
 }
 
 VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	parentComponent(parentComponent_)
 {
-
 	playing = false;
-	EPlayAction action = EPlayAction::Stop;
+	EPlayAction action = Stop;
 
 	showCones = FVAPluginModule::isInDebugMode();
 
@@ -23,16 +22,16 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 	power = parentComponent->getSoundPower();
 	soundTimeOffset = parentComponent->getSoundTimeOffset();
 
-	pos = parentComponent->getPosition();
-	rot = parentComponent->getRotation();
+	pos = parentComponent->GetPosition();
+	rot = parentComponent->GetRotation();
 
-	std::string fileName(TCHAR_TO_UTF8(*parentComponent->getSoundFile()));
+	std::string fileName(TCHAR_TO_UTF8(*parentComponent->GetSoundFile()));
 	std::string name = "SoundSource";
 	std::string nameTmp;
 
-	if (FVAPluginModule::getIsMaster()) {
-
-		activeBuffer = bufferManager.getBufferByFileName(parentComponent->getSoundFile());
+	if (FVAPluginModule::getIsMaster())
+	{
+		activeBuffer = bufferManager.getBufferByFileName(parentComponent->GetSoundFile());
 
 		if (activeBuffer == nullptr)
 		{
@@ -41,35 +40,39 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 		}
 
 		// Only Change if necessary
-		if (loop) {
+		if (loop)
+		{
 			activeBuffer->setLoop(loop);
 		}
 
 		// Only Change if necessary
-		if (soundTimeOffset > 0.0f) {
+		if (soundTimeOffset > 0.0f)
+		{
 			activeBuffer->setSoundTimeOffset(soundTimeOffset);
 		}
 
 		soundSourceID = FVAPluginModule::createNewSoundSource(activeBuffer->getID(), name, pos, rot, power);
 		if (soundSourceID == -1)
 		{
-			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource", true);
+			VAUtils::logStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource",
+			                  true);
 			return;
 		}
 
 		FVAPluginModule::setSoundSourcePower(soundSourceID, parentComponent->getSoundPower());
-
 	}
 
 	// Show graphical representation
-	soundSourceRepresentation = parentComponent->GetWorld()->SpawnActor<AVASoundSourceRepresentation>(AVASoundSourceRepresentation::StaticClass());
-	
-	
-	soundSourceRepresentation->setPos(parentComponent->getPosition());
-	soundSourceRepresentation->setRot(parentComponent->getRotation());
+	soundSourceRepresentation = parentComponent->GetWorld()->SpawnActor<AVASoundSourceRepresentation>(
+		AVASoundSourceRepresentation::StaticClass());
+
+
+	soundSourceRepresentation->setPos(parentComponent->GetPosition());
+	soundSourceRepresentation->setRot(parentComponent->GetRotation());
 	soundSourceRepresentation->setVisibility(showCones);
 
-	if(handleReflections) {
+	if (handleReflections)
+	{
 		TArray<AVAReflectionWall*> wallArray = FVAPluginModule::getReflectionWalls();
 		for (auto wall : wallArray)
 		{
@@ -77,7 +80,7 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 			nameTmp = name + "_R_" + wallName;
 
 			std::string ActiveBufferName;
-			if(FVAPluginModule::getIsMaster())
+			if (FVAPluginModule::getIsMaster())
 			{
 				ActiveBufferName = activeBuffer->getID();
 			}
@@ -95,17 +98,21 @@ VASoundSource::VASoundSource(UVASourceComponent* parentComponent_) :
 void VASoundSource::setPos(FVector pos_)
 {
 	pos = pos_;
-	
-	if (showCones) {
+
+	if (showCones)
+	{
 		soundSourceRepresentation->setPos(pos);
 	}
-	
-	if (FVAPluginModule::getIsMaster()) {
+
+	if (FVAPluginModule::getIsMaster())
+	{
 		FVAPluginModule::setSoundSourcePos(soundSourceID, pos);
 	}
 
-	if (handleReflections) {
-		for (auto ref : reflections) {
+	if (handleReflections)
+	{
+		for (auto ref : reflections)
+		{
 			ref->setPos(pos);
 		}
 	}
@@ -115,17 +122,21 @@ void VASoundSource::setPos(FVector pos_)
 void VASoundSource::setRot(FRotator rot_)
 {
 	rot = rot_;
-	
-	if (FVAPluginModule::getIsMaster()) {
+
+	if (FVAPluginModule::getIsMaster())
+	{
 		FVAPluginModule::setSoundSourceRot(soundSourceID, rot);
 	}
 
-	if (showCones) {
+	if (showCones)
+	{
 		soundSourceRepresentation->setRot(rot);
 	}
 
-	if (handleReflections)	{
-		for (auto ref : reflections) {
+	if (handleReflections)
+	{
+		for (auto ref : reflections)
+		{
 			ref->setRot(rot);
 		}
 	}
@@ -135,11 +146,13 @@ void VASoundSource::setRot(FRotator rot_)
 void VASoundSource::setVisibility(bool vis_)
 {
 	showCones = vis_;
-	
+
 	soundSourceRepresentation->setVisibility(showCones);
 
-	if (handleReflections && reflections.Num() != 0) {
-		for (auto ref : reflections) {
+	if (handleReflections && reflections.Num() != 0)
+	{
+		for (auto ref : reflections)
+		{
 			ref->setVisibility(showCones);
 		}
 	}
@@ -154,14 +167,17 @@ void VASoundSource::setDirectivity(VADirectivity* dir)
 {
 	directivity = dir;
 
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
 	FVAPluginModule::setSoundSourceDirectivity(soundSourceID, dir->getID());
 
-	if (handleReflections) {
-		for (auto ref : reflections) {
+	if (handleReflections)
+	{
+		for (auto ref : reflections)
+		{
 			ref->setDirectivity(dir);
 		}
 	}
@@ -180,17 +196,18 @@ UVASourceComponent* VASoundSource::getParentComponent()
 
 void VASoundSource::setPlayAction(int action)
 {
-	if (!FVAPluginModule::getIsMaster() || getPlayState() == action) {
+	if (!FVAPluginModule::getIsMaster() || getPlayState() == action)
+	{
 		return;
 	}
 
 	activeBuffer->setSoundBufferAction(action);
-	
 }
 
 void VASoundSource::setSoundTime(float time)
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
@@ -199,7 +216,8 @@ void VASoundSource::setSoundTime(float time)
 
 void VASoundSource::setLoop(bool loop)
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 	activeBuffer->setLoop(loop);
@@ -207,50 +225,56 @@ void VASoundSource::setLoop(bool loop)
 
 void VASoundSource::setPower(float power)
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
 	FVAPluginModule::setSoundSourcePower(soundSourceID, power);
 
-	for (auto iter : reflections) {
+	for (auto iter : reflections)
+	{
 		FVAPluginModule::setSoundSourcePower(iter->getSoundSourceID(), power);
 	}
 }
 
 void VASoundSource::playSound()
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
-	setPlayAction(EPlayAction::Play);
+	setPlayAction(Play);
 }
 
 void VASoundSource::stopSound()
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
-	setPlayAction(EPlayAction::Stop);
+	setPlayAction(Stop);
 }
 
 void VASoundSource::pauseSound()
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
-	setPlayAction(EPlayAction::Pause);
+	setPlayAction(Pause);
 }
 
 void VASoundSource::playSoundFromSecond(float time)
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
-	
+
 
 	setSoundTime(time);
 	playSound();
@@ -258,7 +282,8 @@ void VASoundSource::playSoundFromSecond(float time)
 
 int VASoundSource::getPlayState()
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return -1;
 	}
 
@@ -267,13 +292,15 @@ int VASoundSource::getPlayState()
 
 void VASoundSource::muteSound(bool muted_)
 {
-	if (!FVAPluginModule::getIsMaster()) {
+	if (!FVAPluginModule::getIsMaster())
+	{
 		return;
 	}
 
 	FVAPluginModule::setSoundSourceMuted(soundSourceID, muted_);
 
-	for (auto iter : reflections) {
+	for (auto iter : reflections)
+	{
 		FVAPluginModule::setSoundSourceMuted(iter->getSoundSourceID(), muted_);
 	}
 }
@@ -285,16 +312,18 @@ bool VASoundSource::setNewSound(FString soundFile_)
 	VASignalBuffer* tmp_buffer = bufferManager.getBufferByFileName(soundFile_);
 
 	// Check if is valid
-	if (tmp_buffer == nullptr) {
+	if (tmp_buffer == nullptr)
+	{
 		VAUtils::logStuff("[VASoundSource::setNewSound()] Buffer from file " + soundFile_ + " was loaded incorrectly!");
 		return false;
 	}
-	
+
 	// stop 
 	stopSound();
 
 	// If the same Buffer is already loaded only stop sound (prev)
-	if (tmp_buffer == activeBuffer) {
+	if (tmp_buffer == activeBuffer)
+	{
 		return true;
 	}
 
@@ -302,7 +331,8 @@ bool VASoundSource::setNewSound(FString soundFile_)
 
 	// Link to source buffer
 	FVAPluginModule::setNewBufferForSoundSource(soundSourceID, newBufferID);
-	for (auto iter : reflections) {
+	for (auto iter : reflections)
+	{
 		FVAPluginModule::setNewBufferForSoundSource(iter->getSoundSourceID(), newBufferID);
 	}
 
@@ -314,7 +344,8 @@ bool VASoundSource::setNewSound(FString soundFile_)
 bool VASoundSource::loadNewSound(FString soundFile_)
 {
 	VASignalBuffer* tmp_buffer = bufferManager.getBufferByFileName(soundFile_);
-	if (tmp_buffer != nullptr) {
+	if (tmp_buffer != nullptr)
+	{
 		return true;
 	}
 	return false;
