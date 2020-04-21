@@ -1,0 +1,50 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**VAReceiverActor**
+
+Is used to setup the main settings in the szene. For example it controls / sets up the connection to the VA server the general world.
+General Settings: 
+*  Scale: The ratio of the virtual Environment to the real world environment (default = 100)
+*  Updates per second: How many (position) updates should be done per minute (default = 30)
+*  Ask for Debug mode: Whether the plugin should ask to start in Debug mode or not (default = true)
+*  Which VA Server version: Used for the automatic python connection to decide which version should be started (default = 2018.a)
+
+Connection:
+*  Usecase: Automatic, Localhost, Cave, Manual. Changes how the connection should be established. Automatic checks first with python, then if its on windows it connects with localhost, at linux with Cave settings. (default = Automatic)
+*  IP Adress: IP Adress for the manual connection (default = 10.0.1.240 (CAVE))
+*  Port: Port for the manual connection (default = 12340 (default port of VA Server))
+*  Remote VAServer Start Port: The port for the python script (default 41578)
+
+Directivity Manager:
+*  Name of ini file for directivities: Name of the ini file for the directivity mapping that should be used (default = Study/VADir_default.ini)

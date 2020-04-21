@@ -12,17 +12,17 @@
 
 #include "VAReceiverActor.generated.h"
 
-// Foreward declarations
+// Forward declarations
 class AVAReflectionWall;
 
 
 UENUM()
-enum EAdress
+enum EAddress
 {
-	automatic,
-	localhost,
+	Automatic,
+	Localhost,
 	Cave,
-	manual
+	Manual
 };
 
 
@@ -36,142 +36,133 @@ protected:
 
 	// How many units in UE equal 1m in World
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale", Category = "General Settigns"))
-	float worldScale = 100.0f;
+	float WorldScale = 100.0f;
+
+	// How many units in UE equal 1m in World
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Updates per second", Category = "General Settigns"))
+	int UpdateRate = 30;
 
 	// Check if should ask for debug Mode?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?", Category = "General Settigns"))
-	bool askForDebugMode = true;
+	bool bAskForDebugMode = true;
 
 	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase", Category = "Connection"))
-	TEnumAsByte<EAdress> adressSetting = automatic;
+	TEnumAsByte<EAddress> AddressSetting = Automatic;
 
-	// IP Adress for manual input
+	// IP Address for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress", Category = "Connection")) // CanEditChange used
-	FString serverIPAdress = "10.0.1.240";
+	FString ServerIPAddress = "10.0.1.240";
 
 	// Port for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]", Category = "Connection", // CanEditChange used
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
-	uint16 serverPort = 12340;
+	uint16 ServerPort = 12340;
 
 	// File name of the Directivity mapping file
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities", Category = "Directivity Manager"
 	))
-	FString dirMappingFileName = "Study/VADir_default.ini";
+	FString DirMappingFileName = "Study/VADir_default.ini";
 
 	// Port for remote VAServer starting
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Remote VAServer Start Port [0, 65535]", Category = "Connection",
 		// CanEditChange used
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
-	uint16 remoteVAStarterPort = 41578;
-
-	// Check if the system should try to start the VAServer automatically
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Try to start VAServer automatically?", Category = "General Settigns")
-	)
-	bool askForAutomaticRemoteVAStart = true;
+	uint16 RemoteVAStarterPort = 41578;
 
 	// Which version should be started automatically
 	UPROPERTY(EditAnywhere, meta = (DisplayName =
 		"Which VAServer version should be started, configurable in the Config of the VAServer Launcher", Category =
 		"General Settigns"))
-	FString whichVAServerVersionToStart = TEXT("2018.a");
+	FString WhichVAServerVersionToStart = TEXT("2018.a");
+
 
 
 public:
 
 	// Sets default values for this actor's properties
 	AVAReceiverActor();
+	void Tick(float DeltaTime) override;
 
+	// Interface for HRIR Settings
 	UFUNCTION(BlueprintCallable)
-	void readDirMappingFile(FString fileName);
+	void SetUpdateRate(int Rate);
 
-	// Sets Receiver HRIR by File Name
+	// Interface for Dir Mapping
 	UFUNCTION(BlueprintCallable)
-	void setHRIRByFileName(FString fileName);
+	void ReadDirMappingFile(FString FileName);
 
-	// return Scale
-	float getScale();
+	// Interface for HRIR Settings
+	UFUNCTION(BlueprintCallable)
+	void SetHRIRByFileName(FString FileName);
 
-	// return IP Adress as FString TODO wie sonst?
-	FString getIPAdress();
 
-	int getPort();
+	// Directivity Handling
+	FVADirectivity* GetDirectivityByMapping(FString Phoneme) const;
+	FVADirectivity* GetDirectivityByFileName(FString FileName);
 
-	VADirectivity* getDirectivityByMapping(FString phoneme);
-	VADirectivity* getDirectivityByFileName(FString fileName);
 
-	TArray<AVAReflectionWall*> getReflectionWalls();
 
-	void runOnAllNodes(FString command);
+	// Getter Functions
+	bool IsInitialized() const;
+	float GetScale() const;
+	FString GetIPAddress() const;
+	int GetPort() const;
+	int GetUpdateRate() const;
+	TArray<AVAReflectionWall*> GetReflectionWalls();
 
-	static AVAReceiverActor* getCurrentReceiverActor();
+	static AVAReceiverActor* GetCurrentReceiverActor();
 
-	bool isInitialized();
+
+	// Cluster Stuff
+	void RunOnAllNodes(FString Command);
+
 
 protected:
-	// Called when the game starts or when spawned
+	
+	// Initialization
 	void BeginPlay() override;
-
 	void BeginDestroy() override;
 
-	// Updates the Virtual World Position of the Player // 
-	bool updateVirtualWorldPosition();
-
-	// Updates the Real World Position of the Player //
-	bool updateRealWorldPosition();
-
-	// Link to the PlayerController
-	APlayerController* controller;
-
-	// Link to the Player Instance
-	AActor* player;
-
-	// var used to measure time since last update
-	float timeSinceUpdate;
-
-	// tmp Var to do some experiments
-	float totalTime;
-
-	// Tmp Var
-	FVector tmpPosF;
-	FRotator tmpRotF;
-	FQuat tmpQuatF;
+	// Position updates
+	bool UpdateVirtualWorldPose();
+	bool UpdateRealWorldPose();
 
 
-	int receiverID;
-
-	// STUFF AFTER CHANGE
-
-	VADirectivityManager dirManager;
-	VAHRIRManager hrirManager;
-
-	TArray<AVAReflectionWall*> reflectionWalls;
-
-	bool initialized = false;
-
-	bool wallsInitialized = false;
-
-	void initializeWalls();
-
-
-	// Event Listener Delegate
-	FOnClusterEventListener ClusterEventListenerDelegate;
-
-	// Called on cluster Event emission
+	// Cluster Stuff
 	void HandleClusterEvent(const FDisplayClusterClusterEvent& Event);
-
-	// "Compiler"
-	void handleClusterCommand(FString command);
+	void HandleClusterCommand(FString Command);
 
 
+	void InitializeWalls();
+
+	
 #if WITH_EDITOR
 	bool CanEditChange(const UProperty* InProperty) const override;
 #endif
 
-	static AVAReceiverActor* currentReceiverActor;
+	// Current Receiver Actor
+	static AVAReceiverActor* CurrentReceiverActor;
 
-public:
-	// Called every frame
-	void Tick(float DeltaTime) override;
+	
+	// Receiver Specific Data
+	int ReceiverID;
+	FVADirectivityManager DirManager;
+	FVAHRIRManager HRIRManager;
+
+	TArray<AVAReflectionWall*> ReflectionWalls;
+
+	
+	// State of Actor
+	bool bInitialized = false;
+	bool bWallsInitialized = false;
+
+
+	// Time stuff
+	float TimeSinceUpdate;
+	float TotalTime;
+
+	// Event Listener Delegate
+	FOnClusterEventListener ClusterEventListenerDelegate;
+
 };

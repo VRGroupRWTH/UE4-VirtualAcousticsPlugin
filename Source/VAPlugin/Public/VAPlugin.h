@@ -5,7 +5,7 @@
 #include "Modules/ModuleManager.h"
 
 
-#include "VAUtils.h"
+#include "FVAUtils.h"
 #include "Sockets.h"
 
 #define VANET_STATIC
@@ -23,19 +23,13 @@ class IVAInterface;
 class VAQuat;
 class VAVec3;
 
-class FVAPluginModule : public IModuleInterface
+class FVAPlugin : public IModuleInterface
 {
 public:
 
-	// REMAKE!!!
-
 	// process / output CVAException //
-	static void processExeption(FString location, CVAException e);
-	static void processExeption(FString location, FString exception);
-
-
-	// returns if is in Debug Mode //
-	static bool isInDebugMode();
+	static void ProcessException(FString Location, CVAException Exception);
+	static void ProcessException(FString Location, FString ExceptionString);
 
 
 	// ******* Initialization Functions ******* //
@@ -46,96 +40,97 @@ public:
 	// Function called when Shutting down the module //
 	void ShutdownModule() override;
 
-	// Askes whether to use the VA Server and / or the debug mode
-	static void askForSettings(FString host = "unknown", int port = 0, bool askForDebugMode = true,
-	                           bool askForUseVA = true);
+	// Asks whether to use the VA Server and / or the debug mode
+	static void AskForSettings(FString Host = "unknown", int Port = 0, bool bAskForDebugMode = true,
+	                           bool bAskForUseVA = true);
 
 	// Check if all Library Handles are well initialized //
-	static bool checkLibraryHandles();
+	static bool CheckLibraryHandles();
 
 
 	// ******* General Server Functions ******* //
 
 	// connect to Server (called by initializeServer) //
-	static bool connectServer(FString host = "localhost", int port = 12340);
+	static bool ConnectServer(FString HostF = "localhost", int Port = 12340);
 
 	// reset Server //
-	static bool resetServer();
+	static bool ResetServer();
 
 	// check if VA Server is connected //
-	static bool isConnected();
+	static bool IsConnected();
 
 	// Disconnect from VA Server 
-	static bool disconnectServer();
+	static bool DisconnectServer();
 
-	//Remote Start VAServer
-	static bool remoteStartVAServer(const FString& host = "localhost", int port = 41578,
-	                                const FString& version_name = TEXT("2018.a"));
+	// Remote Start VAServer
+	static bool RemoteStartVAServer(const FString& Host = "localhost", int Port = 41578,
+	                                const FString& VersionName = TEXT("2018.a"));
 
-	void BeginSession(bool something);
-	void EndSession(bool something);
+	void BeginSession(bool bSomething);
+	void EndSession(bool bSomething);
 
 
 	// ******* Sound Buffer ******* //
 
-	static std::string createNewBuffer(FString soundFileName, bool loop = false, float soundOffset = 0.0f);
-	static bool setSoundBufferAction(std::string sBufferID, EPlayAction action);
-	static int getSoundBufferAction(std::string sBufferID);
-	static bool setSoundBufferTime(std::string sBufferID, float time);
-	static bool setSoundBufferLoop(std::string sBufferID, bool loop);
+	static std::string CreateNewBuffer(FString SoundFileName, bool bLoop = false, float SoundOffset = 0.0f);
+	static bool SetSoundBufferAction(std::string BufferID, EPlayAction Action);
+	static int GetSoundBufferAction(std::string BufferID);
+	static bool SetSoundBufferTime(std::string BufferID, float Time);
+	static bool SetSoundBufferLoop(std::string BufferID, bool bLoop);
 
 
 	// ******* Sound Sources ******* //
 
-	static int createNewSoundSource(std::string bufferID, std::string name, FVector pos = FVector(0, 0, 0),
-	                                FRotator rot = FRotator(0, 0, 0), float gainFactor = 1.0f);
-	static bool setSoundSourcePos(int soundSourceID, FVector pos);
-	static bool setSoundSourceRot(int soundSourceID, FRotator rot);
-	static bool setNewBufferForSoundSource(int soundSourceID, std::string bufferID);
-	static bool setSoundSourceMuted(int soundSourceID, bool muted);
-	static bool setSoundSourcePower(int soundSourceID, float power);
+	static int CreateNewSoundSource(std::string BufferID, std::string Name, FVector Pos = FVector(0, 0, 0),
+		FRotator Rot = FRotator(0, 0, 0), float Power = -1.0f);
+	static bool SetSoundSourcePosition(int SoundSourceID, FVector Pos);
+	static bool SetSoundSourceRotation(int SoundSourceID, FRotator Rot);
+	static bool SetNewBufferForSoundSource(int SoundSourceID, std::string BufferID);
+	static bool SetSoundSourceMuted(int SoundSourceID, bool bMuted);
+	static bool SetSoundSourcePower(int SoundSourceID, float Power);
 
 
 	// ******* Directivities ******* //
 
-	static int createNewDirectivity(FString fileName);
-	static bool setSoundSourceDirectivity(int soundSourceID, int dirID);
+	static int CreateNewDirectivity(FString FileName);
+	static bool SetSoundSourceDirectivity(int SoundSourceID, int DirectivityID);
 
 
 	// ******* HRIR ******* //
 
-	static int createNewHRIR(FString fileName);
-	static bool setSoundReceiverHRIR(int soundReceiverID, int hrirID);
+	static int CreateNewHRIR(FString FileName);
+	static bool SetSoundReceiverHRIR(int SoundReceiverID, int HRIRID);
 
 
 	// ******* Sound Receiver ******* //
 
-	static int createNewSoundReceiver(AVAReceiverActor* actor);
-	static bool setSoundReceiverPosition(int soundReceiverID, FVector pos);
-	static bool setSoundReceiverRotation(int soundReceiverID, FRotator rot);
+	static int CreateNewSoundReceiver(AVAReceiverActor* Actor);
+	static bool SetSoundReceiverPosition(int SoundReceiverID, FVector Pos);
+	static bool SetSoundReceiverRotation(int SoundReceiverID, FRotator Rot);
 
 
 	// ******* Real World ******* //
 
-	static bool setSoundReceiverRealWorldPose(int soundReceiverID, FVector pos, FRotator rot);
+	static bool SetSoundReceiverRealWorldPose(int SoundReceiverID, FVector Pos, FRotator Rot);
 
 
 	// ******* General Setter Functions ******* //
 
-	static void setReceiverActor(AVAReceiverActor* actor);
-	static void setScale(float scale_);
-	static void setUseVA(bool useVA_);
-	static void setDebugMode(bool debugMode_);
+	static void SetReceiverActor(AVAReceiverActor* Actor);
+	static void SetScale(float ScaleN);
+	static void SetUseVA(bool bUseVAN);
+	static void SetDebugMode(bool DebugModeN);
 
 
 	// ******* Getter Functions ******* //
 
-	static bool getIsInitialized();
-	static bool getUseVA();
-	static bool getDebugMode();
-	static bool getIsMaster();
-	static AVAReceiverActor* getReceiverActor();
-	static TArray<AVAReflectionWall*> getReflectionWalls();
+	static bool GetIsInitialized();
+	static bool GetUseVA();
+	static bool GetDebugMode();
+	static bool GetIsMaster();
+	static bool ShouldInteractWithServer();
+	static AVAReceiverActor* GetReceiverActor();
+	static TArray<AVAReflectionWall*> GetReflectionWalls();
 
 
 protected:
@@ -150,28 +145,28 @@ protected:
 
 
 	// States of the plugin
-	static bool initialized; // To check if its already initialized
-	static bool useVA; // bool if VA is used 
-	static bool debugMode; // bool if is in Debug Mode
-	static bool isMaster; // bool if its the master node 
+	static bool bPluginInitialized; // To check if its already initialized
+	static bool bUseVA; // bool if VA is used 
+	static bool bDebugMode; // bool if is in Debug Mode
+	static bool bIsMaster; // bool if its the master node 
 
 
 	// Interface Classes to Server 
-	static IVANetClient* pVANet; // VA Net Client
-	static IVAInterface* pVA; // VA Server Interface
+	static IVANetClient* VANetClient; // VA Net Client
+	static IVAInterface* VAServer; // VA Server Interface
 
 
 	// Link to the current receiver actor 
-	static AVAReceiverActor* receiverActor;
+	static AVAReceiverActor* ReceiverActor;
 
 
 	// Scale of the UE4 world (how many units is 1m in "real life")
-	static float scale;
+	static float WorldScale;
 
 
 	// tmp Var for easier usage
-	static VAQuat* tmpQuat;
-	static VAVec3* tmpVec;
+	static VAQuat* TmpQuat;
+	static VAVec3* TmpVec;
 
 	//Socket connection to the VAServer Launcher, has to be held open until the program ends
 	static FSocket* VAServerLauncherSocket;

@@ -5,32 +5,35 @@
 
 #include "Containers/UnrealString.h"			// FString
 
-class VADirectivity
+class FVADirectivity
 {
 public:
-	VADirectivity(FString fileName_);
-	VADirectivity(FString fileName_, FString phoneme);
-	VADirectivity(FString fileName_, TArray<FString> phonemes);
+	
+	// Constructor
+	FVADirectivity(FString FileNameN);
+	FVADirectivity(FString FileNameN, FString Phoneme);
+	FVADirectivity(FString FileNameN, TArray<FString> Phonemes);
 
+	
+	// Phoneme handling
+	void AddPhoneme(FString Phoneme);
+	void AddPhoneme(TArray<FString> PhonemesN);
 
-	void addPhoneme(FString phoneme);
-	void addPhoneme(TArray<FString> phoneme);
+	
+	// Check Phonemes
+	bool ContainsPhoneme(FString Phoneme) const;
+	bool IsValid() const;
+	void LogInfo() const;
 
-	int getID();
-
-	void logInfo();
-
-
-	bool containsPhoneme(FString phoneme);
-
-	bool isValid();
-
-	FString getFileName();
+	
+	// Getter Function
+	int GetID() const;
+	FString GetFileName() const;
 
 protected:
-	void createNewDirectivity();
+	void CreateNewDirectivity();
 
-	int dirID;
-	FString fileName;
-	TArray<FString> phonemes;
+	int DirID;
+	FString FileName;
+	TArray<FString> Phonemes;
 };

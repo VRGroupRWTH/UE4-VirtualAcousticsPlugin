@@ -92,3 +92,21 @@ PluginModule::disconnect
 Sound Source Component GainFactor
 
 void VADirectivityManager::reset() - delete all directivities from VA Server
+
+
+
+
+
+Check if useVA is used correctly in Component
+
+Make sure that every Wall Data is computed correctly!!
+
+Remake visibility @Component
+
+Test Disconnect without Python!
+
+HRIR
+
+Check default DIR & HRIR! Richtige Reihenfolge beim ini? 
+
+Groß / Kleinschreibung bei Log Stuff

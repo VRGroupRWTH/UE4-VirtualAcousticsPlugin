@@ -3,8 +3,9 @@
 #include "VASoundSourceRepresentation.h"
 #include "VAPlugin.h"
 
-// For path
-#include "Interfaces/IPluginManager.h"
+// For ConstructorHelpers and SphereMesh
+#include "Components/StaticMeshComponent.h"
+#include "ConstructorHelpers.h"
 
 #include "Engine/StaticMeshActor.h"
 
@@ -14,23 +15,23 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	sphereComp = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
-	sphereComp->bHiddenInGame = true;
-	sphereComp->Mobility = EComponentMobility::Movable;
-	RootComponent = sphereComp;
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(FName("SphereComp"));
+	SphereComponent->bHiddenInGame = true;
+	SphereComponent->Mobility = EComponentMobility::Movable;
+	RootComponent = SphereComponent;
 
 
-	sphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/VAPlugin/Shape_Cone"));
 	if (SphereMeshAsset.Succeeded())
 	{
-		sphereMesh->SetStaticMesh(SphereMeshAsset.Object);
-		sphereMesh->SetupAttachment(RootComponent);
-		sphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
-		sphereMesh->SetRelativeRotation(FRotator(0.0f, 90.0f, 90.0f));
-		sphereMesh->SetWorldScale3D(FVector(0.8f));
+		SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
+		SphereMesh->SetupAttachment(RootComponent);
+		SphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
+		SphereMesh->SetRelativeRotation(FRotator(0.0f, 90.0f, 90.0f));
+		SphereMesh->SetWorldScale3D(FVector(0.8f));
 	}
-	setVisibility(false);
+	SetVisibility(false);
 }
 
 
@@ -39,32 +40,24 @@ void AVASoundSourceRepresentation::BeginPlay()
 	Super::BeginPlay();
 }
 
-// TURNED OFF IN CONSTRUCTOR!
-void AVASoundSourceRepresentation::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
 
-bool AVASoundSourceRepresentation::setPos(FVector pos)
+bool AVASoundSourceRepresentation::SetPosition(const FVector Pos)
 {
-	sphereComp->SetWorldLocation(pos);
+	SphereComponent->SetWorldLocation(Pos);
 	return true;
 }
 
-bool AVASoundSourceRepresentation::setRot(FRotator rot)
+bool AVASoundSourceRepresentation::SetRotation(FRotator Rot)
 {
-	FQuat quat(rot);
-	quat = quat * FQuat(FRotator(0, 0, 0));
-	rot = FRotator(quat);
-	sphereComp->SetWorldRotation(rot);
+	SphereComponent->SetWorldRotation(Rot);
 	return true;
 }
 
-bool AVASoundSourceRepresentation::setVisibility(bool visibility)
+bool AVASoundSourceRepresentation::SetVisibility(bool bVisibility)
 {
-	if (sphereMesh != nullptr)
+	if (SphereMesh != nullptr)
 	{
-		sphereMesh->SetVisibility(visibility);
+		SphereMesh->SetVisibility(bVisibility);
 	}
 	return true;
 }

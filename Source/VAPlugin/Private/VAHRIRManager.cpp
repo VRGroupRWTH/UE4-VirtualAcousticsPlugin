@@ -1,77 +1,82 @@
 #include "VAHRIRManager.h"
 
-#include "VAUtils.h"
+#include "FVAUtils.h"
 
-VAHRIR* VAHRIRManager::defaultHRIR = nullptr;
+FVAHRIR* FVAHRIRManager::DefaultHRIR = nullptr;
 
-VAHRIRManager::VAHRIRManager()
+
+
+// ****************************************************************** // 
+// ******* Initialization ******************************************* //
+// ****************************************************************** //
+
+FVAHRIRManager::FVAHRIRManager()
 {
 }
 
-VAHRIRManager::~VAHRIRManager()
+FVAHRIRManager::~FVAHRIRManager()
 {
-	defaultHRIR = nullptr;
+	DefaultHRIR = nullptr;
 }
 
 
-void VAHRIRManager::reset()
+void FVAHRIRManager::ResetManager()
 {
-	// TODO: delete all HRIR from the server
-
-	if (defaultHRIR != nullptr)
+	if (DefaultHRIR != nullptr)
 	{
-		delete defaultHRIR;
+		delete DefaultHRIR;
 	}
-	defaultHRIR = new VAHRIR(FString("$(DefaultHRIR)"));
+	DefaultHRIR = new FVAHRIR(FString("$(DefaultHRIR)"));
 
-	hrirs.Empty();
-	hrirs.Add(defaultHRIR);
+	HRIRs.Empty();
+	HRIRs.Add(DefaultHRIR);
 }
 
+// ****************************************************************** // 
+// ******* Get HRIR ************************************************* //
+// ****************************************************************** //
 
-VAHRIR* VAHRIRManager::getHRIRByFileName(FString fileName_)
+FVAHRIR* FVAHRIRManager::GetHRIRByFileName(const FString FileName)
 {
 	// Find already existing HRIR
-	if (!hrirs.Num())
+	if (!HRIRs.Num())
 	{
-		for (auto entry : hrirs)
+		for (auto Entry : HRIRs)
 		{
-			if (entry->getFileName() == fileName_)
+			if (Entry->GetFileName() == FileName)
 			{
-				FString output = "[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " was found!";
-				VAUtils::logStuff(output);
+				FVAUtils::LogStuff("[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " was found!");
 
-				return entry;
+				return Entry;
 			}
 		}
 	}
 
 
-	VAUtils::logStuff(
-		"[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " cannot be found! Creating one now...");
+	FVAUtils::LogStuff(
+		"[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " cannot be found! Creating one now...");
 
 	// Create a new HRIR
-	VAHRIR* new_hrir = new VAHRIR(fileName_);
-	if (new_hrir != nullptr)
+	FVAHRIR* NewHRIR = new FVAHRIR(FileName);
+	if (NewHRIR != nullptr)
 	{
-		FString output = "[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " is created!";
-		VAUtils::logStuff(output);
-		hrirs.Add(new_hrir);
-		return new_hrir;
+		FVAUtils::LogStuff("[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " is created!");
+		HRIRs.Add(NewHRIR);
+		return NewHRIR;
 	}
-	VAUtils::logStuff("[VAHRIRManager::getHRIRByFileName()] HRIR from file " + fileName_ + " cannot be created!");
+	FVAUtils::LogStuff("[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " cannot be created!");
 
 	// Return Default HRIR
-	return defaultHRIR;
+	return DefaultHRIR;
 }
 
 
-VAHRIR* VAHRIRManager::getDefaultHRIR()
+FVAHRIR* FVAHRIRManager::GetDefaultHRIR()
 {
-	if (defaultHRIR == nullptr)
+	if (DefaultHRIR == nullptr)
 	{
-		defaultHRIR = new VAHRIR(FString("$(DefaultHRIR)"));
+		DefaultHRIR = new FVAHRIR(FString("$(DefaultHRIR)"));
 	}
 
-	return defaultHRIR;
+	return DefaultHRIR;
 }

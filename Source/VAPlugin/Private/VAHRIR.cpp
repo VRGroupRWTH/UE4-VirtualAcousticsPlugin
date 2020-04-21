@@ -1,43 +1,52 @@
 #include "VAHRIR.h"
 
-// #include "Containers/UnrealString.h"			// FString
 // #include "Containers/Array.h"				// TArray
 
 #include "VAPlugin.h"							// For Server
-#include "VAHRIRManager.h"				// For default Directivity
+#include "VAHRIRManager.h"						// For default Directivity
 
 
-VAHRIR::VAHRIR(FString fileName_) :
-	fileName(fileName_)
+// ****************************************************************** // 
+// ******* Initialization ******************************************* //
+// ****************************************************************** //
+
+FVAHRIR::FVAHRIR(const FString FileNameN) :
+	FileName(FileNameN)
 {
-	createNewHRIR();
+	CreateNewHRIR();
 }
 
 
-void VAHRIR::createNewHRIR()
+void FVAHRIR::CreateNewHRIR()
 {
-	hrirID = FVAPluginModule::createNewHRIR(fileName);
-	if (hrirID == -1)
+	HRIRID = FVAPlugin::CreateNewHRIR(FileName);
+	if (HRIRID == -1)
 	{
-		VAUtils::logStuff("[VAHRIR::createNewHRIR()] HRIR file " + fileName + " cannot be found!");
+		FVAUtils::LogStuff("[VAHRIR::createNewHRIR()] HRIR file " + FileName + " cannot be found!");
 		return;
 	}
 
-	VAUtils::logStuff("created new VAHRIR");
+	FVAUtils::LogStuff("created new VAHRIR");
 }
 
-int VAHRIR::getID()
+
+
+// ****************************************************************** // 
+// ******* Getter Functions ***************************************** //
+// ****************************************************************** //
+// 
+int FVAHRIR::GetID() const
 {
-	return hrirID;
+	return HRIRID;
 }
 
-
-bool VAHRIR::isValid()
+FString FVAHRIR::GetFileName() const
 {
-	return (hrirID != -1);
+	return FileName;
 }
 
-FString VAHRIR::getFileName()
+bool FVAHRIR::IsValid() const
 {
-	return fileName;
+	return bool(HRIRID != -1);
 }
+

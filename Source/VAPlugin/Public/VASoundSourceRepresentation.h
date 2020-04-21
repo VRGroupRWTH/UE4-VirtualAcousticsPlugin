@@ -17,21 +17,17 @@ public:
 	// Sets default values for this actor's properties
 	AVASoundSourceRepresentation();
 
-	USphereComponent* sphereComp;
-
-	UStaticMeshComponent* sphereMesh;
-
-	bool setPos(FVector pos);
-
-	bool setRot(FRotator rot);
-
-	bool setVisibility(bool visibility);
+	// Setter
+	bool SetPosition(FVector Pos);
+	bool SetRotation(FRotator Rot);
+	bool SetVisibility(bool bVisibility);
 
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
 
-public:
-	// Called every frame
-	void Tick(float DeltaTime) override;
+	// Graphical Components
+	USphereComponent* SphereComponent;
+	UStaticMeshComponent* SphereMesh;
+
 };

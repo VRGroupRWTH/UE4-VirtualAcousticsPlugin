@@ -2,22 +2,25 @@
 
 #pragma once
 
+#include "Containers/UnrealString.h"			// FString
 
-class VAHRIR
+class FVAHRIR
 {
 public:
-	VAHRIR(FString fileName_);
 
-	int getID();
+	// Initialization
+	FVAHRIR(FString FileNameN);
 
-	bool isValid();
 
-	FString getFileName();
+	// Getter Functions
+	int GetID() const;
+	FString GetFileName() const;
+	bool IsValid() const;
 
 protected:
 
-	void createNewHRIR();
+	void CreateNewHRIR();
 
-	int hrirID;
-	FString fileName;
+	int HRIRID;
+	FString FileName;
 };

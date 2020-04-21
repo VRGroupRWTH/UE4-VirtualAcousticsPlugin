@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "VASoundSource.h"								// From VA
+#include "FVASoundSource.h"								// From VA
 
 #include "VASourceComponent.generated.h"
 
@@ -11,15 +11,15 @@ UENUM()
 enum EDir
 {
 	DefaultHRIR,
-	manualFile,
-	phoneme,
-	none
+	ManualFile,
+	Phoneme,
+	None
 };
 
 UENUM()
 enum EMovement
 {
-	AttatchToBone,
+	AttachToBone,
 	ObjectSpawnPoint,
 	MoveWithObject
 };
@@ -45,62 +45,62 @@ protected:
 
 	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name", Category = "General Settings"))
-	FString soundFile = "WelcomeToVA.wav";
+	FString SoundFile = "WelcomeToVA.wav";
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "General Settings"))
-	TEnumAsByte<EPlayAction> startingPlayAction = Stop;
+	TEnumAsByte<EPlayAction> StartingPlayAction = Stop;
 
 	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]", Category = "General Settings"))
-	float startingTime = 0.0f;
+	float StartingTime = 0.0f;
 
 	// Check if the sound should be played back in a loop
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop", Category = "General Settings"))
-	bool loop = false;
+	bool bLoop = false;
 
 	// Check if reflections by walls should be considered
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?", Category = "General Settings"))
-	bool handleReflections = true;
+	bool bHandleReflections = true;
 
 	// Check if reflections by walls should be considered
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Power", Category = "General Settings",
 		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
-	float soundPower = 0.0316227749f;
+	float SoundPower = 0.0316227749f;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
 		CustomStructureParam = "Attatch to a Bone, At Object Spawn Point, Move With the Object"))
-	TEnumAsByte<EMovement> movementSetting = ObjectSpawnPoint;
+	TEnumAsByte<EMovement> MovementSetting = ObjectSpawnPoint;
 
 	// Use the manual Offset for the position?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?", Category = "Position"))
-	bool usePoseOffset = false;
+	bool bUsePoseOffset = false;
 
 	// Offset in Position
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset", Category = "Position", EditCondition = "usePoseOffset"))
-	FVector offsetPosition = FVector(0, 0, 0);
+	FVector OffsetPosition = FVector(0, 0, 0);
 
 	// Offset in Rotation
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Rotation", Category = "Position", EditCondition =
 		"usePoseOffset"))
-	FRotator offsetRotation = FRotator(0, 0, 0);
+	FRotator OffsetRotation = FRotator(0, 0, 0);
 
 	// Name of Bone bound to if Position is set to "Attatch to a Bone"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name", Category = "Position"))
-	FString boneName = "CC_Base_Head";
+	FString BoneName = "CC_Base_Head";
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity", Category = "Directivity"))
-	TEnumAsByte<EDir> directivitySetting = none;
+	TEnumAsByte<EDir> DirectivitySetting = None;
 
-	// File Name of the Directivity that sould be used
+	// File Name of the Directivity that should be used
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name", Category = "Directivity"))
-	FString directivityByFileName = "$(DefaultHRIR)";
+	FString DirectivityByFileName = "$(DefaultHRIR)";
 
 	// Directivity that is used by a specific phoneme (see Receiver Actor Directivity Manager)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Phoneme Directivity from config", Category = "Directivity"))
-	FString directivityByMapping = "";
+	FString DirectivityByMapping = "";
 
 
 public:
@@ -112,111 +112,105 @@ public:
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	// Plays Sound // 
+	// *** Playback Settings *** //
+	
 	UFUNCTION(BlueprintCallable)
-	bool PlaySound();
+	bool PlaySound() const;
 
-	// Plays Sound from second // 
 	UFUNCTION(BlueprintCallable)
-	bool PlaySoundFromSecond(float time);
+	bool PlaySoundFromSecond(float Time) const;
 
-	// Pauses Sound //
 	UFUNCTION(BlueprintCallable)
-	bool StopSound();
+	bool StopSound() const;
 
-	// Stops Sound //
 	UFUNCTION(BlueprintCallable)
-	bool PauseSound();
+	bool PauseSound() const;
 
-	// returns the Play Sate in form of a EPlayAction // 
 	UFUNCTION(BlueprintCallable)
-	EPlayAction GetPlayState();
+	EPlayAction GetPlayState() const;
 
-	// Mutes sound // 
+
+	// *** Sound Settings *** // 
+
 	UFUNCTION(BlueprintCallable)
-	void MuteSound(bool bMute = true);
+	bool MuteSound(bool bMuteN = true);
 
-	// returns the Position minding its setting for location //
 	UFUNCTION(BlueprintCallable)
-	FVector GetPosition();
+	bool LoadSoundFile(FString SoundFileN) const;
 
-	// returns the Roatation minding its setting for rotation // 
 	UFUNCTION(BlueprintCallable)
-	FRotator GetRotation();
+	bool SetSoundFile(FString SoundFileN);
 
-	// sets the Directivity by the phoneme set up in the ini file
 	UFUNCTION(BlueprintCallable)
-	bool SetDirectivityByMapping(FString phoneme);
+	FString GetSoundFile() const;
 
-	// sets the Directivity by a file Name
 	UFUNCTION(BlueprintCallable)
-	bool SetDirectivityByFileName(FString fileName);
+	bool SetSoundPower(float Power);
 
-	// gets the file name of the current direcitivity 
 	UFUNCTION(BlueprintCallable)
-	FString GetDirectivityFileName();
+	float GetSoundPower() const;
 
-	// Sets the visibility of the sound Sound source (used for Debug mode)
 	UFUNCTION(BlueprintCallable)
-	bool SetSoundSourceVisibility(bool vis_);
+	bool SetLoop(bool bLoopN);
 
-	// Preloading sound file for later use
 	UFUNCTION(BlueprintCallable)
-	bool LoadSoundFile(FString soundFile_);
-
-	// If its a different file than the current, it sets a new Sound for the sound source
+	bool GetLoop() const;
+	
 	UFUNCTION(BlueprintCallable)
-	bool SetSoundFile(FString soundFile_);
+	bool GetHandleReflections() const;
 
-	// Returns the file name of the current sound playe back
+	
+	// *** Sound Pose *** //
+	
 	UFUNCTION(BlueprintCallable)
-	FString GetSoundFile();
+	FVector GetPosition() const;
 
-	// Returns the file name of the current sound playe back
 	UFUNCTION(BlueprintCallable)
-	bool setSoundPower(float power);
+	FRotator GetRotation() const;
 
-	// Returns the file name of the current sound playe back
 	UFUNCTION(BlueprintCallable)
-	float getSoundPower();
+	bool SetMovementSetting(EMovement MovementSettingN);
 
-	// Sets if the sound source should loop the file
 	UFUNCTION(BlueprintCallable)
-	bool setLoop(bool loop_);
+	bool SetUsePoseOffset(bool bUsePoseOffsetN);
 
-	// returns whether the sound is looping
 	UFUNCTION(BlueprintCallable)
-	bool getLoop();
+	bool SetOffsetPosition(FVector PosN);
 
-
-	// Sets the Movement setting (AttatchToBone, ObjectSpawnPoint, MoveWithObject)
 	UFUNCTION(BlueprintCallable)
-	bool setMovementSetting(EMovement movementSetting_);
+	bool SetOffsetRotation(FRotator RotN);
 
-	// Sets whether to use Pose Offset
+
+	// *** DIRECTIVITIES *** // 
+	
 	UFUNCTION(BlueprintCallable)
-	bool setUsePoseOffset(bool usePoseOffset_);
+	bool SetDirectivityByMapping(FString Phoneme);
 
-	// Changes the Offset for the Position
 	UFUNCTION(BlueprintCallable)
-	bool setOffsetPosition(FVector pos_);
+	bool SetDirectivityByFileName(FString FileName);
 
-	// Changes the Offset for the Rotation
 	UFUNCTION(BlueprintCallable)
-	bool setOffsetRotation(FRotator rot_);
+	FString GetDirectivityFileName() const;
 
-	// Changes the Bone the Sound source is attatched to. If the new bone is found, set MovementSetting to AttatchToBone. Else use old settings
+
+	// *** GRAPHICAL REPRESENTATION *** // 
+	
 	UFUNCTION(BlueprintCallable)
-	bool setBoneName(FString boneName_);
+	bool SetVisibility(bool bVisN) const;
 
-	// Returns the name of the bone the sound is attatched
 	UFUNCTION(BlueprintCallable)
-	FString getBoneName();
+	bool GetVisibility() const;
+	
+	UFUNCTION(BlueprintCallable)
+	bool SetBoneName(FString BoneNameN);
+
+	UFUNCTION(BlueprintCallable)
+	FString GetBoneName() const;
 
 
-	float getSoundTimeOffset(); // TODO!!
-	bool getVisibility(); // TODO!!
-	bool getHandleReflections(); // TODO!!
+
+
+	float GetSoundTimeOffset() const;
 
 protected:
 	// Called when the game starts
@@ -225,45 +219,26 @@ protected:
 	// initialize Sound Source with the settings set // 
 	void Initialize();
 
-
-	// Link to Owner Actor //
-	AActor* OwnerActor;
-
-	// The actual VA Sound Source
-	VASoundSource* SoundSource = nullptr;
-
-	// skeletal_mesh, used if AttatchToBone is selected
+	FVASoundSource* SoundSource;
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
-
-	// Check if it is the first tick //
+	// Class data
 	bool bFirstTick = true;
-
-	// if sound source has initialized //
 	bool bInitialized = false;
+	float TimeSinceUpdate;
+	bool ShouldSendCommand() const;
+	float Timer;
 
-	// To adapt update rate
-	float timeSinceUpdate;
-
-
-	// Checks if has access to server
-	bool shouldSendCommand();
-
-
-	// Spawn Pos & Rot. Used if ObjectSpawnPoint is selected
-	FVector spawnPosition;
-	FRotator spawnRotation;
-
-
-	// Check time // 
-	float timer;
-
-	// Check if is Muted
-	bool muted = false;
-
+	
+	// Sound Source data
+	FVector SpawnPosition;
+	FRotator SpawnRotation;
+	bool bMuted = false;
+	int UpdateRate;
 
 #if WITH_EDITOR
 	// Function to improve settings displayed in Editor, can only be used in editor mode
 	bool CanEditChange(const UProperty* InProperty) const override;
 #endif
+	
 };

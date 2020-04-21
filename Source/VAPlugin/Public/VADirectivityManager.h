@@ -4,34 +4,39 @@
 
 #include "VADirectivity.h"
 
-class VADirectivityManager
+class FVADirectivityManager
 {
 public:
-	VADirectivityManager();
-	~VADirectivityManager();
+	
+	// Initialization
+	FVADirectivityManager();
+	~FVADirectivityManager();
+	
+	void ResetManager();
+	bool ReadConfigFile(FString ConfigFileNameN);
 
-	void reset();
+	
+	// Get Directivities
+	FVADirectivity* GetDirectivityByPhoneme(FString Phoneme) const;
+	FVADirectivity* GetDirectivityByFileName(FString FileName);
+	static FVADirectivity* GetDefaultDirectivity();
 
-	void readConfigFile(FString configFileName_);
+	
+	// Getter Function
+	FString GetFileName() const;
+
+	
+	// Get Information
+	void PrintDirMapping() const;
+	bool IsValid() const;
 
 
-	VADirectivity* getDirectivityByPhoneme(FString phoneme);
-	VADirectivity* getDirectivityByFileName(FString fileName_);
-
-	bool isValid();
-
-	void printDirMapping();
-
-	static VADirectivity* getDefaultDirectivity();
-
-	FString getFileName();
 
 private:
-	TArray<VADirectivity*> directivities;
+	TArray<FVADirectivity*> Directivities;
 
-
-	FString configFileName;
+	FString ConfigFileName;
 
 	// Default Directivity, can be overloaded by config file
-	static VADirectivity* defaultDirectivity;
+	static FVADirectivity* DefaultDirectivity;
 };

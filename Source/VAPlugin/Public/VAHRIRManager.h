@@ -4,20 +4,23 @@
 
 #include "VAHRIR.h"
 
-class VAHRIRManager
+class FVAHRIRManager
 {
 public:
-	VAHRIRManager();
-	~VAHRIRManager();
 
-	void reset();
+	// Initialization
+	FVAHRIRManager();
+	~FVAHRIRManager();
 
-	VAHRIR* getHRIRByFileName(FString fileName_);
+	void ResetManager();
 
-	static VAHRIR* getDefaultHRIR();
+
+	// Get HRIR
+	FVAHRIR* GetHRIRByFileName(FString FileName);
+	static FVAHRIR* GetDefaultHRIR();
 
 private:
-	TArray<VAHRIR*> hrirs;
+	TArray<FVAHRIR*> HRIRs;
 
-	static VAHRIR* defaultHRIR;
+	static FVAHRIR* DefaultHRIR;
 };

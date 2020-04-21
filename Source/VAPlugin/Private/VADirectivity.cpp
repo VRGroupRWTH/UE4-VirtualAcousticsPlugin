@@ -6,88 +6,106 @@
 #include "VADirectivityManager.h"				// For default Directivity
 
 
-VADirectivity::VADirectivity(FString fileName_) :
-	fileName(fileName_)
+// ****************************************************************** // 
+// ******* Initialization ******************************************* //
+// ****************************************************************** //
+
+FVADirectivity::FVADirectivity(FString FileNameN) :
+	FileName(FileNameN)
 {
-	createNewDirectivity();
+	CreateNewDirectivity();
 }
 
-
-VADirectivity::VADirectivity(FString fileName_, FString phoneme) :
-	fileName(fileName_)
+FVADirectivity::FVADirectivity(FString FileNameN, FString Phoneme) :
+	FileName(FileNameN)
 {
-	TArray<FString> tmp;
-	tmp.Add(phoneme);
-	phonemes = tmp;
+	TArray<FString> Tmp;
+	Tmp.Add(Phoneme);
+	Phonemes = Tmp;
 
-	createNewDirectivity();
+	CreateNewDirectivity();
 }
 
-VADirectivity::VADirectivity(FString fileName_, TArray<FString> phonemes_) :
-	fileName(fileName_), phonemes(phonemes_)
+FVADirectivity::FVADirectivity(FString FileNameN, TArray<FString> phonemes_) :
+	FileName(FileNameN), Phonemes(phonemes_)
 {
-	createNewDirectivity();
+	CreateNewDirectivity();
 }
 
-
-void VADirectivity::createNewDirectivity()
+void FVADirectivity::CreateNewDirectivity()
 {
-	dirID = FVAPluginModule::createNewDirectivity(fileName);
-	if (dirID == -1)
+	DirID = FVAPlugin::CreateNewDirectivity(FileName);
+	if (DirID == -1)
 	{
-		VAUtils::logStuff("[VADirectivity::createNewDirectivity()] Directivity file " + fileName + " cannot be found!");
+		FVAUtils::LogStuff("[VADirectivity::createNewDirectivity()] Directivity file " + FileName + " cannot be found!");
 		return;
 	}
 
-	VAUtils::logStuff("created new VADirectivity");
+	FVAUtils::LogStuff("created new VADirectivity");
 }
 
-int VADirectivity::getID()
+
+// ****************************************************************** // 
+// ******* Phoneme handling ***************************************** //
+// ****************************************************************** //
+
+void FVADirectivity::AddPhoneme(const FString Phoneme)
 {
-	return dirID;
+	Phonemes.Add(Phoneme);
 }
 
-void VADirectivity::addPhoneme(FString phoneme)
+void FVADirectivity::AddPhoneme(const TArray<FString> PhonemesN)
 {
-	phonemes.Add(phoneme);
-}
-
-void VADirectivity::addPhoneme(TArray<FString> phoneme)
-{
-	for (auto tmp : phoneme)
+	for (const auto Entry : PhonemesN)
 	{
-		addPhoneme(tmp);
+		AddPhoneme(Entry);
 	}
 }
 
-void VADirectivity::logInfo()
-{
-	FString output = " [Info]  Directivity for: ";
 
-	if (phonemes.Num() == 0)
+// ****************************************************************** // 
+// ******* Check Phonemes ******************************************* //
+// ****************************************************************** //
+
+bool FVADirectivity::ContainsPhoneme(const FString Phoneme) const
+{
+	return Phonemes.Contains(Phoneme);
+}
+
+bool FVADirectivity::IsValid() const
+{
+	return (DirID != -1);
+}
+
+void FVADirectivity::LogInfo() const
+{
+	FString Output = " [Info]  Directivity for: ";
+
+	if (Phonemes.Num() == 0)
 	{
-		VAUtils::logStuff("Directivity has no phonemes");
+		FVAUtils::LogStuff("Directivity has no phonemes");
 	}
 
-	for (auto entry : phonemes)
+	for (auto Entry : Phonemes)
 	{
-		output.Append(*entry).Append(",");
+		Output.Append(*Entry).Append(",");
 	}
-	output.RemoveAt(output.Len() - 1, 1, true);
-	VAUtils::logStuff(output);
+
+	Output.RemoveAt(Output.Len() - 1, 1, true);
+
+	FVAUtils::LogStuff(Output);
 }
 
-bool VADirectivity::containsPhoneme(FString phoneme)
+// ****************************************************************** // 
+// ******* Getter Functions ***************************************** //
+// ****************************************************************** //
+
+int FVADirectivity::GetID() const
 {
-	return phonemes.Contains(phoneme);
+	return DirID;
 }
 
-bool VADirectivity::isValid()
+FString FVADirectivity::GetFileName() const
 {
-	return (dirID != -1);
-}
-
-FString VADirectivity::getFileName()
-{
-	return fileName;
+	return FileName;
 }
