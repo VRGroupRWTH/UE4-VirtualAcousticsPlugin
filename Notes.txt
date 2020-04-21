@@ -110,3 +110,7 @@ HRIR
 Check default DIR & HRIR! Richtige Reihenfolge beim ini? 
 
 Groß / Kleinschreibung bei Log Stuff
+
+Wiki: Run on all nodes Settings
+
+Neue Ordner Struktur (Private / Public)
