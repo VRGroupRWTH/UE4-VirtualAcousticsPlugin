@@ -1,4 +1,4 @@
-#include "FVASoundSource.h"
+#include "VASoundSource.h"
 
 #include "VASourceComponent.h"
 #include "VAPlugin.h"

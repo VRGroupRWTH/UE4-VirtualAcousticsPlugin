@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FVASoundSource.h"								// From VA
+#include "VASoundSource.h"								// From VA
 
 #include "VASourceComponent.generated.h"
 

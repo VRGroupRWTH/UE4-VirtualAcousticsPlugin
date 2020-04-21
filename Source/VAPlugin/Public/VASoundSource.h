@@ -3,9 +3,9 @@
 #pragma once
 
 #include "VASoundSourceRepresentation.h"
-#include "FVASoundSourceReflection.h"
+#include "VASoundSourceReflection.h"
 #include "VASourceComponent.h"
-#include "FVASignalBufferManager.h"
+#include "VASignalBufferManager.h"
 
 // #include <string>
 

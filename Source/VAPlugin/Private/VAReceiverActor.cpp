@@ -4,7 +4,7 @@
 #include "VAReceiverActor.h"
 
 #include "VAPlugin.h"
-#include "FVAUtils.h"
+#include "VAUtils.h"
 
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"

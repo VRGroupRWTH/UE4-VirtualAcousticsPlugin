@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "VAReflectionWall.h"
-#include "FVAUtils.h"
+#include "VAUtils.h"
 #include "VAPlugin.h"
 #include "EngineUtils.h"
 #include "Engine/StaticMeshActor.h"

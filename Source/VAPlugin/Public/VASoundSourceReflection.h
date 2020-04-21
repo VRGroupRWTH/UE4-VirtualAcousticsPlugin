@@ -6,7 +6,7 @@
 
 #include "VASoundSourceRepresentation.h"
 #include "VAReflectionWall.h"
-#include "FVASoundSource.h"
+#include "VASoundSource.h"
 #include "VADirectivity.h"
 
 

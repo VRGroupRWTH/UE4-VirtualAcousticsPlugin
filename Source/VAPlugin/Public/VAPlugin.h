@@ -5,7 +5,7 @@
 #include "Modules/ModuleManager.h"
 
 
-#include "FVAUtils.h"
+#include "VAUtils.h"
 #include "Sockets.h"
 
 #define VANET_STATIC

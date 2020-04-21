@@ -1,6 +1,6 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "FVAUtils.h"
+#include "VAUtils.h"
 
 #include "VAReflectionWall.h"
 #include "VASourceComponent.h"

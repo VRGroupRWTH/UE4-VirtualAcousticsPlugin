@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FVASignalBuffer.h"
+#include "VASignalBuffer.h"
 
 class FVASignalBufferManager
 {
