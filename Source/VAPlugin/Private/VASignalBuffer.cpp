@@ -18,25 +18,25 @@ FVASignalBuffer::FVASignalBuffer(const FString FileNameN) :
 // ******* Setter Functions ***************************************** //
 // ****************************************************************** //
 
-void FVASignalBuffer::SetLoop(const bool bLoopN)
+bool FVASignalBuffer::SetLoop(const bool bLoopN)
 {
 	if (bLoop == bLoopN)
 	{
-		return;
+		return true;
 	}
 
 	bLoop = bLoopN;
-	FVAPlugin::SetSoundBufferLoop(BufferID, bLoop);
+	return FVAPlugin::SetSoundBufferLoop(BufferID, bLoop);
 }
 
-void FVASignalBuffer::SetSoundTimeOffset(const float SoundTimeOffset)
+bool FVASignalBuffer::SetSoundTimeOffset(const float SoundTimeOffset)
 {
-	FVAPlugin::SetSoundBufferTime(BufferID, SoundTimeOffset);
+	return FVAPlugin::SetSoundBufferTime(BufferID, SoundTimeOffset);
 }
 
-void FVASignalBuffer::SetSoundBufferAction(const int Action)
+bool FVASignalBuffer::SetSoundBufferAction(const int Action)
 {
-	FVAPlugin::SetSoundBufferAction(BufferID, static_cast<EPlayAction>(Action));
+	return FVAPlugin::SetSoundBufferAction(BufferID, EPlayAction(Action));
 }
 
 
@@ -60,9 +60,9 @@ bool FVASignalBuffer::GetLoop() const
 	return bLoop;
 }
 
-bool FVASignalBuffer::IsValid() const
+bool FVASignalBuffer::IsValidItem() const
 {
-	return bool(FString(BufferID.c_str()).Equals(FString("-1")));
+	return !bool(FString(BufferID.c_str()).Equals(FString("-1")));
 }
 
 int FVASignalBuffer::GetSoundBufferAction() const

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Containers/UnrealString.h"			// FString
+#include "SharedPointer.h"
 
 class FVAHRIR
 {
@@ -15,7 +16,7 @@ public:
 	// Getter Functions
 	int GetID() const;
 	FString GetFileName() const;
-	bool IsValid() const;
+	bool IsValidItem() const;
 
 protected:
 
@@ -24,3 +25,6 @@ protected:
 	int HRIRID;
 	FString FileName;
 };
+
+
+typedef TSharedPtr<FVAHRIR> FVAHRIRSharedPtr;

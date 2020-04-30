@@ -3,18 +3,9 @@
 #include "VAUtils.h"
 
 #include "VAReflectionWall.h"
-#include "VASourceComponent.h"
-
-#include "Core.h"
-#include "Modules/ModuleManager.h"
-#include "Interfaces/IPluginManager.h"
 #include "VAPlugin.h"
-//#include "VistaBase/VistaTimeUtils.h"
 
-// #pragma warning(disable:5038) //disable initilization order warning
 #include "VA.h"
-#include "VANet.h"
-// #pragma warning(default:5038)
 
 DEFINE_LOG_CATEGORY(VALog);
 
@@ -27,7 +18,7 @@ void FVAUtils::OpenMessageBox(const FString Text, const bool bError)
 
 	if (bError)
 	{
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(AddExclamationMarkInChar(Text)));
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(AddExclamationMarkAroundChar(Text)));
 	}
 	else
 	{
@@ -37,7 +28,7 @@ void FVAUtils::OpenMessageBox(const FString Text, const bool bError)
 }
 
 
-FString FVAUtils::AddExclamationMarkInChar(const FString Text)
+FString FVAUtils::AddExclamationMarkAroundChar(const FString Text)
 {
 	size_t Length = Text.Len();
 	FString ReturnedString = FString("!!!!!");
@@ -165,65 +156,4 @@ void FVAUtils::LogStuff(const FString Text, const bool Error)
 	{
 		UE_LOG(VALog, Log, TEXT("%s"), *Text);
 	}
-}
-
-int FVAUtils::EPlayActionToVAAction(const EPlayAction ActionE)
-{
-	// enum PlaybackAction
-	// {
-	// 	VA_PLAYBACK_ACTION_NONE = -1,	//!< No action
-	// 	VA_PLAYBACK_ACTION_STOP = 0,	//!< Stop playback
-	// 	VA_PLAYBACK_ACTION_PAUSE = 1,	//!< Pause playback
-	// 	VA_PLAYBACK_ACTION_PLAY = 2,	//!< Start/resume playback	
-	// };
-
-	switch (ActionE)
-	{
-	case Stop:
-		return 0;
-		break;
-	case Pause:
-		return 1;
-		break;
-	case Play:
-		return 2;
-		break;
-	default:
-		break;
-	}
-
-	LogStuff("[EPlayActionToVAAction(EPlayAction ActionE)]: ActionE cannot be casted", true);
-
-	return -1;
-}
-
-EPlayAction FVAUtils::VAActionToEPlayAction(const int ActionI)
-{
-	// enum PlaybackAction
-	// {
-	// 	VA_PLAYBACK_ACTION_NONE = -1,	//!< No action
-	// 	VA_PLAYBACK_ACTION_STOP = 0,	//!< Stop playback
-	// 	VA_PLAYBACK_ACTION_PAUSE = 1,	//!< Pause playback
-	// 	VA_PLAYBACK_ACTION_PLAY = 2,	//!< Start/resume playback	
-	// };
-
-	switch (ActionI)
-	{
-	case -1:
-		LogStuff("[VAUtils::VAActionToEPlayAction]: Detected no action as Play State, transferring to Stop");
-	case 0:
-		return Stop;
-		break;
-	case 1:
-		return Pause;
-		break;
-	case 2:
-		return Play;
-		break;
-	default:
-		break;
-	}
-
-	LogStuff("[VAUtils::VAActionToEPlayAction(int action)]: VAAction cannot be casted", true);
-	return Stop;
 }

@@ -19,21 +19,22 @@ public:
 	// Get Directivities
 	FVADirectivity* GetDirectivityByPhoneme(FString Phoneme) const;
 	FVADirectivity* GetDirectivityByFileName(FString FileName);
+	
 	static FVADirectivity* GetDefaultDirectivity();
+
+
 
 	
 	// Getter Function
 	FString GetFileName() const;
-
-	
-	// Get Information
 	void PrintDirMapping() const;
 	bool IsValid() const;
 
+	
 
 
 private:
-	TArray<FVADirectivity*> Directivities;
+	TArray<FVADirectivitySharedPtr> Directivities;
 
 	FString ConfigFileName;
 

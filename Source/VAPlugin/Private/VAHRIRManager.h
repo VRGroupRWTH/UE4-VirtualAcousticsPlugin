@@ -14,13 +14,13 @@ public:
 
 	void ResetManager();
 
-
 	// Get HRIR
 	FVAHRIR* GetHRIRByFileName(FString FileName);
+
 	static FVAHRIR* GetDefaultHRIR();
 
 private:
-	TArray<FVAHRIR*> HRIRs;
+	TArray<FVAHRIRSharedPtr> HRIRs;
 
 	static FVAHRIR* DefaultHRIR;
 };

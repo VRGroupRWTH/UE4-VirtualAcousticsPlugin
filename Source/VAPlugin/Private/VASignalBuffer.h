@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <xstring>
-
+#include <string>								// std::string
 #include "Containers/UnrealString.h"			// FString
+#include "SharedPointer.h"
 
 class FVASignalBuffer
 {
@@ -15,16 +15,16 @@ public:
 
 
 	// Setter
-	void SetLoop(bool bLoopN);
-	void SetSoundTimeOffset(float SoundTimeOffset);
-	void SetSoundBufferAction(int Action);
+	bool SetLoop(bool bLoopN);
+	bool SetSoundTimeOffset(float SoundTimeOffset);
+	bool SetSoundBufferAction(int Action);
 
 
 	// Getter
 	std::string GetID() const;
 	FString GetFileName() const;
 	bool GetLoop() const;
-	bool IsValid() const;
+	bool IsValidItem() const;
 	int GetSoundBufferAction() const;
 
 
@@ -35,3 +35,5 @@ protected:
 	FString FileName;
 	bool bLoop;
 };
+
+typedef TSharedPtr<FVASignalBuffer> FVASignalBufferSharedPtr;

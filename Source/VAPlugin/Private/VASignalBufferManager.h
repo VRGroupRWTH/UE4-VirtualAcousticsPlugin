@@ -17,5 +17,5 @@ public:
 	FVASignalBuffer* GetBufferByFileName(FString FileName);
 
 private:
-	TArray<FVASignalBuffer*> Buffers;
+	TArray<FVASignalBufferSharedPtr> Buffers;
 };

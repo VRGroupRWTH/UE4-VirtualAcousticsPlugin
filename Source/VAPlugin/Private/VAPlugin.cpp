@@ -1,36 +1,35 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
-
 #include "VAPlugin.h"
-
-
-#include "VAReflectionWall.h"
-
-#include "Core.h"
-#include "Modules/ModuleManager.h"
-#include "Interfaces/IPluginManager.h"
-
-#include "Cluster/IDisplayClusterClusterManager.h"
-#include "Containers/UnrealString.h"
-#include "Game/IDisplayClusterGameManager.h"
-#include "Input/IDisplayClusterInputManager.h"
-#include "IDisplayCluster.h"
-
-#include "Networking.h"
-#include "Engine.h"
-
-#if WITH_EDITOR
-#include "Editor.h"
-#endif
-
 
 // #pragma warning(disable:5038) //disable initilization order warning
 #include "VA.h"
 #include "VANet.h"
 // #pragma warning(default:5038)
 
+#include "VAUtils.h"
+
+#include "VAReflectionWall.h"
 #include "VAReceiverActor.h"
 #include "VASourceComponent.h"
-#include "VistaBase/VistaTimeUtils.h"
+
+#include "Engine.h"
+#include "Networking.h"
+#include "Core.h"
+
+#include "Interfaces/IPluginManager.h"
+#include "Cluster/IDisplayClusterClusterManager.h"
+#include "Containers/UnrealString.h"
+
+#include "IDisplayCluster.h"
+#include "SocketSubsystem.h"
+
+
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
+
+
+
+//#include "VistaBase/VistaTimeUtils.h"
 
 
 #define LOCTEXT_NAMESPACE "FVAPluginModule"
@@ -60,8 +59,11 @@ AVAReceiverActor* FVAPlugin::ReceiverActor;
 float FVAPlugin::WorldScale = 100.0f;
 
 // tmp Var for easier usage
-VAQuat* FVAPlugin::TmpQuat = new VAQuat();
-VAVec3* FVAPlugin::TmpVec  = new VAVec3();
+TSharedPtr<VAQuat> FVAPlugin::TmpVAQuatSharedPtr;
+TSharedPtr<VAVec3> FVAPlugin::TmpVAVec3SharedPtr;
+
+VAQuat* FVAPlugin::TmpVAQuat;
+VAVec3* FVAPlugin::TmpVAVec3;
 
 FSocket* FVAPlugin::VAServerLauncherSocket = nullptr;
 
@@ -129,14 +131,21 @@ void FVAPlugin::StartupModule()
 	FEditorDelegates::BeginPIE.AddRaw(this, &FVAPlugin::BeginSession);
 	FEditorDelegates::EndPIE.AddRaw(this, &FVAPlugin::EndSession);
 #endif
+
+	// TODO new 
+	TmpVAQuatSharedPtr = MakeShared<VAQuat>();
+	TmpVAVec3SharedPtr = MakeShared<VAVec3>();
+
+	TmpVAQuat = TmpVAQuatSharedPtr.Get();
+	TmpVAVec3 = TmpVAVec3SharedPtr.Get();
 }
 
 void FVAPlugin::BeginSession(const bool bSomething)
 {
 	bPluginInitialized = false;
-	bUseVA = true;
-	bDebugMode = true;
-	bIsMaster = false;
+	SetUseVA(true);
+	SetDebugMode(true);
+	bIsMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
 }
 
 void FVAPlugin::EndSession(const bool bSomething)
@@ -189,12 +198,12 @@ void FVAPlugin::AskForSettings(const FString Host, const int Port, const bool bA
 			                                                      ")? If yes, make sure to have it switched on."));
 		if (ReturnUseVA == EAppReturnType::Type::Yes)
 		{
-			bUseVA = true;
+			SetUseVA(true);
 		}
 		else
 		{
-			bUseVA = false;
-			bDebugMode = false;
+			SetUseVA(false);
+			SetDebugMode(false);
 			bPluginInitialized = true;
 			return;
 		}
@@ -491,13 +500,18 @@ bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const F
 // ******* Sound Buffer ********************************************* //
 // ****************************************************************** //
 
-std::string FVAPlugin::CreateNewBuffer(const FString SoundFileName, const bool bLoop, const float SoundOffset)
+std::string FVAPlugin::CreateNewBuffer(const FString SoundFileName, const bool bLoop, float SoundOffset)
 {
 	if (!ShouldInteractWithServer())
 	{
 		return "-1";
 	}
 
+	if (SoundOffset < 0.0f)
+	{
+		SoundOffset = 0;
+	}
+	
 	const std::string FileName(TCHAR_TO_UTF8(*SoundFileName));
 
 	try
@@ -532,7 +546,7 @@ bool FVAPlugin::SetSoundBufferAction(const std::string BufferID, const EPlayActi
 
 	try
 	{
-		VAServer->SetSignalSourceBufferPlaybackAction(BufferID, FVAUtils::EPlayActionToVAAction(Action));
+		VAServer->SetSignalSourceBufferPlaybackAction(BufferID, Action);
 
 		return true;
 	}
@@ -547,13 +561,13 @@ int FVAPlugin::GetSoundBufferAction(const std::string BufferID)
 {
 	if (!ShouldInteractWithServer())
 	{
-		return -2;
+		return -1;
 	}
 
 	if (BufferID == "-1")
 	{
 		FVAUtils::LogStuff("FVAPlugin::GetSoundBufferAction() - BufferID invalid (=-1)");
-		return -2;
+		return -1;
 	}
 	
 	try
@@ -564,7 +578,7 @@ int FVAPlugin::GetSoundBufferAction(const std::string BufferID)
 	catch (CVAException& e)
 	{
 		ProcessException("FVAPluginModule::GetSoundBufferAction()", FString(e.ToString().c_str()));
-		return -2;
+		return -1;
 	}
 }
 
@@ -639,18 +653,18 @@ int FVAPlugin::CreateNewSoundSource(const std::string BufferID, const std::strin
 	}
 
 	Pos = FVAUtils::ToVACoordinateSystem(Pos, WorldScale);
-	FVAUtils::FVecToVAVec3(Pos, *TmpVec);
+	FVAUtils::FVecToVAVec3(Pos, *TmpVAVec3);
 
 	Rot = FVAUtils::ToVACoordinateSystem(Rot);
 	FQuat QuatF = Rot.Quaternion();
-	FVAUtils::FQuatToVAQuat(QuatF, *TmpQuat);
+	FVAUtils::FQuatToVAQuat(QuatF, *TmpVAQuat);
 
 
 	try
 	{
 		const int SoundSourceID = VAServer->CreateSoundSource(Name);
 
-		VAServer->SetSoundSourcePose(SoundSourceID, *TmpVec, *TmpQuat);
+		VAServer->SetSoundSourcePose(SoundSourceID, *TmpVAVec3, *TmpVAQuat);
 
 		if (Power != -1.0f && Power >= 0.0f)
 		{
@@ -680,17 +694,13 @@ bool FVAPlugin::SetSoundSourcePosition(const int SoundSourceID, FVector Pos)
 		return false;
 	}
 
-	FVAUtils::LogStuff(FString(
-		"SoundSou: X: " + FString::SanitizeFloat(Pos.X) + " - Y: " + FString::SanitizeFloat(Pos.Y) + " - Z: " + FString
-		::SanitizeFloat(Pos.Z)));
-
 	Pos = FVAUtils::ToVACoordinateSystem(Pos, WorldScale);
-	FVAUtils::FVecToVAVec3(Pos, *TmpVec);
+	FVAUtils::FVecToVAVec3(Pos, *TmpVAVec3);
 
 
 	try
 	{
-		VAServer->SetSoundSourcePosition(SoundSourceID, *TmpVec);
+		VAServer->SetSoundSourcePosition(SoundSourceID, *TmpVAVec3);
 		return true;
 	}
 	catch (CVAException& e)
@@ -715,11 +725,11 @@ bool FVAPlugin::SetSoundSourceRotation(const int SoundSourceID, FRotator Rot)
 	
 	Rot = FVAUtils::ToVACoordinateSystem(Rot);
 	FQuat QuatF = Rot.Quaternion();
-	FVAUtils::FQuatToVAQuat(QuatF, *TmpQuat);
+	FVAUtils::FQuatToVAQuat(QuatF, *TmpVAQuat);
 
 	try
 	{
-		VAServer->SetSoundSourceOrientation(SoundSourceID, *TmpQuat);
+		VAServer->SetSoundSourceOrientation(SoundSourceID, *TmpVAQuat);
 		return true;
 	}
 	catch (CVAException& e)
@@ -744,7 +754,6 @@ bool FVAPlugin::SetNewBufferForSoundSource(const int SoundSourceID, const std::s
 
 	if (BufferID == "-1")
 	{
-
 		FVAUtils::LogStuff("FVAPlugin::SetNewBufferForSoundSource() - BufferID invalid (=-1)");
 		return false;
 	}
@@ -903,6 +912,7 @@ bool FVAPlugin::SetSoundReceiverHRIR(const int SoundReceiverID, const int HRIRID
 	if (HRIRID == -1)
 	{
 		FVAUtils::LogStuff("setSoundReceiverHRIR() - HRIR is not valid (id = -1)", true);
+		return false;
 	}
 
 	try
@@ -963,14 +973,15 @@ bool FVAPlugin::SetSoundReceiverPosition(const int SoundReceiverID, FVector Pos)
 	if (SoundReceiverID == -1)
 	{
 		FVAUtils::LogStuff("SetSoundReceiverPosition() - SoundReceiverID is not valid (id = -1)", true);
+		return false;
 	}
 
 	Pos = FVAUtils::ToVACoordinateSystem(Pos, WorldScale);
-	FVAUtils::FVecToVAVec3(Pos, *TmpVec);
+	FVAUtils::FVecToVAVec3(Pos, *TmpVAVec3);
 	
 	try
 	{
-		VAServer->SetSoundReceiverPosition(SoundReceiverID, *TmpVec);
+		VAServer->SetSoundReceiverPosition(SoundReceiverID, *TmpVAVec3);
 		return true;
 	}
 	catch (CVAException& e)
@@ -990,15 +1001,16 @@ bool FVAPlugin::SetSoundReceiverRotation(const int SoundReceiverID, FRotator Rot
 	if (SoundReceiverID == -1)
 	{
 		FVAUtils::LogStuff("SetSoundReceiverRotation() - SoundReceiverID is not valid (id = -1)", true);
+		return false;
 	}
 	
 	Rot = FVAUtils::ToVACoordinateSystem(Rot);
 	FQuat Quat = Rot.Quaternion();
-	FVAUtils::FQuatToVAQuat(Quat, *TmpQuat);
+	FVAUtils::FQuatToVAQuat(Quat, *TmpVAQuat);
 
 	try
 	{
-		VAServer->SetSoundReceiverOrientation(SoundReceiverID, *TmpQuat);
+		VAServer->SetSoundReceiverOrientation(SoundReceiverID, *TmpVAQuat);
 		return true;
 	}
 	catch (CVAException& e)
@@ -1023,18 +1035,19 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 	if (SoundReceiverID == -1)
 	{
 		FVAUtils::LogStuff("SetSoundReceiverRealWorldPose() - SoundReceiverID is not valid (id = -1)", true);
+		return false;
 	}
 
 	Pos = FVAUtils::ToVACoordinateSystem(Pos, WorldScale);
-	FVAUtils::FVecToVAVec3(Pos, *TmpVec);
+	FVAUtils::FVecToVAVec3(Pos, *TmpVAVec3);
 
 	Rot = FVAUtils::ToVACoordinateSystem(Rot);
 	FQuat quat = Rot.Quaternion();
-	FVAUtils::FQuatToVAQuat(quat, *TmpQuat);
+	FVAUtils::FQuatToVAQuat(quat, *TmpVAQuat);
 
 	try
 	{
-		VAServer->SetSoundReceiverRealWorldPose(SoundReceiverID, *TmpVec, *TmpQuat);
+		VAServer->SetSoundReceiverRealWorldPose(SoundReceiverID, *TmpVAVec3, *TmpVAQuat);
 		return true;
 	}
 	catch (CVAException& e)
@@ -1061,12 +1074,41 @@ void FVAPlugin::SetScale(const float ScaleN)
 
 void FVAPlugin::SetUseVA(const bool bUseVAN)
 {
+	// VA cannot be activated once it was deactivated
+	if(bUseVA == false || bUseVA == bUseVAN)
+	{
+		return;
+	}
+	
 	bUseVA = bUseVAN;
+	if (bUseVAN)
+	{
+		ReceiverActor->RunOnAllNodes("useVA = true");
+	}
+	else
+	{
+		ReceiverActor->RunOnAllNodes("useVA = false");
+		DisconnectServer();
+	}
+	
 }
 
-void FVAPlugin::SetDebugMode(const bool DebugModeN)
+void FVAPlugin::SetDebugMode(const bool bDebugModeN)
 {
-	bDebugMode = DebugModeN;
+	if (bDebugMode == bDebugModeN)
+	{
+		return;
+	}
+	bDebugMode = bDebugModeN;
+
+	if (bDebugMode)
+	{
+		ReceiverActor->RunOnAllNodes("debugMode = true");
+	}
+	else
+	{
+		ReceiverActor->RunOnAllNodes("debugMode = false");
+	}
 
 	TArray<AActor*> ActorArray;
 	UGameplayStatics::GetAllActorsOfClass(ReceiverActor->GetWorld(), AActor::StaticClass(), ActorArray);
@@ -1076,7 +1118,7 @@ void FVAPlugin::SetDebugMode(const bool DebugModeN)
 		TArray<UActorComponent*> VAComponents = EntryActor->GetComponentsByClass(UVASourceComponent::StaticClass());
 		for (UActorComponent* EntryVAComponents : VAComponents)
 		{
-			Cast<UVASourceComponent>(EntryVAComponents)->SetVisibility(bDebugMode);
+			(Cast<UVASourceComponent>(EntryVAComponents))->SetVisibility(bDebugMode);
 		}
 	}
 }

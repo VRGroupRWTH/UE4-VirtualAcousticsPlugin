@@ -1,7 +1,12 @@
 #include "VASoundSourceReflection.h"
+
 #include "VAPlugin.h"
+#include "VAUtils.h"
 
-
+#include "VASoundSource.h"
+#include "VAReflectionWall.h"
+#include "VASoundSourceRepresentation.h"
+#include "VADirectivity.h"
 
 // ****************************************************************** // 
 // ******* Initialization ******************************************* //
@@ -25,7 +30,7 @@ FVASoundSourceReflection::FVASoundSourceReflection(FVASoundSource* ParentSourceN
 		if (SoundSourceID == -1)
 		{
 			FVAUtils::LogStuff(
-				"[VASoundSourceReflection::FVASoundSourceReflection(...)] Error initializing soundSource in VASoundSourceReflection()",
+				"[FVASoundSourceReflection::FVASoundSourceReflection(...)] Error initializing soundSource in VASoundSourceReflection()",
 				true);
 			return;
 		}
@@ -47,32 +52,44 @@ FVASoundSourceReflection::FVASoundSourceReflection(FVASoundSource* ParentSourceN
 // ******* Setter *************************************************** //
 // ****************************************************************** //
 
-void FVASoundSourceReflection::SetPosition(const FVector PosN)
+bool FVASoundSourceReflection::SetPosition(const FVector PosN)
 {
 	Pos = FVAUtils::ComputeReflectedPos(Wall, PosN);
 
+	bool Ret = false;
+	
 	if (FVAPlugin::GetIsMaster())
 	{
-		FVAPlugin::SetSoundSourcePosition(SoundSourceID, Pos);
+		Ret = FVAPlugin::SetSoundSourcePosition(SoundSourceID, Pos);
 	}
 
 	if (bShowCones)
 	{
 		SoundSourceRepresentation->SetPosition(Pos);
 	}
+
+	return Ret;
 }
 
-void FVASoundSourceReflection::SetRotation(const FRotator RotN)
+bool FVASoundSourceReflection::SetRotation(const FRotator RotN)
 {
 	Rot = FVAUtils::ComputeReflectedRot(Wall, RotN);
 
+	bool Ret = false;
+	
 	if (FVAPlugin::GetIsMaster())
 	{
-		FVAPlugin::SetSoundSourceRotation(SoundSourceID, Rot);
+		Ret = FVAPlugin::SetSoundSourceRotation(SoundSourceID, Rot);
 	}
 
 	SoundSourceRepresentation->SetRotation(Rot);
 
+	return Ret;
+}
+
+bool FVASoundSourceReflection::SetDirectivity(FVADirectivity* Dir) const
+{
+	return FVAPlugin::SetSoundSourceDirectivity(SoundSourceID, Dir->GetID());
 }
 
 void FVASoundSourceReflection::SetVisibility(const bool bVis)
@@ -81,19 +98,16 @@ void FVASoundSourceReflection::SetVisibility(const bool bVis)
 	SoundSourceRepresentation->SetVisibility(bVis);
 }
 
-void FVASoundSourceReflection::SetDirectivity(FVADirectivity* Dir) const
+bool FVASoundSourceReflection::SetPowerAccordingOrigSource()
 {
-	FVAPlugin::SetSoundSourceDirectivity(SoundSourceID, Dir->GetID());
-}
-
-void FVASoundSourceReflection::SetPowerAccordingOrigSource()
-{
-	if (FVAPlugin::GetIsMaster())
+	if (!FVAPlugin::GetIsMaster())
 	{
-		const float R = Wall->GetReflectionValueR();
-		Power = ParentSource->GetPower() * R * R;
-		FVAPlugin::SetSoundSourcePower(SoundSourceID, Power);
+		return false;
 	}
+	
+	const float R = Wall->GetReflectionValueR();
+	Power = ParentSource->GetPower() * R * R;
+	return FVAPlugin::SetSoundSourcePower(SoundSourceID, Power);
 }
 
 

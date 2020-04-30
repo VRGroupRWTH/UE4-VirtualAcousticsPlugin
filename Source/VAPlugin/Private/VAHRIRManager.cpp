@@ -2,7 +2,7 @@
 
 #include "VAUtils.h"
 
-FVAHRIR* FVAHRIRManager::DefaultHRIR = nullptr;
+FVAHRIR* FVAHRIRManager::DefaultHRIR;
 
 
 
@@ -16,20 +16,20 @@ FVAHRIRManager::FVAHRIRManager()
 
 FVAHRIRManager::~FVAHRIRManager()
 {
+	HRIRs.Reset();
 	DefaultHRIR = nullptr;
 }
 
 
 void FVAHRIRManager::ResetManager()
 {
-	if (DefaultHRIR != nullptr)
-	{
-		delete DefaultHRIR;
-	}
-	DefaultHRIR = new FVAHRIR(FString("$(DefaultHRIR)"));
+	DefaultHRIR = nullptr;
+	// TODO new
+	FVAHRIRSharedPtr NewHRIR(new FVAHRIR("$(DefaultHRIR)"));
+	DefaultHRIR = NewHRIR.Get();
 
 	HRIRs.Empty();
-	HRIRs.Add(DefaultHRIR);
+	HRIRs.Add(NewHRIR);
 }
 
 // ****************************************************************** // 
@@ -38,45 +38,51 @@ void FVAHRIRManager::ResetManager()
 
 FVAHRIR* FVAHRIRManager::GetHRIRByFileName(const FString FileName)
 {
-	// Find already existing HRIR
-	if (!HRIRs.Num())
+	// Search for already existing HRIR
+	if (HRIRs.Num() > 0)
 	{
-		for (auto Entry : HRIRs)
-		{
-			if (Entry->GetFileName() == FileName)
-			{
-				FVAUtils::LogStuff("[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " was found!");
-
-				return Entry;
-			}
-		}
+ 		for (auto Entry : HRIRs)
+ 		{
+ 			if (Entry.Get()->GetFileName() == FileName)
+ 			{
+ 				FVAUtils::LogStuff("[FVAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + 
+					FileName + " was found!");
+ 
+ 				return Entry.Get();
+ 			}
+ 		}
 	}
-
 
 	FVAUtils::LogStuff(
-		"[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " cannot be found! Creating one now...");
+		"[FVAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + 
+		" cannot be found! Creating one now...");
 
-	// Create a new HRIR
-	FVAHRIR* NewHRIR = new FVAHRIR(FileName);
-	if (NewHRIR != nullptr)
+	// TODO new
+	FVAHRIRSharedPtr NewHRIR(new FVAHRIR(FString(FileName)));
+	
+	if (NewHRIR.IsValid() && NewHRIR->IsValidItem())
 	{
-		FVAUtils::LogStuff("[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " is created!");
+		FVAUtils::LogStuff("[FVAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + 
+			FileName + " is created!");
 		HRIRs.Add(NewHRIR);
-		return NewHRIR;
+		return NewHRIR.Get();
 	}
-	FVAUtils::LogStuff("[VAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + FileName + " cannot be created!");
+	FVAUtils::LogStuff("[FVAHeadRelatedIRManager::getHRIRByFileName()] HRIR from file " + 
+		FileName + " cannot be created!");
 
 	// Return Default HRIR
-	return DefaultHRIR;
+	return GetDefaultHRIR();
 }
-
 
 FVAHRIR* FVAHRIRManager::GetDefaultHRIR()
 {
-	if (DefaultHRIR == nullptr)
+	if (DefaultHRIR != nullptr)
 	{
-		DefaultHRIR = new FVAHRIR(FString("$(DefaultHRIR)"));
+		return DefaultHRIR;
 	}
-
-	return DefaultHRIR;
+	FVAUtils::LogStuff("[FVAHRIRManager::GetDefaultHRIR()] No default HRIR found. Please have a scene loaded " +
+		FString("so a ReceiverActor exists handling a HRIRManager containing the defaultHRIR."));
+	return nullptr;
 }
+
+

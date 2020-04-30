@@ -4,15 +4,14 @@
 
 #include <string>
 
-#include "VASoundSourceRepresentation.h"
-#include "VAReflectionWall.h"
-#include "VASoundSource.h"
-#include "VADirectivity.h"
+#include "CoreMinimal.h"
 
-
+class AVASoundSourceRepresentation;
 class FVASoundSource;
+class AVAReflectionWall;
+class FVADirectivity;
 
-class FVASoundSourceReflection // : public VASoundSourceBaseClass
+class FVASoundSourceReflection 
 {
 public:
 
@@ -21,16 +20,15 @@ public:
 	                        std::string BufferIDN, std::string NameN = "", FVector PosN = FVector(),
 	                        FRotator RotN = FRotator(), float PowerN = 0.0f);
 
-	void SetPosition(FVector PosN);
-	void SetRotation(FRotator RotN);
+	bool SetPosition(FVector PosN);
+	bool SetRotation(FRotator RotN);
+	bool SetDirectivity(FVADirectivity* Dir) const;
 	void SetVisibility(bool bVis);
-	void SetDirectivity(FVADirectivity* Dir) const;
-	void SetPowerAccordingOrigSource();
+	bool SetPowerAccordingOrigSource();
 
 	FVector GetPosition() const;
 	FRotator GetRotation() const;
 	int GetSoundSourceID() const;
-
 
 
 

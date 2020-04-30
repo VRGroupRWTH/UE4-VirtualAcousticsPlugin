@@ -2,31 +2,24 @@
 
 #pragma once
 
-#include "Modules/ModuleManager.h"
-#include "VASourceComponent.h"
+#include "Core.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(VALog, Log, All);
 
 //forward declarations:
 class VAQuat;
 class VAVec3;
+class AVAReflectionWall;
 
 class FVAUtils
 {
 public:
 
-	enum EViewEnum
-	{
-		Unclear,
-		ThirdPerson,
-		HMD,
-		Cave
-	};
 
 
 	// Open Message Box with Text. bool error expresses whether to use excl. marks ++ //
 	static void OpenMessageBox(FString Text, bool bError = false);
-	static FString AddExclamationMarkInChar(FString Text);
+	static FString AddExclamationMarkAroundChar(FString Text);
 
 	// Checking LibraryHandle  //
 	static bool CheckLibraryHandle(const void* LibraryHandle);
@@ -37,7 +30,7 @@ public:
 	// Copy FQuat* to QuatVA* //
 	static bool FQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA);
 
-	// Transforms Vec & Rotator in VA Coordinate System // 
+	// Transforms Vec & Rotators in VA Coordinate System // 
 	static FVector ToVACoordinateSystem(FVector VecF, float Scale);
 	static FRotator ToVACoordinateSystem(FRotator RotF);
 
@@ -48,10 +41,4 @@ public:
 	// Log into VALog
 	static void LogStuff(FString Text, bool Error = false);
 
-	// Transform EPlayAction TODO: Get rid of
-	static int EPlayActionToVAAction(EPlayAction ActionE);
-	static EPlayAction VAActionToEPlayAction(int ActionI);
-
-
-private:
 };

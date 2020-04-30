@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "Components/SphereComponent.h"
 #include "Components/ShapeComponent.h"
+
 #include "VASoundSourceRepresentation.generated.h"
 
 UCLASS()
@@ -18,9 +20,9 @@ public:
 	AVASoundSourceRepresentation();
 
 	// Setter
-	bool SetPosition(FVector Pos);
-	bool SetRotation(FRotator Rot);
-	bool SetVisibility(bool bVisibility);
+	void SetPosition(FVector Pos);
+	void SetRotation(FRotator Rot);
+	void SetVisibility(bool bVisibility);
 
 protected:
 	// Called when the game starts or when spawned

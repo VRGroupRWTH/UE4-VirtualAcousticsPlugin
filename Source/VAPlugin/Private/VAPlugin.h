@@ -1,11 +1,8 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "Modules/ModuleManager.h"
+#include <string>						// std::string
 
-
-#include "VAUtils.h"
 #include "Sockets.h"
 
 #define VANET_STATIC
@@ -14,10 +11,12 @@
 
 
 //forward declarations:
-class AVAReceiverActor;
-class AVAReflectionWall;
-class UVASourceComponent;
-class CVAException;
+enum EPlayAction;
+class AVAReceiverActor;		 
+class AVAReflectionWall;	
+
+// Interface Classes
+class CVAException;			
 class IVANetClient;
 class IVAInterface;
 class VAQuat;
@@ -165,8 +164,12 @@ protected:
 
 
 	// tmp Var for easier usage
-	static VAQuat* TmpQuat;
-	static VAVec3* TmpVec;
+	static TSharedPtr<VAQuat> TmpVAQuatSharedPtr;
+	static TSharedPtr<VAVec3> TmpVAVec3SharedPtr;
+
+	static VAQuat* TmpVAQuat;
+	static VAVec3* TmpVAVec3;
+
 
 	//Socket connection to the VAServer Launcher, has to be held open until the program ends
 	static FSocket* VAServerLauncherSocket;

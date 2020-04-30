@@ -2,8 +2,8 @@
 
 #pragma once
 
-
 #include "Containers/UnrealString.h"			// FString
+#include "SharedPointer.h"
 
 class FVADirectivity
 {
@@ -22,7 +22,7 @@ public:
 	
 	// Check Phonemes
 	bool ContainsPhoneme(FString Phoneme) const;
-	bool IsValid() const;
+	bool IsValidItem() const;
 	void LogInfo() const;
 
 	
@@ -37,3 +37,5 @@ protected:
 	FString FileName;
 	TArray<FString> Phonemes;
 };
+
+typedef TSharedPtr<FVADirectivity> FVADirectivitySharedPtr;

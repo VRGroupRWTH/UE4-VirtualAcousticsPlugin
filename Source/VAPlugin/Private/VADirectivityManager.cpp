@@ -3,9 +3,9 @@
 #include "VAUtils.h"
 
 #include "Core.h"
-#include "Interfaces/IPluginManager.h"
+#include "VAHRIR.h"
 
-FVADirectivity* FVADirectivityManager::DefaultDirectivity = nullptr;
+FVADirectivity* FVADirectivityManager::DefaultDirectivity;
 
 
 // ****************************************************************** // 
@@ -19,26 +19,26 @@ FVADirectivityManager::FVADirectivityManager()
 
 FVADirectivityManager::~FVADirectivityManager()
 {
+	Directivities.Reset();
 	DefaultDirectivity = nullptr;
 }
 
 void FVADirectivityManager::ResetManager()
 {
-	if (DefaultDirectivity != nullptr)
-	{
-		delete DefaultDirectivity;
-	}
-	DefaultDirectivity = new FVADirectivity(FString("$(HumanDir)"));
-
+	DefaultDirectivity = nullptr;
+	// TODO new
+	FVADirectivitySharedPtr NewDirectivity(new FVADirectivity("$(HumanDir)"));
+	DefaultDirectivity = NewDirectivity.Get();
+	
 	Directivities.Empty();
-	Directivities.Add(DefaultDirectivity);
+	Directivities.Add(NewDirectivity);
 }
 
 bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 {
+	bool EverythingFine = true;
 	ConfigFileName = ConfigFileNameN;
 
-	Directivities.Add(DefaultDirectivity);
 	
 	const FString RelativePath = FPaths::ProjectContentDir();
 	const FString Dir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*RelativePath);
@@ -53,11 +53,11 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 	if (ConfigFile == nullptr)
 	{
 		FVAUtils::LogStuff(
-			FString("[VADirectivityManager::ReadConfigFile()] - Unable to load directivity config file: ") +
+			FString("[FVADirectivityManager::ReadConfigFile()] - Unable to load directivity config file: ") +
 			ConfigFilePath);
 		return false;
 	}
-	FVAUtils::LogStuff(FString("[VADirectivityManager::ReadConfigFile()] - Config file loaded: ") + ConfigFilePath);
+	FVAUtils::LogStuff(FString("[FVADirectivityManager::ReadConfigFile()] - Config file loaded: ") + ConfigFilePath);
 
 
 	FString ListSymbol, MapToSymbol;
@@ -75,15 +75,16 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 	        TmpPhoneme;		// for saving each phoneme to bring tmp_list to TArray "a","b","c"
 
 
-	for (auto Entry : Mapping)
+	for (auto EntryMapping : Mapping)
 	{
-		if (!Entry.Contains(MapToSymbol))
+		if (!EntryMapping.Contains(MapToSymbol))
 		{
-			FVAUtils::LogStuff("Directivity" + FString(*Entry) + " has a wrong format!(no mapToSymbol)");
+			FVAUtils::LogStuff("Directivity" + FString(*EntryMapping) + " has a wrong format!(no mapToSymbol)");
+			EverythingFine = false;
 			continue;
 		}
 
-		FString Tmp = *Entry;
+		FString Tmp = *EntryMapping;
 
 		// Separate for Phoneme List and File Name
 		Tmp.Split(MapToSymbol, &TmpList, &TmpFileName);
@@ -91,7 +92,8 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 		if (TmpList.IsEmpty() || TmpFileName.IsEmpty())
 		{
 			FVAUtils::LogStuff(
-				"Directivity" + FString(*Entry) + " has a wrong format! (no list of phonemes or file name)");
+				"Directivity" + FString(*EntryMapping) + " has a wrong format! (no list of phonemes or file name)");
+			EverythingFine = false;
 			continue;
 		}
 
@@ -107,9 +109,9 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 
 		// Log output
 		FString Output = "Mapping from: ";
-		for (auto Entry2 : TmpPhonemes)
+		for (auto EntryPhoneme : TmpPhonemes)
 		{
-			Output.Append(Entry2 + ",");
+			Output.Append(EntryPhoneme + ",");
 		}
 		Output.Append(" --> " + TmpFileName);
 		FVAUtils::LogStuff(Output);
@@ -122,6 +124,7 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 		if (TmpDir == nullptr)
 		{
 			FVAUtils::LogStuff("FVADirectivityManager::ReadConfigFile() - Could not create Directivity from file " + TmpFileName);
+			EverythingFine = false;
 		}
 		else
 		{
@@ -134,7 +137,7 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 			DefaultDirectivity = TmpDir;
 		}
 	}
-	return true;
+	return EverythingFine;
 }
 
 
@@ -147,13 +150,13 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByPhoneme(const FString Pho
 	// Search for Directivity
 	for (auto Entry : Directivities)
 	{
-		if (Entry->ContainsPhoneme(Phoneme))
+		if (Entry.Get()->ContainsPhoneme(Phoneme))
 		{
-			return Entry;
+			return Entry.Get();
 		}
 	}
 	FVAUtils::LogStuff(
-		"[VADirectivityManager::GetDirectivityByPhoneme()] Directivity for phoneme " + Phoneme +
+		"[FVADirectivityManager::GetDirectivityByPhoneme()] Directivity for phoneme " + Phoneme +
 		" cannot be found! Using defaultDir");
 
 	// If there is a default Directivity from ini file
@@ -163,48 +166,52 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByPhoneme(const FString Pho
 FVADirectivity* FVADirectivityManager::GetDirectivityByFileName(const FString FileName)
 {
 	// Search for already existing Directivity
-	if (!Directivities.Num())
+	if (Directivities.Num() > 0)
 	{
 		for (auto Entry : Directivities)
 		{
-			if (Entry->GetFileName() == FileName)
+			if (Entry.Get()->GetFileName() == FileName)
 			{
-				FVAUtils::LogStuff(
-					"[VADirectivityManager::getDirectivityByFileName()] Directivity from file " + FileName +
-					" was found!");
+				FVAUtils::LogStuff("[FVADirectivityManager::getDirectivityByFileName()] Directivity from file " + 
+					FileName + " was found!");
 
-				return Entry;
+				return Entry.Get();
 			}
 		}
 	}
 
 	FVAUtils::LogStuff(
-		"[VADirectivityManager::GetDirectivityByFileName()] Directivity from file " + FileName +
+		"[FVADirectivityManager::GetDirectivityByFileName()] Directivity from file " + FileName +
 		" cannot be found! Creating one now...");
 
-	// Create a new one TODO new 
-	FVADirectivity* NewDirectivity = new FVADirectivity(FileName);
-	if (NewDirectivity != nullptr)
+	// TODO new 
+	FVADirectivitySharedPtr NewDirectivity(new FVADirectivity(FileName));
+	
+	if (NewDirectivity.IsValid() && NewDirectivity->IsValidItem())
 	{
+		FVAUtils::LogStuff("[FVAHeadRelatedIRManager::GetDirectivityByFileName()] Directivity from file "+ 
+			FileName + " is created!");
 		Directivities.Add(NewDirectivity);
-		return NewDirectivity;
+		return NewDirectivity.Get();
 	}
-	FVAUtils::LogStuff(
-		"[VADirectivityManager::GetDirectivityByFileName()] Directivity from file " + FileName +
-		" cannot be created!");
+	FVAUtils::LogStuff("[FVADirectivityManager::GetDirectivityByFileName()] Directivity from file " + 
+		FileName + " cannot be created! ");
 
 	// Return default one
 	return GetDefaultDirectivity();
 }
 
+
+
 FVADirectivity* FVADirectivityManager::GetDefaultDirectivity()
 {
-	if (DefaultDirectivity == nullptr)
+	if (DefaultDirectivity != nullptr)
 	{
-		DefaultDirectivity = new FVADirectivity(FString("$(HumanDir)"));
+		return DefaultDirectivity;
 	}
-
-	return DefaultDirectivity;
+	FVAUtils::LogStuff("[FVADirectivityManager::GetDefaultDirectivity()] No default directivity found. " + 
+		FString("Please have a scene loaded so a ReceiverActor exists handling a DirManager containing the defaultDir."));
+	return nullptr;
 }
 
 
@@ -212,15 +219,11 @@ FVADirectivity* FVADirectivityManager::GetDefaultDirectivity()
 // ******* Getter Function ****************************************** //
 // ****************************************************************** //
 
+
 FString FVADirectivityManager::GetFileName() const
 {
 	return ConfigFileName;
 }
-
-
-// ****************************************************************** // 
-// ******* Get Information ****************************************** //
-// ****************************************************************** //
 
 bool FVADirectivityManager::IsValid() const
 {
@@ -231,6 +234,6 @@ void FVADirectivityManager::PrintDirMapping() const
 {
 	for (auto Entry : Directivities)
 	{
-		Entry->LogInfo();
+		Entry.Get()->LogInfo();
 	}
 }

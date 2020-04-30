@@ -41,23 +41,20 @@ void AVASoundSourceRepresentation::BeginPlay()
 }
 
 
-bool AVASoundSourceRepresentation::SetPosition(const FVector Pos)
+void AVASoundSourceRepresentation::SetPosition(const FVector Pos)
 {
 	SphereComponent->SetWorldLocation(Pos);
-	return true;
 }
 
-bool AVASoundSourceRepresentation::SetRotation(FRotator Rot)
+void AVASoundSourceRepresentation::SetRotation(const FRotator Rot)
 {
 	SphereComponent->SetWorldRotation(Rot);
-	return true;
 }
 
-bool AVASoundSourceRepresentation::SetVisibility(bool bVisibility)
+void AVASoundSourceRepresentation::SetVisibility(const bool bVisibility)
 {
 	if (SphereMesh != nullptr)
 	{
 		SphereMesh->SetVisibility(bVisibility);
 	}
-	return true;
 }

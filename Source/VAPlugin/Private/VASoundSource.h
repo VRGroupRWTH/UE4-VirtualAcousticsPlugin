@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "VASoundSourceRepresentation.h"
-#include "VASoundSourceReflection.h"
-#include "VASourceComponent.h"
+#include "CoreMinimal.h"
 #include "VASignalBufferManager.h"
 
-// #include <string>
-
 class UVASourceComponent;
+class FVASoundSourceReflection;
+class AVASoundSourceRepresentation;
+class FVADirectivity;
 
 class FVASoundSource
 {
@@ -23,22 +22,22 @@ public:
 	void SetPosition(FVector PosN);
 	void SetRotation(FRotator RotN);
 	void SetVisibility(bool VisN);
-	void SetDirectivity(FVADirectivity* DirN);
+	bool SetDirectivity(FVADirectivity* DirN);
 
-	void SetPlayAction(int ActionN) const;
-	void SetSoundTime(float TimeN) const;
-	void SetLoop(bool bLoopN);
+	bool SetPlayAction(int ActionN) const;
+	bool SetSoundTime(float TimeN) const;
+	bool SetLoop(bool bLoopN);
 
-	void SetPower(float PowerN);
+	bool SetPower(float PowerN);
 
-	void PlaySound() const;
-	void StopSound() const;
-	void PauseSound() const;
-	void PlaySoundFromSecond(float TimeN) const;
+	bool PlaySound() const;
+	bool StopSound() const;
+	bool PauseSound() const;
+	bool PlaySoundFromSecond(float TimeN) const;
 
-	void MuteSound(bool MutedN = true);
+	bool MuteSound(bool MutedN = true);
 
-	// Functions for user to (pre-) load new sound files at runtime
+	// Functions for user to (pre-) load sound files at runtime
 	bool SetNewSound(FString SoundFileN);
 	bool LoadNewSound(FString SoundFileN);
 

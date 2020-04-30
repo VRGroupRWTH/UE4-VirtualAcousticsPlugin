@@ -1,31 +1,6 @@
-Reading Directivities correctly
-Make Wall to plane
-Ausgabe RL Pos
-Spawn Cones in Source Component
-
-
-
-
 processException()
 
-All Enums in defines
-
-Einheitlich pos position, rot rotation, trans transform
-
-Source Component getPos & getRot richtig? 
-
-bool and void richtig mit Zugriffs Funktionen
-
-Component visibility
-
 VADirectivity Konstruktoren
-
-VADirMapper doppelte Phoneme? & was mit name default?
-
-
-EPlayAction VASoundSource::getPlayAction() {
-	return EPlayAction::Play;
-}
 
 VASoundSource::VASoundSource(UVASourceComponent * parentComponent_) :
 	parentComponent(parentComponent_)
@@ -33,84 +8,19 @@ VASoundSource::VASoundSource(UVASourceComponent * parentComponent_) :
 	// TODO
 }
 
-Sound Component soundOffset --> soundTimeOffset
 
-catch bei directivity ist falsch
-
-
-Receiver Actor getReflectionWalls()
-
-Component Interface Functions check if is master (play, pause, stop etc)
-
-ReceiverActor::getIPAdress()
-IP Adresse im Generellen
-
-useVA auch bei Ini richtig nutzen
-
-soundID (Component)
-
-Source, Reflection, Base setPos() & setRot() (ohne param)
-
-
-TODO: Set Input for Debug Mode
-Set Walls to static ?!
-
-
-Check all includes
-
-VAPlugin::REMAKE
-
-
-
-Funktion für Server Löschung: pVA->Finalize();
-
-/* 	enum PlaybackAction
-	{
-		VA_PLAYBACK_ACTION_NONE = -1,	//!< No action
-		VA_PLAYBACK_ACTION_STOP = 0,	//!< Stop playback
-		VA_PLAYBACK_ACTION_PAUSE = 1,	//!< Pause playback
-		VA_PLAYBACK_ACTION_PLAY = 2,	//!< Start/resume playback	
-	};
-*/
-
-
-enum EPlayAction {
-	Stop = 0,
-	Pause = 1,
-	Play = 2
-};
-Check that!
-
-void UVASourceComponent::setGainFactor(float gainFactor_)
-
-void AVAReflectionWall::spawnSphere(FVector pos, FRotator rot) 
-
-PluginModule::resetServer return true;
-PluginModule::disconnect
-
-
-Sound Source Component GainFactor
-
-void VADirectivityManager::reset() - delete all directivities from VA Server
-
-
-
-
-
-Check if useVA is used correctly in Component
-
-Make sure that every Wall Data is computed correctly!!
-
-Remake visibility @Component
+Set Input for Debug Mode?
 
 Test Disconnect without Python!
 
 HRIR
 
-Check default DIR & HRIR! Richtige Reihenfolge beim ini? 
 
 Groß / Kleinschreibung bei Log Stuff
 
-Wiki: Run on all nodes Settings
+Manche Funktionen const aber sie sind nicht const weil sie am Server was machen
+bool FVASignalBuffer::SetSoundTimeOffset(const float SoundTimeOffset)
+{
+	return FVAPlugin::SetSoundBufferTime(BufferID, SoundTimeOffset);
+}
 
-Neue Ordner Struktur (Private / Public)

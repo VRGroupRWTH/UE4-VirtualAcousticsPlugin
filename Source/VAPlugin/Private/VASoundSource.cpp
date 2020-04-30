@@ -1,7 +1,13 @@
 #include "VASoundSource.h"
 
-#include "VASourceComponent.h"
 #include "VAPlugin.h"
+#include "VAUtils.h"
+
+#include "VASourceComponent.h"
+#include "VASoundSourceReflection.h"
+#include "VASoundSourceRepresentation.h"
+#include "VADirectivity.h"
+#include "VAReflectionWall.h"
 
 int FVASoundSource::Counter = 0;
 
@@ -33,7 +39,7 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent) :
 
 		if (ActiveBuffer == nullptr)
 		{
-			FVAUtils::LogStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing Buffer", true);
+			FVAUtils::LogStuff("[FVASoundSource::VASoundSource(UVASourceComponent*)] Error initializing Buffer", true);
 			return;
 		}
 
@@ -48,7 +54,7 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent) :
 		SoundSourceID = FVAPlugin::CreateNewSoundSource(ActiveBuffer->GetID(), Name, Position, Rotation, Power);
 		if (SoundSourceID == -1)
 		{
-			FVAUtils::LogStuff("[VASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource",
+			FVAUtils::LogStuff("[FVASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource",
 			                  true);
 			return;
 		}
@@ -107,14 +113,14 @@ void FVASoundSource::SetPosition(const FVector PosN)
 		FVAPlugin::SetSoundSourcePosition(SoundSourceID, Position);
 	}
 
+
 	SoundSourceRepresentation->SetPosition(Position);
 
-	
 	if (bHandleReflections)
 	{
 		for (auto EntryReflections : Reflections)
 		{
-			EntryReflections->SetPosition(Position);
+			EntryReflections->SetPosition(Position);	
 		}
 	}
 }
@@ -128,6 +134,7 @@ void FVASoundSource::SetRotation(const FRotator RotN)
 		FVAPlugin::SetSoundSourceRotation(SoundSourceID, Rotation);
 	}
 
+	
 	SoundSourceRepresentation->SetRotation(Rotation);
 
 	if (bHandleReflections)
@@ -148,6 +155,9 @@ void FVASoundSource::SetVisibility(const bool VisN)
 	
 	bShowCones = VisN;
 
+
+	bool bFullSuccess = true;
+	
 	SoundSourceRepresentation->SetVisibility(bShowCones);
 
 	if (bHandleReflections && Reflections.Num() != 0)
@@ -159,145 +169,187 @@ void FVASoundSource::SetVisibility(const bool VisN)
 	}
 }
 
-void FVASoundSource::SetDirectivity(FVADirectivity* DirN)
+bool FVASoundSource::SetDirectivity(FVADirectivity* DirN)
 {
 	Directivity = DirN;
 
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
 	}
 
-	FVAPlugin::SetSoundSourceDirectivity(SoundSourceID, DirN->GetID());
+
+	bool bFullSuccess = true;
+	
+	if(!FVAPlugin::SetSoundSourceDirectivity(SoundSourceID, DirN->GetID()))
+	{
+		bFullSuccess = false;
+	}
 
 	if (bHandleReflections)
 	{
 		for (auto EntryReflections : Reflections)
 		{
-			EntryReflections->SetDirectivity(DirN);
+			if(!EntryReflections->SetDirectivity(DirN))
+			{
+				bFullSuccess = false;
+			}
 		}
 	}
+
+	return bFullSuccess;
 }
 
-void FVASoundSource::SetPlayAction(const int ActionN) const
-{
-	if (!FVAPlugin::GetIsMaster() || GetPlayState() == ActionN)
-	{
-		return;
-	}
-
-	ActiveBuffer->SetSoundBufferAction(ActionN);
-}
-
-void FVASoundSource::SetSoundTime(const float TimeN) const
+bool FVASoundSource::SetPlayAction(const int ActionN) const
 {
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
+	}
+	
+	if (int(GetPlayState()) == ActionN)
+	{
+		return true;
 	}
 
-	ActiveBuffer->SetSoundTimeOffset(TimeN);
+	return ActiveBuffer->SetSoundBufferAction(ActionN);
 }
 
-void FVASoundSource::SetLoop(const bool bLoopN)
+bool FVASoundSource::SetSoundTime(const float TimeN) const
 {
-	if (!FVAPlugin::GetIsMaster() || bLoop == bLoopN)
+	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
+	}
+
+	return ActiveBuffer->SetSoundTimeOffset(TimeN);
+}
+
+bool FVASoundSource::SetLoop(const bool bLoopN)
+{
+	if (!FVAPlugin::GetIsMaster())
+	{
+		return false;
+	}
+
+	if (bLoop == bLoopN)
+	{
+		return true;
 	}
 	
 	bLoop = bLoopN;
 
-	ActiveBuffer->SetLoop(bLoopN);
+	return ActiveBuffer->SetLoop(bLoopN);
 }
 
-void FVASoundSource::SetPower(const float PowerN)
+bool FVASoundSource::SetPower(const float PowerN)
 {
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
 	}
 
 	if (Power == PowerN)
 	{
-		return;
+		return true;
 	}
 	
 	Power = PowerN;
 
-	FVAPlugin::SetSoundSourcePower(SoundSourceID, PowerN);
+	bool bFullSuccess = true;
+	
+	if(!FVAPlugin::SetSoundSourcePower(SoundSourceID, PowerN))
+	{
+		bFullSuccess = false;
+	}
+	
 	for (auto EntryReflections : Reflections)
 	{
-		EntryReflections->SetPowerAccordingOrigSource();
+		if(!EntryReflections->SetPowerAccordingOrigSource())
+		{
+			bFullSuccess = false;
+		}
 	}
+	return bFullSuccess;
 }
 
-void FVASoundSource::PlaySound() const
+bool FVASoundSource::PlaySound() const
 {
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
 	}
 
-	SetPlayAction(Play);
+	return SetPlayAction(Play);
 }
 
-void FVASoundSource::StopSound() const
+bool FVASoundSource::StopSound() const
 {
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
 	}
 
-	SetPlayAction(Stop);
+	return SetPlayAction(Stop);
 }
 
-void FVASoundSource::PauseSound() const
+bool FVASoundSource::PauseSound() const
 {
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
 	}
 
-	SetPlayAction(Pause);
+	return SetPlayAction(Pause);
 }
 
-void FVASoundSource::PlaySoundFromSecond(const float TimeN) const
+bool FVASoundSource::PlaySoundFromSecond(const float TimeN) const
 {
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
 	}
 
-	SetSoundTime(TimeN);
-
-	PlaySound();
+	if (SetSoundTime(TimeN))
+	{
+		return SetPlayAction(Play);
+	}
+	
+	return false;
 }
 
-void FVASoundSource::MuteSound(const bool MutedN)
+bool FVASoundSource::MuteSound(const bool MutedN)
 {
 	if (!FVAPlugin::GetIsMaster())
 	{
-		return;
+		return false;
 	}
 
-	FVAPlugin::SetSoundSourceMuted(SoundSourceID, MutedN);
+	bool bFullSuccess = true;
+	if(!FVAPlugin::SetSoundSourceMuted(SoundSourceID, MutedN))
+	{
+		bFullSuccess = false;
+	}
 
 	for (auto EntryReflections : Reflections)
 	{
-		FVAPlugin::SetSoundSourceMuted(EntryReflections->GetSoundSourceID(), MutedN);
+		if(!FVAPlugin::SetSoundSourceMuted(EntryReflections->GetSoundSourceID(), MutedN))
+		{
+			bFullSuccess = false;
+		}
 	}
+	return bFullSuccess;
 }
 
 bool FVASoundSource::SetNewSound(FString SoundFileN)
 {
-	// create new buffer
+	// create buffer
 	FVASignalBuffer* TmpBuffer = BufferManager.GetBufferByFileName(SoundFileN);
 
 	// Check if is valid
 	if (TmpBuffer == nullptr)
 	{
-		FVAUtils::LogStuff("[VASoundSource::SetNewSound()] Buffer from file " + SoundFileN + " was loaded incorrectly!");
+		FVAUtils::LogStuff("[FVASoundSource::SetNewSound()] Buffer from file " + SoundFileN + " was loaded incorrectly!");
 		return false;
 	}
 

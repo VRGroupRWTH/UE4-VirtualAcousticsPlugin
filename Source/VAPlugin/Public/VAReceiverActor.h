@@ -2,19 +2,18 @@
 
 #pragma once
 
+#include "VADefines.h"
 
 #include "VADirectivityManager.h"
 #include "VAHRIRManager.h"
+
 #include "GameFramework/Actor.h"
-#include "Cluster/IDisplayClusterClusterManager.h"		// For Events
-#include "Cluster/DisplayClusterClusterEvent.h"			// For Events
-#include "CoreMinimal.h"								// For Events
+#include "Cluster/IDisplayClusterClusterManager.h"		// Events
 
 #include "VAReceiverActor.generated.h"
 
-// Forward declarations
-class AVAReflectionWall;
 
+class AVAReflectionWall;
 
 UENUM()
 enum EAddress
@@ -48,7 +47,7 @@ protected:
 
 	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase", Category = "Connection"))
-	TEnumAsByte<EAddress> AddressSetting = Automatic;
+	TEnumAsByte<EAddress> AddressSetting = EAddress::Automatic;
 
 	// IP Address for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress", Category = "Connection")) // CanEditChange used
@@ -59,9 +58,12 @@ protected:
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
 	uint16 ServerPort = 12340;
 
+	// Read in File? 
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Read an initial mapping file?", Category = "Directivity Manager"))
+	bool bReadInitialMappingFile = true;
+	
 	// File name of the Directivity mapping file
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities", Category = "Directivity Manager"
-	))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities", Category = "Directivity Manager"))
 	FString DirMappingFileName = "Study/VADir_default.ini";
 
 	// Port for remote VAServer starting
@@ -90,17 +92,16 @@ public:
 
 	// Interface for Dir Mapping
 	UFUNCTION(BlueprintCallable)
-	void ReadDirMappingFile(FString FileName);
+	bool ReadDirMappingFile(FString FileName);
 
 	// Interface for HRIR Settings
 	UFUNCTION(BlueprintCallable)
-	void SetHRIRByFileName(FString FileName);
+	bool SetHRIRByFileName(FString FileName);
 
 
 	// Directivity Handling
 	FVADirectivity* GetDirectivityByMapping(FString Phoneme) const;
 	FVADirectivity* GetDirectivityByFileName(FString FileName);
-
 
 
 	// Getter Functions
@@ -149,6 +150,8 @@ protected:
 	int ReceiverID;
 	FVADirectivityManager DirManager;
 	FVAHRIRManager HRIRManager;
+
+	FVAHRIR* CurrentHRIR;
 
 	TArray<AVAReflectionWall*> ReflectionWalls;
 

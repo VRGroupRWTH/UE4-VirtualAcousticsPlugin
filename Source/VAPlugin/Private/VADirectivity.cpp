@@ -1,22 +1,19 @@
 #include "VADirectivity.h"
 
-#include "Containers/Array.h"					// TArray
-
-#include "VAPlugin.h"							// For Server
-#include "VADirectivityManager.h"				// For default Directivity
-
+#include "VAPlugin.h"							// For Server Interface functions
+#include "VAUtils.h"
 
 // ****************************************************************** // 
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVADirectivity::FVADirectivity(FString FileNameN) :
+FVADirectivity::FVADirectivity(const FString FileNameN) :
 	FileName(FileNameN)
 {
 	CreateNewDirectivity();
 }
 
-FVADirectivity::FVADirectivity(FString FileNameN, FString Phoneme) :
+FVADirectivity::FVADirectivity(const FString FileNameN, const FString Phoneme) :
 	FileName(FileNameN)
 {
 	TArray<FString> Tmp;
@@ -26,8 +23,8 @@ FVADirectivity::FVADirectivity(FString FileNameN, FString Phoneme) :
 	CreateNewDirectivity();
 }
 
-FVADirectivity::FVADirectivity(FString FileNameN, TArray<FString> phonemes_) :
-	FileName(FileNameN), Phonemes(phonemes_)
+FVADirectivity::FVADirectivity(const FString FileNameN, const TArray<FString> PhonemesN) :
+	FileName(FileNameN), Phonemes(PhonemesN)
 {
 	CreateNewDirectivity();
 }
@@ -37,11 +34,11 @@ void FVADirectivity::CreateNewDirectivity()
 	DirID = FVAPlugin::CreateNewDirectivity(FileName);
 	if (DirID == -1)
 	{
-		FVAUtils::LogStuff("[VADirectivity::createNewDirectivity()] Directivity file " + FileName + " cannot be found!");
+		FVAUtils::LogStuff("[FVADirectivity::createNewDirectivity()] Directivity file " + FileName + " cannot be found!");
 		return;
 	}
 
-	FVAUtils::LogStuff("created new VADirectivity");
+	FVAUtils::LogStuff("created a VADirectivity");
 }
 
 
@@ -72,7 +69,7 @@ bool FVADirectivity::ContainsPhoneme(const FString Phoneme) const
 	return Phonemes.Contains(Phoneme);
 }
 
-bool FVADirectivity::IsValid() const
+bool FVADirectivity::IsValidItem() const
 {
 	return (DirID != -1);
 }

@@ -2,35 +2,40 @@
 
 #pragma once
 
+
+#include "GameFramework/Actor.h"
 #include "VASoundSource.h"								// From VA
+#include "SharedPointer.h"
 
 #include "VASourceComponent.generated.h"
 
-// struct used to input Directivity via Variable in UE4 Editor
 UENUM()
 enum EDir
 {
 	DefaultHRIR,
 	ManualFile,
 	Phoneme,
-	None
+	NoDirectivity
 };
 
 UENUM()
 enum EMovement
 {
-	AttachToBone,
-	ObjectSpawnPoint,
-	MoveWithObject
+	MoveWithObject = 0,
+	ObjectSpawnPoint = 1,
+	AttachToBone = 2,
 };
+
 
 UENUM(BlueprintType)
 enum EPlayAction
 {
+	NoPlayAction = -1 UMETA(Hidden),
 	Stop = 0,
 	Pause = 1,
 	Play = 2
 };
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VAPLUGIN_API UVASourceComponent : public UActorComponent
@@ -49,7 +54,7 @@ protected:
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "General Settings"))
-	TEnumAsByte<EPlayAction> StartingPlayAction = Stop;
+	TEnumAsByte<EPlayAction> StartingPlayAction = EPlayAction::Stop;
 
 	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]", Category = "General Settings"))
@@ -71,14 +76,14 @@ protected:
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
 		CustomStructureParam = "Attatch to a Bone, At Object Spawn Point, Move With the Object"))
-	TEnumAsByte<EMovement> MovementSetting = ObjectSpawnPoint;
+	TEnumAsByte<EMovement> MovementSetting = EMovement::ObjectSpawnPoint;
 
 	// Use the manual Offset for the position?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?", Category = "Position"))
 	bool bUsePoseOffset = false;
 
 	// Offset in Position
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset", Category = "Position", EditCondition = "usePoseOffset"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Offset Position", Category = "Position", EditCondition = "usePoseOffset"))
 	FVector OffsetPosition = FVector(0, 0, 0);
 
 	// Offset in Rotation
@@ -92,7 +97,7 @@ protected:
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity", Category = "Directivity"))
-	TEnumAsByte<EDir> DirectivitySetting = None;
+	TEnumAsByte<EDir> DirectivitySetting = EDir::NoDirectivity;
 
 	// File Name of the Directivity that should be used
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name", Category = "Directivity"))
@@ -181,7 +186,7 @@ public:
 	bool SetOffsetRotation(FRotator RotN);
 
 
-	// *** DIRECTIVITIES *** // 
+	// *** Directivities *** // 
 	
 	UFUNCTION(BlueprintCallable)
 	bool SetDirectivityByMapping(FString Phoneme);
@@ -193,7 +198,7 @@ public:
 	FString GetDirectivityFileName() const;
 
 
-	// *** GRAPHICAL REPRESENTATION *** // 
+	// *** Graphical Representation *** // 
 	
 	UFUNCTION(BlueprintCallable)
 	bool SetVisibility(bool bVisN) const;
@@ -219,7 +224,7 @@ protected:
 	// initialize Sound Source with the settings set // 
 	void Initialize();
 
-	FVASoundSource* SoundSource;
+	TSharedPtr<FVASoundSource> SoundSource;
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
 	// Class data

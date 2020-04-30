@@ -1,10 +1,7 @@
 #include "VAHRIR.h"
 
-// #include "Containers/Array.h"				// TArray
-
 #include "VAPlugin.h"							// For Server
-#include "VAHRIRManager.h"						// For default Directivity
-
+#include "VAUtils.h"			
 
 // ****************************************************************** // 
 // ******* Initialization ******************************************* //
@@ -22,11 +19,11 @@ void FVAHRIR::CreateNewHRIR()
 	HRIRID = FVAPlugin::CreateNewHRIR(FileName);
 	if (HRIRID == -1)
 	{
-		FVAUtils::LogStuff("[VAHRIR::createNewHRIR()] HRIR file " + FileName + " cannot be found!");
+		FVAUtils::LogStuff("[FVAHRIR::createNewHRIR()] HRIR file " + FileName + " cannot be found!");
 		return;
 	}
 
-	FVAUtils::LogStuff("created new VAHRIR");
+	FVAUtils::LogStuff("created a VAHRIR");
 }
 
 
@@ -45,7 +42,7 @@ FString FVAHRIR::GetFileName() const
 	return FileName;
 }
 
-bool FVAHRIR::IsValid() const
+bool FVAHRIR::IsValidItem() const
 {
 	return bool(HRIRID != -1);
 }

@@ -6,21 +6,15 @@
 #include "VAPlugin.h"
 #include "VAUtils.h"
 
-#include "Engine/World.h"
-#include "GameFramework/PlayerController.h"
-#include "VADefines.h"
+#include "VASourceComponent.h"
+#include "VAReflectionWall.h"
 
-#include "DisplayClusterPawn.h"
-#include "DisplayClusterSceneComponent.h"
 
-#include "Engine.h"									 // For Events
-#include "IDisplayCluster.h"						 // For Events
-#include "IDisplayClusterClusterManager.h"
-
-#include "VirtualRealityPawn.h"
-
-#include "EngineUtils.h"
-#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"							// World
+#include "GameFramework/PlayerController.h"			// Viewport
+#include "IDisplayCluster.h"						// For Events
+#include "VirtualRealityPawn.h"						// VR Pawn
+#include "Kismet/GameplayStatics.h"					// Get Actors of class
 
 
 AVAReceiverActor* AVAReceiverActor::CurrentReceiverActor;
@@ -93,16 +87,24 @@ void AVAReceiverActor::BeginPlay()
 		{
 			FVAPlugin::ResetServer();
 		}
+		
+		// Initialize the dirManager
+		DirManager.ResetManager();
+		if (bReadInitialMappingFile)
+		{
+			DirManager.ReadConfigFile(DirMappingFileName);
+		}
+
+		// Initialize the HRIRManager
+		HRIRManager.ResetManager();
 
 		// Initialize Receiver Actor
 		ReceiverID = FVAPlugin::CreateNewSoundReceiver(this);
+		if (FVAHRIRManager::GetDefaultHRIR()->GetID() != -1)
+		{
+			CurrentHRIR = FVAHRIRManager::GetDefaultHRIR();
+		}
 
-		// Initialize the dirManager
-		DirManager.ResetManager();
-		DirManager.ReadConfigFile(DirMappingFileName);
-
-		// Initialize the hrirManager
-		HRIRManager.ResetManager();
 	}
 
 	// Initialize Walls for Sound Reflection
@@ -271,22 +273,35 @@ FVADirectivity* AVAReceiverActor::GetDirectivityByFileName(const FString FileNam
 	return DirManager.GetDirectivityByFileName(FileName);
 }
 
-void AVAReceiverActor::ReadDirMappingFile(const FString FileName)
+bool AVAReceiverActor::ReadDirMappingFile(const FString FileName)
 {
 	if (DirManager.GetFileName() == FileName)
 	{
 		FVAUtils::LogStuff("[AVAReceiverActor::readDirMappingFile()]: file already loaded");
-		return;
+		return false;
 	}
 
 	DirMappingFileName = FileName;
 	DirManager.ResetManager();
-	DirManager.ReadConfigFile(DirMappingFileName);
+	return DirManager.ReadConfigFile(DirMappingFileName);
 }
 
-void AVAReceiverActor::SetHRIRByFileName(const FString FileName)
+bool AVAReceiverActor::SetHRIRByFileName(const FString FileName)
 {
-	FVAPlugin::SetSoundReceiverHRIR(ReceiverID, HRIRManager.GetHRIRByFileName(FileName)->GetID());
+	FVAHRIR* NewHRIR = HRIRManager.GetHRIRByFileName(FileName);
+
+	if (NewHRIR == nullptr)
+	{
+		return false;
+	}
+	
+	if(CurrentHRIR != nullptr && NewHRIR->GetID() == CurrentHRIR->GetID())
+	{
+		return true;
+	}
+	
+	CurrentHRIR = NewHRIR;
+	return FVAPlugin::SetSoundReceiverHRIR(ReceiverID, NewHRIR->GetID());
 }
 
 
@@ -309,20 +324,20 @@ FString AVAReceiverActor::GetIPAddress() const
 {
 	switch (AddressSetting)
 	{
-	case Automatic:
+	case EAddress::Automatic:
 #if PLATFORM_WINDOWS
 		return FString("127.0.0.1");
 #else
 		return FString("10.0.1.240");
 #endif
 		break;
-	case Cave:
+	case EAddress::Cave:
 		return FString("10.0.1.240");
 		break;
-	case Localhost:
+	case EAddress::Localhost:
 		return FString("127.0.0.1");
 		break;
-	case Manual:
+	case EAddress::Manual:
 		return ServerIPAddress;
 		break;
 	default:
@@ -338,12 +353,12 @@ int AVAReceiverActor::GetPort() const
 {
 	switch (AddressSetting)
 	{
-	case Automatic:
-	case Cave:
-	case Localhost:
+	case EAddress::Automatic:
+	case EAddress::Cave:
+	case EAddress::Localhost:
 		return 12340;
 		break;
-	case Manual:
+	case EAddress::Manual:
 		return ServerPort;
 		break;
 	default:
@@ -446,15 +461,15 @@ void AVAReceiverActor::HandleClusterCommand(const FString Command)
 bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 {
 	// Check manual Address
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, ServerIPAddress))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, ServerIPAddress) ||
+		InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, ServerPort))
 	{
-		return AddressSetting == Manual;
+		return AddressSetting == EAddress::Manual;
 	}
 
-	// Check manual Port
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, ServerPort))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, DirMappingFileName))
 	{
-		return AddressSetting == Manual;
+		return bReadInitialMappingFile;
 	}
 
 	return true;
