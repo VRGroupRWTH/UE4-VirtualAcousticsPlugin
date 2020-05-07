@@ -39,7 +39,7 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent) :
 
 		if (ActiveBuffer == nullptr)
 		{
-			FVAUtils::LogStuff("[FVASoundSource::VASoundSource(UVASourceComponent*)] Error initializing Buffer", true);
+			FVAUtils::LogStuff("[FVASoundSource::VASoundSource()]: Error initializing Buffer", true);
 			return;
 		}
 
@@ -54,7 +54,7 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent) :
 		SoundSourceID = FVAPlugin::CreateNewSoundSource(ActiveBuffer->GetID(), Name, Position, Rotation, Power);
 		if (SoundSourceID == -1)
 		{
-			FVAUtils::LogStuff("[FVASoundSource::VASoundSource(UVASourceComponent*)] Error initializing soundSource",
+			FVAUtils::LogStuff("[FVASoundSource::VASoundSource()]: Error initializing soundSource",
 			                  true);
 			return;
 		}
@@ -349,16 +349,17 @@ bool FVASoundSource::SetNewSound(FString SoundFileN)
 	// Check if is valid
 	if (TmpBuffer == nullptr)
 	{
-		FVAUtils::LogStuff("[FVASoundSource::SetNewSound()] Buffer from file " + SoundFileN + " was loaded incorrectly!");
+		FVAUtils::LogStuff("[FVASoundSource::SetNewSound()]: Buffer from file " + 
+			SoundFileN + " was loaded incorrectly!", true);
 		return false;
 	}
 
-	// stop 
-	StopSound();
+	// Stop 
 
 	// If the same Buffer is already loaded only stop sound (prev)
 	if (TmpBuffer == ActiveBuffer)
 	{
+		StopSound();
 		return true;
 	}
 

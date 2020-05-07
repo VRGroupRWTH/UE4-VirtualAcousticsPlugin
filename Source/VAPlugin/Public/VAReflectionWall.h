@@ -21,11 +21,8 @@ class VAPLUGIN_API AVAReflectionWall : public AActor
 	float ReflectionValueR = 1;
 
 public:
-	// Sets default values for this actor's properties
+	// Sets default values for this actors properties
 	AVAReflectionWall();
-
-	// Compute all Data
-	void ComputePlaneData();
 
 	// Getter functions
 	FVector GetNormalVector() const;
@@ -43,10 +40,6 @@ protected:
 	FVector NormalVector;
 	FVector SupportVector;
 	float HessianD;
-
-	// is PlaneData already computed?
-	bool bAlreadyComputed;
-
 
 public:
 	// Called every frame

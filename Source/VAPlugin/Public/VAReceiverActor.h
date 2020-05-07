@@ -45,6 +45,10 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?", Category = "General Settigns"))
 	bool bAskForDebugMode = true;
 
+	// Check if should try to use Python Automatic Remote star
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Automatic Remote VA Start via Python?", Category = "General Settigns"))
+	bool bAutomaticRemoteVAStart = true;
+
 	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase", Category = "Connection"))
 	TEnumAsByte<EAddress> AddressSetting = EAddress::Automatic;

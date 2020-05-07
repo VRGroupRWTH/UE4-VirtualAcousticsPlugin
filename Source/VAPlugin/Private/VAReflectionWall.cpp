@@ -12,8 +12,6 @@ AVAReflectionWall::AVAReflectionWall()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	bAlreadyComputed = false;
-
 	PlaneComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("PlaneComp"));
 	PlaneComponent->InitBoxExtent(FVector(1, 100, 100));
 	PlaneComponent->SetVisibility(true);
@@ -23,11 +21,6 @@ AVAReflectionWall::AVAReflectionWall()
 void AVAReflectionWall::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (!bAlreadyComputed)
-	{
-		ComputePlaneData();
-	}
 }
 
 // Called every frame
@@ -39,32 +32,22 @@ void AVAReflectionWall::Tick(const float DeltaTime)
 
 FVector AVAReflectionWall::GetNormalVector() const
 {
-	return NormalVector;
+	return PlaneComponent->GetComponentRotation().Vector();
 }
 
 FVector AVAReflectionWall::GetSupportVector() const
 {
-	return SupportVector;
+	return PlaneComponent->GetComponentLocation();
 }
 
 float AVAReflectionWall::GetHessianD() const
 {
-	return HessianD;
+	return FVector::DotProduct(GetNormalVector(), GetSupportVector());
 }
 
 float AVAReflectionWall::GetReflectionValueR() const
 {
 	return ReflectionValueR;
-}
-
-void AVAReflectionWall::ComputePlaneData()
-{
-	NormalVector  = PlaneComponent->GetComponentRotation().Vector();
-	SupportVector = PlaneComponent->GetComponentLocation();
-
-	HessianD = FVector::DotProduct(NormalVector, SupportVector);
-
-	bAlreadyComputed = true;
 }
 
 

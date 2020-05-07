@@ -75,7 +75,7 @@ protected:
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
-		CustomStructureParam = "Attatch to a Bone, At Object Spawn Point, Move With the Object"))
+		CustomStructureParam = "Move With the Object, At Object Spawn Point (unmovable, also reflections), Attatch to a Bone"))
 	TEnumAsByte<EMovement> MovementSetting = EMovement::ObjectSpawnPoint;
 
 	// Use the manual Offset for the position?
@@ -118,97 +118,124 @@ public:
 
 
 	// *** Playback Settings *** //
-	
+
+	// Play Sound
 	UFUNCTION(BlueprintCallable)
 	bool PlaySound() const;
 
+	// Play Sound starting from second of sound
 	UFUNCTION(BlueprintCallable)
 	bool PlaySoundFromSecond(float Time) const;
 
+	// Stop Sound
 	UFUNCTION(BlueprintCallable)
 	bool StopSound() const;
 
+	// Pause Sound
 	UFUNCTION(BlueprintCallable)
 	bool PauseSound() const;
 
+	// Returns the Play State directly from the server 	NoPlayAction = -1, Stop = 0, Pause = 1,	Play = 2
 	UFUNCTION(BlueprintCallable)
 	EPlayAction GetPlayState() const;
 
 
 	// *** Sound Settings *** // 
 
+	// Mute sound (true = mute)
 	UFUNCTION(BlueprintCallable)
 	bool MuteSound(bool bMuteN = true);
 
+	// (Pre-) loads a sound file for later usage
 	UFUNCTION(BlueprintCallable)
 	bool LoadSoundFile(FString SoundFileN) const;
 
+	// Sets a sound file. If already loaded use the loaded one, if not create new
 	UFUNCTION(BlueprintCallable)
 	bool SetSoundFile(FString SoundFileN);
 
+	// Returns the name of the sound file set at the moment
 	UFUNCTION(BlueprintCallable)
 	FString GetSoundFile() const;
 
+	// Sets the Sound Power in Watts
 	UFUNCTION(BlueprintCallable)
 	bool SetSoundPower(float Power);
 
+	// Gets the Sound Power in Watts
 	UFUNCTION(BlueprintCallable)
 	float GetSoundPower() const;
 
+	// Sets whether to loop or not (true = loop)
 	UFUNCTION(BlueprintCallable)
 	bool SetLoop(bool bLoopN);
 
+	// Gets whether to loop or not (true = loop)
 	UFUNCTION(BlueprintCallable)
 	bool GetLoop() const;
-	
+
+	// Gets whether to handle the reflections on this sound source
 	UFUNCTION(BlueprintCallable)
 	bool GetHandleReflections() const;
 
 	
 	// *** Sound Pose *** //
-	
+
+	// Gets Position of Sound Source
 	UFUNCTION(BlueprintCallable)
 	FVector GetPosition() const;
 
+	// Gets Rotation of Sound Source
 	UFUNCTION(BlueprintCallable)
 	FRotator GetRotation() const;
 
+	// Sets Movement Setting 	MoveWithObject = 0, ObjectSpawnPoint = 1, AttachToBone = 2,
 	UFUNCTION(BlueprintCallable)
 	bool SetMovementSetting(EMovement MovementSettingN);
 
+	// Sets to use Position Offset
 	UFUNCTION(BlueprintCallable)
 	bool SetUsePoseOffset(bool bUsePoseOffsetN);
 
+	// Sets the Position Offset. If Offset disabled it gets enabled
 	UFUNCTION(BlueprintCallable)
 	bool SetOffsetPosition(FVector PosN);
 
+	// Sets the Rotation Offset. If Offset disabled it gets enabled
 	UFUNCTION(BlueprintCallable)
 	bool SetOffsetRotation(FRotator RotN);
 
 
-	// *** Directivities *** // 
+	// *** Directivities *** //
 	
+	// Sets Directivity by searching for its corresponding Directivity from the Mapping 
 	UFUNCTION(BlueprintCallable)
 	bool SetDirectivityByMapping(FString Phoneme);
 
+	// Sets Directivity by a File Name
 	UFUNCTION(BlueprintCallable)
 	bool SetDirectivityByFileName(FString FileName);
 
+	// Gets the File Name of the Directivity
 	UFUNCTION(BlueprintCallable)
 	FString GetDirectivityFileName() const;
 
 
 	// *** Graphical Representation *** // 
-	
+
+	// Sets the Visibility of the Sound Source and its reflections
 	UFUNCTION(BlueprintCallable)
 	bool SetVisibility(bool bVisN) const;
 
+	// Gets the Visibility of the Sound Source and its reflections
 	UFUNCTION(BlueprintCallable)
 	bool GetVisibility() const;
-	
+
+	// Sets the Bone name and sets the Movement Setting to follow the bone if it is found. Otherwise keeps old settings
 	UFUNCTION(BlueprintCallable)
 	bool SetBoneName(FString BoneNameN);
 
+	// Gets the Bone Name
 	UFUNCTION(BlueprintCallable)
 	FString GetBoneName() const;
 

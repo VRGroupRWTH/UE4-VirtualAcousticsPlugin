@@ -28,8 +28,8 @@ FVASignalBuffer* FVASignalBufferManager::GetBufferByFileName(const FString FileN
 		{
 			if (EntryBuffer.Get()->GetFileName() == FileName)
 			{
-				FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()] Buffer from file " + FileName +
-					" was found!");
+				FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
+					FileName + " was found!", false);
 
 				return EntryBuffer.Get();
 			}
@@ -37,24 +37,22 @@ FVASignalBuffer* FVASignalBufferManager::GetBufferByFileName(const FString FileN
 	}
 
 
-	FVAUtils::LogStuff(
-		"[FVASignalBufferManager::getBufferByFileName()] Buffer from file " + FileName +
-		" cannot be found! Creating one now...");
+	FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
+		FileName + " cannot be found! Creating one now...", false);
 
 	// TODO new
 	FVASignalBufferSharedPtr NewBuffer = MakeShared<FVASignalBuffer>(FileName);
 
 	if (NewBuffer.IsValid() && NewBuffer->IsValidItem())
 	{
-		FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()] Buffer from file " + FileName +
-			" is created!");
+		FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
+			FileName + " is created!", false);
 		Buffers.Add(NewBuffer);
 		return NewBuffer.Get();
 	}
 	
-	FVAUtils::LogStuff(
-		"[FVASignalBufferManager::getBufferByFileName()] Buffer from file " + FileName +
-		" cannot be created properly!");
+	FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
+		FileName + " cannot be created properly!", true);
 
 	return nullptr;
 }

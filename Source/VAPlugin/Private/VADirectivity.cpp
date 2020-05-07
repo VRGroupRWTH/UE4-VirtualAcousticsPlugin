@@ -34,11 +34,12 @@ void FVADirectivity::CreateNewDirectivity()
 	DirID = FVAPlugin::CreateNewDirectivity(FileName);
 	if (DirID == -1)
 	{
-		FVAUtils::LogStuff("[FVADirectivity::createNewDirectivity()] Directivity file " + FileName + " cannot be found!");
+		FVAUtils::LogStuff("[FVADirectivity::createNewDirectivity()]: Directivity file " + 
+			FileName + " cannot be created!", true);
 		return;
 	}
 
-	FVAUtils::LogStuff("created a VADirectivity");
+	FVAUtils::LogStuff("[FVADirectivity::createNewDirectivity()]: Created a new VADirectivity", false);
 }
 
 
@@ -76,11 +77,11 @@ bool FVADirectivity::IsValidItem() const
 
 void FVADirectivity::LogInfo() const
 {
-	FString Output = " [Info]  Directivity for: ";
+	FString Output = " [FVADirectivity::LogInfo()]: Directivity for: ";
 
 	if (Phonemes.Num() == 0)
 	{
-		FVAUtils::LogStuff("Directivity has no phonemes");
+		FVAUtils::LogStuff("[FVADirectivity::LogInfo()]: Directivity has no phonemes", false);
 	}
 
 	for (auto Entry : Phonemes)
@@ -90,7 +91,7 @@ void FVADirectivity::LogInfo() const
 
 	Output.RemoveAt(Output.Len() - 1, 1, true);
 
-	FVAUtils::LogStuff(Output);
+	FVAUtils::LogStuff(Output, false);
 }
 
 // ****************************************************************** // 

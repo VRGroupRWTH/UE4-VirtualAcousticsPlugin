@@ -19,11 +19,11 @@ void FVAHRIR::CreateNewHRIR()
 	HRIRID = FVAPlugin::CreateNewHRIR(FileName);
 	if (HRIRID == -1)
 	{
-		FVAUtils::LogStuff("[FVAHRIR::createNewHRIR()] HRIR file " + FileName + " cannot be found!");
+		FVAUtils::LogStuff("[FVAHRIR::createNewHRIR()]: HRIR file " + FileName + " cannot be created!", true);
 		return;
 	}
 
-	FVAUtils::LogStuff("created a VAHRIR");
+	FVAUtils::LogStuff("[FVAHRIR::createNewHRIR()]: Created a VAHRIR", false);
 }
 
 

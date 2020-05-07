@@ -15,6 +15,18 @@ void FVAUtils::OpenMessageBox(const FString Text, const bool bError)
 	{
 		return;
 	}
+	
+	FString TrueStatement;
+	if (bError)
+	{
+		TrueStatement = "TRUE";
+	}
+	else
+	{
+		TrueStatement = "FALSE";
+	}
+	
+	LogStuff("[FVAUtils::OpenMessageBox(ERROR = " + TrueStatement + ")]: Opening Message Box with message: " + Text);
 
 	if (bError)
 	{

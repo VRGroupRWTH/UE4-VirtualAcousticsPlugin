@@ -37,10 +37,15 @@ void AVAReceiverActor::BeginPlay()
 	CurrentReceiverActor = this;
 
 	//try to start (remote) VAServer automatically
-	const bool StartedVAServer = FVAPlugin::RemoteStartVAServer(GetIPAddress(), RemoteVAStarterPort,
-	                                                                  WhichVAServerVersionToStart);
+	bool bStartedVAServer = false;
+	if (bAutomaticRemoteVAStart)
+	{
+		bStartedVAServer = FVAPlugin::RemoteStartVAServer(GetIPAddress(), RemoteVAStarterPort,
+			WhichVAServerVersionToStart);
+	}
+	
 	// Ask if used or not
-	FVAPlugin::AskForSettings(GetIPAddress(), GetPort(), bAskForDebugMode, !StartedVAServer);
+	FVAPlugin::AskForSettings(GetIPAddress(), GetPort(), bAskForDebugMode, !bStartedVAServer);
 
 	if (FVAPlugin::GetIsMaster())
 	{
@@ -187,6 +192,11 @@ void AVAReceiverActor::Tick(const float DeltaTime)
 		return;
 	}
 
+	if (!bInitialized)
+	{
+		FVAUtils::OpenMessageBox("[AVAReceiverActor::Tick()]: Receiver Actor is not initialized", true);
+	}
+
 	TimeSinceUpdate += DeltaTime;
 	TotalTime += DeltaTime;
 
@@ -277,7 +287,7 @@ bool AVAReceiverActor::ReadDirMappingFile(const FString FileName)
 {
 	if (DirManager.GetFileName() == FileName)
 	{
-		FVAUtils::LogStuff("[AVAReceiverActor::readDirMappingFile()]: file already loaded");
+		FVAUtils::LogStuff("[AVAReceiverActor::ReadDirMappingFile()]: file already loaded", false);
 		return false;
 	}
 
@@ -344,7 +354,7 @@ FString AVAReceiverActor::GetIPAddress() const
 		break;
 	}
 
-	FVAUtils::LogStuff("Error in AVAReceiverActor::getIPAddress()", true);
+	FVAUtils::LogStuff("[AVAReceiverActor::GetIPAddress()]: Unreachable Error", true);
 
 	return FString("127.0.0.1");
 }
@@ -365,7 +375,7 @@ int AVAReceiverActor::GetPort() const
 		break;
 	}
 
-	FVAUtils::LogStuff("Error in AVAReceiverActor::getPort()", true);
+	FVAUtils::LogStuff("[AVAReceiverActor::GetPort()]: Unreachable Error", true);
 
 	return -1;
 }
@@ -403,7 +413,8 @@ void AVAReceiverActor::RunOnAllNodes(const FString Command)
 		{
 			//in standalone (e.g., desktop editor play) cluster events are not executed....
 			HandleClusterCommand(Command);
-			FVAUtils::LogStuff("Cluster Command " + Command + " ran local");
+			FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
+				Command + " ran local", false);
 		}
 		else
 		{
@@ -415,7 +426,8 @@ void AVAReceiverActor::RunOnAllNodes(const FString Command)
 			
 			Manager->EmitClusterEvent(ClusterEvent, true);
 
-			FVAUtils::LogStuff("Cluster Command " + Command + " sent");
+			FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
+				Command + " sent", false);
 		}
 	}
 }
@@ -430,7 +442,9 @@ void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent& Eve
 
 void AVAReceiverActor::HandleClusterCommand(const FString Command)
 {
-	FVAUtils::LogStuff("Cluster Command " + Command + " received");
+	FVAUtils::LogStuff("[AVAReceiverActor::HandleClusterCommand()]: Cluster Command " + 
+		Command + " received", false);
+	
 	if (Command == "useVA = true")
 	{
 		FVAPlugin::SetUseVA(true);
@@ -449,7 +463,8 @@ void AVAReceiverActor::HandleClusterCommand(const FString Command)
 	}
 	else
 	{
-		FVAUtils::LogStuff("Cluster Command " + Command + " could not have been found.");
+		FVAUtils::LogStuff("[AVAReceiverActor::HandleClusterCommand()]: Cluster Command " + 
+			Command + " could be evaluated.", true);
 	}
 }
 

@@ -31,21 +31,21 @@ void UVASourceComponent::BeginPlay()
 		// If no Rec Actor found spawn one with default parameters
 		if (ReceiverActorTmp == nullptr)
 		{
-			FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values");
+			FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values", false);
 			ReceiverActorTmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
 		}
 	}
 	else if (ReceiverActors.Num() == 1)
 	{
 		ReceiverActorTmp = dynamic_cast<AVAReceiverActor*>(ReceiverActors[0]);
-		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: Receiver found!");
+		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: Receiver found!", false);
 	}
 	else if (ReceiverActors.Num() >= 2)
 	{
 		FVAPlugin::SetUseVA(false);
 
 		FVAUtils::OpenMessageBox("There are more than 1 Receiver Actors in the world. Stopping VAPlugin. Make sure to remove the wrong one.", true);
-		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: More than 1 Receiver found! Stopping VAPlugin. Make sure to remove the wrong one");
+		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: More than 1 Receiver found! Stopping VAPlugin. Make sure to remove the wrong one", true);
 		
 		return;
 	}
@@ -74,7 +74,7 @@ void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick T
 
 	if (!bInitialized)
 	{
-		FVAUtils::OpenMessageBox("Sound source is not initialized", true);
+		FVAUtils::OpenMessageBox("[UVASourceComponent::TickComponent()]: Sound source is not initialized", true);
 	}
 
 	if (bFirstTick && FVAPlugin::GetIsMaster())
@@ -118,11 +118,12 @@ void UVASourceComponent::Initialize()
 		if (SkeletalMeshComponent != nullptr
 			&& SkeletalMeshComponent->DoesSocketExist(FName(*BoneName)))
 		{
-			FVAUtils::LogStuff("Bone detected.");
+			FVAUtils::LogStuff("[UVASourceComponent::Initialize()]: Bone " + BoneName + " detected.", false);
 		}
 		else
 		{
-			FVAUtils::OpenMessageBox("Error: Could not find bone, using MoveWithObject instead.");
+			FVAUtils::OpenMessageBox("[UVASourceComponent::Initialize()]: Could not find bone " + 
+				BoneName  + ", using MoveWithObject instead.", true);
 			MovementSetting = EMovement::MoveWithObject;
 		}
 	}
@@ -156,7 +157,7 @@ void UVASourceComponent::Initialize()
 		}
 	}
 
-	FVAUtils::LogStuff("SoundSourceComponent initialized successfully");
+	FVAUtils::LogStuff("[UVASourceComponent::Initialize()]: SoundSourceComponent initialized successfully", false);
 
 	bInitialized = true;
 }
@@ -353,7 +354,7 @@ FVector UVASourceComponent::GetPosition() const
 
 	default:
 		Pos = FVector::ZeroVector;
-		FVAUtils::LogStuff(FString("[UVASourceComponent::getPosition()]: default"));
+		FVAUtils::LogStuff(FString("[UVASourceComponent::GetPosition()]: In default, Unreachable Error", true));
 		break;
 	}
 
@@ -383,7 +384,7 @@ FRotator UVASourceComponent::GetRotation() const
 		break;
 
 	default:
-		FVAUtils::LogStuff(FString("[UVASourceComponent::getRotation()]: default"));
+		FVAUtils::LogStuff(FString("[UVASourceComponent::GetRotation()]: In default, Unreachable Error", true));
 		Rot = FRotator::ZeroRotator;
 		break;
 	}
@@ -443,6 +444,12 @@ bool UVASourceComponent::SetOffsetPosition(const FVector PosN)
 		return false;
 	}
 
+	if (!bUsePoseOffset)
+	{
+		bUsePoseOffset = true;
+		SoundSource->SetRotation(GetRotation());
+	}
+	
 	if (OffsetPosition == PosN)
 	{
 		return true;
@@ -459,6 +466,12 @@ bool UVASourceComponent::SetOffsetRotation(const FRotator RotN)
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
+	}
+	
+	if (!bUsePoseOffset)
+	{
+		bUsePoseOffset = true;
+		SoundSource->SetPosition(GetPosition());
 	}
 
 	if (OffsetRotation == RotN)
@@ -556,10 +569,12 @@ bool UVASourceComponent::SetBoneName(const FString BoneNameN)
 	{
 		BoneName = BoneNameN;
 		MovementSetting = EMovement::AttachToBone;
+		FVAUtils::LogStuff("[UVASourceComponent::SetBoneName()]: Successfully found bone with name" + 
+			BoneName + "and set Movement Setting to follow the bone", false);
 		return true;
 	}
 	FVAUtils::OpenMessageBox(
-		"[UVASourceComponent::setBoneName(FString)]: Could not find the bone, using old settings instead.");
+		"[UVASourceComponent::SetBoneName()]: Could not find the bone, using old settings instead.");
 	return false;
 }
 
@@ -567,7 +582,7 @@ FString UVASourceComponent::GetBoneName() const
 {
 	if (MovementSetting != EMovement::AttachToBone)
 	{
-		FVAUtils::LogStuff("[UVASourceComponent::getBoneName()]: Movement is not set to AttachToBone..");
+		FVAUtils::LogStuff("[UVASourceComponent::GetBoneName()]: Movement is not set to AttachToBone..", true);
 		return "SoundSource is not attached to bone, but current bone is: " + BoneName;
 	}
 	

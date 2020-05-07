@@ -29,9 +29,8 @@ FVASoundSourceReflection::FVASoundSourceReflection(FVASoundSource* ParentSourceN
 		SoundSourceID = FVAPlugin::CreateNewSoundSource(BufferIDN, NameN, Pos, Rot, Power);
 		if (SoundSourceID == -1)
 		{
-			FVAUtils::LogStuff(
-				"[FVASoundSourceReflection::FVASoundSourceReflection(...)] Error initializing soundSource in VASoundSourceReflection()",
-				true);
+			FVAUtils::LogStuff("[FVASoundSourceReflection::FVASoundSourceReflection()]:" + 
+				FString(" Error initializing soundSource in VASoundSourceReflection()"),	true);
 			return;
 		}
 		

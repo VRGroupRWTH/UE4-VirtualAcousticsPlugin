@@ -79,8 +79,8 @@ void FVAPlugin::ProcessException(const FString Location, const CVAException Exce
 
 void FVAPlugin::ProcessException(const FString Location, const FString ExceptionString)
 {
-	FString output = " in [";
-	output.Append(Location).Append("] with error: ").Append(ExceptionString);
+	FString output = "[FVAPlugin::ProcessException()]: Exception from [";
+	output.Append(Location).Append("] with error message: ").Append(ExceptionString);
 	FVAUtils::LogStuff(output, true);
 	FVAUtils::OpenMessageBox(output, true);
 }
@@ -114,7 +114,7 @@ void FVAPlugin::StartupModule()
 	// ++ Check Handles ++ //
 	if (!CheckLibraryHandles())
 	{
-		FVAUtils::OpenMessageBox("stop initializing because of incomplete libraryHandles");
+		FVAUtils::OpenMessageBox("[FVAPlugin::StartupModule()]: Stop initializing because of incomplete libraryHandles");
 		return;
 	}
 
@@ -232,36 +232,37 @@ void FVAPlugin::AskForSettings(const FString Host, const int Port, const bool bA
 
 bool FVAPlugin::CheckLibraryHandles()
 {
-	if (LibraryHandleNet && LibraryHandleBase &&
-		LibraryHandleVistaAspects && LibraryHandleVistaBase && LibraryHandleVistaInterProcComm)
-	{
-		return true;
-	}
+	bool bSuc = true;
 	if (!LibraryHandleNet)
 	{
-		FVAUtils::LogStuff("Could not load Net", true);
+		FVAUtils::LogStuff("[FVAPlugin::CheckLibraryHandles()]: Could not load Net", true);
+		bSuc = false;
 	}
 
 	if (!LibraryHandleBase)
 	{
-		FVAUtils::LogStuff("Could not load Base", true);
+		FVAUtils::LogStuff("[FVAPlugin::CheckLibraryHandles()]: Could not load Base", true);
+		bSuc = false;
 	}
 
 	if (!LibraryHandleVistaAspects)
 	{
-		FVAUtils::LogStuff("Could not load Vista Aspects", true);
+		FVAUtils::LogStuff("[FVAPlugin::CheckLibraryHandles()]: Could not load Vista Aspects", true);
+		bSuc = false;
 	}
 
 	if (!LibraryHandleVistaBase)
 	{
-		FVAUtils::LogStuff("Could not load Vista Base", true);
+		FVAUtils::LogStuff("[FVAPlugin::CheckLibraryHandles()]: Could not load Vista Base", true);
+		bSuc = false;
 	}
 
 	if (!LibraryHandleVistaInterProcComm)
 	{
-		FVAUtils::LogStuff("could not load Vista InterProcComm", true);
+		FVAUtils::LogStuff("[FVAPlugin::CheckLibraryHandles()]: could not load Vista InterProcComm", true);
+		bSuc = false;
 	}
-	return false;
+	return bSuc;
 }
 
 
@@ -282,7 +283,7 @@ bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 		return true;
 	}
 
-	FVAUtils::LogStuff("Connecting to VAServer. Be sure to have it switched on");
+	FVAUtils::LogStuff("[Plugin::ConnectServer()]: Connecting to VAServer. Be sure to have it switched on", false);
 
 	try
 	{
@@ -292,7 +293,7 @@ bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 		VANetClient->Initialize(HostS, Port);
 		if (!VANetClient->IsConnected())
 		{
-			FVAUtils::OpenMessageBox("Could not connect to VA Server", true);
+			FVAUtils::OpenMessageBox("[Plugin::ConnectServer()]: Could not connect to VA Server", true);
 			bUseVA = false;
 			return false;
 		}
@@ -320,7 +321,7 @@ bool FVAPlugin::ResetServer()
 
 	try
 	{
-		FVAUtils::LogStuff("Resetting Server now...");
+		FVAUtils::LogStuff("[FVAPlugin::ResetServer()]: Resetting Server now.", false);
 		VAServer->Reset();
 	}
 	catch (CVAException& e)
@@ -366,7 +367,7 @@ bool FVAPlugin::DisconnectServer()
 		return true;
 	}
 	
-	FVAUtils::LogStuff("[FVAPluginModule::disconnectServer()] Disconnecting now");
+	FVAUtils::LogStuff("[FVAPluginModule::disconnectServer()]: Disconnecting now", false);
 
 	if (VAServerLauncherSocket != nullptr)
 	{
@@ -402,9 +403,8 @@ bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const F
 		return true;
 	}
 
-	FVAUtils::LogStuff(
-		"Try to remotely start the VAServer at address " + Host + ":" + FString::FromInt(Port) + " for version: " +
-		VersionName);
+	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Try to remotely start the VAServer at address " + 
+		Host + ":" + FString::FromInt(Port) + " for version: " + VersionName, false);
 
 
 	//Connect
@@ -420,16 +420,16 @@ bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const F
 
 	if (!bValidIP)
 	{
-		FVAUtils::LogStuff("Error: The Ip cannot be parsed!");
+		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: The Ip cannot be parsed!", true);
 		return false;
 	}
 
 	if (VAServerLauncherSocket == nullptr || !VAServerLauncherSocket->Connect(*InternetAddress))
 	{
-		FVAUtils::LogStuff("Error: Cannot connect to Launcher!");
+		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Cannot connect to Launcher!", true);
 		return false;
 	}
-	FVAUtils::LogStuff("Successfully connected to Launcher");
+	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Successfully connected to Launcher", false);
 
 	//Send requested version
 	TArray<uint8> RequestData;
@@ -444,9 +444,8 @@ bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const F
 	
 	int BytesSend = 0;
 	VAServerLauncherSocket->Send(RequestData.GetData(), RequestData.Num(), BytesSend);
-	FVAUtils::LogStuff(
-		"Send " + FString::FromInt(BytesSend) + " bytes to the VAServer Launcher, with version name: " + VersionName +
-		" Waiting for answer....");
+	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Send " + FString::FromInt(BytesSend) + 
+		" bytes to the VAServer Launcher, with version name: " + VersionName + " Waiting for answer.", false);
 
 	//Receive response
 	const int32 BufferSize = 16;
@@ -457,37 +456,36 @@ bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const F
 		switch (Response[0])
 		{
 		case 'g':
-			FVAUtils::LogStuff("Received go from launcher, VAServer seems to be correctly started.");
+			FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Received go from launcher, VAServer seems to be correctly started.", false);
 			break;
 		case 'n':
-			FVAUtils::OpenMessageBox("VAServer cannot be launched, invalid VAServer binary file or cannot be found",
+			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, invalid VAServer binary file or cannot be found",
 			                        true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'i':
-			FVAUtils::OpenMessageBox("VAServer cannot be launched, invalid file entry in the config", true);
+			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, invalid file entry in the config", true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'a':
-			FVAUtils::OpenMessageBox("VAServer was aborted", true);
+			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer was aborted", true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'f':
-			FVAUtils::OpenMessageBox(
-				"VAServer cannot be launched, requested version \"" + VersionName + "\" is not available/specified",
-				true);
+			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, requested version \"" + 
+				VersionName + "\" is not available/specified", true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		default:
-			FVAUtils::OpenMessageBox(
-				"Unexpected response from VAServer Launcher: " + FString(reinterpret_cast<char*>(&Response[0])), true);
+			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: Unexpected response from VAServer Launcher: " + 
+				FString(reinterpret_cast<char*>(&Response[0])), true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		}
 	}
 	else
 	{
-		FVAUtils::LogStuff("Error while receiving response from VAServer Launcher");
+		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Error while receiving response from VAServer Launcher", true);
 		VAServerLauncherSocket = nullptr;
 		return false;
 	}
@@ -540,7 +538,7 @@ bool FVAPlugin::SetSoundBufferAction(const std::string BufferID, const EPlayActi
 	
 	if (BufferID == "-1")
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundBufferAction() - BufferID invalid (=-1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundBufferAction()]: BufferID invalid (=-1)", true);
 		return false;
 	}
 
@@ -566,7 +564,7 @@ int FVAPlugin::GetSoundBufferAction(const std::string BufferID)
 
 	if (BufferID == "-1")
 	{
-		FVAUtils::LogStuff("FVAPlugin::GetSoundBufferAction() - BufferID invalid (=-1)");
+		FVAUtils::LogStuff("[FVAPlugin::GetSoundBufferAction()]: BufferID invalid (=-1)", true);
 		return -1;
 	}
 	
@@ -591,7 +589,7 @@ bool FVAPlugin::SetSoundBufferTime(const std::string BufferID, const float Time)
 
 	if (BufferID == "-1")
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundBufferTime() - BufferID invalid (=-1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundBufferTime()]: BufferID invalid (=-1)", true);
 		return false;
 	}
 
@@ -616,7 +614,7 @@ bool FVAPlugin::SetSoundBufferLoop(const std::string BufferID, const bool bLoop)
 
 	if (BufferID == "-1")
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundBufferLoop() - BufferID invalid (=-1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundBufferLoop()]: BufferID invalid (=-1)", true);
 		return false;
 	}
 
@@ -648,7 +646,7 @@ int FVAPlugin::CreateNewSoundSource(const std::string BufferID, const std::strin
 
 	if (BufferID == "-1")
 	{
-		FVAUtils::LogStuff("FVAPlugin::CreateNewSoundSource() - BufferID invalid (=-1)");
+		FVAUtils::LogStuff("[FVAPlugin::CreateNewSoundSource()]: BufferID invalid (=-1)", true);
 		return -1;
 	}
 
@@ -690,7 +688,7 @@ bool FVAPlugin::SetSoundSourcePosition(const int SoundSourceID, FVector Pos)
 
 	if (SoundSourceID == -1)
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundSourcePos() - SoundSourceID invalid (= -1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourcePos()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 
@@ -719,7 +717,7 @@ bool FVAPlugin::SetSoundSourceRotation(const int SoundSourceID, FRotator Rot)
 
 	if (SoundSourceID == -1)
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundSourceRot() - SoundSourceID invalid (= -1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceRot()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 	
@@ -748,13 +746,13 @@ bool FVAPlugin::SetNewBufferForSoundSource(const int SoundSourceID, const std::s
 
 	if (SoundSourceID == -1)
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetNewBufferForSoundSource() - SoundSourceID invalid (= -1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetNewBufferForSoundSource()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 
 	if (BufferID == "-1")
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetNewBufferForSoundSource() - BufferID invalid (=-1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetNewBufferForSoundSource()]: BufferID invalid (=-1)", true);
 		return false;
 	}
 	
@@ -779,7 +777,7 @@ bool FVAPlugin::SetSoundSourceMuted(const int SoundSourceID, const bool bMuted)
 
 	if (SoundSourceID == -1)
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundSourceMuted() - SoundSourceID invalid (= -1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceMuted()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 	
@@ -804,7 +802,7 @@ bool FVAPlugin::SetSoundSourcePower(const int SoundSourceID, const float Power)
 
 	if (SoundSourceID == -1)
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundSourcePower() - SoundSourceID invalid (= -1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourcePower()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 
@@ -839,7 +837,7 @@ int FVAPlugin::CreateNewDirectivity(const FString FileName)
 	}
 	catch (CVAException& e)
 	{
-		ProcessException("FVAPluginModule::createNewDirectivity()",
+		ProcessException("FVAPluginModule::CreateNewDirectivity()",
 		                FString(e.ToString().c_str()) + " (" + FileName + ")");
 		return -1;
 	}
@@ -854,14 +852,13 @@ bool FVAPlugin::SetSoundSourceDirectivity(const int SoundSourceID, const int Dir
 
 	if (SoundSourceID == -1)
 	{
-		FVAUtils::LogStuff("FVAPlugin::SetSoundSourceDirectivity() - SoundSourceID invalid (= -1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceDirectivity()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 
 	if (DirectivityID == -1)
 	{
-
-		FVAUtils::LogStuff("FVAPlugin::SetSoundSourceDirectivity() - DirectivityID invalid (=-1)");
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceDirectivity()]: DirectivityID invalid (=-1)", true);
 		return false;
 	}
 
@@ -873,7 +870,7 @@ bool FVAPlugin::SetSoundSourceDirectivity(const int SoundSourceID, const int Dir
 	}
 	catch (CVAException& e)
 	{
-		ProcessException("FVAPluginModule::setSoundSourceDirectivity()", FString(e.ToString().c_str()));
+		ProcessException("FVAPluginModule::SetSoundSourceDirectivity()", FString(e.ToString().c_str()));
 		return false;
 	}
 }
@@ -896,7 +893,7 @@ int FVAPlugin::CreateNewHRIR(const FString FileName)
 	}
 	catch (CVAException& e)
 	{
-		ProcessException("FVAPluginModule::createNewHRIR()", FString(e.ToString().c_str()) + " (" + FileName + ")");
+		ProcessException("FVAPluginModule::CreateNewHRIR()", FString(e.ToString().c_str()) + " (" + FileName + ")");
 		return -1;
 	}
 }
@@ -911,7 +908,7 @@ bool FVAPlugin::SetSoundReceiverHRIR(const int SoundReceiverID, const int HRIRID
 
 	if (HRIRID == -1)
 	{
-		FVAUtils::LogStuff("setSoundReceiverHRIR() - HRIR is not valid (id = -1)", true);
+		FVAUtils::LogStuff("[SetSoundReceiverHRIR()]: HRIR is not valid (id = -1)", true);
 		return false;
 	}
 
@@ -950,7 +947,7 @@ int FVAPlugin::CreateNewSoundReceiver(AVAReceiverActor* Actor)
 		if (HRIR != -1)
 		{
 			VAServer->SetSoundReceiverDirectivity(SoundReceiverID, HRIR);
-			FVAUtils::LogStuff("FVAPlugin::CreateNewSoundReceiver(): Default Directivity is not initialized, using no Directivity");
+			FVAUtils::LogStuff("[FVAPlugin::CreateNewSoundReceiver()]: Default Directivity is not initialized, using no Directivity", false);
 		}
 		
 		return SoundReceiverID;
@@ -972,7 +969,7 @@ bool FVAPlugin::SetSoundReceiverPosition(const int SoundReceiverID, FVector Pos)
 
 	if (SoundReceiverID == -1)
 	{
-		FVAUtils::LogStuff("SetSoundReceiverPosition() - SoundReceiverID is not valid (id = -1)", true);
+		FVAUtils::LogStuff("[SetSoundReceiverPosition()]: SoundReceiverID is not valid (id = -1)", true);
 		return false;
 	}
 
@@ -1000,7 +997,7 @@ bool FVAPlugin::SetSoundReceiverRotation(const int SoundReceiverID, FRotator Rot
 
 	if (SoundReceiverID == -1)
 	{
-		FVAUtils::LogStuff("SetSoundReceiverRotation() - SoundReceiverID is not valid (id = -1)", true);
+		FVAUtils::LogStuff("[SetSoundReceiverRotation()]: SoundReceiverID is not valid (id = -1)", true);
 		return false;
 	}
 	
@@ -1015,7 +1012,7 @@ bool FVAPlugin::SetSoundReceiverRotation(const int SoundReceiverID, FRotator Rot
 	}
 	catch (CVAException& e)
 	{
-		ProcessException("FVAPluginModule::setSoundReceiverRotation()", FString(e.ToString().c_str()));
+		ProcessException("FVAPluginModule::SetSoundReceiverRotation()", FString(e.ToString().c_str()));
 		return false;
 	}
 }
@@ -1034,7 +1031,7 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 	
 	if (SoundReceiverID == -1)
 	{
-		FVAUtils::LogStuff("SetSoundReceiverRealWorldPose() - SoundReceiverID is not valid (id = -1)", true);
+		FVAUtils::LogStuff("[SetSoundReceiverRealWorldPose()]: SoundReceiverID is not valid (id = -1)", true);
 		return false;
 	}
 
@@ -1052,7 +1049,7 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 	}
 	catch (CVAException& e)
 	{
-		ProcessException("setSoundReceiverRealWorldPose()", FString(e.ToString().c_str()));
+		ProcessException("SetSoundReceiverRealWorldPose()", FString(e.ToString().c_str()));
 		return false;
 	}
 }
