@@ -9,14 +9,14 @@ class UVASourceComponent;
 class FVASoundSourceReflection;
 class AVASoundSourceRepresentation;
 class FVADirectivity;
+class AVAReflectionWall;
 
 class FVASoundSource
 {
 public:
 
 	// Initialization
-	FVASoundSource(UVASourceComponent* ParentComponent);
-
+	FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVAReflectionWall*> WallArray);
 
 	// Setter
 	void SetPosition(FVector PosN);

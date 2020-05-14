@@ -223,11 +223,11 @@ public:
 
 	// *** Graphical Representation *** // 
 
-	// Sets the Visibility of the Sound Source and its reflections
+	// Sets the Visibility of the Sound Source and its reflections. Only works with single instance, not working in cluster mode
 	UFUNCTION(BlueprintCallable)
 	bool SetVisibility(bool bVisN) const;
 
-	// Gets the Visibility of the Sound Source and its reflections
+	// Gets the Visibility of the Sound Source and its reflections. Only works with single instance, not working in cluster mode
 	UFUNCTION(BlueprintCallable)
 	bool GetVisibility() const;
 
@@ -250,6 +250,8 @@ protected:
 
 	// initialize Sound Source with the settings set // 
 	void Initialize();
+
+	AVAReceiverActor* CurrentReceiverActor;
 
 	TSharedPtr<FVASoundSource> SoundSource;
 	USkeletalMeshComponent* SkeletalMeshComponent;

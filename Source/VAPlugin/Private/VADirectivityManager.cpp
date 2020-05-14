@@ -66,7 +66,7 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 
 	if(ListSymbol.Equals(MapToSymbol))
 	{
-		FVAUtils::OpenMessageBox("[FVADirectivityManager::ReadConfigFile]: ListSymbol and MapToSymbol are equal", true)
+		FVAUtils::OpenMessageBox("[FVADirectivityManager::ReadConfigFile]: ListSymbol and MapToSymbol are equal", true);
 	}
 	
 	TArray<FString> Mapping;

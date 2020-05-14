@@ -17,7 +17,6 @@
 #include "Kismet/GameplayStatics.h"					// Get Actors of class
 
 
-AVAReceiverActor* AVAReceiverActor::CurrentReceiverActor;
 
 // ****************************************************************** // 
 // ******* Initialization Functions ********************************* //
@@ -34,7 +33,7 @@ void AVAReceiverActor::BeginPlay()
 
 	FVAPlugin::SetReceiverActor(this);
 
-	CurrentReceiverActor = this;
+	// CurrentReceiverActor = this;
 
 	//try to start (remote) VAServer automatically
 	bool bStartedVAServer = false;
@@ -394,15 +393,24 @@ TArray<AVAReflectionWall*> AVAReceiverActor::GetReflectionWalls()
 	return ReflectionWalls;
 }
 
-AVAReceiverActor* AVAReceiverActor::GetCurrentReceiverActor()
-{
-	return CurrentReceiverActor;
-}
 
 
 // ****************************************************************** // 
 // ******* Cluster Stuff ******************************************** // 
 // ****************************************************************** //
+
+void AVAReceiverActor::SetDebugMode(const bool bDebugModeN)
+{
+	if (bDebugModeN)
+	{
+		RunOnAllNodes("debugMode = true");
+	}
+	else
+	{
+		RunOnAllNodes("debugMode = false");
+	}
+}
+
 
 void AVAReceiverActor::RunOnAllNodes(const FString Command)
 {

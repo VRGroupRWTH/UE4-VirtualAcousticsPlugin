@@ -15,7 +15,7 @@ int FVASoundSource::Counter = 0;
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent) :
+FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVAReflectionWall*> WallArray) :
 	ParentComponent(ParentComponent)
 {
 	bPlaying = false;
@@ -73,7 +73,6 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent) :
 
 	if (bHandleReflections)
 	{
-		TArray<AVAReflectionWall*> WallArray = FVAPlugin::GetReflectionWalls();
 		for (auto EntryWall : WallArray)
 		{
 			std::string WallName(TCHAR_TO_UTF8(*EntryWall->GetName()));

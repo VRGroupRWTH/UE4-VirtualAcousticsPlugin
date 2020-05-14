@@ -129,7 +129,6 @@ public:
 	static bool GetIsMaster();
 	static bool ShouldInteractWithServer();
 	static AVAReceiverActor* GetReceiverActor();
-	static TArray<AVAReflectionWall*> GetReflectionWalls();
 
 
 protected:

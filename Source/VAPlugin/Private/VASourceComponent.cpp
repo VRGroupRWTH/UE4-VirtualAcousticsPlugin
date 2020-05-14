@@ -50,6 +50,7 @@ void UVASourceComponent::BeginPlay()
 		return;
 	}
 
+	CurrentReceiverActor = ReceiverActorTmp;
 
 	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
 	if (ReceiverActorTmp->IsInitialized() && !bInitialized)
@@ -132,8 +133,9 @@ void UVASourceComponent::Initialize()
 	SpawnPosition = GetOwner()->GetTransform().GetLocation();
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
 
-	// TODO new 
-	SoundSource = MakeShared<FVASoundSource>(this);
+	// TODO new
+	TArray<AVAReflectionWall*> WallArray = CurrentReceiverActor->GetReflectionWalls();
+	SoundSource = MakeShared<FVASoundSource>(this, WallArray);
 	if (FVAPlugin::GetIsMaster())
 	{
 		switch (DirectivitySetting)
@@ -144,12 +146,12 @@ void UVASourceComponent::Initialize()
 
 		case EDir::ManualFile:
 			SoundSource->SetDirectivity(
-				AVAReceiverActor::GetCurrentReceiverActor()->GetDirectivityByFileName(DirectivityByFileName));
+				CurrentReceiverActor->GetDirectivityByFileName(DirectivityByFileName));
 			break;
 
 		case EDir::Phoneme:
 			SoundSource->SetDirectivity(
-				AVAReceiverActor::GetCurrentReceiverActor()->GetDirectivityByMapping(DirectivityByMapping));
+				CurrentReceiverActor->GetDirectivityByMapping(DirectivityByMapping));
 			break;
 
 		default:
@@ -501,7 +503,7 @@ bool UVASourceComponent::SetDirectivityByMapping(const FString Phoneme)
 	DirectivitySetting = EDir::Phoneme;
 	DirectivityByMapping = Phoneme;
 
-	return SoundSource->SetDirectivity(AVAReceiverActor::GetCurrentReceiverActor()->GetDirectivityByMapping(Phoneme));
+	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByMapping(Phoneme));
 }
 
 bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
@@ -514,7 +516,7 @@ bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
 	DirectivitySetting = EDir::ManualFile;
 	DirectivityByFileName = FileName;
 
-	return SoundSource->SetDirectivity(AVAReceiverActor::GetCurrentReceiverActor()->GetDirectivityByFileName(FileName));
+	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
 }
 
 FString UVASourceComponent::GetDirectivityFileName() const

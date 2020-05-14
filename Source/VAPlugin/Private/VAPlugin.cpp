@@ -283,7 +283,7 @@ bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 		return true;
 	}
 
-	FVAUtils::LogStuff("[Plugin::ConnectServer()]: Connecting to VAServer. Be sure to have it switched on", false);
+	FVAUtils::LogStuff("[FVAPlugin::ConnectServer()]: Connecting to VAServer. Be sure to have it switched on", false);
 
 	try
 	{
@@ -293,7 +293,7 @@ bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 		VANetClient->Initialize(HostS, Port);
 		if (!VANetClient->IsConnected())
 		{
-			FVAUtils::OpenMessageBox("[Plugin::ConnectServer()]: Could not connect to VA Server", true);
+			FVAUtils::OpenMessageBox("[FVAPlugin::ConnectServer()]: Could not connect to VA Server", true);
 			bUseVA = false;
 			return false;
 		}
@@ -308,6 +308,8 @@ bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 
 		return false;
 	}
+
+	FVAUtils::LogStuff("[FVAPlugin::ConnectServer()]: Connected to the VA Server", false);
 
 	return true;
 }
@@ -489,7 +491,7 @@ bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const F
 		VAServerLauncherSocket = nullptr;
 		return false;
 	}
-
+	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: End of function", false);
 	return true;
 }
 
@@ -1173,11 +1175,6 @@ bool FVAPlugin::ShouldInteractWithServer()
 AVAReceiverActor* FVAPlugin::GetReceiverActor()
 {
 	return ReceiverActor;
-}
-
-TArray<AVAReflectionWall*> FVAPlugin::GetReflectionWalls()
-{
-	return ReceiverActor->GetReflectionWalls();
 }
 
 

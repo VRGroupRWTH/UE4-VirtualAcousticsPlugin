@@ -10,6 +10,8 @@
 #include "GameFramework/Actor.h"
 #include "Cluster/IDisplayClusterClusterManager.h"		// Events
 
+#include "VAPlugin.h"
+
 #include "VAReceiverActor.generated.h"
 
 
@@ -29,6 +31,10 @@ UCLASS()
 class VAPLUGIN_API AVAReceiverActor : public AActor
 {
 	GENERATED_BODY()
+
+	friend class UVASourceComponent;
+	friend void FVAPlugin::SetUseVA(bool);			// For run on all nodes
+	friend void FVAPlugin::SetDebugMode(bool);		// For run on all nodes
 
 protected:
 
@@ -101,29 +107,42 @@ public:
 	// Interface for HRIR Settings
 	UFUNCTION(BlueprintCallable)
 	bool SetHRIRByFileName(FString FileName);
+	
+	// Set Debug Mode to toggle global visibility of all sound Sources
+	UFUNCTION(BlueprintCallable)
+	void SetDebugMode(bool bDebugModeN);
 
-
-	// Directivity Handling
-	FVADirectivity* GetDirectivityByMapping(FString Phoneme) const;
-	FVADirectivity* GetDirectivityByFileName(FString FileName);
-
-
-	// Getter Functions
-	bool IsInitialized() const;
+	// Gets scale of virtual world compared to real world
+	UFUNCTION(BlueprintCallable)
 	float GetScale() const;
+
+	// Gets IP Address
+	UFUNCTION(BlueprintCallable)
 	FString GetIPAddress() const;
+
+	// Gets Port
+	UFUNCTION(BlueprintCallable)
 	int GetPort() const;
-	int GetUpdateRate() const;
-	TArray<AVAReflectionWall*> GetReflectionWalls();
-
-	static AVAReceiverActor* GetCurrentReceiverActor();
 
 
-	// Cluster Stuff
-	void RunOnAllNodes(FString Command);
 
 
 protected:
+	// Get Walls
+	TArray<AVAReflectionWall*> GetReflectionWalls();					// SourceC
+
+	// Directivity Handling
+	FVADirectivity* GetDirectivityByMapping(FString Phoneme) const;		// SourceC
+	FVADirectivity* GetDirectivityByFileName(FString FileName);			// SourceC
+
+	
+	// Cluster Stuff
+	void RunOnAllNodes(FString Command);
+
+	// Getter Functions	
+	bool IsInitialized() const;											// SourceC
+	int GetUpdateRate() const;											// SourceC
+
 	
 	// Initialization
 	void BeginPlay() override;
@@ -147,18 +166,17 @@ protected:
 #endif
 
 	// Current Receiver Actor
-	static AVAReceiverActor* CurrentReceiverActor;
+	// CurrentReceiverActor;
 
 	
 	// Receiver Specific Data
 	int ReceiverID;
-	FVADirectivityManager DirManager;
-	FVAHRIRManager HRIRManager;
+	FVADirectivityManager	DirManager;
+	FVAHRIRManager			HRIRManager;
 
 	FVAHRIR* CurrentHRIR;
 
 	TArray<AVAReflectionWall*> ReflectionWalls;
-
 	
 	// State of Actor
 	bool bInitialized = false;

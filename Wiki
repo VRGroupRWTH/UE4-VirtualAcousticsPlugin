@@ -8,7 +8,7 @@
 RUN ON ALL NODES
 
 
-
+Dass der RecActor automatisch erstellt wird (nur mit schallquellen)
 
 
 
@@ -142,7 +142,8 @@ Sound Pose
 *  SetMovementSetting(EMovement)		Sets how the position of the movement should be set (0 = Move with object, 1 = Object Spawn Point, 2 = Attatch to bone)
 *  SetUsePoseOffset(bool)				Sets whether to use offset or not
 *  SetOffsetPosition(FVector)			Sets position offset (if activated)
-*  SetOffsetRotation(FRotator)			Sets rotation offset (if activated)
+*  SetOffsetRotation(FRotator)			
+* Sets rotation offset (if activated)
 
 
 Directivities							
