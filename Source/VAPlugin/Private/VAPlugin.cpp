@@ -97,11 +97,11 @@ void FVAPlugin::StartupModule()
 	FString PathNet, PathBase, PathVistaAspects, PathVistaBase, PathVistaInterProcComm;
 
 #if PLATFORM_WINDOWS
-	PathBase = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.dll"));
-	PathVistaAspects = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.dll"));
-	PathVistaBase = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.dll"));
-	PathVistaInterProcComm = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.dll"));
-	PathNet = FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.dll"));
+	PathBase				= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.dll"));
+	PathVistaAspects		= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.dll"));
+	PathVistaBase			= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.dll"));
+	PathVistaInterProcComm	= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.dll"));
+	PathNet					= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.dll"));
 
 
 	// ++ Load DLL Handles ++ // 
@@ -119,11 +119,11 @@ void FVAPlugin::StartupModule()
 	}
 
 #elif PLATFORM_LINUX
-	pathBase				=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.so"));
-	pathVistaAspects		=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.so"));
-	pathVistaBase			=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.so"));
-	pathVistaInterProcComm	=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.so"));
-	pathNet					=	FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.so"));
+	PathBase				= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VABase.so"));
+	PathVistaAspects		= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaAspects.so"));
+	PathVistaBase			= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaBase.so"));
+	PathVistaInterProcComm	= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VistaInterProcComm.so"));
+	PathNet					= FPaths::Combine(*BaseDir, TEXT("Source/VALibrary/lib/VANet.so"));
 #endif 
 
 	
