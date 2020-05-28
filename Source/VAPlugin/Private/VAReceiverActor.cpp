@@ -333,20 +333,20 @@ FString AVAReceiverActor::GetIPAddress() const
 {
 	switch (AddressSetting)
 	{
-	case EAddress::Automatic:
+	case EConnectionSetting::Automatic:
 #if PLATFORM_WINDOWS
 		return FString("127.0.0.1");
 #else
 		return FString("10.0.1.240");
 #endif
 		break;
-	case EAddress::Cave:
+	case EConnectionSetting::Cave:
 		return FString("10.0.1.240");
 		break;
-	case EAddress::Localhost:
+	case EConnectionSetting::Localhost:
 		return FString("127.0.0.1");
 		break;
-	case EAddress::Manual:
+	case EConnectionSetting::Manual:
 		return ServerIPAddress;
 		break;
 	default:
@@ -362,12 +362,12 @@ int AVAReceiverActor::GetPort() const
 {
 	switch (AddressSetting)
 	{
-	case EAddress::Automatic:
-	case EAddress::Cave:
-	case EAddress::Localhost:
+	case EConnectionSetting::Automatic:
+	case EConnectionSetting::Cave:
+	case EConnectionSetting::Localhost:
 		return 12340;
 		break;
-	case EAddress::Manual:
+	case EConnectionSetting::Manual:
 		return ServerPort;
 		break;
 	default:
@@ -487,7 +487,7 @@ bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, ServerIPAddress) ||
 		InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, ServerPort))
 	{
-		return AddressSetting == EAddress::Manual;
+		return AddressSetting == EConnectionSetting::Manual;
 	}
 
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, DirMappingFileName))

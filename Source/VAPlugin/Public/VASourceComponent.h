@@ -71,7 +71,7 @@ protected:
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity", Category = "Directivity"))
-	TEnumAsByte<EDir::Type> DirectivitySetting = EDir::Type::NoDirectivity;
+	TEnumAsByte<EDirectivitySetting::Type> DirectivitySetting = EDirectivitySetting::Type::NoDirectivity;
 
 	// File Name of the Directivity that should be used
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name", Category = "Directivity"))

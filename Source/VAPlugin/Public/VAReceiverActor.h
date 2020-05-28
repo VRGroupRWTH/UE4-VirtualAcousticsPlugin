@@ -50,7 +50,7 @@ protected:
 
 	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase", Category = "Connection"))
-	TEnumAsByte<EAddress::Type> AddressSetting = EAddress::Type::Automatic;
+	TEnumAsByte<EConnectionSetting::Type> AddressSetting = EConnectionSetting::Type::Automatic;
 
 	// IP Address for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress", Category = "Connection")) // CanEditChange used

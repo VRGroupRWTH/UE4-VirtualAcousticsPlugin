@@ -5,28 +5,43 @@
 
 
 UENUM(BlueprintType)
-namespace EAddress
+namespace EPlayAction
 {
 	enum Type
 	{
-		Automatic,
-		Localhost,
-		Cave,
-		Manual
+		NoPlayAction = -1	UMETA(Hidden),
+		Stop = 0,
+		Pause = 1,
+		Play = 2
 	};
 }
 
+
 UENUM(BlueprintType)
-namespace EDir
+namespace EConnectionSetting
 {
 	enum Type
 	{
-		DefaultHRIR,
-		ManualFile,
-		Phoneme,
-		NoDirectivity
+		Automatic = 0,
+		Localhost = 1,
+		Cave = 2,
+		Manual = 3
 	};
 }
+
+
+UENUM(BlueprintType)
+namespace EDirectivitySetting
+{
+	enum Type
+	{
+		DefaultHRIR = 0,
+		Phoneme = 1,
+		NoDirectivity = 2,
+		ManualFile = 3
+	};
+}
+
 
 UENUM(BlueprintType)
 namespace EMovement
@@ -39,15 +54,3 @@ namespace EMovement
 	};
 }
 
-
-UENUM(BlueprintType)
-namespace EPlayAction
-{
-	enum Type
-	{
-		NoPlayAction = -1	UMETA(Hidden),
-		Stop = 0			,
-		Pause = 1			,
-		Play = 2			
-	};
-}

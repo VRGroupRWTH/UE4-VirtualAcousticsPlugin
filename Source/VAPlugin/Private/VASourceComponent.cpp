@@ -140,16 +140,16 @@ void UVASourceComponent::Initialize()
 	{
 		switch (DirectivitySetting)
 		{
-		case EDir::DefaultHRIR:
+		case EDirectivitySetting::DefaultHRIR:
 			SoundSource->SetDirectivity(FVADirectivityManager::GetDefaultDirectivity());
 			break;
 
-		case EDir::ManualFile:
+		case EDirectivitySetting::ManualFile:
 			SoundSource->SetDirectivity(
 				CurrentReceiverActor->GetDirectivityByFileName(DirectivityByFileName));
 			break;
 
-		case EDir::Phoneme:
+		case EDirectivitySetting::Phoneme:
 			SoundSource->SetDirectivity(
 				CurrentReceiverActor->GetDirectivityByMapping(DirectivityByMapping));
 			break;
@@ -500,7 +500,7 @@ bool UVASourceComponent::SetDirectivityByMapping(const FString Phoneme)
 		return false;
 	}
 
-	DirectivitySetting = EDir::Phoneme;
+	DirectivitySetting = EDirectivitySetting::Phoneme;
 	DirectivityByMapping = Phoneme;
 
 	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByMapping(Phoneme));
@@ -513,7 +513,7 @@ bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
 		return false;
 	}
 
-	DirectivitySetting = EDir::ManualFile;
+	DirectivitySetting = EDirectivitySetting::ManualFile;
 	DirectivityByFileName = FileName;
 
 	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
@@ -616,13 +616,13 @@ bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
 	// Check Directivity Config
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, DirectivityByFileName))
 	{
-		return DirectivitySetting == EDir::ManualFile;
+		return DirectivitySetting == EDirectivitySetting::ManualFile;
 	}
 
 	// Check Bone Name
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, DirectivityByMapping))
 	{
-		return DirectivitySetting == EDir::Phoneme;
+		return DirectivitySetting == EDirectivitySetting::Phoneme;
 	}
 
 	// Check Bone Name
