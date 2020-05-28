@@ -536,8 +536,8 @@ public:
 
 	//! Default constructor
 	inline CVASignalSourceInfo()
-		: iReferences( 0 )
-		, iType( UNSPECIFIED )
+		: iType( UNSPECIFIED )
+		, iReferences( 0 )
 	{};
 
 	// Signal source destructor
@@ -642,8 +642,8 @@ public:
 	//! Constructor for sound source info
 	inline CVASoundSourceInfo()
 		: iID( -1 )
-		, bMuted( false )
 		, dSpoundPower( g_dSoundPower_94dB_SPL_1m )
+		, bMuted( false )
 		, iSignalSourceID( -1 )
 		, iDirectivityID( -1 )
 		, iAuraMode( -1 )
@@ -718,10 +718,10 @@ public:
 	//! Default constructor for sound portal
 	inline CVASoundPortalInfo()
 		: iID( -1 )
-		, iNextPortalID( -1 )
-		, iSoundSourceID( -1 )
-		, iSoundReceiverID( -1 )
 		, iMaterialID( -1 )
+		, iNextPortalID( -1 )
+		, iSoundReceiverID( -1 )
+		, iSoundSourceID( -1 )
 	{};
 
 	//! Destructor

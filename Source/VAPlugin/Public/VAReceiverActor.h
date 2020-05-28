@@ -2,108 +2,185 @@
 
 #pragma once
 
-#include "VAPlugin.h"
-#include "CoreMinimal.h"
+#include "VAEnums.h"									// EAddress
+
+#include "VADirectivityManager.h"
+#include "VAHRIRManager.h"
+
 #include "GameFramework/Actor.h"
+#include "Cluster/IDisplayClusterClusterManager.h"		// Events
+
+#include "VAPlugin.h"
+
 #include "VAReceiverActor.generated.h"
 
-// struct used to input Directivity via Variable in UE4 Editor
-UENUM()
-enum EDir { 
-	DefaultHRIR
-}; 
 
-// struct used to input IP-Adress of VA server via Variable in UE4 Editor
-USTRUCT()
-struct FAdress {
-	GENERATED_BODY()
+class AVAReflectionWall;
 
-		UPROPERTY(EditAnywhere, meta = (DisplayName = "xxx._._._"))
-		uint8 ip1;
 
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "_.xxx._._"))
-		uint8 ip2;
-
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "_._.xxx._"))
-		uint8 ip3;
-
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "_._._.xxx"))
-		uint8 ip4;
-
-	FAdress(uint8 ip1_ = 127, uint8 ip2_ = 0, uint8 ip3_ = 0, uint8 ip4_ = 1) : ip1(ip1_), ip2(ip2_), ip3(ip3_), ip4(ip4_)
-	{ }
-};
 
 
 UCLASS()
 class VAPLUGIN_API AVAReceiverActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AVAReceiverActor();
 
-	// Factor for global output Gain
-	UPROPERTY(EditAnywhere, meta=(DisplayName = "Gain Factor [0,1]", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
-		float vGainFactor = 1.0f;
-	
-	// Choose Directivity File for Receiver
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity"))
-		TEnumAsByte<EDir> vDirectivity = EDir::DefaultHRIR;
+	friend class UVASourceComponent;
+	friend void FVAPlugin::SetUseVA(bool);			// For run on all nodes
+	friend void FVAPlugin::SetDebugMode(bool);		// For run on all nodes
+
+protected:
+
 
 	// How many units in UE equal 1m in World
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale"))
-		float vScale = 100.0f;
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale", Category = "General Settigns"))
+	float WorldScale = 100.0f;
 
-	// IP Adress of VA Server. 127.0.0.1 = localhost
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress"))
-		FAdress vIPAdress = FAdress(127,0,0,1);
+	// How many units in UE equal 1m in World
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Updates per second", Category = "General Settigns"))
+	int UpdateRate = 30;
 
+	// Check if should ask for debug Mode?
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?", Category = "General Settigns"))
+	bool bAskForDebugMode = true;
 
+	// Check if should try to use Python Automatic Remote star
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Automatic Remote VA Start via Python?", Category = "General Settigns"))
+	bool bAutomaticRemoteVAStart = true;
+
+	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase", Category = "Connection"))
+	TEnumAsByte<EConnectionSetting::Type> AddressSetting = EConnectionSetting::Type::Automatic;
+
+	// IP Address for manual input
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress", Category = "Connection")) // CanEditChange used
+	FString ServerIPAddress = "10.0.1.240";
+
+	// Port for manual input
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Port [0, 65535]", Category = "Connection", // CanEditChange used
+		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
+	uint16 ServerPort = 12340;
+
+	// Read in File? 
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Read an initial mapping file?", Category = "Directivity Manager"))
+	bool bReadInitialMappingFile = true;
 	
-	// return directivity x in form: $(x)
-	std::string getDirectivity();
+	// File name of the Directivity mapping file
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Name of ini file for directivities", Category = "Directivity Manager"))
+	FString DirMappingFileName = "Study/VADir_default.ini";
+
+	// Port for remote VAServer starting
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Remote VAServer Start Port [0, 65535]", Category = "Connection",
+		// CanEditChange used
+		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
+	uint16 RemoteVAStarterPort = 41578;
+
+	// Which version should be started automatically
+	UPROPERTY(EditAnywhere, meta = (DisplayName =
+		"Which VAServer version should be started, configurable in the Config of the VAServer Launcher", Category =
+		"General Settigns"))
+	FString WhichVAServerVersionToStart = TEXT("2018.a");
+
+
+
+public:
+
+	// Sets default values for this actor's properties
+	AVAReceiverActor();
+	void Tick(float DeltaTime) override;
+
+	// Interface for HRIR Settings
+	UFUNCTION(BlueprintCallable)
+	void SetUpdateRate(int Rate);
+
+	// Interface for Dir Mapping
+	UFUNCTION(BlueprintCallable)
+	bool ReadDirMappingFile(FString FileName);
+
+	// Interface for HRIR Settings
+	UFUNCTION(BlueprintCallable)
+	bool SetHRIRByFileName(FString FileName);
 	
-	// return Offset
-	float getGainFactor();
+	// Set Debug Mode to toggle global visibility of all sound Sources
+	UFUNCTION(BlueprintCallable)
+	void SetDebugMode(bool bDebugModeN);
 
-	// return Scale
-	float getScale();
+	// Gets scale of virtual world compared to real world
+	UFUNCTION(BlueprintCallable)
+	float GetScale() const;
 
-	// return IP Adress as FString TODO wie sonst?
-	FString getIPAdress();
+	// Gets IP Address
+	UFUNCTION(BlueprintCallable)
+	FString GetIPAddress() const;
+
+	// Gets Port
+	UFUNCTION(BlueprintCallable)
+	int GetPort() const;
+
+
 
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	// Get Walls
+	TArray<AVAReflectionWall*> GetReflectionWalls();					// SourceC
 
-	// Updates the Virtual World Position of the Player
-	bool updateVirtualWorldPosition();
+	// Directivity Handling
+	FVADirectivity* GetDirectivityByMapping(FString Phoneme) const;		// SourceC
+	FVADirectivity* GetDirectivityByFileName(FString FileName);			// SourceC
 
-	// Updates the Real World Position of the Player
-	bool updateRealWorldPosition();
+	
+	// Cluster Stuff
+	void RunOnAllNodes(FString Command);
 
-	// Link to the PlayerController
-	APlayerController* controller;
+	// Getter Functions	
+	bool IsInitialized() const;											// SourceC
+	int GetUpdateRate() const;											// SourceC
 
-	// Link to the Player Instance
-	AActor* player;
+	
+	// Initialization
+	void BeginPlay() override;
+	void BeginDestroy() override;
 
-	// var used to measure time since last update
-	float timeSinceUpdate;
-
-	// Tmp Var
-	FVector		tmpPosF;
-	FRotator	tmpRotF;
-	FQuat		tmpQuatF;
-	VAVec3*		tmpPos;
-	VAQuat*		tmpQuat;
+	// Position updates
+	bool UpdateVirtualWorldPose();
+	bool UpdateRealWorldPose();
 
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	// Cluster Stuff
+	void HandleClusterEvent(const FDisplayClusterClusterEvent& Event);
+	void HandleClusterCommand(FString Command);
+
+
+	void InitializeWalls();
+
+	
+#if WITH_EDITOR
+	bool CanEditChange(const UProperty* InProperty) const override;
+#endif
+
+	// Current Receiver Actor
+	// CurrentReceiverActor;
+
+	
+	// Receiver Specific Data
+	int ReceiverID;
+	FVADirectivityManager	DirManager;
+	FVAHRIRManager			HRIRManager;
+
+	FVAHRIR* CurrentHRIR;
+
+	TArray<AVAReflectionWall*> ReflectionWalls;
+	
+	// State of Actor
+	bool bInitialized = false;
+	bool bWallsInitialized = false;
+
+
+	// Time stuff
+	float TimeSinceUpdate;
+	float TotalTime;
+
+	// Event Listener Delegate
+	FOnClusterEventListener ClusterEventListenerDelegate;
 
 };

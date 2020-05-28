@@ -1,225 +1,171 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "VAUtils.h"
-#include "VADefines.h"
-#include "Core.h"
-#include "Modules/ModuleManager.h"
-#include "Interfaces/IPluginManager.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
+
+#include "VAReflectionWall.h"
 #include "VAPlugin.h"
-//#include "VA.h"
-//#include "VANet.h"
-//#include "VistaBase/VistaTimeUtils.h"
 
+#include "VA.h"
 
-void VAUtils::openMessageBox(char* text, bool error)
+DEFINE_LOG_CATEGORY(VALog);
+
+void FVAUtils::OpenMessageBox(const FString Text, const bool bError)
 {
-	//char* text;
-	if (error) {
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(addExclamationMarkInChar(text))));
-		//text = addExclamationMarkInChar(text);
-	}
-	else {
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(text)));
-		//text = text_p;
-	}
-	//FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(text)), &FText::FromString(ANSI_TO_TCHAR(title)));
-	//FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ANSI_TO_TCHAR(text)));
-}
-
-void VAUtils::openMessageBoxV(char* text, bool error)
-{
-	if (M_VERBOSE)
-		openMessageBox(text, error);
-}
-
-char* VAUtils::addExclamationMarkInChar(char* text)
-{
-	size_t len = strlen(text);
-	char* ret = new char[len + 21];
-
-	for (int i = 0; i < 10; i++)
+	if (!FVAPlugin::GetIsMaster())
 	{
-		ret[i] = '!';
-		ret[i + 10 + len] = '!';
+		return;
 	}
-
-	for (int i = 0; i < len; i++)
+	
+	FString TrueStatement;
+	if (bError)
 	{
-		ret[10 + i] = text[i];
+		TrueStatement = "TRUE";
+	}
+	else
+	{
+		TrueStatement = "FALSE";
+	}
+	
+	LogStuff("[FVAUtils::OpenMessageBox(ERROR = " + TrueStatement + ")]: Opening Message Box with message: " + Text);
+
+	if (bError)
+	{
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(AddExclamationMarkAroundChar(Text)));
+	}
+	else
+	{
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(Text));
 	}
 
-	ret[len + 20] = '\0';
-
-	/*strcpy(ret, text);
-	ret[len] = a;
-	ret[len + 1] = '\0';*/
-
-	return ret;
 }
 
-bool VAUtils::checkLibraryHandle(void* LibraryHandle)
+
+FString FVAUtils::AddExclamationMarkAroundChar(const FString Text)
 {
-	if (LibraryHandle) {
-		openMessageBoxV("Handle OK");
+	size_t Length = Text.Len();
+	FString ReturnedString = FString("!!!!!");
+	ReturnedString.Append(Text).Append("!!!!!");
+
+	return ReturnedString;
+}
+
+bool FVAUtils::CheckLibraryHandle(const void* LibraryHandle)
+{
+	if (LibraryHandle)
+	{
 		return true;
 	}
-	else {
-		openMessageBox("Handle not OK", true);
-		return false;
-	}
+	return false;
 }
 
-bool VAUtils::fVecToVAVec3(FVector& VecF, VAVec3& VecVA)
+bool FVAUtils::FVecToVAVec3(FVector& VecF, VAVec3& VecVA)
 {
-	if (&VecF == NULL || &VecVA == 0)
+	if (&VecF == nullptr || &VecVA == nullptr)
+	{	
 		return false;
+	}
 
 	VecVA.Set(VecF.X, VecF.Y, VecF.Z);
 
 	return true;
 }
 
-bool VAUtils::fVecToVAVec3Rot(FVector& vecF, VAVec3& vecVA)
+
+FVector FVAUtils::ToVACoordinateSystem(const FVector VecF, const float Scale)
 {
 	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|y*********//   //*****|z****x****//
-	//*****|**********//   //*****|***/******//
-	//*****|*********x//   //*****|*/*******y//
-	//*****0----------//   //*****0----------//
+	//*****|yP********//   //*****|z****x****//
+	//*****|**********//   //*****|***/******//		  / forward
+	//*****|********xR//   //*****|*/*******y//		 /
+	//*****0----------//   //*****0----------//		/
 	//****/***********//   //****************//
-	//**z/************//   //****************//
+	//*zY/************//   //****************//
+	const float ScaleInv = 1 / (Scale);
+	return FVector(ScaleInv * VecF.Y, ScaleInv * VecF.Z, -ScaleInv * VecF.X);
+}
 
-	if (&vecF == NULL || &vecVA == NULL)
+FRotator FVAUtils::ToVACoordinateSystem(const FRotator RotF)
+{
+	// ++ VA Server ++//   // ++ Unreal En ++//
+	//*****|yP********//   //*****|zY**xR****//
+	//*****|**/******//   //*****|**/*******//		  / forward
+	//*****|*/******xR//   //*****|*/******yP//		 /
+	//*****0----------//   //*****0----------//		/
+	//****/***********//   //****************//
+	//*zY/************//   //****************//
+	//
+	//	https://gamedev.stackexchange.com/questions/157946/converting-a-quaternion-in-a-right-to-left-handed-coordinate-system
+	//
+	//			  Unreal			VAServer
+	//	forward		x					-z
+	//	up			z					y
+	//	right		y					x
+	//
+	//
+	//	All *(-1) due to changing direction
+	//Quaternion(
+	// 	-input.y,			(where VA x?)
+	// 	-input.z,			(where VA y?)
+	// 	input.x,			(where VA z?)
+	// 	input.w		
+	// )
+
+	const FQuat Quat = RotF.Quaternion();
+	const FQuat Tmp = FQuat(-Quat.Y, -Quat.Z, Quat.X, Quat.W);
+	return Tmp.Rotator();
+}
+
+bool FVAUtils::FQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA)
+{
+	if (&QuatF == nullptr || &QuatVA == nullptr)
+	{	
 		return false;
-
-	//VecVA.Set(-VecF.Z, VecF.X, VecF.Y);
-	vecVA.Set(vecF.Y, vecF.Z, -vecF.X);
-
-	return true;
-}
-
-FVector VAUtils::toVACoordinateSystem(FVector vecF)
-{
-	return FVector(vecF.Y, vecF.Z, -vecF.X);
-}
-
-FRotator VAUtils::toVACoordinateSystem(FRotator rotF)
-{
-	return FRotator(rotF.Yaw, -rotF.Roll, rotF.Pitch);
-}
-
-bool VAUtils::fQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA)
-{
-	if (&QuatF == NULL || &QuatVA == NULL)
-		return false;
+	}
 
 	QuatVA.Set(QuatF.X, QuatF.Y, QuatF.Z, QuatF.W);
 
 	return true;
 }
 
-bool VAUtils::fQuatToVAQuatRot(FQuat& QuatF, VAQuat& QuatVA)
+
+FVector FVAUtils::ComputeReflectedPos(const AVAReflectionWall* Wall, const FVector Pos)
 {
-	// ++ VA Server ++//   // ++ Unreal En ++//
-	//*****|y*********//   //*****|z****x****//
-	//*****|**********//   //*****|***/******//
-	//*****|*********x//   //*****|*/*******y//
-	//*****0----------//   //*****0----------//
-	//****/***********//   //****************//
-	//**z/************//   //****************//
+	const FVector Normal = Wall->GetNormalVector();
+	const float D = Wall->GetHessianD();
+	const float T = D - FVector::DotProduct(Normal, Pos);
 
-	if (&QuatF == NULL || &QuatVA == NULL)
-		return false;
-
-	QuatVA.Set(QuatF.Z, -QuatF.X, -QuatF.Y, QuatF.W);
-
-	return true;
-}
-
-bool VAUtils::rotateFRotator(FRotator & rot)
-{
-	// X = Y // Y = Z // Z = -X
-	// rot1.Pitch = rot.Yaw;
-	// rot1.Yaw = -rot.Roll;
-	// rot1.Roll = rot.Pitch;
-
-	// FRotator rot1 = FRotator(rot.Yaw, -rot.Roll, rot.Pitch);
-
-	rot = FRotator(rot.Yaw, -rot.Roll, rot.Pitch);
-	return true;
-}
-
-bool VAUtils::rotateFVec(FVector & vec)
-{
-	// X = Y // Y = Z // Z = -X
-	vec = FVector(vec.Y, vec.Z, -vec.X);
-	return true;
-}
-
-bool VAUtils::scaleVAVec(VAVec3 & vecVA, float scale)
-{
-	double scaleD = (double)scale;
-	vecVA.Set(vecVA.x / scaleD, vecVA.y / scaleD, vecVA.z / scaleD);
-	return true;
+	return (Pos + 2.0 * T * Normal);
 }
 
 
-/*
-bool VAUtils::getViewingPos(FVector* vec, FQuat* quat)
+FRotator FVAUtils::ComputeReflectedRot(const AVAReflectionWall* Wall, const FRotator Rot)
 {
-	if (vec == NULL || quat == NULL)
-		return false;
+	// TODO Maybe make easier computation?
+	
+	const FVector NormalVec = Wall->GetNormalVector();
 
-	FRotator* rot = new FRotator();
+	const FVector Direction = Rot.Vector();
 
-	//UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(*rot, *vec);
-	*quat = rot->Quaternion();
-	delete rot;
+	const FVector Pos1 = Wall->GetSupportVector() + (1000 * NormalVec);
+	const FVector Pos2 = Pos1 + (500 * Direction);
 
-	return true;
+	const FVector Pos1R = ComputeReflectedPos(Wall, Pos1);
+	const FVector Pos2R = ComputeReflectedPos(Wall, Pos2);
+
+	const FVector Tmp = Pos2R - Pos1R;
+
+	return Tmp.Rotation();
 }
 
-bool VAUtils::getViewingPos(VAVec3* vec, VAQuat* quat)
+
+void FVAUtils::LogStuff(const FString Text, const bool Error)
 {
-	if (vec == NULL || quat == NULL)
-		return false;
-
-	FVector* vecF = new FVector();
-	FQuat* quatF = new FQuat();
-	FRotator* rot = new FRotator();
-
-	if(FVAPluginModule::isViewModeHMD())
+	if (Error)
 	{
-		//UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(*rot, *vecF);
+		UE_LOG(VALog, Error, TEXT("%s"), *Text);
 	}
-
-	*quatF = rot->Quaternion();
-
-	fQuatToVAQuat(quatF, quat);
-	fVecToVAVec3(vecF, vec);
-
-	delete vecF, quatF, rot;
-	return true;
+	else
+	{
+		UE_LOG(VALog, Log, TEXT("%s"), *Text);
+	}
 }
-
-bool VAUtils::getViewingPosVA(VAVec3* vec, VAQuat* quat)
-{
-	if (vec == NULL || quat == NULL)
-		return false;
-
-	FVector* vecF = new FVector();
-	FQuat* quatF = new FQuat();
-	FRotator* rot = new FRotator();
-
-	//UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(*rot, *vecF);
-	*quatF = rot->Quaternion();
-
-	fQuatToVAQuatRot(quatF, quat);
-	fVecToVAVec3Rot(vecF, vec);
-
-	delete vecF, quatF, rot;
-	return true;
-}
-*/
-
