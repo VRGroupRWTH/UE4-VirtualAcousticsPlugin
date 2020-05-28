@@ -1,26 +1,5 @@
-processException()
-
 VADirectivity Konstruktoren
-
-VASoundSource::VASoundSource(UVASourceComponent * parentComponent_) :
-	parentComponent(parentComponent_)
-{
-	// TODO
-}
-
 
 Set Input for Debug Mode?
 
 Test Disconnect without Python!
-
-HRIR
-
-
-Groß / Kleinschreibung bei Log Stuff
-
-Manche Funktionen const aber sie sind nicht const weil sie am Server was machen
-bool FVASignalBuffer::SetSoundTimeOffset(const float SoundTimeOffset)
-{
-	return FVAPlugin::SetSoundBufferTime(BufferID, SoundTimeOffset);
-}
-

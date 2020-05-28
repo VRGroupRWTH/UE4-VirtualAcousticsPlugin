@@ -2,7 +2,7 @@
 
 #include "Modules/ModuleManager.h"
 #include <string>						// std::string
-
+#include "VAEnums.h"					// EPlayState
 #include "Sockets.h"
 
 #define VANET_STATIC
@@ -11,7 +11,6 @@
 
 
 //forward declarations:
-enum EPlayAction;
 class AVAReceiverActor;		 
 class AVAReflectionWall;	
 
@@ -72,7 +71,7 @@ public:
 	// ******* Sound Buffer ******* //
 
 	static std::string CreateNewBuffer(FString SoundFileName, bool bLoop = false, float SoundOffset = 0.0f);
-	static bool SetSoundBufferAction(std::string BufferID, EPlayAction Action);
+	static bool SetSoundBufferAction(std::string BufferID, EPlayAction::Type Action);
 	static int GetSoundBufferAction(std::string BufferID);
 	static bool SetSoundBufferTime(std::string BufferID, float Time);
 	static bool SetSoundBufferLoop(std::string BufferID, bool bLoop);

@@ -472,7 +472,7 @@ void AVAReceiverActor::HandleClusterCommand(const FString Command)
 	else
 	{
 		FVAUtils::LogStuff("[AVAReceiverActor::HandleClusterCommand()]: Cluster Command " + 
-			Command + " could be evaluated.", true);
+			Command + " could not be evaluated.", true);
 	}
 }
 

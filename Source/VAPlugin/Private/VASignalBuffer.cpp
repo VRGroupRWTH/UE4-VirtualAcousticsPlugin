@@ -36,7 +36,7 @@ bool FVASignalBuffer::SetSoundTimeOffset(const float SoundTimeOffset)
 
 bool FVASignalBuffer::SetSoundBufferAction(const int Action)
 {
-	return FVAPlugin::SetSoundBufferAction(BufferID, EPlayAction(Action));
+	return FVAPlugin::SetSoundBufferAction(BufferID, EPlayAction::Type(Action));
 }
 
 

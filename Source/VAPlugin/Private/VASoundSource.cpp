@@ -279,7 +279,7 @@ bool FVASoundSource::PlaySound() const
 		return false;
 	}
 
-	return SetPlayAction(Play);
+	return SetPlayAction(EPlayAction::Type::Play);
 }
 
 bool FVASoundSource::StopSound() const
@@ -289,7 +289,7 @@ bool FVASoundSource::StopSound() const
 		return false;
 	}
 
-	return SetPlayAction(Stop);
+	return SetPlayAction(EPlayAction::Type::Stop);
 }
 
 bool FVASoundSource::PauseSound() const
@@ -299,7 +299,7 @@ bool FVASoundSource::PauseSound() const
 		return false;
 	}
 
-	return SetPlayAction(Pause);
+	return SetPlayAction(EPlayAction::Type::Pause);
 }
 
 bool FVASoundSource::PlaySoundFromSecond(const float TimeN) const
@@ -311,7 +311,7 @@ bool FVASoundSource::PlaySoundFromSecond(const float TimeN) const
 
 	if (SetSoundTime(TimeN))
 	{
-		return SetPlayAction(Play);
+		return SetPlayAction(EPlayAction::Type::Play);
 	}
 	
 	return false;

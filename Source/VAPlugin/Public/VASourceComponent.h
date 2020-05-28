@@ -2,39 +2,13 @@
 
 #pragma once
 
+#include "VAEnums.h"									// EDir, EPlayAction, EMovement
 
 #include "GameFramework/Actor.h"
 #include "VASoundSource.h"								// From VA
 #include "SharedPointer.h"
 
 #include "VASourceComponent.generated.h"
-
-UENUM()
-enum EDir
-{
-	DefaultHRIR,
-	ManualFile,
-	Phoneme,
-	NoDirectivity
-};
-
-UENUM()
-enum EMovement
-{
-	MoveWithObject = 0,
-	ObjectSpawnPoint = 1,
-	AttachToBone = 2,
-};
-
-
-UENUM(BlueprintType)
-enum EPlayAction
-{
-	NoPlayAction = -1 UMETA(Hidden),
-	Stop = 0,
-	Pause = 1,
-	Play = 2
-};
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -54,7 +28,7 @@ protected:
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "General Settings"))
-	TEnumAsByte<EPlayAction> StartingPlayAction = EPlayAction::Stop;
+	TEnumAsByte<EPlayAction::Type> StartingPlayAction = EPlayAction::Type::Stop;
 
 	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]", Category = "General Settings"))
@@ -76,7 +50,7 @@ protected:
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
 		CustomStructureParam = "Move With the Object, At Object Spawn Point (unmovable, also reflections), Attatch to a Bone"))
-	TEnumAsByte<EMovement> MovementSetting = EMovement::ObjectSpawnPoint;
+	TEnumAsByte<EMovement::Type> MovementSetting = EMovement::Type::ObjectSpawnPoint;
 
 	// Use the manual Offset for the position?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?", Category = "Position"))
@@ -97,7 +71,7 @@ protected:
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity", Category = "Directivity"))
-	TEnumAsByte<EDir> DirectivitySetting = EDir::NoDirectivity;
+	TEnumAsByte<EDir::Type> DirectivitySetting = EDir::Type::NoDirectivity;
 
 	// File Name of the Directivity that should be used
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name", Category = "Directivity"))
@@ -137,7 +111,7 @@ public:
 
 	// Returns the Play State directly from the server 	NoPlayAction = -1, Stop = 0, Pause = 1,	Play = 2
 	UFUNCTION(BlueprintCallable)
-	EPlayAction GetPlayState() const;
+	EPlayAction::Type GetPlayState() const;
 
 
 	// *** Sound Settings *** // 
@@ -191,7 +165,7 @@ public:
 
 	// Sets Movement Setting 	MoveWithObject = 0, ObjectSpawnPoint = 1, AttachToBone = 2,
 	UFUNCTION(BlueprintCallable)
-	bool SetMovementSetting(EMovement MovementSettingN);
+	bool SetMovementSetting(EMovement::Type MovementSettingN);
 
 	// Sets to use Position Offset
 	UFUNCTION(BlueprintCallable)
@@ -223,11 +197,11 @@ public:
 
 	// *** Graphical Representation *** // 
 
-	// Sets the Visibility of the Sound Source and its reflections. Only works with single instance, not working in cluster mode
+	// Sets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
 	bool SetVisibility(bool bVisN) const;
 
-	// Gets the Visibility of the Sound Source and its reflections. Only works with single instance, not working in cluster mode
+	// Gets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
 	bool GetVisibility() const;
 

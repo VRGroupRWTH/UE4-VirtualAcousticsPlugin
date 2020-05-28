@@ -531,7 +531,7 @@ std::string FVAPlugin::CreateNewBuffer(const FString SoundFileName, const bool b
 	}
 }
 
-bool FVAPlugin::SetSoundBufferAction(const std::string BufferID, const EPlayAction Action)
+bool FVAPlugin::SetSoundBufferAction(const std::string BufferID, const EPlayAction::Type Action)
 {
 	if (!ShouldInteractWithServer())
 	{

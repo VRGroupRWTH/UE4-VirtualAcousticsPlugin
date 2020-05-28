@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "VADefines.h"
+#include "VAEnums.h"									// EAddress
 
 #include "VADirectivityManager.h"
 #include "VAHRIRManager.h"
@@ -17,14 +17,7 @@
 
 class AVAReflectionWall;
 
-UENUM()
-enum EAddress
-{
-	Automatic,
-	Localhost,
-	Cave,
-	Manual
-};
+
 
 
 UCLASS()
@@ -57,7 +50,7 @@ protected:
 
 	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Usecase", Category = "Connection"))
-	TEnumAsByte<EAddress> AddressSetting = EAddress::Automatic;
+	TEnumAsByte<EAddress::Type> AddressSetting = EAddress::Type::Automatic;
 
 	// IP Address for manual input
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "IP Adress", Category = "Connection")) // CanEditChange used

@@ -214,14 +214,14 @@ bool UVASourceComponent::PauseSound() const
 	return SoundSource->PauseSound();
 }
 
-EPlayAction UVASourceComponent::GetPlayState() const
+EPlayAction::Type UVASourceComponent::GetPlayState() const
 {
 	if (!ShouldSendCommand())
 	{
 		return EPlayAction::Stop;
 	}
 
-	return EPlayAction(SoundSource->GetPlayState());
+	return EPlayAction::Type(SoundSource->GetPlayState());
 }
 
 
@@ -399,7 +399,7 @@ FRotator UVASourceComponent::GetRotation() const
 	return Rot;
 }
 
-bool UVASourceComponent::SetMovementSetting(const EMovement MovementSettingN)
+bool UVASourceComponent::SetMovementSetting(const EMovement::Type MovementSettingN)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
