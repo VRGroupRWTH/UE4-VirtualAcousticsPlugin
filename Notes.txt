@@ -1,5 +1,0 @@
-VADirectivity Konstruktoren
-
-Set Input for Debug Mode?
-
-Test Disconnect without Python!
