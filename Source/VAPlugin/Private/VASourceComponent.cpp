@@ -22,43 +22,7 @@ void UVASourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<AActor*> ReceiverActors;
-	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), ReceiverActors);
-	AVAReceiverActor* ReceiverActorTmp = nullptr;
 
-	if (ReceiverActors.Num() == 0)
-	{
-		// If no Rec Actor found spawn one with default parameters
-		if (ReceiverActorTmp == nullptr)
-		{
-			FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values", false);
-			ReceiverActorTmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
-		}
-	}
-	else if (ReceiverActors.Num() == 1)
-	{
-		ReceiverActorTmp = dynamic_cast<AVAReceiverActor*>(ReceiverActors[0]);
-		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: Receiver found!", false);
-	}
-	else if (ReceiverActors.Num() >= 2)
-	{
-		FVAPlugin::SetUseVA(false);
-
-		FVAUtils::OpenMessageBox("There are more than 1 Receiver Actors in the world. Stopping VAPlugin. Make sure to remove the wrong one.", true);
-		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: More than 1 Receiver found! Stopping VAPlugin. Make sure to remove the wrong one", true);
-		
-		return;
-	}
-
-	CurrentReceiverActor = ReceiverActorTmp;
-
-	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
-	if (ReceiverActorTmp->IsInitialized() && !bInitialized)
-	{
-		Initialize();
-	}
-
-	UpdateRate = ReceiverActorTmp->GetUpdateRate();
 }
 
 
@@ -110,6 +74,46 @@ void UVASourceComponent::Initialize()
 
 	bFirstTick = true;
 
+
+	TArray<AActor*> ReceiverActors;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), ReceiverActors);
+	AVAReceiverActor* ReceiverActorTmp = nullptr;
+
+	if (ReceiverActors.Num() == 0)
+	{
+		// If no Rec Actor found spawn one with default parameters
+		if (ReceiverActorTmp == nullptr)
+		{
+			FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values", false);
+			ReceiverActorTmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
+		}
+	}
+	else if (ReceiverActors.Num() == 1)
+	{
+		ReceiverActorTmp = dynamic_cast<AVAReceiverActor*>(ReceiverActors[0]);
+		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: Receiver found!", false);
+	}
+	else if (ReceiverActors.Num() >= 2)
+	{
+		FVAPlugin::SetUseVA(false);
+
+		FVAUtils::OpenMessageBox("There are more than 1 Receiver Actors in the world. Stopping VAPlugin. Make sure to remove the wrong one.", true);
+		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: More than 1 Receiver found! Stopping VAPlugin. Make sure to remove the wrong one", true);
+
+		return;
+	}
+
+	CurrentReceiverActor = ReceiverActorTmp;
+
+	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
+	if (ReceiverActorTmp->IsInitialized() && !bInitialized)
+	{
+		Initialize();
+	}
+
+	UpdateRate = ReceiverActorTmp->GetUpdateRate();
+
+	
 
 	SkeletalMeshComponent = dynamic_cast<USkeletalMeshComponent*>(
 		GetOwner()->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
