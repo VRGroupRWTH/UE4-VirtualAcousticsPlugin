@@ -50,7 +50,7 @@ protected:
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
 		CustomStructureParam = "Move With the Object, At Object Spawn Point (unmovable, also reflections), Attatch to a Bone"))
-	TEnumAsByte<EMovement::Type> MovementSetting = EMovement::Type::ObjectSpawnPoint;
+	TEnumAsByte<EMovement::Type> MovementSetting = EMovement::Type::MoveWithObject;
 
 	// Use the manual Offset for the position?
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Offset?", Category = "Position"))
