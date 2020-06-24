@@ -178,7 +178,7 @@ bool UVASourceComponent::ShouldSendCommand() const
 // ******* Playback Settings **************************************** //
 // ****************************************************************** //
 
-bool UVASourceComponent::PlaySound() const
+bool UVASourceComponent::PlaySound()
 {
 	if (!ShouldSendCommand())
 	{
@@ -188,7 +188,7 @@ bool UVASourceComponent::PlaySound() const
 	return SoundSource->PlaySound();
 }
 
-bool UVASourceComponent::PlaySoundFromSecond(const float Time) const
+bool UVASourceComponent::PlaySoundFromSecond(const float Time)
 {
 	if (!ShouldSendCommand())
 	{
@@ -198,7 +198,7 @@ bool UVASourceComponent::PlaySoundFromSecond(const float Time) const
 	return SoundSource->PlaySoundFromSecond(Time);
 }
 
-bool UVASourceComponent::StopSound() const
+bool UVASourceComponent::StopSound()
 {
 	if (!ShouldSendCommand())
 	{
@@ -208,7 +208,7 @@ bool UVASourceComponent::StopSound() const
 	return SoundSource->StopSound();
 }
 
-bool UVASourceComponent::PauseSound() const
+bool UVASourceComponent::PauseSound()
 {
 	if (!ShouldSendCommand())
 	{
@@ -251,7 +251,7 @@ bool UVASourceComponent::MuteSound(const bool bMuteN)
 	return SoundSource->MuteSound(bMuted);
 }
 
-bool UVASourceComponent::LoadSoundFile(FString SoundFileN) const
+bool UVASourceComponent::LoadSoundFile(FString SoundFileN)
 {
 	if (!ShouldSendCommand())
 	{
@@ -539,7 +539,7 @@ FString UVASourceComponent::GetDirectivityFileName() const
 // ******* Graphical Representation ********************************* //
 // ****************************************************************** //
 
-bool UVASourceComponent::SetVisibility(const bool bVisN) const
+bool UVASourceComponent::SetVisibility(const bool bVisN)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{

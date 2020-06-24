@@ -95,19 +95,19 @@ public:
 
 	// Play Sound
 	UFUNCTION(BlueprintCallable)
-	bool PlaySound() const;
+	bool PlaySound();
 
 	// Play Sound starting from second of sound
 	UFUNCTION(BlueprintCallable)
-	bool PlaySoundFromSecond(float Time) const;
+	bool PlaySoundFromSecond(float Time);
 
 	// Stop Sound
 	UFUNCTION(BlueprintCallable)
-	bool StopSound() const;
+	bool StopSound();
 
 	// Pause Sound
 	UFUNCTION(BlueprintCallable)
-	bool PauseSound() const;
+	bool PauseSound();
 
 	// Returns the Play State directly from the server 	NoPlayAction = -1, Stop = 0, Pause = 1,	Play = 2
 	UFUNCTION(BlueprintCallable)
@@ -122,7 +122,7 @@ public:
 
 	// (Pre-) loads a sound file for later usage
 	UFUNCTION(BlueprintCallable)
-	bool LoadSoundFile(FString SoundFileN) const;
+	bool LoadSoundFile(FString SoundFileN);
 
 	// Sets a sound file. If already loaded use the loaded one, if not create new
 	UFUNCTION(BlueprintCallable)
@@ -199,7 +199,7 @@ public:
 
 	// Sets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
-	bool SetVisibility(bool bVisN) const;
+	bool SetVisibility(bool bVisN);
 
 	// Gets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
