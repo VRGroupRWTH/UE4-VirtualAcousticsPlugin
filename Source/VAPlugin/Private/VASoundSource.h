@@ -24,6 +24,8 @@ public:
 	void SetVisibility(bool VisN);
 	bool SetDirectivity(FVADirectivity* DirN);
 
+	bool RemoveDirectivity();
+
 	bool SetPlayAction(int ActionN) const;
 	bool SetSoundTime(float TimeN) const;
 	bool SetLoop(bool bLoopN);

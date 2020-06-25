@@ -877,6 +877,32 @@ bool FVAPlugin::SetSoundSourceDirectivity(const int SoundSourceID, const int Dir
 	}
 }
 
+
+bool FVAPlugin::RemoveSoundSourceDirectivity(const int SoundSourceID)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return false;
+	}
+
+	if (SoundSourceID == -1)
+	{
+		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceDirectivity()]: SoundSourceID invalid (= -1)", true);
+		return false;
+	}
+
+	try
+	{
+		VAServer->SetSoundSourceDirectivity(SoundSourceID, -1);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		ProcessException("FVAPluginModule::SetSoundSourceDirectivity()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
 // ****************************************************************** // 
 // ******* HRIR ***************************************************** //
 // ****************************************************************** //

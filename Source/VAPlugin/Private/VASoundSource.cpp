@@ -199,6 +199,37 @@ bool FVASoundSource::SetDirectivity(FVADirectivity* DirN)
 	return bFullSuccess;
 }
 
+bool FVASoundSource::RemoveDirectivity()
+{
+	Directivity = nullptr;
+	
+	if (!FVAPlugin::GetIsMaster())
+	{
+		return false;
+	}
+
+
+	bool bFullSuccess = true;
+
+	if (!FVAPlugin::RemoveSoundSourceDirectivity(SoundSourceID))
+	{
+		bFullSuccess = false;
+	}
+
+	if (bHandleReflections)
+	{
+		for (auto EntryReflections : Reflections)
+		{
+			if (!EntryReflections->RemoveDirectivity())
+			{
+				bFullSuccess = false;
+			}
+		}
+	}
+
+	return bFullSuccess;
+}
+
 bool FVASoundSource::SetPlayAction(const int ActionN) const
 {
 	if (!FVAPlugin::GetIsMaster())

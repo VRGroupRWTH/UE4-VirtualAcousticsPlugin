@@ -86,9 +86,14 @@ bool FVASoundSourceReflection::SetRotation(const FRotator RotN)
 	return Ret;
 }
 
-bool FVASoundSourceReflection::SetDirectivity(FVADirectivity* Dir) const
+bool FVASoundSourceReflection::SetDirectivity(FVADirectivity* Dir)
 {
 	return FVAPlugin::SetSoundSourceDirectivity(SoundSourceID, Dir->GetID());
+}
+
+bool FVASoundSourceReflection::RemoveDirectivity()
+{
+	return FVAPlugin::RemoveSoundSourceDirectivity(SoundSourceID);
 }
 
 void FVASoundSourceReflection::SetVisibility(const bool bVis)

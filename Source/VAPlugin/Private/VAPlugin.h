@@ -92,6 +92,7 @@ public:
 
 	static int CreateNewDirectivity(FString FileName);
 	static bool SetSoundSourceDirectivity(int SoundSourceID, int DirectivityID);
+	static bool RemoveSoundSourceDirectivity(int SoundSourceID);
 
 
 	// ******* HRIR ******* //
