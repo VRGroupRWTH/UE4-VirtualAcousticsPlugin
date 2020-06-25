@@ -186,7 +186,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool SetDirectivityByMapping(FString Phoneme);
 
-	// Sets Directivity by a File Name
+	// Sets Directivity by a File Name, Passing "" will remove the current directivity
 	UFUNCTION(BlueprintCallable)
 	bool SetDirectivityByFileName(FString FileName);
 

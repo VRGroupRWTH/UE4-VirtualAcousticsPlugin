@@ -522,7 +522,7 @@ bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
 
 	if (FileName == "")
 	{
-		SoundSource->RemoveDirectivity();
+		 return SoundSource->RemoveDirectivity();
 	}
 	
 	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
