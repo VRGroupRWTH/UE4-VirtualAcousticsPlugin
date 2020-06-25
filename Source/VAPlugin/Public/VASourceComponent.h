@@ -186,10 +186,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool SetDirectivityByMapping(FString Phoneme);
 
-	// Sets Directivity by a File Name, Passing "" will remove the current directivity
+	// Sets Directivity by a File Name, Passing a empty string "" removes the directivity, passing "default" sets the default directivity
 	UFUNCTION(BlueprintCallable)
 	bool SetDirectivityByFileName(FString FileName);
-
+	
 	// Gets the File Name of the Directivity
 	UFUNCTION(BlueprintCallable)
 	FString GetDirectivityFileName() const;
