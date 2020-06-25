@@ -156,7 +156,7 @@ FRotator FVAUtils::ComputeReflectedRot(const AVAReflectionWall* Wall, const FRot
 
 	FVAUtils::LogStuff(FString("Rot Reflected: " + Tmp.Rotation().ToString()));
 	
-	return Tmp.Rotation() + FRotator(0,0,2*Wall->GetActorRotation().Pitch-Rot.Roll);
+	return ((Tmp.Rotation()).Quaternion() * (FRotator(0,0,2*Wall->GetActorRotation().Pitch-Rot.Roll).Quaternion())).Rotator();
 }
 
 
