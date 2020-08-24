@@ -142,24 +142,6 @@ FVector FVAUtils::ComputeReflectedPos(const AVAReflectionWall* Wall, const FVect
 
 FRotator FVAUtils::ComputeReflectedRot(const AVAReflectionWall* Wall, const FRotator Rot)
 {
-	// TODO Maybe make easier computation?
-	
-	// const FVector NormalVec = Wall->GetNormalVector();
-	// 
-	// const FVector Direction = Rot.Vector();
-	// 
-	// const FVector Pos1 = Wall->GetSupportVector() + (1000 * NormalVec);
-	// const FVector Pos2 = Pos1 + (500 * Direction);
-	// 
-	// const FVector Pos1R = ComputeReflectedPos(Wall, Pos1);
-	// const FVector Pos2R = ComputeReflectedPos(Wall, Pos2);
-	// 
-	// const FVector Tmp = Pos2R - Pos1R;
-	// 
-	// FVAUtils::LogStuff(FString("Rot Reflected: " + Tmp.Rotation().ToString()));
-	// 
-	// return ((Tmp.Rotation()).Quaternion() * (FRotator(0,0,2*Wall->GetActorRotation().Pitch-Rot.Roll).Quaternion())).Rotator();
-
 	const FVector WallNormalVec = Wall->GetNormalVector();
 	const FVector StartPos		= Wall->GetSupportVector() + (1000 * WallNormalVec);
 
@@ -176,9 +158,7 @@ FRotator FVAUtils::ComputeReflectedRot(const AVAReflectionWall* Wall, const FRot
 	const FVector DirForwardR	= PosForwardR - StartPosR;
 	const FVector DirUpR		= PosUpR - StartPosR;
 
-	const FRotator FinalRotation= UKismetMathLibrary::MakeRotFromXZ(DirForwardR, DirUpR);
-	return FinalRotation;
-
+	return UKismetMathLibrary::MakeRotFromXZ(DirForwardR, DirUpR);
 }
 
 
