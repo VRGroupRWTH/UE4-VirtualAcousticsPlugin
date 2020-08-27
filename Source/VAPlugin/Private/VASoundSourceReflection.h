@@ -22,7 +22,9 @@ public:
 
 	bool SetPosition(FVector PosN);
 	bool SetRotation(FRotator RotN);
-	bool SetDirectivity(FVADirectivity* Dir) const;
+	bool SetDirectivity(FVADirectivity* Dir);
+	bool RemoveDirectivity();
+	
 	void SetVisibility(bool bVis);
 	bool SetPowerAccordingOrigSource();
 

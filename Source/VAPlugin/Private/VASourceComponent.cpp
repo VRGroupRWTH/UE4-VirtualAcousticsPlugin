@@ -22,43 +22,7 @@ void UVASourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<AActor*> ReceiverActors;
-	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), ReceiverActors);
-	AVAReceiverActor* ReceiverActorTmp = nullptr;
 
-	if (ReceiverActors.Num() == 0)
-	{
-		// If no Rec Actor found spawn one with default parameters
-		if (ReceiverActorTmp == nullptr)
-		{
-			FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values", false);
-			ReceiverActorTmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
-		}
-	}
-	else if (ReceiverActors.Num() == 1)
-	{
-		ReceiverActorTmp = dynamic_cast<AVAReceiverActor*>(ReceiverActors[0]);
-		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: Receiver found!", false);
-	}
-	else if (ReceiverActors.Num() >= 2)
-	{
-		FVAPlugin::SetUseVA(false);
-
-		FVAUtils::OpenMessageBox("There are more than 1 Receiver Actors in the world. Stopping VAPlugin. Make sure to remove the wrong one.", true);
-		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: More than 1 Receiver found! Stopping VAPlugin. Make sure to remove the wrong one", true);
-		
-		return;
-	}
-
-	CurrentReceiverActor = ReceiverActorTmp;
-
-	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
-	if (ReceiverActorTmp->IsInitialized() && !bInitialized)
-	{
-		Initialize();
-	}
-
-	UpdateRate = ReceiverActorTmp->GetUpdateRate();
 }
 
 
@@ -110,6 +74,46 @@ void UVASourceComponent::Initialize()
 
 	bFirstTick = true;
 
+
+	TArray<AActor*> ReceiverActors;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), ReceiverActors);
+	AVAReceiverActor* ReceiverActorTmp = nullptr;
+
+	if (ReceiverActors.Num() == 0)
+	{
+		// If no Rec Actor found spawn one with default parameters
+		if (ReceiverActorTmp == nullptr)
+		{
+			FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: No AVAReceiver found! Spawning one with default values", false);
+			ReceiverActorTmp = this->GetWorld()->SpawnActor<AVAReceiverActor>(AVAReceiverActor::StaticClass());
+		}
+	}
+	else if (ReceiverActors.Num() == 1)
+	{
+		ReceiverActorTmp = dynamic_cast<AVAReceiverActor*>(ReceiverActors[0]);
+		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: Receiver found!", false);
+	}
+	else if (ReceiverActors.Num() >= 2)
+	{
+		FVAPlugin::SetUseVA(false);
+
+		FVAUtils::OpenMessageBox("There are more than 1 Receiver Actors in the world. Stopping VAPlugin. Make sure to remove the wrong one.", true);
+		FVAUtils::LogStuff("[UVASourceComponent::BeginPlay()]: More than 1 Receiver found! Stopping VAPlugin. Make sure to remove the wrong one", true);
+
+		return;
+	}
+
+	CurrentReceiverActor = ReceiverActorTmp;
+
+	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
+	if (ReceiverActorTmp->IsInitialized() && !bInitialized)
+	{
+		Initialize();
+	}
+
+	UpdateRate = ReceiverActorTmp->GetUpdateRate();
+
+	
 
 	SkeletalMeshComponent = dynamic_cast<USkeletalMeshComponent*>(
 		GetOwner()->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
@@ -174,7 +178,7 @@ bool UVASourceComponent::ShouldSendCommand() const
 // ******* Playback Settings **************************************** //
 // ****************************************************************** //
 
-bool UVASourceComponent::PlaySound() const
+bool UVASourceComponent::PlaySound()
 {
 	if (!ShouldSendCommand())
 	{
@@ -184,7 +188,7 @@ bool UVASourceComponent::PlaySound() const
 	return SoundSource->PlaySound();
 }
 
-bool UVASourceComponent::PlaySoundFromSecond(const float Time) const
+bool UVASourceComponent::PlaySoundFromSecond(const float Time)
 {
 	if (!ShouldSendCommand())
 	{
@@ -194,7 +198,7 @@ bool UVASourceComponent::PlaySoundFromSecond(const float Time) const
 	return SoundSource->PlaySoundFromSecond(Time);
 }
 
-bool UVASourceComponent::StopSound() const
+bool UVASourceComponent::StopSound()
 {
 	if (!ShouldSendCommand())
 	{
@@ -204,7 +208,7 @@ bool UVASourceComponent::StopSound() const
 	return SoundSource->StopSound();
 }
 
-bool UVASourceComponent::PauseSound() const
+bool UVASourceComponent::PauseSound()
 {
 	if (!ShouldSendCommand())
 	{
@@ -247,7 +251,7 @@ bool UVASourceComponent::MuteSound(const bool bMuteN)
 	return SoundSource->MuteSound(bMuted);
 }
 
-bool UVASourceComponent::LoadSoundFile(FString SoundFileN) const
+bool UVASourceComponent::LoadSoundFile(FString SoundFileN)
 {
 	if (!ShouldSendCommand())
 	{
@@ -516,6 +520,11 @@ bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
 	DirectivitySetting = EDirectivitySetting::ManualFile;
 	DirectivityByFileName = FileName;
 
+	if (FileName == "")
+	{
+		 return SoundSource->RemoveDirectivity();
+	}
+	
 	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
 }
 
@@ -535,7 +544,7 @@ FString UVASourceComponent::GetDirectivityFileName() const
 // ******* Graphical Representation ********************************* //
 // ****************************************************************** //
 
-bool UVASourceComponent::SetVisibility(const bool bVisN) const
+bool UVASourceComponent::SetVisibility(const bool bVisN)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{

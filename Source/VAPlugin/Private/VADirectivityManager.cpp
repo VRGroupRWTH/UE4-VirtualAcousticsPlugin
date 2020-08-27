@@ -188,6 +188,11 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByPhoneme(const FString Pho
 
 FVADirectivity* FVADirectivityManager::GetDirectivityByFileName(const FString FileName)
 {
+	if (FileName == "default")
+	{
+		return GetDefaultDirectivity();
+	}
+	
 	// Search for already existing Directivity
 	if (Directivities.Num() > 0)
 	{

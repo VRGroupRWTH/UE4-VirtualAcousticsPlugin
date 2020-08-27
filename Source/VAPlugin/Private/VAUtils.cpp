@@ -5,6 +5,8 @@
 #include "VAReflectionWall.h"
 #include "VAPlugin.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 #include "VA.h"
 
 DEFINE_LOG_CATEGORY(VALog);
@@ -140,21 +142,23 @@ FVector FVAUtils::ComputeReflectedPos(const AVAReflectionWall* Wall, const FVect
 
 FRotator FVAUtils::ComputeReflectedRot(const AVAReflectionWall* Wall, const FRotator Rot)
 {
-	// TODO Maybe make easier computation?
-	
-	const FVector NormalVec = Wall->GetNormalVector();
+	const FVector WallNormalVec = Wall->GetNormalVector();
+	const FVector StartPos		= Wall->GetSupportVector() + (1000 * WallNormalVec);
 
-	const FVector Direction = Rot.Vector();
+	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(Rot);
+	const FVector UpVector		= UKismetMathLibrary::GetUpVector(Rot);
 
-	const FVector Pos1 = Wall->GetSupportVector() + (1000 * NormalVec);
-	const FVector Pos2 = Pos1 + (500 * Direction);
+	const FVector PosForward	= StartPos + (500 * ForwardVector);
+	const FVector PosUp			= StartPos + (500 * UpVector);
 
-	const FVector Pos1R = ComputeReflectedPos(Wall, Pos1);
-	const FVector Pos2R = ComputeReflectedPos(Wall, Pos2);
+	const FVector StartPosR		= ComputeReflectedPos(Wall, StartPos);
+	const FVector PosForwardR	= ComputeReflectedPos(Wall, PosForward);
+	const FVector PosUpR		= ComputeReflectedPos(Wall, PosUp);
 
-	const FVector Tmp = Pos2R - Pos1R;
+	const FVector DirForwardR	= PosForwardR - StartPosR;
+	const FVector DirUpR		= PosUpR - StartPosR;
 
-	return Tmp.Rotation();
+	return UKismetMathLibrary::MakeRotFromXZ(DirForwardR, DirUpR);
 }
 
 
