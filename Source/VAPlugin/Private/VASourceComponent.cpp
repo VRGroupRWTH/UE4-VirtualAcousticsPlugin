@@ -2,6 +2,7 @@
 
 #include "VASourceComponent.h"
 
+#include "VASoundSource.h"
 #include "VAReceiverActor.h"
 #include "VAPlugin.h"
 #include "VAUtils.h"

@@ -5,10 +5,12 @@
 #include "VAEnums.h"									// EDir, EPlayAction, EMovement
 
 #include "GameFramework/Actor.h"
-#include "VASoundSource.h"								// From VA
 #include "SharedPointer.h"
 
 #include "VASourceComponent.generated.h"
+
+//forward declarations to not include private header files
+class FVASoundSource;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
