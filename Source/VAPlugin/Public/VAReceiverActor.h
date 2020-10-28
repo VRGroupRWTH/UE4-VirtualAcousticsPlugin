@@ -4,20 +4,19 @@
 
 #include "VAEnums.h"									// EAddress
 
-#include "VADirectivityManager.h"
-#include "VAHRIRManager.h"
-
 #include "GameFramework/Actor.h"
 #include "Cluster/IDisplayClusterClusterManager.h"		// Events
-
-#include "VAPlugin.h"
 
 #include "VAReceiverActor.generated.h"
 
 
+//forward declarations to not include private header files
+class FVAPlugin;
 class AVAReflectionWall;
-
-
+class FVADirectivity;
+class FVADirectivityManager;
+class FVAHRIR;
+class FVAHRIRManager;
 
 
 UCLASS()
@@ -26,8 +25,7 @@ class VAPLUGIN_API AVAReceiverActor : public AActor
 	GENERATED_BODY()
 
 	friend class UVASourceComponent;
-	friend void FVAPlugin::SetUseVA(bool);			// For run on all nodes
-	friend void FVAPlugin::SetDebugMode(bool);		// For run on all nodes
+  friend class FVAPlugin;
 
 protected:
 
@@ -164,8 +162,8 @@ protected:
 	
 	// Receiver Specific Data
 	int ReceiverID;
-	FVADirectivityManager	DirManager;
-	FVAHRIRManager			HRIRManager;
+	TSharedPtr<FVADirectivityManager> DirManager;
+  TSharedPtr<FVAHRIRManager> HRIRManager;
 
 	FVAHRIR* CurrentHRIR;
 

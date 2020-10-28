@@ -8,6 +8,8 @@
 
 #include "VASourceComponent.h"
 #include "VAReflectionWall.h"
+#include "VADirectivityManager.h"
+#include "VAHRIRManager.h"
 
 
 #include "Engine/World.h"							// World
@@ -25,6 +27,9 @@
 AVAReceiverActor::AVAReceiverActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+  DirManager = MakeShared<FVADirectivityManager>();
+  HRIRManager = MakeShared<FVAHRIRManager>();
 }
 
 void AVAReceiverActor::BeginPlay()
@@ -93,14 +98,14 @@ void AVAReceiverActor::BeginPlay()
 		}
 		
 		// Initialize the dirManager
-		DirManager.ResetManager();
+		DirManager->ResetManager();
 		if (bReadInitialMappingFile)
 		{
-			DirManager.ReadConfigFile(DirMappingFileName);
+			DirManager->ReadConfigFile(DirMappingFileName);
 		}
 
 		// Initialize the HRIRManager
-		HRIRManager.ResetManager();
+		HRIRManager->ResetManager();
 
 		// Initialize Receiver Actor
 		ReceiverID = FVAPlugin::CreateNewSoundReceiver(this);
@@ -152,8 +157,8 @@ void AVAReceiverActor::BeginDestroy()
 
 	FVAPlugin::ResetServer();
 
-	DirManager.ResetManager();
-	HRIRManager.ResetManager();
+	DirManager->ResetManager();
+	HRIRManager->ResetManager();
 
 	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
 	if (ClusterManager && ClusterEventListenerDelegate.IsBound())
@@ -274,30 +279,30 @@ bool AVAReceiverActor::UpdateRealWorldPose()
 
 FVADirectivity* AVAReceiverActor::GetDirectivityByMapping(const FString Phoneme) const
 {
-	return DirManager.GetDirectivityByPhoneme(Phoneme);
+	return DirManager->GetDirectivityByPhoneme(Phoneme);
 }
 
 FVADirectivity* AVAReceiverActor::GetDirectivityByFileName(const FString FileName)
 {
-	return DirManager.GetDirectivityByFileName(FileName);
+	return DirManager->GetDirectivityByFileName(FileName);
 }
 
 bool AVAReceiverActor::ReadDirMappingFile(const FString FileName)
 {
-	if (DirManager.GetFileName() == FileName)
+	if (DirManager->GetFileName() == FileName)
 	{
 		FVAUtils::LogStuff("[AVAReceiverActor::ReadDirMappingFile()]: file already loaded", false);
 		return false;
 	}
 
 	DirMappingFileName = FileName;
-	DirManager.ResetManager();
-	return DirManager.ReadConfigFile(DirMappingFileName);
+	DirManager->ResetManager();
+	return DirManager->ReadConfigFile(DirMappingFileName);
 }
 
 bool AVAReceiverActor::SetHRIRByFileName(const FString FileName)
 {
-	FVAHRIR* NewHRIR = HRIRManager.GetHRIRByFileName(FileName);
+	FVAHRIR* NewHRIR = HRIRManager->GetHRIRByFileName(FileName);
 
 	if (NewHRIR == nullptr)
 	{
