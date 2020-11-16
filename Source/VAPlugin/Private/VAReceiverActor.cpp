@@ -44,6 +44,7 @@ void AVAReceiverActor::BeginPlay()
 	bool bStartedVAServer = false;
 	if (bAutomaticRemoteVAStart)
 	{
+    FVAPlugin::StartVAServerLauncher(); //if possible
 		bStartedVAServer = FVAPlugin::RemoteStartVAServer(GetIPAddress(), RemoteVAStarterPort,
 			WhichVAServerVersionToStart);
 	}

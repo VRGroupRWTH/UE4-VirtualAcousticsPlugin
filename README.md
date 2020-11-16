@@ -7,6 +7,7 @@ To install the Plugin, clone the repository into the "Plugins" folder of your Un
 
 The Server can either be used in its original form ([Link](http://www.virtualacoustics.org/)) or with the especially for this Plugin optimized Python Connection script ([Link](https://devhub.vr.rwth-aachen.de/VR-Group/vaserver), Recommended). 
 Using the Version with the Python script has the adventage of not needing to Restart the Server all the time manually and make sure to follow the instructions which are currently in its Readme file.
+If you are using the automatic VAServer launching either have VAServer cloned out next to the folder of your project or specify the VALauncher Path in the Engine/Virtual Acoustics(VA) section of the project settings. 
 
 The Plugin requires to have the [nDisplayExtensions](https://devhub.vr.rwth-aachen.de/VR-Group/unreal-development/ndisplayextensions) installed.
 

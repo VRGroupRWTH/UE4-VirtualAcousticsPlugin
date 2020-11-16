@@ -10,6 +10,7 @@
 #include "VAReflectionWall.h"
 #include "VAReceiverActor.h"
 #include "VASourceComponent.h"
+#include "VASettings.h"
 
 #include "Engine.h"
 #include "Networking.h"
@@ -495,6 +496,35 @@ bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const F
 	}
 	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: End of function", false);
 	return true;
+}
+
+bool FVAPlugin::StartVAServerLauncher()
+{
+  //check whether we can also start the VSServer Launcher python script.
+
+  const UVASettings* Settings = GetDefault<UVASettings>();
+  FString LauncherScriptDir = Settings->VALauncherPath;
+
+  if(FPaths::IsRelative(LauncherScriptDir))
+  {
+    FString GameDir = FPaths::GameDir();
+    GameDir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*GameDir);
+    LauncherScriptDir = FPaths::ConvertRelativePathToFull(GameDir, LauncherScriptDir);
+  }
+
+  LauncherScriptDir = FPaths::Combine(LauncherScriptDir, TEXT("LaunchScript"));
+  FString LauncherScript = TEXT("VirtualAcousticsStarterServer.py");
+  if (FPaths::FileExists(FPaths::Combine(LauncherScriptDir, LauncherScript)))
+  {
+    FString command = "cd "+ LauncherScriptDir+" & start py " + LauncherScript;
+    system(TCHAR_TO_ANSI(*command));
+    return true;
+  }
+  else
+  {
+    FVAUtils::LogStuff("Unable to automatically start the launcher script, looked for "+LauncherScript+" at "+LauncherScriptDir+". If you want to use this convenience function change blabla in project settings. However, nothing bad will happen without.");
+  }
+  return false;
 }
 
 

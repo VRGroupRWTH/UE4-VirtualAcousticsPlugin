@@ -64,6 +64,8 @@ public:
 	static bool RemoteStartVAServer(const FString& Host = "localhost", int Port = 41578,
 	                                const FString& VersionName = TEXT("2018.a"));
 
+  static bool StartVAServerLauncher();
+
 	void BeginSession(bool bSomething);
 	void EndSession(bool bSomething);
 
