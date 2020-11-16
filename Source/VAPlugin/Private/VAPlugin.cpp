@@ -53,7 +53,7 @@ IVANetClient* FVAPlugin::VANetClient;
 IVAInterface* FVAPlugin::VAServer;
 
 // Link to the current receiver actor 
-AVAReceiverActor* FVAPlugin::ReceiverActor;
+AVAReceiverActor* FVAPlugin::ReceiverActor = nullptr;
 
 // Scale of the UE4 world (how many units is 1m in "real life")
 float FVAPlugin::WorldScale = 100.0f;
@@ -155,6 +155,8 @@ void FVAPlugin::EndSession(const bool bSomething)
 		VAServerLauncherSocket->Close();
 		VAServerLauncherSocket = nullptr;
 	}
+
+  ReceiverActor = nullptr;
 }
 
 void FVAPlugin::ShutdownModule()
@@ -1136,7 +1138,10 @@ void FVAPlugin::SetDebugMode(const bool bDebugModeN)
 	}
 
 	TArray<AActor*> ActorArray;
-	UGameplayStatics::GetAllActorsOfClass(ReceiverActor->GetWorld(), AActor::StaticClass(), ActorArray);
+  if(ReceiverActor && ReceiverActor->GetWorld())
+  {
+    UGameplayStatics::GetAllActorsOfClass(ReceiverActor->GetWorld(), AActor::StaticClass(), ActorArray);
+  }
 
 	for (AActor* EntryActor : ActorArray)
 	{
