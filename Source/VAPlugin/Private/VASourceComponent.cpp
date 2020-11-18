@@ -38,9 +38,14 @@ void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick T
 		return;
 	}
 
+
 	if (!bInitialized)
 	{
-		FVAUtils::OpenMessageBox("[UVASourceComponent::TickComponent()]: Sound source is not initialized", true);
+    Initialize();
+    if (!bInitialized)
+    {
+      FVAUtils::OpenMessageBox("[UVASourceComponent::TickComponent()]: Sound source is not initialized", true);
+    }
 	}
 
 	if (bFirstTick && FVAPlugin::GetIsMaster())
@@ -105,12 +110,6 @@ void UVASourceComponent::Initialize()
 	}
 
 	CurrentReceiverActor = ReceiverActorTmp;
-
-	// If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
-	if (ReceiverActorTmp->IsInitialized() && !bInitialized)
-	{
-		Initialize();
-	}
 
 	UpdateRate = ReceiverActorTmp->GetUpdateRate();
 
