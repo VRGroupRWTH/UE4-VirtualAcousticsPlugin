@@ -522,7 +522,7 @@ bool FVAPlugin::StartVAServerLauncher()
   }
   else
   {
-    FVAUtils::LogStuff("Unable to automatically start the launcher script, looked for "+LauncherScript+" at "+LauncherScriptDir+". If you want to use this convenience function change blabla in project settings. However, nothing bad will happen without.");
+    FVAUtils::LogStuff("Unable to automatically start the launcher script, looked for "+LauncherScript+" at "+LauncherScriptDir+". If you want to use this convenience function change the VALauncher Path in the Engine/Virtual Acoustics(VA) section of the project settings. However, nothing bad will happen without.");
   }
   return false;
 }
