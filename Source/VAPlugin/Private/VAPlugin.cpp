@@ -507,9 +507,9 @@ bool FVAPlugin::StartVAServerLauncher()
 
   if(FPaths::IsRelative(LauncherScriptDir))
   {
-    FString GameDir = FPaths::GameDir();
-    GameDir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*GameDir);
-    LauncherScriptDir = FPaths::ConvertRelativePathToFull(GameDir, LauncherScriptDir);
+    FString ProjectDir = FPaths::ProjectDir();
+    ProjectDir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*ProjectDir);
+    LauncherScriptDir = FPaths::ConvertRelativePathToFull(ProjectDir, LauncherScriptDir);
   }
 
   LauncherScriptDir = FPaths::Combine(LauncherScriptDir, TEXT("LaunchScript"));
