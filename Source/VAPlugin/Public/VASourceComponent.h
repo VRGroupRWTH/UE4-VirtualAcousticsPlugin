@@ -11,6 +11,7 @@
 
 //forward declarations to not include private header files
 class FVASoundSource;
+class AVAReceiverActor;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
