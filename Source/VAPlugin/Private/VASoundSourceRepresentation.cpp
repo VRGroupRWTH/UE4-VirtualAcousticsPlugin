@@ -6,6 +6,7 @@
 // For ConstructorHelpers and SphereMesh
 #include "Components/StaticMeshComponent.h"
 #include "ConstructorHelpers.h"
+#include "Engine/CollisionProfile.h"
 
 #include "Engine/StaticMeshActor.h"
 
@@ -30,6 +31,7 @@ AVASoundSourceRepresentation::AVASoundSourceRepresentation()
 		SphereMesh->SetRelativeLocation(FVector(80.0f, 0.0f, 0.0f));
 		SphereMesh->SetRelativeRotation(FRotator(0.0f, 90.0f, 90.0f));
 		SphereMesh->SetWorldScale3D(FVector(0.8f));
+    SphereMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
 	}
 	SetVisibility(false);
 }
