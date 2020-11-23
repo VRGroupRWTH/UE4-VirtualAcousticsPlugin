@@ -15,6 +15,15 @@
 UVASourceComponent::UVASourceComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+  // If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
+  // Otherwise it will be later on initialized from the Receiver Actor
+  TArray<AActor*> ReceiverActors;
+  UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AVAReceiverActor::StaticClass(), ReceiverActors);
+  if (ReceiverActors.Num() >= 1 && Cast<AVAReceiverActor>(ReceiverActors[0])->IsInitialized() && !bInitialized)
+  {
+    Initialize();
+  }
 }
 
 
@@ -39,14 +48,12 @@ void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick T
 	}
 
 
-	if (!bInitialized)
-	{
-    Initialize();
-    if (!bInitialized)
-    {
-      FVAUtils::OpenMessageBox("[UVASourceComponent::TickComponent()]: Sound source is not initialized", true);
-    }
-	}
+
+  if (!bInitialized)
+  {
+    FVAUtils::OpenMessageBox("[UVASourceComponent::TickComponent()]: Sound source is not initialized", true);
+  }
+
 
 	if (bFirstTick && FVAPlugin::GetIsMaster())
 	{
