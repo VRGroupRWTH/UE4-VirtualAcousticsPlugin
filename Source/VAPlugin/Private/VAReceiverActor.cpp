@@ -405,9 +405,9 @@ TArray<AVAReflectionWall*> AVAReceiverActor::GetReflectionWalls()
 // ******* Cluster Stuff ******************************************** // 
 // ****************************************************************** //
 
-void AVAReceiverActor::SetDebugMode(const bool bDebugModeN)
+void AVAReceiverActor::SetDebugMode(const bool bDebugMode)
 {
-	if (bDebugModeN)
+	if (bDebugMode)
 	{
 		RunOnAllNodes("debugMode = true");
 	}

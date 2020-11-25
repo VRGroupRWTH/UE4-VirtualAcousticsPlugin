@@ -241,41 +241,41 @@ EPlayAction::Type UVASourceComponent::GetPlayState() const
 // ******* Sound Settings ******************************************* //
 // ****************************************************************** //
 
-bool UVASourceComponent::MuteSound(const bool bMuteN)
+bool UVASourceComponent::MuteSound(const bool bMute)
 {
 	if (!ShouldSendCommand())
 	{
 		return false;
 	}
 
-	if (bMuted == bMuteN)
+	if (bMuted == bMute)
 	{
 		return true;
 	}
 
-	bMuted = bMuteN;
+	bMuted = bMute;
 
 	return SoundSource->MuteSound(bMuted);
 }
 
-bool UVASourceComponent::LoadSoundFile(FString SoundFileN)
+bool UVASourceComponent::LoadSoundFile(FString SoundFileName)
 {
 	if (!ShouldSendCommand())
 	{
 		return false;
 	}
 
-	return SoundSource->LoadNewSound(SoundFile);
+	return SoundSource->LoadNewSound(SoundFileName);
 }
 
-bool UVASourceComponent::SetSoundFile(const FString SoundFileN)
+bool UVASourceComponent::SetSoundFile(const FString SoundFileName)
 {
 	if (!ShouldSendCommand())
 	{
 		return false;
 	}
 
-	if (SoundFile == SoundFileN)
+	if (SoundFile == SoundFileName)
 	{
 		if(SoundSource->StopSound())
 		{
@@ -283,7 +283,7 @@ bool UVASourceComponent::SetSoundFile(const FString SoundFileN)
 		}
 	}
 
-	SoundFile = SoundFileN;
+	SoundFile = SoundFileName;
 
 	return SoundSource->SetNewSound(SoundFile);
 }
@@ -315,21 +315,21 @@ float UVASourceComponent::GetSoundPower() const
 	return SoundPower;
 }
 
-bool UVASourceComponent::SetLoop(const bool bLoopN)
+bool UVASourceComponent::SetLoop(const bool bNewLoop)
 {
 	if (!ShouldSendCommand())
 	{
 		return false;
 	}
 
-	if (bLoop == bLoopN)
+	if (bLoop == bNewLoop)
 	{
 		return true;
 	}
 
-	bLoop = bLoopN;
+	bLoop = bNewLoop;
 
-	return SoundSource->SetLoop(bLoopN);
+	return SoundSource->SetLoop(bNewLoop);
 }
 
 bool UVASourceComponent::GetLoop() const
@@ -410,19 +410,19 @@ FRotator UVASourceComponent::GetRotation() const
 	return Rot;
 }
 
-bool UVASourceComponent::SetMovementSetting(const EMovement::Type MovementSettingN)
+bool UVASourceComponent::SetMovementSetting(const EMovement::Type NewMovementSetting)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
 
-	if (MovementSetting == MovementSettingN)
+	if (MovementSetting == NewMovementSetting)
 	{
 		return true;
 	}
 
-	MovementSetting = MovementSettingN;
+	MovementSetting = NewMovementSetting;
 
 	SoundSource->SetPosition(GetPosition());
 	SoundSource->SetRotation(GetRotation());
@@ -430,19 +430,19 @@ bool UVASourceComponent::SetMovementSetting(const EMovement::Type MovementSettin
 	return true;
 }
 
-bool UVASourceComponent::SetUsePoseOffset(const bool bUsePoseOffsetN)
+bool UVASourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
 
-	if (bUsePoseOffset == bUsePoseOffsetN)
+	if (bUsePoseOffset == bNewUsePoseOffset)
 	{
 		return true;
 	}
 
-	bUsePoseOffset = bUsePoseOffsetN;
+	bUsePoseOffset = bNewUsePoseOffset;
 
 	SoundSource->SetPosition(GetPosition());
 	SoundSource->SetRotation(GetRotation());
@@ -450,7 +450,7 @@ bool UVASourceComponent::SetUsePoseOffset(const bool bUsePoseOffsetN)
 	return true;
 }
 
-bool UVASourceComponent::SetOffsetPosition(const FVector PosN)
+bool UVASourceComponent::SetOffsetPosition(const FVector Pos)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -463,18 +463,18 @@ bool UVASourceComponent::SetOffsetPosition(const FVector PosN)
 		SoundSource->SetRotation(GetRotation());
 	}
 	
-	if (OffsetPosition == PosN)
+	if (OffsetPosition == Pos)
 	{
 		return true;
 	}
 
-	OffsetPosition = PosN;
+	OffsetPosition = Pos;
 
 	SoundSource->SetPosition(GetPosition());
 	return true;
 }
 
-bool UVASourceComponent::SetOffsetRotation(const FRotator RotN)
+bool UVASourceComponent::SetOffsetRotation(const FRotator Rot)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -487,12 +487,12 @@ bool UVASourceComponent::SetOffsetRotation(const FRotator RotN)
 		SoundSource->SetPosition(GetPosition());
 	}
 
-	if (OffsetRotation == RotN)
+	if (OffsetRotation == Rot)
 	{
 		return true;
 	}
 
-	OffsetRotation = RotN;
+	OffsetRotation = Rot;
 
 	SoundSource->SetRotation(GetRotation());
 	return true;
@@ -551,14 +551,14 @@ FString UVASourceComponent::GetDirectivityFileName() const
 // ******* Graphical Representation ********************************* //
 // ****************************************************************** //
 
-bool UVASourceComponent::SetVisibility(const bool bVisN)
+bool UVASourceComponent::SetVisibility(const bool bVis)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
 
-	SoundSource->SetVisibility(bVisN);
+	SoundSource->SetVisibility(bVis);
 	return true;
 }
 
@@ -567,25 +567,23 @@ bool UVASourceComponent::GetVisibility() const
 	return SoundSource->GetVisibility();
 }
 
-bool UVASourceComponent::SetBoneName(const FString BoneNameN)
+bool UVASourceComponent::SetBoneName(const FString NewBoneName)
 {
 	if (!FVAPlugin::GetUseVA())
 	{
 		return false;
 	}
 
-	if (BoneName == BoneNameN)
+	if (BoneName == NewBoneName)
 	{
 		return true;
 	}
 
-	BoneName = BoneNameN;
-
 	// Check if the bone exists
 	if (SkeletalMeshComponent != nullptr
-		&& SkeletalMeshComponent->DoesSocketExist(FName(*BoneNameN)))
+		&& SkeletalMeshComponent->DoesSocketExist(FName(*NewBoneName)))
 	{
-		BoneName = BoneNameN;
+		BoneName = NewBoneName;
 		MovementSetting = EMovement::AttachToBone;
 		FVAUtils::LogStuff("[UVASourceComponent::SetBoneName()]: Successfully found bone with name" + 
 			BoneName + "and set Movement Setting to follow the bone", false);

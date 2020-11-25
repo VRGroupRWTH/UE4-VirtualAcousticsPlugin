@@ -121,15 +121,15 @@ public:
 
 	// Mute sound (true = mute)
 	UFUNCTION(BlueprintCallable)
-	bool MuteSound(bool bMuteN = true);
+	bool MuteSound(bool bMute = true);
 
 	// (Pre-) loads a sound file for later usage
 	UFUNCTION(BlueprintCallable)
-	bool LoadSoundFile(FString SoundFileN);
+	bool LoadSoundFile(FString SoundFileName);
 
 	// Sets a sound file. If already loaded use the loaded one, if not create new
 	UFUNCTION(BlueprintCallable)
-	bool SetSoundFile(FString SoundFileN);
+	bool SetSoundFile(FString SoundFileName);
 
 	// Returns the name of the sound file set at the moment
 	UFUNCTION(BlueprintCallable)
@@ -145,7 +145,7 @@ public:
 
 	// Sets whether to loop or not (true = loop)
 	UFUNCTION(BlueprintCallable)
-	bool SetLoop(bool bLoopN);
+	bool SetLoop(bool bNewLoop);
 
 	// Gets whether to loop or not (true = loop)
 	UFUNCTION(BlueprintCallable)
@@ -168,19 +168,19 @@ public:
 
 	// Sets Movement Setting 	MoveWithObject = 0, ObjectSpawnPoint = 1, AttachToBone = 2,
 	UFUNCTION(BlueprintCallable)
-	bool SetMovementSetting(EMovement::Type MovementSettingN);
+	bool SetMovementSetting(EMovement::Type NewMovementSetting);
 
 	// Sets to use Position Offset
 	UFUNCTION(BlueprintCallable)
-	bool SetUsePoseOffset(bool bUsePoseOffsetN);
+	bool SetUsePoseOffset(bool bNewUsePoseOffset);
 
 	// Sets the Position Offset. If Offset disabled it gets enabled
 	UFUNCTION(BlueprintCallable)
-	bool SetOffsetPosition(FVector PosN);
+	bool SetOffsetPosition(FVector Pos);
 
 	// Sets the Rotation Offset. If Offset disabled it gets enabled
 	UFUNCTION(BlueprintCallable)
-	bool SetOffsetRotation(FRotator RotN);
+	bool SetOffsetRotation(FRotator Rot);
 
 
 	// *** Directivities *** //
@@ -202,7 +202,7 @@ public:
 
 	// Sets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
-	bool SetVisibility(bool bVisN);
+	bool SetVisibility(bool bVisibility);
 
 	// Gets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
@@ -210,7 +210,7 @@ public:
 
 	// Sets the Bone name and sets the Movement Setting to follow the bone if it is found. Otherwise keeps old settings
 	UFUNCTION(BlueprintCallable)
-	bool SetBoneName(FString BoneNameN);
+	bool SetBoneName(FString NewBoneName);
 
 	// Gets the Bone Name
 	UFUNCTION(BlueprintCallable)

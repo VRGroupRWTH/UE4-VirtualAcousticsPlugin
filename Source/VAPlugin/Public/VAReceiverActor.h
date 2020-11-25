@@ -101,7 +101,7 @@ public:
 	
 	// Set Debug Mode to toggle global visibility of all sound Sources
 	UFUNCTION(BlueprintCallable)
-	void SetDebugMode(bool bDebugModeN);
+	void SetDebugMode(bool bDebugMode);
 
 	// Gets scale of virtual world compared to real world
 	UFUNCTION(BlueprintCallable)
