@@ -4,7 +4,7 @@
  *    VVV        VVV A           Virtual Acoustics (VA) | http://www.virtualacoustics.org
  *     VVV      VVV AAA          Licensed under the Apache License, Version 2.0
  *      VVV    VVV   AAA
- *       VVV  VVV     AAA        Copyright 2015-2018
+ *       VVV  VVV     AAA        Copyright 2015-2020
  *        VVVVVV       AAA       Institute of Technical Acoustics (ITA)
  *         VVVV         AAA      RWTH Aachen University
  *
@@ -22,11 +22,11 @@ The official website can be found at http://www.virtualacoustics.org.
 
 @section vabase_sec VABase
 
-VABase provides basic classes and a sophisticated interface calls #IVAInterface that is used throughout the entire
+VABase provides basic classes and the interface desription #IVAInterface to control a VA core.
 
 @section vabase_license_sec License
 
-Copyright 2015-2018 Institute of Technical Acoustics (ITA), RWTH Aachen University
+Copyright 2015-2020 Institute of Technical Acoustics (ITA), RWTH Aachen University
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use the VA software package except in compliance with the License.

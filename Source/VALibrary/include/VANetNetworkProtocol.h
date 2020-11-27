@@ -4,7 +4,7 @@
  *    VVV        VVV A           Virtual Acoustics (VA) | http://www.virtualacoustics.org
  *     VVV      VVV AAA          Licensed under the Apache License, Version 2.0
  *      VVV    VVV   AAA
- *       VVV  VVV     AAA        Copyright 2015-2018
+ *       VVV  VVV     AAA        Copyright 2015-2020
  *        VVVVVV       AAA       Institute of Technical Acoustics (ITA)
  *         VVVV         AAA      RWTH Aachen University
  *
@@ -118,6 +118,8 @@ public:
 	static const int VA_NP_CREATE_SIGNAL_SOURCE_MACHINE = 650;
 
 	static const int VA_NP_CREATE_SIGNAL_SOURCE_TEXT_TO_SPEECH = 660;
+
+	static const int VA_NP_CREATE_SIGNAL_SOURCE_PROTOTYPE_FROM_PARAMETERS = 670;
 
 	// Synchronization functions
 	static const int VA_NP_LOCK_UPDATE = 700;
@@ -452,6 +454,9 @@ public:
 
 	std::string ClientCreateSignalSourceBufferFromParameters( const CVAStruct& oParams, const std::string& sName = "" );
 	void ServerCreateSignalSourceBufferFromParameters();
+
+	std::string ClientCreateSignalSourcePrototypeFromParameters( const CVAStruct& oParams, const std::string& sName = "" );
+	void ServerCreateSignalSourcePrototypeFromParameters();
 
 	std::string ClientCreateTextToSpeechSignalSource( const std::string& sName = "" );
 	void ServerCreateTextToSpeechSignalSource();

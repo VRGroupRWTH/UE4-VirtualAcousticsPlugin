@@ -4,7 +4,7 @@
  *    VVV        VVV A           Virtual Acoustics (VA) | http://www.virtualacoustics.org
  *     VVV      VVV AAA          Licensed under the Apache License, Version 2.0
  *      VVV    VVV   AAA
- *       VVV  VVV     AAA        Copyright 2015-2018
+ *       VVV  VVV     AAA        Copyright 2015-2020
  *        VVVVVV       AAA       Institute of Technical Acoustics (ITA)
  *         VVVV         AAA      RWTH Aachen University
  *
@@ -597,13 +597,29 @@ public:
 	/**
 	  * Creates a signal source which streams the samples of a buffer that is created based on magic parameters.
 	  * Useful for prototyping, i.e. if a special signal source type is required and no interface change should be performed.
-	  *
+ 	  *
 	  * @param[in] oParams Buffer signal source magic parameters
 	  * @param[in] sName		Name (optional, e.g. "Prototype Trumpet")
-  	  *
+ 	  *
 	  * @return Signal source ID
 	  */
 	virtual std::string CreateSignalSourceBufferFromParameters( const CVAStruct& oParams, const std::string& sName = "" ) = 0;
+	
+	//! Creates a prototype signal source from parameters
+	/**
+	  * Creates a prototype signal source which generates samples. Which class is instantiated is depending on the given class
+	  * parameter and the currently available core feature set. This prototype function is used to provide a generic interface call
+	  * so no API changes are required during rapid prototyping.
+	  *
+	  * Usually, the "class" key corresponds to a certain implementation of a prototype, e.g. jet_engine, car_engine, train_engine.
+	  * The parameters may be controlled by the SetSignalSourceParameter and obtained via GetSignalSourceParameters.
+  	  *
+	  * @param[in] oParams Set of magic parameters, must include a "class" key
+	  * @param[in] sName	 Name (optional, e.g. "Prototype generator exhaust")
+	  *
+	  * @return Signal source ID
+	  */
+	virtual std::string CreateSignalSourcePrototypeFromParameters( const CVAStruct& oParams, const std::string& sName = "" ) = 0;
 
 	//! Creates a text-to-speech (TTS) signal source
 	/**
@@ -1629,6 +1645,21 @@ public:
 	  * @return Scene identifier string
 	  */
 	virtual std::string CreateScene( const CVAStruct& oParams, const std::string& sName = "" ) = 0;
+
+	//! Creates a virtual scene from file
+	/**
+	  * @sa CreateScene
+	  *
+	  * @param[in] sSceneFilePath Scene file path
+	  * @param[in] sName Verbatin scene name
+	  * @return Scene identifier string
+	  */
+	inline std::string CreateSceneFromFile( const std::string& sFilePath, const std::string& sName = "" )
+	{
+		CVAStruct oParams;
+		oParams[ "filepath" ] = sFilePath;
+		return CreateScene( oParams, sName );
+	};
 
 	//! IDs of created scenes
 	/**

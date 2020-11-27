@@ -4,7 +4,7 @@
  *    VVV        VVV A           Virtual Acoustics (VA) | http://www.virtualacoustics.org
  *     VVV      VVV AAA          Licensed under the Apache License, Version 2.0
  *      VVV    VVV   AAA
- *       VVV  VVV     AAA        Copyright 2015-2018
+ *       VVV  VVV     AAA        Copyright 2015-2020
  *        VVVVVV       AAA       Institute of Technical Acoustics (ITA)
  *         VVVV         AAA      RWTH Aachen University
  *
@@ -50,6 +50,7 @@ public:
 		VA_SS_ENGINE,		//!< Sound source is an engine
 		VA_SS_MACHINE,		//!< Sound source is a machine
 		VA_SS_TEXT_TO_SPEECH, //!< Text-to-speech signal source
+		VA_SS_JETENGINE,    //!< Sound source is a jet engine
 	};
 
 	//! Destructor.
@@ -107,7 +108,7 @@ public:
 	  *
 	  * @note This method is called by the core to fetch data. If the core receives a NULL pointer it will be interpreted as silence.
 	  */
-	virtual const float* GetStreamBlock( const CVAAudiostreamState* pStreamInfo ) = 0;
+	virtual std::vector< const float* > GetStreamBlock( const CVAAudiostreamState* pStreamInfo ) = 0;
 
 	//! Parameter getter interaction hook
 	/**
@@ -121,6 +122,12 @@ public:
 	  * @param[in] oIn Parameter set
 	  */
 	virtual void SetParameters( const CVAStruct& oIn ) = 0;
+
+	//! Returns number of channels (override in case you have more than one channel)
+	virtual int GetNumChannels() const
+	{
+		return 1;
+	};
 
 
 private:

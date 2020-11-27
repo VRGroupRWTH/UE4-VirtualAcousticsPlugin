@@ -4,7 +4,7 @@
  *    VVV        VVV A           Virtual Acoustics (VA) | http://www.virtualacoustics.org
  *     VVV      VVV AAA          Licensed under the Apache License, Version 2.0
  *      VVV    VVV   AAA
- *       VVV  VVV     AAA        Copyright 2015-2018
+ *       VVV  VVV     AAA        Copyright 2015-2020
  *        VVVVVV       AAA       Institute of Technical Acoustics (ITA)
  *         VVVV         AAA      RWTH Aachen University
  *
@@ -22,7 +22,7 @@
 #include <vector>
 #include <cmath>
 
-// L_w = L_p + 10 * log10( 1m / 1m ) dB re 1pW + 10 * log10 ( 4 * pi ) dB re 1pW; P = 10^( L_w / 10 ) * 1pW
+// L_w = L_p + 20 * log10( 1m / 1m ) dB re 1pW + 10 * log10 ( 4 * pi ) dB re 1pW; P = 10^( L_w / 10 ) * 1pW
 static const double g_dSoundPower_94dB_SPL_1m = 0.0316227766f; //!< [W] Sound power that results in 94 dB SPL re 20uPa @ 1m for spherical spreading
 static const double g_dSoundPower_128dB_SPL_1m = 31.6227766017f; //!< [W] Sound power that results in 124 dB SPL re 20uPa @ 1m for spherical spreading
 
@@ -217,6 +217,22 @@ inline VABASE_API VAVec3 operator*( const VAVec3& oVec, const double dScalar )
 	return vScaledVector;
 };
 
+//!< Scalar division operator for vectors
+/**
+* @param[in] oVec Vector
+* @param[in] dScalar Scalar
+*
+* @return Scaled vector
+*/
+inline VABASE_API VAVec3 operator/(const VAVec3& oVec, const double dScalar)
+{
+	VAVec3 vScaledVector = oVec;
+	vScaledVector.x /= dScalar;
+	vScaledVector.y /= dScalar;
+	vScaledVector.z /= dScalar;
+	return vScaledVector;
+};
+
 //! Stream output operator for VAVec3
 /**
   * Output format: "< x, y, z >"
@@ -296,6 +312,20 @@ public:
 		oOrient[ "z" ] = z;
 		oOrient[ "w" ] = w;
 		return oOrient;
+	};
+
+	inline double Length() const
+	{
+		return std::sqrt( x * x + y * y + z * z + w * w );
+	};
+
+	inline void Norm()
+	{
+		auto l = Length();
+		x /= l;
+		y /= l;
+		z /= l;
+		w /= l;
 	};
 };
 
@@ -536,8 +566,8 @@ public:
 
 	//! Default constructor
 	inline CVASignalSourceInfo()
-		: iType( UNSPECIFIED )
-		, iReferences( 0 )
+		: iReferences( 0 )
+		, iType( UNSPECIFIED )
 	{};
 
 	// Signal source destructor
@@ -642,8 +672,8 @@ public:
 	//! Constructor for sound source info
 	inline CVASoundSourceInfo()
 		: iID( -1 )
-		, dSpoundPower( g_dSoundPower_94dB_SPL_1m )
 		, bMuted( false )
+		, dSpoundPower( g_dSoundPower_94dB_SPL_1m )
 		, iSignalSourceID( -1 )
 		, iDirectivityID( -1 )
 		, iAuraMode( -1 )
@@ -718,10 +748,10 @@ public:
 	//! Default constructor for sound portal
 	inline CVASoundPortalInfo()
 		: iID( -1 )
-		, iMaterialID( -1 )
 		, iNextPortalID( -1 )
-		, iSoundReceiverID( -1 )
 		, iSoundSourceID( -1 )
+		, iSoundReceiverID( -1 )
+		, iMaterialID( -1 )
 	{};
 
 	//! Destructor
