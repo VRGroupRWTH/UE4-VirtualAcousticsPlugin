@@ -55,7 +55,6 @@ FVAHRIR* FVAHRIRManager::GetHRIRByFileName(const FString FileName)
 	FVAUtils::LogStuff(	"[FVAHRIRManager::GetHRIRByFileName()]: HRIR from file " + 
 		FileName + " cannot be found! Creating one now...", false);
 
-	// TODO new
 	FVAHRIRSharedPtr NewHRIR(new FVAHRIR(FString(FileName)));
 	
 	if (NewHRIR.IsValid() && NewHRIR->IsValidItem())
