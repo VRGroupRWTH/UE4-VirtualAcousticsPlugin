@@ -24,7 +24,6 @@ FVAHRIRManager::~FVAHRIRManager()
 void FVAHRIRManager::ResetManager()
 {
 	DefaultHRIR = nullptr;
-	// TODO new
 	FVAHRIRSharedPtr NewHRIR(new FVAHRIR("$(DefaultHRIR)"));
 	DefaultHRIR = NewHRIR.Get();
 
