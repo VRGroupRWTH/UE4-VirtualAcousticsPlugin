@@ -144,7 +144,6 @@ void UVASourceComponent::Initialize()
 	SpawnPosition = GetOwner()->GetTransform().GetLocation();
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
 
-	// TODO new
 	TArray<AVAReflectionWall*> WallArray = CurrentReceiverActor->GetReflectionWalls();
 	SoundSource = MakeShared<FVASoundSource>(this, WallArray);
 	if (FVAPlugin::GetIsMaster())
