@@ -40,7 +40,6 @@ FVASignalBuffer* FVASignalBufferManager::GetBufferByFileName(const FString FileN
 	FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
 		FileName + " cannot be found! Creating one now...", false);
 
-	// TODO new
 	FVASignalBufferSharedPtr NewBuffer = MakeShared<FVASignalBuffer>(FileName);
 
 	if (NewBuffer.IsValid() && NewBuffer->IsValidItem())
