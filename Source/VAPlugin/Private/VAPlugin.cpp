@@ -133,7 +133,6 @@ void FVAPlugin::StartupModule()
 	FEditorDelegates::EndPIE.AddRaw(this, &FVAPlugin::EndSession);
 #endif
 
-	// TODO new 
 	TmpVAQuatSharedPtr = MakeShared<VAQuat>();
 	TmpVAVec3SharedPtr = MakeShared<VAVec3>();
 
