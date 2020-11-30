@@ -26,7 +26,7 @@ FVADirectivityManager::~FVADirectivityManager()
 void FVADirectivityManager::ResetManager()
 {
 	DefaultDirectivity = nullptr;
-	// TODO new
+
 	FVADirectivitySharedPtr NewDirectivity(new FVADirectivity("$(HumanDir)"));
 	DefaultDirectivity = NewDirectivity.Get();
 	
@@ -211,7 +211,6 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByFileName(const FString Fi
 	FVAUtils::LogStuff("[FVADirectivityManager::GetDirectivityByFileName()]: Directivity from file " + 
 		FileName + " cannot be found! Creating one now.", false);
 
-	// TODO new 
 	FVADirectivitySharedPtr NewDirectivity(new FVADirectivity(FileName));
 	
 	if (NewDirectivity.IsValid() && NewDirectivity->IsValidItem())
