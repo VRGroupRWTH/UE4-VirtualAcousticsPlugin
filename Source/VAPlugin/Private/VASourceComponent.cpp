@@ -35,6 +35,11 @@ void UVASourceComponent::BeginPlay()
 
 }
 
+void UVASourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	SoundSource.Reset();
+}
+
 
 // Called every frame
 void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
