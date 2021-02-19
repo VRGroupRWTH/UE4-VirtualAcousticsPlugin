@@ -515,7 +515,7 @@ bool FVAPlugin::StartVAServerLauncher()
   FString LauncherScript = TEXT("VirtualAcousticsStarterServer.py");
   if (FPaths::FileExists(FPaths::Combine(LauncherScriptDir, LauncherScript)))
   {
-    FString command = "cd "+ LauncherScriptDir+" & start py " + LauncherScript;
+    FString command = "cd/d "+ LauncherScriptDir+" & start py " + LauncherScript;
     system(TCHAR_TO_ANSI(*command));
     return true;
   }
