@@ -22,20 +22,15 @@ FVASignalBufferManager::~FVASignalBufferManager()
 FVASignalBuffer* FVASignalBufferManager::GetBufferByFileName(const FString FileName)
 {
 	// Find already existing Buffer
-	if (!Buffers.Num())
+	for (auto EntryBuffer : Buffers)
 	{
-		for (auto EntryBuffer : Buffers)
+		if (EntryBuffer.Get()->GetFileName() == FileName)
 		{
-			if (EntryBuffer.Get()->GetFileName() == FileName)
-			{
-				FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
-					FileName + " was found!", false);
-
-				return EntryBuffer.Get();
-			}
+			FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
+				FileName + " was found!", false);
+			return EntryBuffer.Get();
 		}
 	}
-
 
 	FVAUtils::LogStuff("[FVASignalBufferManager::getBufferByFileName()]: Buffer from file " + 
 		FileName + " cannot be found! Creating one now...", false);
