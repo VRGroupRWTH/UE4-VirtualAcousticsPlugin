@@ -35,23 +35,33 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 
 	if (FVAPlugin::GetIsMaster())
 	{
-		ActiveBuffer = BufferManager.GetBufferByFileName(ParentComponent->GetSoundFile());
-
-		if (ActiveBuffer == nullptr)
+		std::string sSignalID = "-1";
+		if ( ParentComponent->GetSignalSourceType() == ESignalSource::JetEngine )
 		{
-			FVAUtils::LogStuff("[FVASoundSource::VASoundSource()]: Error initializing Buffer", true);
-			return;
+			sSignalID = FVAPlugin::CreateSignalSourcePrototype( ESignalSource::JetEngine );
+			//FVAPlugin::SetJetEngineRMP(sSignalID, ParentComponent->GetJetRPM());
+		}
+		else
+		{
+			ActiveBuffer = BufferManager.GetBufferByFileName(ParentComponent->GetSoundFile());
+
+			if (ActiveBuffer == nullptr)
+			{
+				FVAUtils::LogStuff("[FVASoundSource::VASoundSource()]: Error initializing Buffer", true);
+				return;
+			}
+
+			ActiveBuffer->SetLoop(bLoop);
+
+			// Only Change if necessary
+			if (SoundTimeOffset > 0.0f)
+			{
+				ActiveBuffer->SetSoundTimeOffset(SoundTimeOffset);
+			}
+			sSignalID = ActiveBuffer->GetID();
 		}
 
-		ActiveBuffer->SetLoop(bLoop);
-		
-		// Only Change if necessary
-		if (SoundTimeOffset > 0.0f)
-		{
-			ActiveBuffer->SetSoundTimeOffset(SoundTimeOffset);
-		}
-
-		SoundSourceID = FVAPlugin::CreateNewSoundSource(ActiveBuffer->GetID(), Name, Position, Rotation, Power);
+		SoundSourceID = FVAPlugin::CreateNewSoundSource(sSignalID, Name, Position, Rotation, Power);
 		if (SoundSourceID == -1)
 		{
 			FVAUtils::LogStuff("[FVASoundSource::VASoundSource()]: Error initializing soundSource",

@@ -346,6 +346,11 @@ bool UVASourceComponent::GetHandleReflections() const
 	return bHandleReflections;
 }
 
+ESignalSource::Type UVASourceComponent::GetSignalSourceType() const
+{
+	return SignalSourceType;
+}
+
 
 
 // ****************************************************************** // 

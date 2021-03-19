@@ -664,6 +664,60 @@ bool FVAPlugin::SetSoundBufferLoop(const std::string BufferID, const bool bLoop)
 	}
 }
 
+std::string FVAPlugin::CreateSignalSourcePrototype(ESignalSource::Type SignalSourceClass)
+{
+	if (!ShouldInteractWithServer())
+		return "-1";
+
+
+	std::string ClassName;
+	switch (SignalSourceClass)
+	{
+	case ESignalSource::JetEngine:
+		ClassName = "jet_engine";
+		break;
+	}
+
+	try
+	{
+		CVAStruct SignalSourceStruct;
+		SignalSourceStruct["class"] = ClassName;
+		return VAServer->CreateSignalSourcePrototypeFromParameters( SignalSourceStruct );
+	}
+	catch (CVAException& e)
+	{
+		ProcessException("FVAPluginModule::CreateSignalSourcePrototype()", FString(e.ToString().c_str()));
+		return "-1";
+	}
+}
+
+bool FVAPlugin::SetJetEngineRMP(std::string SignalSourceID, float fRPM)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return false;
+	}
+	if (SignalSourceID == "-1")
+	{
+		FVAUtils::LogStuff("[FVAPlugin::SetJetEngineRMP()]: SignalSourceID invalid (=-1)", true);
+		return false;
+	}
+
+
+	try
+	{
+		CVAStruct VAParams;
+		VAParams["rpm"] = fRPM;
+		VAServer->SetSignalSourceParameters(SignalSourceID, VAParams);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		ProcessException("FVAPluginModule::SetJetEngineRMP()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
 
 // ****************************************************************** // 
 // ******* Sound Sources ******************************************** //

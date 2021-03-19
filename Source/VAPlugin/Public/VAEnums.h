@@ -16,6 +16,16 @@ namespace EPlayAction
 	};
 }
 
+UENUM(BlueprintType)
+namespace ESignalSource
+{
+	enum Type
+	{
+		AudioFile = 0,
+		JetEngine = 7
+	};
+}
+
 
 UENUM(BlueprintType)
 namespace EConnectionSetting

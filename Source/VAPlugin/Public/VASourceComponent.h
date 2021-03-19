@@ -25,30 +25,40 @@ protected:
 	friend class AVAReceiverActor;
 
 
-	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name", Category = "General Settings"))
-	FString SoundFile = "WelcomeToVA.wav";
-
-	// Action of the sound source at the first tick
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "General Settings"))
-	TEnumAsByte<EPlayAction::Type> StartingPlayAction = EPlayAction::Type::Stop;
-
-	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]", Category = "General Settings"))
-	float StartingTime = 0.0f;
-
-	// Check if the sound should be played back in a loop
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop", Category = "General Settings"))
-	bool bLoop = false;
 
 	// Check if reflections by walls should be considered
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?", Category = "General Settings"))
 	bool bHandleReflections = true;
 
-	// Check if reflections by walls should be considered
+	// Sound power used for this source
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Power", Category = "General Settings",
 		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
 	float SoundPower = 0.0316227749f;
+
+
+	// Select the type of the signal source
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Type", Category = "Signal Source Settings"))
+	TEnumAsByte<ESignalSource::Type> SignalSourceType = ESignalSource::Type::AudioFile;
+
+	// Action of the sound source at the first tick
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "Signal Source Settings|Audio File"))
+		TEnumAsByte<EPlayAction::Type> StartingPlayAction = EPlayAction::Type::Stop;
+
+	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name", Category = "Signal Source Settings|Audio File"))
+	FString SoundFile = "WelcomeToVA.wav";
+
+	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]", Category = "Signal Source Settings|Audio File"))
+	float StartingTime = 0.0f;
+
+	// Check if the sound should be played back in a loop
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop", Category = "Signal Source Settings|Audio File"))
+	bool bLoop = false;
+
+	// Set rotations per minute of the jet
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "RPM", Category = "Signal Source Settings|Jet Engine"))
+	float JetRPM = 1000.0f;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
@@ -154,6 +164,10 @@ public:
 	// Gets whether to handle the reflections on this sound source
 	UFUNCTION(BlueprintCallable)
 	bool GetHandleReflections() const;
+
+	// Gets the signal type used for this sound source
+	UFUNCTION(BlueprintCallable)
+	ESignalSource::Type GetSignalSourceType() const;
 
 	
 	// *** Sound Pose *** //

@@ -78,6 +78,11 @@ public:
 	static bool SetSoundBufferTime(std::string BufferID, float Time);
 	static bool SetSoundBufferLoop(std::string BufferID, bool bLoop);
 
+	// ******* Signal Sources ******* //
+
+	static std::string CreateSignalSourcePrototype(ESignalSource::Type SignalSourceClass);
+	static bool SetJetEngineRMP(std::string SignalSourceID, float fRPM);
+
 
 	// ******* Sound Sources ******* //
 
