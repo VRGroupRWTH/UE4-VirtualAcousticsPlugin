@@ -17,6 +17,7 @@ public:
 
 	// Initialization
 	FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVAReflectionWall*> WallArray);
+	~FVASoundSource();
 
 	// Setter
 	void SetPosition(FVector PosN);

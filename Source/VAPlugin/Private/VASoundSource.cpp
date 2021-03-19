@@ -63,8 +63,10 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 	}
 
 	// Show graphical representation
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.bAllowDuringConstructionScript = true;
 	SoundSourceRepresentation = ParentComponent->GetWorld()->SpawnActor<AVASoundSourceRepresentation>(
-		AVASoundSourceRepresentation::StaticClass());
+		AVASoundSourceRepresentation::StaticClass(), SpawnParameters);
 
 
 	SoundSourceRepresentation->SetPosition(ParentComponent->GetPosition());
@@ -93,6 +95,14 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 			const float PowerR = Power * R * R;
 			Reflections.Add(new FVASoundSourceReflection(this, EntryWall, ActiveBufferName, NameTmp, Position, Rotation, PowerR));
 		}
+	}
+}
+
+FVASoundSource::~FVASoundSource()
+{
+	if(SoundSourceRepresentation && SoundSourceRepresentation->IsValidLowLevel())
+	{
+		SoundSourceRepresentation->Destroy();
 	}
 }
 

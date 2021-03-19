@@ -225,6 +225,8 @@ protected:
 	// Called when the game starts
 	void BeginPlay() override;
 
+	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	// initialize Sound Source with the settings set // 
 	void Initialize();
 

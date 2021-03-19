@@ -35,6 +35,11 @@ void UVASourceComponent::BeginPlay()
 
 }
 
+void UVASourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	SoundSource.Reset();
+}
+
 
 // Called every frame
 void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
@@ -144,7 +149,6 @@ void UVASourceComponent::Initialize()
 	SpawnPosition = GetOwner()->GetTransform().GetLocation();
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
 
-	// TODO new
 	TArray<AVAReflectionWall*> WallArray = CurrentReceiverActor->GetReflectionWalls();
 	SoundSource = MakeShared<FVASoundSource>(this, WallArray);
 	if (FVAPlugin::GetIsMaster())
