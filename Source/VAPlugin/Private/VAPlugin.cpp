@@ -676,6 +676,9 @@ std::string FVAPlugin::CreateSignalSourcePrototype(ESignalSource::Type SignalSou
 	case ESignalSource::JetEngine:
 		ClassName = "jet_engine";
 		break;
+	default:
+		ProcessException("FVAPluginModule::CreateSignalSourcePrototype()", FString("Trying to create unknown signal source class") );
+		return "-1";
 	}
 
 	try
@@ -691,15 +694,15 @@ std::string FVAPlugin::CreateSignalSourcePrototype(ESignalSource::Type SignalSou
 	}
 }
 
-bool FVAPlugin::SetJetEngineRMP(std::string SignalSourceID, float fRPM)
+bool FVAPlugin::SetSignalSourceParameter(std::string sSignalSourceID, std::string sParamName, float fParamValue)
 {
 	if (!ShouldInteractWithServer())
 	{
 		return false;
 	}
-	if (SignalSourceID == "-1")
+	if (sSignalSourceID == "-1")
 	{
-		FVAUtils::LogStuff("[FVAPlugin::SetJetEngineRMP()]: SignalSourceID invalid (=-1)", true);
+		FVAUtils::LogStuff("[FVAPlugin::SetSignalSourceParameter()]: SignalSourceID invalid (=-1)", true);
 		return false;
 	}
 
@@ -707,15 +710,20 @@ bool FVAPlugin::SetJetEngineRMP(std::string SignalSourceID, float fRPM)
 	try
 	{
 		CVAStruct VAParams;
-		VAParams["rpm"] = fRPM;
-		VAServer->SetSignalSourceParameters(SignalSourceID, VAParams);
+		VAParams[sParamName] = fParamValue;
+		VAServer->SetSignalSourceParameters(sSignalSourceID, VAParams);
 		return true;
 	}
-	catch (CVAException& e)
+	catch (CVAException & e)
 	{
-		ProcessException("FVAPluginModule::SetJetEngineRMP()", FString(e.ToString().c_str()));
+		ProcessException("FVAPlugin::SetSignalSourceParameter()", FString(e.ToString().c_str()));
 		return false;
 	}
+}
+
+bool FVAPlugin::SetJetEngineRMP(std::string sSignalSourceID, float fRPM)
+{
+	return SetSignalSourceParameter(sSignalSourceID, "rpm", fRPM);
 }
 
 

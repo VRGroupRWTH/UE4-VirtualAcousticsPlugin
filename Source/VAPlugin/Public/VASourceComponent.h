@@ -3,6 +3,7 @@
 #pragma once
 
 #include "VAEnums.h"									// EDir, EPlayAction, EMovement
+#include "SignalSources\VAAbstractSignalSource.h"
 
 #include "GameFramework/Actor.h"
 #include "SharedPointer.h"
@@ -36,9 +37,19 @@ protected:
 	float SoundPower = 0.0316227749f;
 
 
+	// Select the class of the signal source
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Class", Category = "Signal Source", AllowAbstract = "false"))
+		TSubclassOf<UVAAbstractSignalSource> SignalSourceClass;
+
 	// Select the type of the signal source
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Type", Category = "Signal Source Settings"))
-	TEnumAsByte<ESignalSource::Type> SignalSourceType = ESignalSource::Type::AudioFile;
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Type", Category = "Signal Source"))
+		TEnumAsByte<ESignalSource::Type> SignalSourceType = ESignalSource::Type::AudioFile;
+
+	// Select the type of the signal source
+	UPROPERTY(EditInstanceOnly, Instanced, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
+		UVAAbstractSignalSource* SignalSource = nullptr;
+
+
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "Signal Source Settings|Audio File"))
@@ -55,10 +66,6 @@ protected:
 	// Check if the sound should be played back in a loop
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop", Category = "Signal Source Settings|Audio File"))
 	bool bLoop = false;
-
-	// Set rotations per minute of the jet
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "RPM", Category = "Signal Source Settings|Jet Engine"))
-	float JetRPM = 1000.0f;
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
@@ -216,7 +223,7 @@ public:
 
 	// Sets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
-	bool SetVisibility(bool bVisibility);
+	virtual bool SetVisibility(bool bVisibility);
 
 	// Gets the Visibility of the Sound Source and its reflections.
 	UFUNCTION(BlueprintCallable)
@@ -264,6 +271,8 @@ protected:
 	int UpdateRate;
 
 #if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
 	// Function to improve settings displayed in Editor, can only be used in editor mode
 	bool CanEditChange(const UProperty* InProperty) const override;
 #endif

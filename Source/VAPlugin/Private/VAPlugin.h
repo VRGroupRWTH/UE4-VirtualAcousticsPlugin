@@ -81,7 +81,8 @@ public:
 	// ******* Signal Sources ******* //
 
 	static std::string CreateSignalSourcePrototype(ESignalSource::Type SignalSourceClass);
-	static bool SetJetEngineRMP(std::string SignalSourceID, float fRPM);
+	static bool SetSignalSourceParameter(std::string sSignalSourceID, std::string sParamName, float fParamValue);
+	static bool SetJetEngineRMP(std::string sSignalSourceID, float fRPM);
 
 
 	// ******* Sound Sources ******* //

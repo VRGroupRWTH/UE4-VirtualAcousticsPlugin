@@ -1,0 +1,127 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "VAAudiofileSignalSource.h"
+
+#include "VAUtils.h"
+#include "VAPlugin.h"
+
+// ****************************************************************** // 
+// ******* Initialization ******************************************* //
+// ****************************************************************** //
+
+void UVAAudiofileSignalSource::Initialize()
+{
+	if (bInitialized)
+	{
+		FVAUtils::LogStuff("[UVAAudiofileSignalSource::Initialize()]: Signal source is already initialized, aborting...", true);
+		return;
+	}
+
+	sID = FVAPlugin::CreateNewBuffer(SoundFile, bLoop, StartingTime);
+	if (sID == "-1")
+	{
+		FVAUtils::LogStuff("[UVAAudiofileSignalSource::Initialize()]: Error creating Audiofile Signal Source", true);
+		return;
+	}
+	bInitialized = true;
+
+	if (!FVAPlugin::SetSoundBufferAction(sID, StartingPlayAction))
+		FVAUtils::LogStuff("[UVAAudiofileSignalSource::Initialize()]:  Could not set Play Action during initializing", true);
+}
+
+// ****************************************************************** // 
+// ******* Bluepring Functions ************************************** //
+// ****************************************************************** //
+
+bool UVAAudiofileSignalSource::Play()
+{
+	return SetPlayAction(EPlayAction::Play);
+}
+
+bool UVAAudiofileSignalSource::PlayFromTime(const float fTime)
+{
+	if (SetPlayBackPosition(fTime))
+		return SetPlayAction(EPlayAction::Play);
+
+	return false;
+}
+
+bool UVAAudiofileSignalSource::Pause()
+{
+	return SetPlayAction(EPlayAction::Pause);
+}
+
+bool UVAAudiofileSignalSource::Stop()
+{
+	return SetPlayAction(EPlayAction::Stop);
+}
+
+
+// ****************************************************************** // 
+// ******* Setter Functions ***************************************** //
+// ****************************************************************** //
+
+bool UVAAudiofileSignalSource::SetLoop(const bool bLoopN)
+{
+	if (!FVAPlugin::GetIsMaster())
+	{
+		return false;
+	}
+
+	if (bLoop == bLoopN)
+	{
+		return true;
+	}
+
+	bLoop = bLoopN;
+	return FVAPlugin::SetSoundBufferLoop(sID, bLoop);
+}
+
+bool UVAAudiofileSignalSource::SetPlayBackPosition(const float fTime)
+{
+	if (!FVAPlugin::GetIsMaster())
+	{
+		return false;
+	}
+	return FVAPlugin::SetSoundBufferTime(sID, fTime);
+}
+
+bool UVAAudiofileSignalSource::SetPlayAction(const int Action)
+{
+	if (!FVAPlugin::GetIsMaster())
+	{
+		return false;
+	}
+
+	if (int(GetPlayAction()) == Action)
+	{
+		return true;
+	}
+	return FVAPlugin::SetSoundBufferAction(sID, EPlayAction::Type(Action));
+}
+
+
+
+// ****************************************************************** // 
+// ******* Getter Functions ***************************************** //
+// ****************************************************************** //
+
+FString UVAAudiofileSignalSource::GetFileName() const
+{
+	return SoundFile;
+}
+
+bool UVAAudiofileSignalSource::GetLoop() const
+{
+	return bLoop;
+}
+
+int UVAAudiofileSignalSource::GetPlayAction() const
+{
+	if (!FVAPlugin::GetIsMaster())
+	{
+		return -1;
+	}
+	return FVAPlugin::GetSoundBufferAction(sID);
+}

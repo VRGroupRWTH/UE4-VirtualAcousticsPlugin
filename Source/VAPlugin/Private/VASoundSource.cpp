@@ -39,7 +39,6 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 		if ( ParentComponent->GetSignalSourceType() == ESignalSource::JetEngine )
 		{
 			sSignalID = FVAPlugin::CreateSignalSourcePrototype( ESignalSource::JetEngine );
-			//FVAPlugin::SetJetEngineRMP(sSignalID, ParentComponent->GetJetRPM());
 		}
 		else
 		{

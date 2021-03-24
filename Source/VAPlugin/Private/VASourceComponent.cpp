@@ -7,6 +7,9 @@
 #include "VAPlugin.h"
 #include "VAUtils.h"
 
+#include "SignalSources\VAAudiofileSignalSource.h"
+#include "SignalSources\VAJetEngineSignalSource.h"
+
 #include "Components/SkeletalMeshComponent.h"		// Skeletons
 #include "Kismet/GameplayStatics.h"					// Get Actors of Class
 
@@ -24,8 +27,9 @@ UVASourceComponent::UVASourceComponent()
   {
     Initialize();
   }
-}
 
+  SignalSource = NewObject<UVAAudiofileSignalSource>();
+}
 
 // Called when the game starts
 void UVASourceComponent::BeginPlay()
@@ -148,6 +152,10 @@ void UVASourceComponent::Initialize()
 
 	SpawnPosition = GetOwner()->GetTransform().GetLocation();
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
+
+
+
+	SignalSource->Initialize();
 
 	TArray<AVAReflectionWall*> WallArray = CurrentReceiverActor->GetReflectionWalls();
 	SoundSource = MakeShared<FVASoundSource>(this, WallArray);
@@ -626,6 +634,34 @@ float UVASourceComponent::GetSoundTimeOffset() const
 // ****************************************************************** //
 
 #if WITH_EDITOR
+
+void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	if (PropertyChangedEvent.GetPropertyName() != GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSourceType))
+		return;
+
+	if (SignalSource != nullptr)
+	{
+		SignalSource->Rename(*MakeUniqueObjectName(this, UVAAbstractSignalSource::StaticClass(), "Settings_EXPIRED").ToString());
+		SignalSource->MarkPendingKill();
+		SignalSource = nullptr;
+	}
+	switch (SignalSourceType)
+	{
+	case ESignalSource::AudioFile:
+		SignalSource = NewObject<UVAAudiofileSignalSource>();
+		break;
+	case ESignalSource::JetEngine:
+		SignalSource = NewObject<UVAJetEngineSignalSource>();
+		break;
+	default:
+		FVAUtils::OpenMessageBox("[UVASourceComponent::PostEditChangeProperty()]: Signal source type is not supported", true);
+		break;
+	}
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+
+
 bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
