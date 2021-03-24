@@ -27,15 +27,12 @@ UVASourceComponent::UVASourceComponent()
   {
     Initialize();
   }
-
-  SignalSource = Cast<UVAAbstractSignalSource>(CreateDefaultSubobject("SoundSignal", UVAAbstractSignalSource::StaticClass(), SignalSourceType, true, false, false));
 }
 
 // Called when the game starts
 void UVASourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void UVASourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -266,11 +263,11 @@ bool UVASourceComponent::SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource
 
 	if (SignalSourceTypeN == UVAAudiofileSignalSource::StaticClass())
 	{
-		SignalSource = NewObject<UVAAudiofileSignalSource>();
+		SignalSource = NewObject<UVAAbstractSignalSource>(this, SignalSourceTypeN);
 	}
 	else if (SignalSourceTypeN == UVAJetEngineSignalSource::StaticClass())
 	{
-		SignalSource = NewObject<UVAJetEngineSignalSource>();
+		SignalSource = NewObject<UVAAbstractSignalSource>(this, SignalSourceTypeN);
 	}
 	else
 	{

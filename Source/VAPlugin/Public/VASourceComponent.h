@@ -4,7 +4,6 @@
 
 #include "VAEnums.h"									// EDir, EPlayAction, EMovement
 #include "SignalSources/VAAbstractSignalSource.h"
-#include "SignalSources/VAAudiofileSignalSource.h"
 
 #include "GameFramework/Actor.h"
 #include "SharedPointer.h"
@@ -40,10 +39,10 @@ protected:
 
 	// Select the class of the signal source
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "Signal Type", Category = "Signal Source", AllowAbstract = "false"))
-		TSubclassOf<UVAAbstractSignalSource> SignalSourceType = UVAAudiofileSignalSource::StaticClass();
+		TSubclassOf<UVAAbstractSignalSource> SignalSourceType = nullptr;
 
 	// Select the type of the signal source
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
+	UPROPERTY(EditAnywhere, Instanced, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
 		UVAAbstractSignalSource* SignalSource = nullptr;
 
 
