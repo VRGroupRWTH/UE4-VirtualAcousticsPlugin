@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), HideCategories=("Tags", "AssetUserData", "Activation", "Collision", "Cooking"))
 class VAPLUGIN_API UVAAudiofileSignalSource : public UVAAbstractSignalSource
 {
 	GENERATED_BODY()

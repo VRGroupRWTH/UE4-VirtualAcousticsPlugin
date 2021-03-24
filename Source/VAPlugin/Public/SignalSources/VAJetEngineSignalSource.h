@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), HideCategories=("Tags", "AssetUserData", "Activation", "Collision", "Cooking"))
 class VAPLUGIN_API UVAJetEngineSignalSource : public UVAAbstractSignalSource
 {
 	GENERATED_BODY()

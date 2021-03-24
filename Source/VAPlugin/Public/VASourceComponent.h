@@ -104,8 +104,6 @@ public:
 	// Sets default values for this component's properties
 	UVASourceComponent();
 
-	void PostInitProperties() override;
-
 	// Called every frame
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
