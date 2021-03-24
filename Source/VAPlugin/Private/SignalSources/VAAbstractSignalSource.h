@@ -24,6 +24,9 @@ public:
 	// Creates the signal source in VA and sets the ID accordingly
 	virtual void Initialize() PURE_VIRTUAL(UVAAbstractSignalSource::Initialize, );
 
+	//used for prototype interface of VA, to implement arbitrary signal source
+	virtual std::string GetPrototypeName();
+
 	// Returns the VA signal source identifier (string)
 	std::string GetID() const;
 

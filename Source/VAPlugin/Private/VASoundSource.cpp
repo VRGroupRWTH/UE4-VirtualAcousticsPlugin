@@ -9,6 +9,9 @@
 #include "VADirectivity.h"
 #include "VAReflectionWall.h"
 
+#include "SignalSources/VAJetEngineSignalSource.h"
+#include "SignalSources/VAAudiofileSignalSource.h"
+
 int FVASoundSource::Counter = 0;
 
 // ****************************************************************** // 
@@ -36,9 +39,10 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 	if (FVAPlugin::GetIsMaster())
 	{
 		std::string sSignalID = "-1";
-		if ( ParentComponent->GetSignalSourceType() == ESignalSource::JetEngine )
+		if ( ParentComponent->GetSignalSourceType() == UVAJetEngineSignalSource::StaticClass() )
 		{
-			sSignalID = FVAPlugin::CreateSignalSourcePrototype( ESignalSource::JetEngine );
+			//TODO: remove here!
+			//sSignalID = FVAPlugin::CreateSignalSourcePrototype( ParentComponent->Sign );
 		}
 		else
 		{

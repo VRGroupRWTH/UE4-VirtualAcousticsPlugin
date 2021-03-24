@@ -3,6 +3,11 @@
 
 #include "VAAbstractSignalSource.h"
 
+std::string UVAAbstractSignalSource::GetPrototypeName()
+{
+	return "invalid";
+}
+
 std::string UVAAbstractSignalSource::GetID() const
 {
 	return sID;

@@ -28,14 +28,13 @@ UVASourceComponent::UVASourceComponent()
     Initialize();
   }
 
-  SignalSource = NewObject<UVAAudiofileSignalSource>();
+  SignalSource = Cast<UVAAbstractSignalSource>(CreateDefaultSubobject("SoundSignal", UVAAbstractSignalSource::StaticClass(), SignalSourceType, true, false, false));
 }
 
 // Called when the game starts
 void UVASourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 
 }
 
@@ -187,6 +186,12 @@ void UVASourceComponent::Initialize()
 	bInitialized = true;
 }
 
+bool UVASourceComponent::UpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
+{
+	SignalSourceType = nullptr;
+	return SetSignalSourceType(SignalSourceTypeN);
+}
+
 bool UVASourceComponent::ShouldSendCommand() const
 {
 	return (bInitialized && FVAPlugin::GetUseVA() && FVAPlugin::GetIsMaster());
@@ -247,6 +252,35 @@ EPlayAction::Type UVASourceComponent::GetPlayState() const
 	return EPlayAction::Type(SoundSource->GetPlayState());
 }
 
+bool UVASourceComponent::SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
+{
+	if(SignalSourceType == SignalSourceTypeN)
+		return true;
+	
+	if (SignalSource != nullptr)
+	{
+		SignalSource->Rename(*MakeUniqueObjectName(this, UVAAbstractSignalSource::StaticClass(), "Settings_EXPIRED").ToString());
+		SignalSource->MarkPendingKill();
+		SignalSource = nullptr;
+	}
+
+	if (SignalSourceTypeN == UVAAudiofileSignalSource::StaticClass())
+	{
+		SignalSource = NewObject<UVAAudiofileSignalSource>();
+	}
+	else if (SignalSourceTypeN == UVAJetEngineSignalSource::StaticClass())
+	{
+		SignalSource = NewObject<UVAJetEngineSignalSource>();
+	}
+	else
+	{
+		FVAUtils::OpenMessageBox("[UVASourceComponent::PostEditChangeProperty()]: Signal source type is not supported", true);
+		return false;
+	}
+
+	SignalSourceType = SignalSourceTypeN;
+	return true;
+}
 
 
 // ****************************************************************** // 
@@ -354,7 +388,7 @@ bool UVASourceComponent::GetHandleReflections() const
 	return bHandleReflections;
 }
 
-ESignalSource::Type UVASourceComponent::GetSignalSourceType() const
+TSubclassOf<UVAAbstractSignalSource> UVASourceComponent::GetSignalSourceType() const
 {
 	return SignalSourceType;
 }
@@ -637,27 +671,10 @@ float UVASourceComponent::GetSoundTimeOffset() const
 
 void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if (PropertyChangedEvent.GetPropertyName() != GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSourceClass))
+	if (PropertyChangedEvent.GetPropertyName() != GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSourceType))
 		return;
-
-	if (SignalSource != nullptr)
-	{
-		SignalSource->Rename(*MakeUniqueObjectName(this, UVAAbstractSignalSource::StaticClass(), "Settings_EXPIRED").ToString());
-		SignalSource->MarkPendingKill();
-		SignalSource = nullptr;
-	}
-	if (SignalSourceClass == UVAAudiofileSignalSource::StaticClass())
-	{
-		SignalSource = NewObject<UVAAudiofileSignalSource>();
-	}
-	else if (SignalSourceClass == UVAJetEngineSignalSource::StaticClass())
-	{
-		SignalSource = NewObject<UVAJetEngineSignalSource>();
-	}
-	else
-	{
-		FVAUtils::OpenMessageBox("[UVASourceComponent::PostEditChangeProperty()]: Signal source type is not supported", true);
-	}
+	
+	UpdateSignalSourceType(SignalSourceType);
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }

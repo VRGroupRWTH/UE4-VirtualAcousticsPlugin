@@ -24,6 +24,8 @@ public:
 	// Creates the signal source in VA and sets the ID accordingly
 	void Initialize() override;
 
+	std::string GetPrototypeName() override;
+
 	// Sets the rounds per minute (RPM) of the jet
 	bool SetJetRPM(float fRPM);
 	// Returns the rounds per minute (RPM) of the jet

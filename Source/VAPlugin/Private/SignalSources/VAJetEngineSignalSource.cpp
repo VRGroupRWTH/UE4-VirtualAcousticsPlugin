@@ -16,7 +16,7 @@ void UVAJetEngineSignalSource::Initialize()
 	}
 
 
-	sID = FVAPlugin::CreateSignalSourcePrototype(ESignalSource::JetEngine);
+	sID = FVAPlugin::CreateSignalSourcePrototype(this);
 	if (sID == "-1")
 	{
 		FVAUtils::LogStuff("[UVAJetEngineSignalSource::Initialize()]: Error initializing Jet Engine Signal Source", true);
@@ -32,6 +32,10 @@ void UVAJetEngineSignalSource::Initialize()
 	}
 }
 
+std::string UVAJetEngineSignalSource::GetPrototypeName()
+{
+	return "jet_engine";
+}
 
 bool UVAJetEngineSignalSource::SetJetRPM(float fRPM)
 {

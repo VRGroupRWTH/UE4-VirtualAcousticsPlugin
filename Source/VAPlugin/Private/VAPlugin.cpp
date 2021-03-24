@@ -664,19 +664,13 @@ bool FVAPlugin::SetSoundBufferLoop(const std::string BufferID, const bool bLoop)
 	}
 }
 
-std::string FVAPlugin::CreateSignalSourcePrototype(ESignalSource::Type SignalSourceClass)
+std::string FVAPlugin::CreateSignalSourcePrototype(UVAAbstractSignalSource* SignalSource)
 {
 	if (!ShouldInteractWithServer())
 		return "-1";
 
-
-	std::string ClassName;
-	switch (SignalSourceClass)
+	if(SignalSource->GetPrototypeName() == "invalid")
 	{
-	case ESignalSource::JetEngine:
-		ClassName = "jet_engine";
-		break;
-	default:
 		ProcessException("FVAPluginModule::CreateSignalSourcePrototype()", FString("Trying to create unknown signal source class") );
 		return "-1";
 	}
@@ -684,7 +678,7 @@ std::string FVAPlugin::CreateSignalSourcePrototype(ESignalSource::Type SignalSou
 	try
 	{
 		CVAStruct SignalSourceStruct;
-		SignalSourceStruct["class"] = ClassName;
+		SignalSourceStruct["class"] = SignalSource->GetPrototypeName();
 		return VAServer->CreateSignalSourcePrototypeFromParameters( SignalSourceStruct );
 	}
 	catch (CVAException& e)

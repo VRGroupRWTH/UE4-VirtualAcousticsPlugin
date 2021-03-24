@@ -3,7 +3,8 @@
 #pragma once
 
 #include "VAEnums.h"									// EDir, EPlayAction, EMovement
-#include "SignalSources\VAAbstractSignalSource.h"
+#include "SignalSources/VAAbstractSignalSource.h"
+#include "SignalSources/VAAudiofileSignalSource.h"
 
 #include "GameFramework/Actor.h"
 #include "SharedPointer.h"
@@ -38,15 +39,11 @@ protected:
 
 
 	// Select the class of the signal source
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Class", Category = "Signal Source", AllowAbstract = "false"))
-		TSubclassOf<UVAAbstractSignalSource> SignalSourceClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "Signal Type", Category = "Signal Source", AllowAbstract = "false"))
+		TSubclassOf<UVAAbstractSignalSource> SignalSourceType = UVAAudiofileSignalSource::StaticClass();
 
 	// Select the type of the signal source
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Type", Category = "Signal Source"))
-		TEnumAsByte<ESignalSource::Type> SignalSourceType = ESignalSource::Type::AudioFile;
-
-	// Select the type of the signal source
-	UPROPERTY(EditInstanceOnly, Instanced, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
 		UVAAbstractSignalSource* SignalSource = nullptr;
 
 
@@ -107,6 +104,8 @@ public:
 	// Sets default values for this component's properties
 	UVASourceComponent();
 
+	void PostInitProperties() override;
+
 	// Called every frame
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -134,7 +133,15 @@ public:
 	EPlayAction::Type GetPlayState() const;
 
 
-	// *** Sound Settings *** // 
+	// *** Sound Settings *** //
+
+	// Sets the signal type used for this sound source
+	UFUNCTION(BlueprintCallable)
+	bool SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
+
+	// Gets the signal type used for this sound source
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<UVAAbstractSignalSource> GetSignalSourceType() const;
 
 	// Mute sound (true = mute)
 	UFUNCTION(BlueprintCallable)
@@ -172,9 +179,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetHandleReflections() const;
 
-	// Gets the signal type used for this sound source
-	UFUNCTION(BlueprintCallable)
-	ESignalSource::Type GetSignalSourceType() const;
 
 	
 	// *** Sound Pose *** //
@@ -250,6 +254,8 @@ protected:
 
 	// initialize Sound Source with the settings set // 
 	void Initialize();
+
+	bool UpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
 
 	AVAReceiverActor* CurrentReceiverActor;
 

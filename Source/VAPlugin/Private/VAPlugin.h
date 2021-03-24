@@ -12,7 +12,8 @@
 
 //forward declarations:
 class AVAReceiverActor;		 
-class AVAReflectionWall;	
+class AVAReflectionWall;
+class UVAAbstractSignalSource;
 
 // Interface Classes
 class CVAException;			
@@ -80,7 +81,7 @@ public:
 
 	// ******* Signal Sources ******* //
 
-	static std::string CreateSignalSourcePrototype(ESignalSource::Type SignalSourceClass);
+	static std::string CreateSignalSourcePrototype(UVAAbstractSignalSource* SignalSource);
 	static bool SetSignalSourceParameter(std::string sSignalSourceID, std::string sParamName, float fParamValue);
 	static bool SetJetEngineRMP(std::string sSignalSourceID, float fRPM);
 
