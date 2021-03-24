@@ -637,7 +637,7 @@ float UVASourceComponent::GetSoundTimeOffset() const
 
 void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if (PropertyChangedEvent.GetPropertyName() != GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSourceType))
+	if (PropertyChangedEvent.GetPropertyName() != GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSourceClass))
 		return;
 
 	if (SignalSource != nullptr)
@@ -646,18 +646,19 @@ void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 		SignalSource->MarkPendingKill();
 		SignalSource = nullptr;
 	}
-	switch (SignalSourceType)
+	if (SignalSourceClass == UVAAudiofileSignalSource::StaticClass())
 	{
-	case ESignalSource::AudioFile:
 		SignalSource = NewObject<UVAAudiofileSignalSource>();
-		break;
-	case ESignalSource::JetEngine:
-		SignalSource = NewObject<UVAJetEngineSignalSource>();
-		break;
-	default:
-		FVAUtils::OpenMessageBox("[UVASourceComponent::PostEditChangeProperty()]: Signal source type is not supported", true);
-		break;
 	}
+	else if (SignalSourceClass == UVAJetEngineSignalSource::StaticClass())
+	{
+		SignalSource = NewObject<UVAJetEngineSignalSource>();
+	}
+	else
+	{
+		FVAUtils::OpenMessageBox("[UVASourceComponent::PostEditChangeProperty()]: Signal source type is not supported", true);
+	}
+
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
