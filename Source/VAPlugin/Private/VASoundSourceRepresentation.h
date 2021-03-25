@@ -10,7 +10,7 @@
 
 #include "VASoundSourceRepresentation.generated.h"
 
-UCLASS()
+UCLASS(ClassGroup = (VA))
 class VAPLUGIN_API AVASoundSourceRepresentation : public AActor
 {
 	GENERATED_BODY()

@@ -16,7 +16,7 @@ class FVASoundSource;
 class AVAReceiverActor;
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(VA), meta=(BlueprintSpawnableComponent) )
 class VAPLUGIN_API UVASourceComponent : public UActorComponent
 {
 	GENERATED_BODY()

@@ -7,7 +7,7 @@
 
 #include "VAReflectionWall.generated.h"
 
-UCLASS()
+UCLASS(ClassGroup = (VA))
 class VAPLUGIN_API AVAReflectionWall : public AActor
 {
 	GENERATED_BODY()

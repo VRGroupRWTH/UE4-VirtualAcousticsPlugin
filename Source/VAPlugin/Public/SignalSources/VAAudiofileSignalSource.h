@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (VA))
 class VAPLUGIN_API UVAAudiofileSignalSource : public UVAAbstractSignalSource
 {
 	GENERATED_BODY()

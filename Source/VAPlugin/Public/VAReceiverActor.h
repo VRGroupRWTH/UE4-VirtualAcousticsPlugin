@@ -19,7 +19,7 @@ class FVAHRIR;
 class FVAHRIRManager;
 
 
-UCLASS()
+UCLASS(ClassGroup = (VA))
 class VAPLUGIN_API AVAReceiverActor : public AActor
 {
 	GENERATED_BODY()

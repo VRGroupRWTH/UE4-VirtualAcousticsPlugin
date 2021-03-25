@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (VA))
 class VAPLUGIN_API UVAJetEngineSignalSource : public UVAAbstractSignalSource
 {
 	GENERATED_BODY()
