@@ -251,7 +251,7 @@ protected:
 
 #if WITH_EDITOR
 	// Function to improve settings displayed in Editor, can only be used in editor mode
-	bool CanEditChange(const UProperty* InProperty) const override;
+	bool CanEditChange(const FProperty* InProperty) const override;
 #endif
 	
 };

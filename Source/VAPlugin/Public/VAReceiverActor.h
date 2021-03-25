@@ -153,7 +153,7 @@ protected:
 
 	
 #if WITH_EDITOR
-	bool CanEditChange(const UProperty* InProperty) const override;
+	bool CanEditChange(const FProperty* InProperty) const override;
 #endif
 
 	// Current Receiver Actor

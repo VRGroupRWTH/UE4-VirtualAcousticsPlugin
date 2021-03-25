@@ -446,7 +446,7 @@ void AVAReceiverActor::RunOnAllNodes(const FString Command)
 	}
 }
 
-void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEvent& Event)
+void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEventJson& Event)
 {
 	if (Event.Category == "VAPlugin" && Event.Type == "command")
 	{
@@ -487,7 +487,7 @@ void AVAReceiverActor::HandleClusterCommand(const FString Command)
 // ****************************************************************** //
 
 #if WITH_EDITOR
-bool AVAReceiverActor::CanEditChange(const UProperty* InProperty) const
+bool AVAReceiverActor::CanEditChange(const FProperty* InProperty) const
 {
 	// Check manual Address
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(AVAReceiverActor, ServerIPAddress) ||

@@ -621,7 +621,7 @@ float UVASourceComponent::GetSoundTimeOffset() const
 // ****************************************************************** //
 
 #if WITH_EDITOR
-bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
+bool UVASourceComponent::CanEditChange(const FProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
 
