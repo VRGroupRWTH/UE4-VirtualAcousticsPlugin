@@ -27,7 +27,7 @@ public:
 	std::string GetPrototypeName() override;
 
 	// Sets the rounds per minute (RPM) of the jet
-	bool SetJetRPM(float fRPM);
+	bool SetJetRPM(float RPM);
 	// Returns the rounds per minute (RPM) of the jet
 	float GetJetRPM() const;
 

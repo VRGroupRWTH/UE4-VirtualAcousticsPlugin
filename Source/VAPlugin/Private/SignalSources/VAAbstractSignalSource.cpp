@@ -10,10 +10,15 @@ std::string UVAAbstractSignalSource::GetPrototypeName()
 
 std::string UVAAbstractSignalSource::GetID() const
 {
-	return sID;
+	return ID;
 }
 
 bool UVAAbstractSignalSource::IsValid() const
 {
-	return !bool( FString(sID.c_str()).Equals(FString("-1")) );
+	return IsValidID(ID);
+}
+
+bool UVAAbstractSignalSource::IsValidID(const std::string& ID)
+{
+	return !ID.empty() && ID != "-1";
 }

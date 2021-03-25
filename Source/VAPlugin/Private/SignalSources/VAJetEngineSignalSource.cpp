@@ -16,8 +16,8 @@ void UVAJetEngineSignalSource::Initialize()
 	}
 
 
-	sID = FVAPlugin::CreateSignalSourcePrototype(this);
-	if (sID == "-1")
+	ID = FVAPlugin::CreateSignalSourcePrototype(this);
+	if (!IsValidID(ID))
 	{
 		FVAUtils::LogStuff("[UVAJetEngineSignalSource::Initialize()]: Error initializing Jet Engine Signal Source", true);
 		return;
@@ -26,7 +26,7 @@ void UVAJetEngineSignalSource::Initialize()
 
 	bInitialized = true;
 
-	if (!FVAPlugin::SetSignalSourceParameter(sID, "rpm", JetRPM))
+	if (!FVAPlugin::SetSignalSourceParameter(ID, "rpm", JetRPM))
 	{
 		FVAUtils::LogStuff("[UVAJetEngineSignalSource::Initialize()]: Could not set Jet RPM during initialization", true);
 	}
@@ -37,15 +37,15 @@ std::string UVAJetEngineSignalSource::GetPrototypeName()
 	return "jet_engine";
 }
 
-bool UVAJetEngineSignalSource::SetJetRPM(float fRPM)
+bool UVAJetEngineSignalSource::SetJetRPM(float RPM)
 {
 	if (!bInitialized)
 		return false;
 
-	if (!FVAPlugin::SetSignalSourceParameter(sID, "rpm", fRPM))
+	if (!FVAPlugin::SetSignalSourceParameter(ID, "rpm", RPM))
 		return false;
 	
-	JetRPM = fRPM;
+	JetRPM = RPM;
 	return true;
 }
 

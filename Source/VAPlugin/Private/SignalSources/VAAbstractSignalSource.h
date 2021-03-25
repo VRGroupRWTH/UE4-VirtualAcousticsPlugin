@@ -15,7 +15,7 @@ class UVAAbstractSignalSource : public UActorComponent
 	GENERATED_BODY()
 
 protected:
-	std::string sID = "-1";
+	std::string ID = "-1";
 	bool bInitialized = false;
 
 public:	
@@ -24,7 +24,8 @@ public:
 	// Creates the signal source in VA and sets the ID accordingly
 	virtual void Initialize() PURE_VIRTUAL(UVAAbstractSignalSource::Initialize, );
 
-	//used for prototype interface of VA, to implement arbitrary signal source
+	//Used for prototype interface of VA, to implement arbitrary signal source.
+	//  Only overload in derived class if corresponding signal source can be created via prototype function
 	virtual std::string GetPrototypeName();
 
 	// Returns the VA signal source identifier (string)
@@ -32,4 +33,6 @@ public:
 
 	// Checks whether this signal source was properly initialized and has a valid ID
 	bool IsValid() const;
+
+	static bool IsValidID(const std::string& ID);
 };

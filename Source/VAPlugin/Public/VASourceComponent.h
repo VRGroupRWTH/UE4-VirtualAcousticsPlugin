@@ -9,6 +9,8 @@
 #include "GameFramework/Actor.h"
 #include "SharedPointer.h"
 
+#include <string>
+
 #include "VASourceComponent.generated.h"
 
 //forward declarations to not include private header files
@@ -257,6 +259,15 @@ protected:
 
 	bool ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
 
+	void SetSignalSourceID(const std::string& ID);
+
+	// *** Event/Delegates *** //
+
+	void BindSignalSourceEvents();
+	void UnbindSignalSourceEvents();
+
+
+
 	AVAReceiverActor* CurrentReceiverActor;
 
 	TSharedPtr<FVASoundSource> SoundSource;
@@ -276,7 +287,10 @@ protected:
 	bool bMuted = false;
 	int UpdateRate;
 
+	FDelegateHandle SignalSourceChangedDelegate;
+
 #if WITH_EDITOR
+	virtual void PreEditChange(UProperty* PropertyWhatWillChange) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	// Function to improve settings displayed in Editor, can only be used in editor mode
