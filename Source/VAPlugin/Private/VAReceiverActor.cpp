@@ -422,29 +422,26 @@ void AVAReceiverActor::SetDebugMode(const bool bDebugMode)
 void AVAReceiverActor::RunOnAllNodes(const FString Command)
 {
 	IDisplayClusterClusterManager* const Manager = IDisplayCluster::Get().GetClusterMgr();
-	if (Manager)
+	if (!IDisplayCluster::IsAvailable() || !Manager)
 	{
-		if (Manager->GetNodesAmount()==1)
-		{
-			//in standalone (e.g., desktop editor play) cluster events are not executed....
-			//TODO: is that still the case in 4.26?
-			HandleClusterCommand(Command);
-			FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
-				Command + " ran locally", false);
-		}
-		else
-		{
-			// else create a cluster event to react to
-			FDisplayClusterClusterEventJson ClusterEvent;
-			ClusterEvent.Name		= Command;
-			ClusterEvent.Category	= "VAPlugin";
-			ClusterEvent.Type		= "command";
-			
-			Manager->EmitClusterEventJson(ClusterEvent, true);
+		//in standalone (e.g., desktop editor play) cluster events are not executed....
+		//TODO: is that still the case in 4.26?
+		HandleClusterCommand(Command);
+		FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
+			Command + " ran locally", false);
+	}
+	else
+	{
+		// else create a cluster event to react to
+		FDisplayClusterClusterEventJson ClusterEvent;
+		ClusterEvent.Name		= Command;
+		ClusterEvent.Category	= "VAPlugin";
+		ClusterEvent.Type		= "command";
+		
+		Manager->EmitClusterEventJson(ClusterEvent, true);
 
-			FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
-				Command + " sent", false);
-		}
+		FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
+			Command + " sent", false);
 	}
 }
 
