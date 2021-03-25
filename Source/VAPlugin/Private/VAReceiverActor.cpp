@@ -12,6 +12,7 @@
 #include "VAHRIRManager.h"
 
 
+#include "Cluster/DisplayClusterClusterEvent.h"
 #include "Engine/World.h"							// World
 #include "GameFramework/PlayerController.h"			// Viewport
 #include "IDisplayCluster.h"						// For Events
@@ -74,9 +75,9 @@ void AVAReceiverActor::BeginPlay()
 	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
 	if (ClusterManager && !ClusterEventListenerDelegate.IsBound())
 	{
-		ClusterEventListenerDelegate = FOnClusterEventListener::CreateUObject(
+		ClusterEventListenerDelegate = FOnClusterEventJsonListener::CreateUObject(
 			this, &AVAReceiverActor::HandleClusterEvent);
-		ClusterManager->AddClusterEventListener(ClusterEventListenerDelegate);
+		ClusterManager->AddClusterEventJsonListener(ClusterEventListenerDelegate);
 	}
 
 	if (!FVAPlugin::GetUseVA())
@@ -128,12 +129,13 @@ void AVAReceiverActor::BeginPlay()
 	TArray<AActor*> ActorsA;
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AActor::StaticClass(), ActorsA);
 
-	for (AActor* EntryActor : ActorsA)
+	for (AActor* Actor : ActorsA)
 	{
-		TArray<UActorComponent*> VASourceComponents = EntryActor->GetComponentsByClass(UVASourceComponent::StaticClass());
-		for (UActorComponent* EntrySourceComponent : VASourceComponents)
+		TArray<UVASourceComponent*> VASourceComponents;
+		Actor->GetComponents(VASourceComponents);
+		for (UVASourceComponent* SourceComponent : VASourceComponents)
 		{
-			Cast<UVASourceComponent>(EntrySourceComponent)->Initialize();
+			SourceComponent->Initialize();
 		}
 	}
 
@@ -164,7 +166,7 @@ void AVAReceiverActor::BeginDestroy()
 	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
 	if (ClusterManager && ClusterEventListenerDelegate.IsBound())
 	{
-		ClusterManager->RemoveClusterEventListener(ClusterEventListenerDelegate);
+		ClusterManager->RemoveClusterEventJsonListener(ClusterEventListenerDelegate);
 	}
 }
 
@@ -423,22 +425,23 @@ void AVAReceiverActor::RunOnAllNodes(const FString Command)
 	IDisplayClusterClusterManager* const Manager = IDisplayCluster::Get().GetClusterMgr();
 	if (Manager)
 	{
-		if (Manager->IsStandalone())
+		if (Manager->GetNodesAmount()==1)
 		{
 			//in standalone (e.g., desktop editor play) cluster events are not executed....
+			//TODO: is that still the case in 4.26?
 			HandleClusterCommand(Command);
 			FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
-				Command + " ran local", false);
+				Command + " ran locally", false);
 		}
 		else
 		{
 			// else create a cluster event to react to
-			FDisplayClusterClusterEvent ClusterEvent;
+			FDisplayClusterClusterEventJson ClusterEvent;
 			ClusterEvent.Name		= Command;
 			ClusterEvent.Category	= "VAPlugin";
 			ClusterEvent.Type		= "command";
 			
-			Manager->EmitClusterEvent(ClusterEvent, true);
+			Manager->EmitClusterEventJson(ClusterEvent, true);
 
 			FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
 				Command + " sent", false);

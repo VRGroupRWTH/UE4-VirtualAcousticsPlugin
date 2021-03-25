@@ -1172,12 +1172,13 @@ void FVAPlugin::SetDebugMode(const bool bDebugModeN)
     UGameplayStatics::GetAllActorsOfClass(ReceiverActor->GetWorld(), AActor::StaticClass(), ActorArray);
   }
 
-	for (AActor* EntryActor : ActorArray)
+	for (AActor* Actor : ActorArray)
 	{
-		TArray<UActorComponent*> VAComponents = EntryActor->GetComponentsByClass(UVASourceComponent::StaticClass());
-		for (UActorComponent* EntryVAComponents : VAComponents)
+		TArray<UVASourceComponent*> VAComponents;
+		Actor->GetComponents(VAComponents);
+		for (UVASourceComponent* VAComponent : VAComponents)
 		{
-			(Cast<UVASourceComponent>(EntryVAComponents))->SetVisibility(bDebugMode);
+			VAComponent->SetVisibility(bDebugMode);
 		}
 	}
 }

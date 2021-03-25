@@ -145,7 +145,7 @@ protected:
 
 
 	// Cluster Stuff
-	void HandleClusterEvent(const FDisplayClusterClusterEvent& Event);
+	void HandleClusterEvent(const FDisplayClusterClusterEventJson& Event);
 	void HandleClusterCommand(FString Command);
 
 
@@ -179,6 +179,6 @@ protected:
 	float TotalTime;
 
 	// Event Listener Delegate
-	FOnClusterEventListener ClusterEventListenerDelegate;
+	FOnClusterEventJsonListener ClusterEventListenerDelegate;
 
 };
