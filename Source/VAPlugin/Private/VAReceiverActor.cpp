@@ -258,18 +258,17 @@ bool AVAReceiverActor::UpdateRealWorldPose()
 		return false;
 	}
 
-	USceneComponent* Head	= VirtualRealityPawn->GetHeadComponent();
-	USceneComponent* Origin = VirtualRealityPawn->GetTrackingOriginComponent();
+	USceneComponent* Head	= VirtualRealityPawn->Head;
 
-	if (!Head || !Origin)
+	if (!Head)
 	{
 		return false;
 	}
 
 	// calculate positions
-	const FQuat InverseOriginRot	= Origin->GetComponentQuat().Inverse();
+	const FQuat InverseOriginRot	= VirtualRealityPawn->GetActorQuat().Inverse();
 	const FVector Pos				= InverseOriginRot.RotateVector(
-		Head->GetComponentLocation() - Origin->GetComponentLocation());
+		Head->GetComponentLocation() - VirtualRealityPawn->GetActorLocation());
 	const FQuat Quat				= InverseOriginRot * Head->GetComponentQuat();
 
 	return FVAPlugin::SetSoundReceiverRealWorldPose(ReceiverID, Pos, Quat.Rotator());
