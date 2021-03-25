@@ -29,6 +29,11 @@ UVASourceComponent::UVASourceComponent()
   }
 }
 
+void UVASourceComponent::OnComponentCreated()
+{
+	ForceUpdateSignalSourceType(SignalSourceType);
+}
+
 // Called when the game starts
 void UVASourceComponent::BeginPlay()
 {
@@ -183,7 +188,7 @@ void UVASourceComponent::Initialize()
 	bInitialized = true;
 }
 
-bool UVASourceComponent::UpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
+bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
 {
 	SignalSourceType = nullptr;
 	return SetSignalSourceType(SignalSourceTypeN);
@@ -671,7 +676,7 @@ void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 	if (PropertyChangedEvent.GetPropertyName() != GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSourceType))
 		return;
 	
-	UpdateSignalSourceType(SignalSourceType);
+	ForceUpdateSignalSourceType(SignalSourceType);
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }

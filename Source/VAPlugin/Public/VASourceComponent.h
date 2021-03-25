@@ -4,6 +4,7 @@
 
 #include "VAEnums.h"									// EDir, EPlayAction, EMovement
 #include "SignalSources/VAAbstractSignalSource.h"
+#include "SignalSources/VAAudiofileSignalSource.h"
 
 #include "GameFramework/Actor.h"
 #include "SharedPointer.h"
@@ -39,7 +40,7 @@ protected:
 
 	// Select the class of the signal source
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "Signal Type", Category = "Signal Source", AllowAbstract = "false"))
-		TSubclassOf<UVAAbstractSignalSource> SignalSourceType = nullptr;
+		TSubclassOf<UVAAbstractSignalSource> SignalSourceType = UVAAudiofileSignalSource::StaticClass();
 
 	// Select the type of the signal source
 	UPROPERTY(EditAnywhere, Instanced, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
@@ -102,6 +103,8 @@ public:
 
 	// Sets default values for this component's properties
 	UVASourceComponent();
+
+	void OnComponentCreated() override;
 
 	// Called every frame
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -252,7 +255,7 @@ protected:
 	// initialize Sound Source with the settings set // 
 	void Initialize();
 
-	bool UpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
+	bool ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
 
 	AVAReceiverActor* CurrentReceiverActor;
 
