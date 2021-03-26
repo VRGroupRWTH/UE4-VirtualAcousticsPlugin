@@ -158,11 +158,6 @@ void UVASourceComponent::Initialize()
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
 
 
-	if (SignalSource)
-	{
-		SignalSource->Initialize();
-	}
-
 	TArray<AVAReflectionWall*> WallArray = CurrentReceiverActor->GetReflectionWalls();
 	SoundSource = MakeShared<FVASoundSource>(this, WallArray);
 	if (FVAPlugin::GetIsMaster())
@@ -186,6 +181,12 @@ void UVASourceComponent::Initialize()
 		default:
 			break;
 		}
+	}
+
+	if (SignalSource)
+	{
+		SignalSource->Initialize();
+		SetSignalSourceID(SignalSource->GetID());
 	}
 
 	FVAUtils::LogStuff("[UVASourceComponent::Initialize()]: SoundSourceComponent initialized successfully", false);
@@ -222,9 +223,14 @@ bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSign
 	return true;
 }
 
-void UVASourceComponent::SetSignalSourceID(const std::string& ID)
+bool UVASourceComponent::SetSignalSourceID(const std::string& ID)
 {
-	//TODO: Implement
+	return FVAPlugin::SetNewBufferForSoundSource(SoundSource->GetSoundSourceID(), ID);
+}
+
+void UVASourceComponent::OnSignalSourceIDChanged(const std::string& ID)
+{
+	FVAPlugin::SetNewBufferForSoundSource(SoundSource->GetSoundSourceID(), ID);
 }
 
 void UVASourceComponent::BindSignalSourceEvents()
@@ -232,7 +238,7 @@ void UVASourceComponent::BindSignalSourceEvents()
 	UVAAudiofileSignalSource* AudioSignalSource = Cast<UVAAudiofileSignalSource>(SignalSource);
 	if (AudioSignalSource && !AudioSignalSource->OnAudiofileChanged().IsBoundToObject(this))
 	{
-		SignalSourceChangedDelegate = AudioSignalSource->OnAudiofileChanged().AddUObject(this, &UVASourceComponent::SetSignalSourceID);
+		SignalSourceChangedDelegate = AudioSignalSource->OnAudiofileChanged().AddUObject(this, &UVASourceComponent::OnSignalSourceIDChanged);
 	}
 }
 
@@ -314,7 +320,15 @@ bool UVASourceComponent::SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource
 	if(SignalSourceType == SignalSourceTypeN)
 		return true;
 
-	return ForceUpdateSignalSourceType(SignalSourceTypeN);
+	if (!ForceUpdateSignalSourceType(SignalSourceTypeN))
+		return false;
+
+	if (SignalSource)
+	{
+		SignalSource->Initialize();
+		return SetSignalSourceID(SignalSource->GetID());
+	}
+	return true;
 }
 
 
@@ -706,14 +720,17 @@ float UVASourceComponent::GetSoundTimeOffset() const
 
 void UVASourceComponent::PreEditChange(UProperty* PropertyWhatWillChange)
 {
-	//If user directly changes the signal source component to "None"
+	Super::PreEditChange(PropertyWhatWillChange);
+
+	// TODO:
+	// This is true if user directly changes the signal source component to "None"
+	// However, it is also true if user changes a sub-property of SignalSource
 	if (PropertyWhatWillChange->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSource))
 	{
-		UnbindSignalSourceEvents();
-		SignalSourceType = nullptr;
+		UnbindSignalSourceEvents(); //Unbind works for now, since we bind in BeginPlay() again.
+		//SignalSourceType = nullptr;
 	}
 
-	Super::PreEditChange(PropertyWhatWillChange);
 }
 
 void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

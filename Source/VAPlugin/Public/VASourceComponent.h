@@ -259,7 +259,8 @@ protected:
 
 	bool ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
 
-	void SetSignalSourceID(const std::string& ID);
+	bool SetSignalSourceID(const std::string& ID);
+	void OnSignalSourceIDChanged(const std::string& ID);
 
 	// *** Event/Delegates *** //
 

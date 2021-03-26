@@ -87,7 +87,11 @@ bool UVAAudiofileSignalSource::SetAudiofile(FString AudioFilename)
 	
 	Filename = AudioFilename;
 	ID = NewID;
-	AudiofileChangedEvent.Broadcast(ID);
+
+	if (bInitialized) //Broadcast is only required after initialization (after BeginPlay())
+	{
+		AudiofileChangedEvent.Broadcast(ID);
+	}
 	return true;
 }
 
