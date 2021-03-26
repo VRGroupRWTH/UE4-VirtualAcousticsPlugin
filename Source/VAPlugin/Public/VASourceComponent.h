@@ -112,42 +112,21 @@ public:
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	// *** Playback Settings *** //
-
-	// Play Sound
-	UFUNCTION(BlueprintCallable)
-	bool PlaySound();
-
-	// Play Sound starting from second of sound
-	UFUNCTION(BlueprintCallable)
-	bool PlaySoundFromSecond(float Time);
-
-	// Stop Sound
-	UFUNCTION(BlueprintCallable)
-	bool StopSound();
-
-	// Pause Sound
-	UFUNCTION(BlueprintCallable)
-	bool PauseSound();
-
-	// Returns the Play State directly from the server 	NoPlayAction = -1, Stop = 0, Pause = 1,	Play = 2
-	UFUNCTION(BlueprintCallable)
-	EPlayAction::Type GetPlayState() const;
-
-
-	// *** Sound Settings *** //
+	// *** Signal Source *** //
 
 	// Sets the signal type used for this sound source
 	UFUNCTION(BlueprintCallable)
-	bool SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
+		bool SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
 
 	// Gets the signal type used for this sound source
 	UFUNCTION(BlueprintCallable)
-	TSubclassOf<UVAAbstractSignalSource> GetSignalSourceType() const;
+		TSubclassOf<UVAAbstractSignalSource> GetSignalSourceType() const;
 
 	// Returns a pointer to the signal source component
 	UFUNCTION(BlueprintCallable)
-	UVAAbstractSignalSource* GetSignalSource() const;
+		UVAAbstractSignalSource* GetSignalSource() const;
+
+	// *** Sound Source Settings *** //
 
 	// Mute sound (true = mute)
 	UFUNCTION(BlueprintCallable)
@@ -173,13 +152,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetSoundPower() const;
 
-	// Sets whether to loop or not (true = loop)
-	UFUNCTION(BlueprintCallable)
-	bool SetLoop(bool bNewLoop);
-
-	// Gets whether to loop or not (true = loop)
-	UFUNCTION(BlueprintCallable)
-	bool GetLoop() const;
+	// *** Image Sources *** //
 
 	// Gets whether to handle the reflections on this sound source
 	UFUNCTION(BlueprintCallable)
@@ -292,8 +265,12 @@ protected:
 	bool bMuted = false;
 	int UpdateRate;
 
+private:
 	FDelegateHandle SignalSourceChangedDelegate;
 
+	int SoundSourceID = -1; //TODO!: This is for later use once we moved functionality from the VASoundSource to this class
+
+protected:
 #if WITH_EDITOR
 	virtual void PreEditChange(UProperty* PropertyWhatWillChange) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

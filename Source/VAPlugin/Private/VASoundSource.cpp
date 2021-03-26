@@ -25,7 +25,6 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 
 	bShowCones = FVAPlugin::GetDebugMode();
 	bHandleReflections = ParentComponent->GetHandleReflections();
-	bLoop = ParentComponent->GetLoop();
 	Power = ParentComponent->GetSoundPower();
 
 	const float SoundTimeOffset = ParentComponent->GetSoundTimeOffset();
@@ -38,33 +37,7 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 
 	if (FVAPlugin::GetIsMaster())
 	{
-		std::string sSignalID = "-1";
-		if ( ParentComponent->GetSignalSourceType() == UVAJetEngineSignalSource::StaticClass() )
-		{
-			//TODO: remove here!
-			//sSignalID = FVAPlugin::CreateSignalSourcePrototype( ParentComponent->Sign );
-		}
-		else
-		{
-			ActiveBuffer = BufferManager.GetBufferByFileName(ParentComponent->GetSoundFile());
-
-			if (ActiveBuffer == nullptr)
-			{
-				FVAUtils::LogStuff("[FVASoundSource::VASoundSource()]: Error initializing Buffer", true);
-				return;
-			}
-
-			ActiveBuffer->SetLoop(bLoop);
-
-			// Only Change if necessary
-			if (SoundTimeOffset > 0.0f)
-			{
-				ActiveBuffer->SetSoundTimeOffset(SoundTimeOffset);
-			}
-			sSignalID = ActiveBuffer->GetID();
-		}
-
-		SoundSourceID = FVAPlugin::CreateNewSoundSource(sSignalID, Name, Position, Rotation, Power);
+		SoundSourceID = FVAPlugin::CreateNewSoundSource(Name, Position, Rotation, Power);
 		if (SoundSourceID == -1)
 		{
 			FVAUtils::LogStuff("[FVASoundSource::VASoundSource()]: Error initializing soundSource",
@@ -92,21 +65,10 @@ FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVARe
 		{
 			std::string WallName(TCHAR_TO_UTF8(*EntryWall->GetName()));
 			const std::string NameTmp = Name + "_R_" + WallName;
-
-			std::string ActiveBufferName;
-			
-			if (FVAPlugin::GetIsMaster())
-			{
-				ActiveBufferName = ActiveBuffer->GetID();
-			}
-			else
-			{
-				ActiveBufferName = "BufferNameNotNeededOnSlave";
-			}
 			
 			const float R = EntryWall->GetReflectionValueR();
 			const float PowerR = Power * R * R;
-			Reflections.Add(new FVASoundSourceReflection(this, EntryWall, ActiveBufferName, NameTmp, Position, Rotation, PowerR));
+			ImageSources.Add(new FVASoundSourceReflection(this, EntryWall, NameTmp, Position, Rotation, PowerR));
 		}
 	}
 }
@@ -140,7 +102,7 @@ void FVASoundSource::SetPosition(const FVector PosN)
 
 	if (bHandleReflections)
 	{
-		for (auto EntryReflections : Reflections)
+		for (auto EntryReflections : ImageSources)
 		{
 			EntryReflections->SetPosition(Position);	
 		}
@@ -161,7 +123,7 @@ void FVASoundSource::SetRotation(const FRotator RotN)
 
 	if (bHandleReflections)
 	{
-		for (auto EntryReflections : Reflections)
+		for (auto EntryReflections : ImageSources)
 		{
 			EntryReflections->SetRotation(Rotation);
 		}
@@ -182,9 +144,9 @@ void FVASoundSource::SetVisibility(const bool VisN)
 	
 	SoundSourceRepresentation->SetVisibility(bShowCones);
 
-	if (bHandleReflections && Reflections.Num() != 0)
+	if (bHandleReflections && ImageSources.Num() != 0)
 	{
-		for (auto EntryReflections : Reflections)
+		for (auto EntryReflections : ImageSources)
 		{
 			EntryReflections->SetVisibility(bShowCones);
 		}
@@ -210,7 +172,7 @@ bool FVASoundSource::SetDirectivity(FVADirectivity* DirN)
 
 	if (bHandleReflections)
 	{
-		for (auto EntryReflections : Reflections)
+		for (auto EntryReflections : ImageSources)
 		{
 			if(!EntryReflections->SetDirectivity(DirN))
 			{
@@ -219,6 +181,22 @@ bool FVASoundSource::SetDirectivity(FVADirectivity* DirN)
 		}
 	}
 
+	return bFullSuccess;
+}
+
+bool FVASoundSource::SetSignalSourceToImageSources(const std::string& SignalSourceID)
+{
+	bool bFullSuccess = true;
+	if (bHandleReflections)
+	{
+		for (auto EntryReflections : ImageSources)
+		{
+			if (!FVAPlugin::SetSoundSourceSignalSource(EntryReflections->GetSoundSourceID(), SignalSourceID))
+			{
+				bFullSuccess = false;
+			}
+		}
+	}
 	return bFullSuccess;
 }
 
@@ -241,7 +219,7 @@ bool FVASoundSource::RemoveDirectivity()
 
 	if (bHandleReflections)
 	{
-		for (auto EntryReflections : Reflections)
+		for (auto EntryReflections : ImageSources)
 		{
 			if (!EntryReflections->RemoveDirectivity())
 			{
@@ -251,48 +229,6 @@ bool FVASoundSource::RemoveDirectivity()
 	}
 
 	return bFullSuccess;
-}
-
-bool FVASoundSource::SetPlayAction(const int ActionN) const
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return false;
-	}
-	
-	if (int(GetPlayState()) == ActionN)
-	{
-		return true;
-	}
-
-	return ActiveBuffer->SetSoundBufferAction(ActionN);
-}
-
-bool FVASoundSource::SetSoundTime(const float TimeN) const
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return false;
-	}
-
-	return ActiveBuffer->SetSoundTimeOffset(TimeN);
-}
-
-bool FVASoundSource::SetLoop(const bool bLoopN)
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return false;
-	}
-
-	if (bLoop == bLoopN)
-	{
-		return true;
-	}
-	
-	bLoop = bLoopN;
-
-	return ActiveBuffer->SetLoop(bLoopN);
 }
 
 bool FVASoundSource::SetPower(const float PowerN)
@@ -316,7 +252,7 @@ bool FVASoundSource::SetPower(const float PowerN)
 		bFullSuccess = false;
 	}
 	
-	for (auto EntryReflections : Reflections)
+	for (auto EntryReflections : ImageSources)
 	{
 		if(!EntryReflections->SetPowerAccordingOrigSource())
 		{
@@ -324,51 +260,6 @@ bool FVASoundSource::SetPower(const float PowerN)
 		}
 	}
 	return bFullSuccess;
-}
-
-bool FVASoundSource::PlaySound() const
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return false;
-	}
-
-	return SetPlayAction(EPlayAction::Type::Play);
-}
-
-bool FVASoundSource::StopSound() const
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return false;
-	}
-
-	return SetPlayAction(EPlayAction::Type::Stop);
-}
-
-bool FVASoundSource::PauseSound() const
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return false;
-	}
-
-	return SetPlayAction(EPlayAction::Type::Pause);
-}
-
-bool FVASoundSource::PlaySoundFromSecond(const float TimeN) const
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return false;
-	}
-
-	if (SetSoundTime(TimeN))
-	{
-		return SetPlayAction(EPlayAction::Type::Play);
-	}
-	
-	return false;
 }
 
 bool FVASoundSource::MuteSound(const bool MutedN)
@@ -384,7 +275,7 @@ bool FVASoundSource::MuteSound(const bool MutedN)
 		bFullSuccess = false;
 	}
 
-	for (auto EntryReflections : Reflections)
+	for (auto EntryReflections : ImageSources)
 	{
 		if(!FVAPlugin::SetSoundSourceMuted(EntryReflections->GetSoundSourceID(), MutedN))
 		{
@@ -392,54 +283,6 @@ bool FVASoundSource::MuteSound(const bool MutedN)
 		}
 	}
 	return bFullSuccess;
-}
-
-bool FVASoundSource::SetNewSound(FString SoundFileN)
-{
-	// create buffer
-	FVASignalBuffer* TmpBuffer = BufferManager.GetBufferByFileName(SoundFileN);
-
-	// Check if is valid
-	if (TmpBuffer == nullptr)
-	{
-		FVAUtils::LogStuff("[FVASoundSource::SetNewSound()]: Buffer from file " + 
-			SoundFileN + " was loaded incorrectly!", true);
-		return false;
-	}
-
-	// Stop 
-
-	// If the same Buffer is already loaded only stop sound (prev)
-	if (TmpBuffer == ActiveBuffer)
-	{
-		StopSound();
-		return true;
-	}
-
-	const std::string NewBufferID = TmpBuffer->GetID();
-
-	// Link to source buffer
-	FVAPlugin::SetNewBufferForSoundSource(SoundSourceID, NewBufferID);
-	for (auto EntryReflections : Reflections)
-	{
-		FVAPlugin::SetNewBufferForSoundSource(EntryReflections->GetSoundSourceID(), NewBufferID);
-	}
-
-	ActiveBuffer = TmpBuffer;
-
-	return true;
-}
-
-bool FVASoundSource::LoadNewSound(FString SoundFileN)
-{
-	FVASignalBuffer* TmpBuffer = BufferManager.GetBufferByFileName(SoundFileN);
-
-	if (TmpBuffer != nullptr)
-	{
-		return true;
-	}
-
-	return false;
 }
 
 // ****************************************************************** // 
@@ -464,16 +307,6 @@ bool FVASoundSource::GetVisibility() const
 int FVASoundSource::GetSoundSourceID() const
 {
 	return SoundSourceID;
-}
-
-int FVASoundSource::GetPlayState() const
-{
-	if (!FVAPlugin::GetIsMaster())
-	{
-		return -1;
-	}
-
-	return ActiveBuffer->GetSoundBufferAction();
 }
 
 float FVASoundSource::GetPower() const

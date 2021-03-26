@@ -71,10 +71,10 @@ void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick T
 	if (bFirstTick && FVAPlugin::GetIsMaster())
 	{
 		TimeSinceUpdate = 1.0f;
-		if (StartingPlayAction == EPlayAction::Play)
-		{
-			SoundSource->PlaySoundFromSecond(StartingTime);
-		}
+		//if (StartingPlayAction == EPlayAction::Play)
+		//{
+		//	SoundSource->PlaySoundFromSecond(StartingTime);
+		//}
 	}
 	bFirstTick = false;
 
@@ -223,14 +223,18 @@ bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSign
 	return true;
 }
 
-bool UVASourceComponent::SetSignalSourceID(const std::string& ID)
+bool UVASourceComponent::SetSignalSourceID(const std::string& SignalSourceID)
 {
-	return FVAPlugin::SetNewBufferForSoundSource(SoundSource->GetSoundSourceID(), ID);
+	if (!FVAPlugin::SetSoundSourceSignalSource(SoundSource->GetSoundSourceID(), SignalSourceID))
+	{
+		return false;
+	}
+	return SoundSource->SetSignalSourceToImageSources(SignalSourceID);
 }
 
-void UVASourceComponent::OnSignalSourceIDChanged(const std::string& ID)
+void UVASourceComponent::OnSignalSourceIDChanged(const std::string& SignalSourceID)
 {
-	FVAPlugin::SetNewBufferForSoundSource(SoundSource->GetSoundSourceID(), ID);
+	SetSignalSourceID(SignalSourceID);
 }
 
 void UVASourceComponent::BindSignalSourceEvents()
@@ -262,58 +266,9 @@ bool UVASourceComponent::ShouldSendCommand() const
 
 
 // ****************************************************************** // 
-// ******* Playback Settings **************************************** //
+// ******* Signal Source ******************************************** //
 // ****************************************************************** //
 
-bool UVASourceComponent::PlaySound()
-{
-	if (!ShouldSendCommand())
-	{
-		return false;
-	}
-
-	return SoundSource->PlaySound();
-}
-
-bool UVASourceComponent::PlaySoundFromSecond(const float Time)
-{
-	if (!ShouldSendCommand())
-	{
-		return false;
-	}
-
-	return SoundSource->PlaySoundFromSecond(Time);
-}
-
-bool UVASourceComponent::StopSound()
-{
-	if (!ShouldSendCommand())
-	{
-		return false;
-	}
-
-	return SoundSource->StopSound();
-}
-
-bool UVASourceComponent::PauseSound()
-{
-	if (!ShouldSendCommand())
-	{
-		return false;
-	}
-
-	return SoundSource->PauseSound();
-}
-
-EPlayAction::Type UVASourceComponent::GetPlayState() const
-{
-	if (!ShouldSendCommand())
-	{
-		return EPlayAction::Stop;
-	}
-
-	return EPlayAction::Type(SoundSource->GetPlayState());
-}
 
 bool UVASourceComponent::SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
 {
@@ -343,7 +298,7 @@ UVAAbstractSignalSource* UVASourceComponent::GetSignalSource() const
 
 
 // ****************************************************************** // 
-// ******* Sound Settings ******************************************* //
+// ******* Sound Source Settings ************************************ //
 // ****************************************************************** //
 
 bool UVASourceComponent::MuteSound(const bool bMute)
@@ -365,32 +320,14 @@ bool UVASourceComponent::MuteSound(const bool bMute)
 
 bool UVASourceComponent::LoadSoundFile(FString SoundFileName)
 {
-	if (!ShouldSendCommand())
-	{
-		return false;
-	}
-
-	return SoundSource->LoadNewSound(SoundFileName);
+	//TODO!: Remove Function?
+	return false;
 }
 
 bool UVASourceComponent::SetSoundFile(const FString SoundFileName)
 {
-	if (!ShouldSendCommand())
-	{
-		return false;
-	}
-
-	if (SoundFile == SoundFileName)
-	{
-		if(SoundSource->StopSound())
-		{
-			return true;
-		}
-	}
-
-	SoundFile = SoundFileName;
-
-	return SoundSource->SetNewSound(SoundFile);
+	//TODO!: Remove Function?
+	return false;
 }
 
 FString UVASourceComponent::GetSoundFile() const
@@ -420,27 +357,9 @@ float UVASourceComponent::GetSoundPower() const
 	return SoundPower;
 }
 
-bool UVASourceComponent::SetLoop(const bool bNewLoop)
-{
-	if (!ShouldSendCommand())
-	{
-		return false;
-	}
-
-	if (bLoop == bNewLoop)
-	{
-		return true;
-	}
-
-	bLoop = bNewLoop;
-
-	return SoundSource->SetLoop(bNewLoop);
-}
-
-bool UVASourceComponent::GetLoop() const
-{
-	return bLoop;
-}
+// ****************************************************************** // 
+// ******* Image Sources / Reflections ****************************** //
+// ****************************************************************** //
 
 bool UVASourceComponent::GetHandleReflections() const
 {

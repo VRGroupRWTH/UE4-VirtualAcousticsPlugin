@@ -13,8 +13,8 @@
 // ****************************************************************** //
 
 FVASoundSourceReflection::FVASoundSourceReflection(FVASoundSource* ParentSourceN,
-	AVAReflectionWall* WallN, const std::string BufferIDN, const std::string NameN, 
-	const FVector PosN, const FRotator RotN, const float PowerN) :
+	AVAReflectionWall* WallN, const std::string& NameN, 
+	const FVector& PosN, const FRotator& RotN, const float PowerN) :
 	ParentSource(ParentSourceN),
 	Wall(WallN),
 	Power(PowerN)
@@ -26,7 +26,7 @@ FVASoundSourceReflection::FVASoundSourceReflection(FVASoundSource* ParentSourceN
 
 	if (FVAPlugin::GetIsMaster())
 	{
-		SoundSourceID = FVAPlugin::CreateNewSoundSource(BufferIDN, NameN, Pos, Rot, Power);
+		SoundSourceID = FVAPlugin::CreateNewSoundSource(NameN, Pos, Rot, Power);
 		if (SoundSourceID == -1)
 		{
 			FVAUtils::LogStuff("[FVASoundSourceReflection::FVASoundSourceReflection()]:" + 

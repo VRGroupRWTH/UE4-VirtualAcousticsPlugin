@@ -88,11 +88,11 @@ public:
 
 	// ******* Sound Sources ******* //
 
-	static int CreateNewSoundSource(std::string BufferID, std::string Name, FVector Pos = FVector(0, 0, 0),
-		FRotator Rot = FRotator(0, 0, 0), float Power = -1.0f);
+	static int CreateNewSoundSource(const std::string& Name, FVector Pos = FVector(0, 0, 0),
+		FRotator Rot = FRotator(0, 0, 0), float Power = -1.0f, const std::string& SignalSourceID = "");
 	static bool SetSoundSourcePosition(int SoundSourceID, FVector Pos);
 	static bool SetSoundSourceRotation(int SoundSourceID, FRotator Rot);
-	static bool SetNewBufferForSoundSource(int SoundSourceID, std::string BufferID);
+	static bool SetSoundSourceSignalSource(int SoundSourceID, const std::string& SignalSourceID);
 	static bool SetSoundSourceMuted(int SoundSourceID, bool bMuted);
 	static bool SetSoundSourcePower(int SoundSourceID, float Power);
 

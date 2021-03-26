@@ -17,8 +17,8 @@ public:
 
 	// Calculates the correct position by its own, needs the position of the original soundSource
 	FVASoundSourceReflection(FVASoundSource* ParentSourceN, AVAReflectionWall* WallN,
-	                        std::string BufferIDN, std::string NameN = "", FVector PosN = FVector(),
-	                        FRotator RotN = FRotator(), float PowerN = 0.0f);
+	                        const std::string& NameN = "", const FVector& PosN = FVector(),
+	                        const FRotator& RotN = FRotator(), float PowerN = 0.0f);
 
 	bool SetPosition(FVector PosN);
 	bool SetRotation(FRotator RotN);
