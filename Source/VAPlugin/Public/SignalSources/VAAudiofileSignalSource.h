@@ -46,7 +46,8 @@ public:
 	bool LoadAudiofile(FString Filename);
 
 	UFUNCTION(BlueprintCallable)
-	// Switches the internal signal source to match the corresponding ID. Creates a new signal source, if audiofile is not pre-loaded.
+	// Switches the internal signal source to match the corresponding audiofile. Creates a new signal source, if audiofile is not pre-loaded.
+	//    Additionally, copies sets the loop and play back action of the new internal signal source accordingly.
 	//    Raises an even broadcasting the ID of the internal audiofile signal source which is "-1", if signal source could not be created.
 	//    @return True on success
 	bool SetAudiofile(FString Filename);
@@ -60,7 +61,7 @@ public:
 
 	// *** Getter *** //
 
-	FString GetFileName() const;
+	FString GetFilename() const;
 	bool GetLoop() const;
 	int GetPlayAction() const;
 
@@ -86,7 +87,7 @@ protected:
 
 	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Filename", Category = "Audio file"))
-		FString SoundFile = "WelcomeToVA.wav";
+		FString Filename = "WelcomeToVA.wav";
 
 	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]", Category = "Audio file"))

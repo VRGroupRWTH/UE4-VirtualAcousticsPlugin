@@ -18,16 +18,12 @@ void UVAAudiofileSignalSource::Initialize()
 		return;
 	}
 
-	ID = FVAPlugin::CreateNewBuffer(SoundFile, bLoop, StartingTime);
-	if (!IsValidID(ID))
+	if (!SetAudiofile(Filename))
 	{
 		FVAUtils::LogStuff("[UVAAudiofileSignalSource::Initialize()]: Error creating Audiofile Signal Source", true);
 		return;
 	}
 	bInitialized = true;
-
-	if (!FVAPlugin::SetSoundBufferAction(ID, StartingPlayAction))
-		FVAUtils::LogStuff("[UVAAudiofileSignalSource::Initialize()]:  Could not set Play Action during initializing", true);
 }
 
 // ****************************************************************** // 
@@ -67,12 +63,12 @@ bool UVAAudiofileSignalSource::LoadAudiofile(FString Filename)
 // ******* Setter Functions ***************************************** //
 // ****************************************************************** //
 
-bool UVAAudiofileSignalSource::SetAudiofile(FString Filename)
+bool UVAAudiofileSignalSource::SetAudiofile(FString AudioFilename)
 {
-	std::string NewID = AudiofileManager.GetAudiofileSignalSourceID(Filename);
+	std::string NewID = AudiofileManager.GetAudiofileSignalSourceID(AudioFilename);
 	if (!IsValidID(NewID))
 	{
-		FVAUtils::LogStuff("[UVAAudiofileSignalSource::SetAudiofile()]: Audiofile " + Filename + " was loaded incorrectly!", true);
+		FVAUtils::LogStuff("[UVAAudiofileSignalSource::SetAudiofile()]: Audiofile " + AudioFilename + " was loaded incorrectly!", true);
 		return false;
 	}
 
@@ -85,10 +81,11 @@ bool UVAAudiofileSignalSource::SetAudiofile(FString Filename)
 
 	if (!CopySignalSourceSettings(NewID))
 	{
-		FVAUtils::LogStuff("[UVAAudiofileSignalSource::SetAudiofile()]: Could not copy settings to signal source of new audiofile: " + Filename, true);
+		FVAUtils::LogStuff("[UVAAudiofileSignalSource::SetAudiofile()]: Could not copy settings to signal source of new audiofile: " + AudioFilename, true);
 		return false;
 	}
 	
+	Filename = AudioFilename;
 	ID = NewID;
 	AudiofileChangedEvent.Broadcast(ID);
 	return true;
@@ -139,9 +136,9 @@ bool UVAAudiofileSignalSource::SetPlayAction(const int Action)
 // ******* Getter Functions ***************************************** //
 // ****************************************************************** //
 
-FString UVAAudiofileSignalSource::GetFileName() const
+FString UVAAudiofileSignalSource::GetFilename() const
 {
-	return SoundFile;
+	return Filename;
 }
 
 bool UVAAudiofileSignalSource::GetLoop() const
@@ -169,10 +166,15 @@ bool UVAAudiofileSignalSource::CopySignalSourceSettings(const std::string& Other
 	{
 		return false;
 	}
-	int PlayAction = GetPlayAction();
-	if (PlayAction == -1)
+
+	int PlayAction = StartingPlayAction;
+	if (bInitialized)
 	{
-		return false;
+		PlayAction = GetPlayAction();
+		if (PlayAction == -1)
+		{
+			return false;
+		}
 	}
 	return FVAPlugin::SetSoundBufferAction(OtherID, EPlayAction::Type(PlayAction));
 }
