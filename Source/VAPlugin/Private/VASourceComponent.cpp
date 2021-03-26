@@ -331,6 +331,16 @@ bool UVASourceComponent::SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource
 	return true;
 }
 
+TSubclassOf<UVAAbstractSignalSource> UVASourceComponent::GetSignalSourceType() const
+{
+	return SignalSourceType;
+}
+
+UVAAbstractSignalSource* UVASourceComponent::GetSignalSource() const
+{
+	return SignalSource;
+}
+
 
 // ****************************************************************** // 
 // ******* Sound Settings ******************************************* //
@@ -435,11 +445,6 @@ bool UVASourceComponent::GetLoop() const
 bool UVASourceComponent::GetHandleReflections() const
 {
 	return bHandleReflections;
-}
-
-TSubclassOf<UVAAbstractSignalSource> UVASourceComponent::GetSignalSourceType() const
-{
-	return SignalSourceType;
 }
 
 

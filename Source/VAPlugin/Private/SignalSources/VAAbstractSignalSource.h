@@ -9,7 +9,7 @@
 #include "VAAbstractSignalSource.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), Abstract, meta=(BlueprintSpawnableComponent), HideDropdown, HideCategories=("Tags", "AssetUserData", "Activation", "Collision", "Cooking") )
+UCLASS( ClassGroup=(VA), Abstract, meta=(BlueprintSpawnableComponent), HideDropdown, HideCategories=("Tags", "AssetUserData", "Activation", "Collision", "Cooking") )
 class UVAAbstractSignalSource : public UActorComponent
 {
 	GENERATED_BODY()

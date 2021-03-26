@@ -54,15 +54,23 @@ public:
 
 	// *** Setter *** //
 
+	UFUNCTION(BlueprintCallable)
 	bool SetLoop(bool bLoopN);
+	UFUNCTION(BlueprintCallable)
 	bool SetPlayBackPosition(float Time);
+	UFUNCTION(BlueprintCallable)
 	bool SetPlayAction(int Action);
 
 
 	// *** Getter *** //
 
+	UFUNCTION(BlueprintCallable)
 	FString GetFilename() const;
+	UFUNCTION(BlueprintCallable)
 	bool GetLoop() const;
+	UFUNCTION(BlueprintCallable)
+	EPlayAction::Type GetPlayActionEnum() const;
+
 	int GetPlayAction() const;
 
 	// *** Events/Delegates *** //

@@ -150,6 +150,11 @@ bool UVAAudiofileSignalSource::GetLoop() const
 	return bLoop;
 }
 
+EPlayAction::Type UVAAudiofileSignalSource::GetPlayActionEnum() const
+{
+	return EPlayAction::Type(GetPlayAction());
+}
+
 int UVAAudiofileSignalSource::GetPlayAction() const
 {
 	if (!FVAPlugin::GetIsMaster())

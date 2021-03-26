@@ -42,17 +42,17 @@ protected:
 
 	// Select the class of the signal source
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "Signal Type", Category = "Signal Source", AllowAbstract = "false"))
-		TSubclassOf<UVAAbstractSignalSource> SignalSourceType = UVAAudiofileSignalSource::StaticClass();
+	TSubclassOf<UVAAbstractSignalSource> SignalSourceType = UVAAudiofileSignalSource::StaticClass();
 
 	// Select the type of the signal source
 	UPROPERTY(EditAnywhere, Instanced, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
-		UVAAbstractSignalSource* SignalSource = nullptr;
+	UVAAbstractSignalSource* SignalSource = nullptr;
 
 
 
 	// Action of the sound source at the first tick
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "Signal Source Settings|Audio File"))
-		TEnumAsByte<EPlayAction::Type> StartingPlayAction = EPlayAction::Type::Stop;
+	TEnumAsByte<EPlayAction::Type> StartingPlayAction = EPlayAction::Type::Stop;
 
 	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name", Category = "Signal Source Settings|Audio File"))
@@ -144,6 +144,10 @@ public:
 	// Gets the signal type used for this sound source
 	UFUNCTION(BlueprintCallable)
 	TSubclassOf<UVAAbstractSignalSource> GetSignalSourceType() const;
+
+	// Returns a pointer to the signal source component
+	UFUNCTION(BlueprintCallable)
+	UVAAbstractSignalSource* GetSignalSource() const;
 
 	// Mute sound (true = mute)
 	UFUNCTION(BlueprintCallable)
