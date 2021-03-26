@@ -15,12 +15,13 @@ class UVAAbstractSignalSource : public UActorComponent
 	GENERATED_BODY()
 
 protected:
-	std::string ID = "-1";
+	// ID representing the internal va signal source. Invalid ID before initialization.
+	std::string ID;
 	bool bInitialized = false;
 
 public:	
 	// Sets default values for this component's properties
-	UVAAbstractSignalSource() = default;
+	UVAAbstractSignalSource();
 	// Creates the signal source in VA and sets the ID accordingly
 	virtual void Initialize() PURE_VIRTUAL(UVAAbstractSignalSource::Initialize, );
 

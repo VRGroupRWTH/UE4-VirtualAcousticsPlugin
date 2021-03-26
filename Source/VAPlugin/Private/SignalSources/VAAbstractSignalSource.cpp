@@ -3,6 +3,12 @@
 
 #include "VAAbstractSignalSource.h"
 
+#include "VADefines.h"
+
+UVAAbstractSignalSource::UVAAbstractSignalSource() : ID(VA_INVALID_ID_STRING)
+{
+}
+
 std::string UVAAbstractSignalSource::GetPrototypeName()
 {
 	return "invalid";
@@ -15,10 +21,10 @@ std::string UVAAbstractSignalSource::GetID() const
 
 bool UVAAbstractSignalSource::IsValid() const
 {
-	return IsValidID(ID);
+	return VA::IsValidID(ID);
 }
 
 bool UVAAbstractSignalSource::IsValidID(const std::string& ID)
 {
-	return !ID.empty() && ID != "-1";
+	return VA::IsValidID(ID);
 }

@@ -1,4 +1,5 @@
 #include "VAPlugin.h"
+#include "VADefines.h"
 
 #pragma warning(disable:5038) //disable initilization order warning
 #include "VA.h"
@@ -535,7 +536,7 @@ std::string FVAPlugin::CreateNewBuffer(const FString SoundFileName, const bool b
 {
 	if (!ShouldInteractWithServer())
 	{
-		return "-1";
+		return VA_INVALID_ID_STRING;
 	}
 
 	if (SoundOffset < 0.0f)
@@ -558,7 +559,7 @@ std::string FVAPlugin::CreateNewBuffer(const FString SoundFileName, const bool b
 	catch (CVAException& e)
 	{
 		ProcessException("FVAPluginModule::CreateNewBuffer()", FString(e.ToString().c_str()));
-		return "-1";
+		return VA_INVALID_ID_STRING;
 	}
 }
 
@@ -569,7 +570,7 @@ bool FVAPlugin::SetSoundBufferAction(const std::string BufferID, const EPlayActi
 		return false;
 	}
 	
-	if (BufferID == "-1")
+	if (!VA::IsValidID(BufferID))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundBufferAction()]: BufferID invalid (=-1)", true);
 		return false;
@@ -578,7 +579,6 @@ bool FVAPlugin::SetSoundBufferAction(const std::string BufferID, const EPlayActi
 	try
 	{
 		VAServer->SetSignalSourceBufferPlaybackAction(BufferID, Action);
-
 		return true;
 	}
 	catch (CVAException& e)
@@ -595,7 +595,7 @@ int FVAPlugin::GetSoundBufferAction(const std::string BufferID)
 		return -1;
 	}
 
-	if (BufferID == "-1")
+	if (!VA::IsValidID(BufferID))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::GetSoundBufferAction()]: BufferID invalid (=-1)", true);
 		return -1;
@@ -620,7 +620,7 @@ bool FVAPlugin::SetSoundBufferTime(const std::string BufferID, const float Time)
 		return false;
 	}
 
-	if (BufferID == "-1")
+	if (!VA::IsValidID(BufferID))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundBufferTime()]: BufferID invalid (=-1)", true);
 		return false;
@@ -645,7 +645,7 @@ bool FVAPlugin::SetSoundBufferLoop(const std::string BufferID, const bool bLoop)
 		return false;
 	}
 
-	if (BufferID == "-1")
+	if (!VA::IsValidID(BufferID))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundBufferLoop()]: BufferID invalid (=-1)", true);
 		return false;
@@ -667,12 +667,12 @@ bool FVAPlugin::SetSoundBufferLoop(const std::string BufferID, const bool bLoop)
 std::string FVAPlugin::CreateSignalSourcePrototype(UVAAbstractSignalSource* SignalSource)
 {
 	if (!ShouldInteractWithServer())
-		return "-1";
+		return VA_INVALID_ID_STRING;
 
 	if(SignalSource->GetPrototypeName() == "invalid")
 	{
 		ProcessException("FVAPluginModule::CreateSignalSourcePrototype()", FString("Trying to create unknown signal source class") );
-		return "-1";
+		return VA_INVALID_ID_STRING;
 	}
 
 	try
@@ -684,17 +684,17 @@ std::string FVAPlugin::CreateSignalSourcePrototype(UVAAbstractSignalSource* Sign
 	catch (CVAException& e)
 	{
 		ProcessException("FVAPluginModule::CreateSignalSourcePrototype()", FString(e.ToString().c_str()));
-		return "-1";
+		return VA_INVALID_ID_STRING;
 	}
 }
 
-bool FVAPlugin::SetSignalSourceParameter(std::string sSignalSourceID, std::string sParamName, float fParamValue)
+bool FVAPlugin::SetSignalSourceParameter(std::string SignalSourceID, std::string ParamName, float ParamValue)
 {
 	if (!ShouldInteractWithServer())
 	{
 		return false;
 	}
-	if (sSignalSourceID == "-1")
+	if (!VA::IsValidID(SignalSourceID))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSignalSourceParameter()]: SignalSourceID invalid (=-1)", true);
 		return false;
@@ -704,8 +704,8 @@ bool FVAPlugin::SetSignalSourceParameter(std::string sSignalSourceID, std::strin
 	try
 	{
 		CVAStruct VAParams;
-		VAParams[sParamName] = fParamValue;
-		VAServer->SetSignalSourceParameters(sSignalSourceID, VAParams);
+		VAParams[ParamName] = ParamValue;
+		VAServer->SetSignalSourceParameters(SignalSourceID, VAParams);
 		return true;
 	}
 	catch (CVAException & e)
@@ -730,13 +730,13 @@ int FVAPlugin::CreateNewSoundSource(const std::string BufferID, const std::strin
 {
 	if (!ShouldInteractWithServer())
 	{
-		return -1;
+		return VA_INVALID_ID;
 	}
 
-	if (BufferID == "-1")
+	if (!VA::IsValidID(BufferID))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::CreateNewSoundSource()]: BufferID invalid (=-1)", true);
-		return -1;
+		return VA_INVALID_ID;
 	}
 
 	Pos = FVAUtils::ToVACoordinateSystem(Pos, WorldScale);
@@ -764,7 +764,7 @@ int FVAPlugin::CreateNewSoundSource(const std::string BufferID, const std::strin
 	catch (CVAException& e)
 	{
 		ProcessException("FVAPluginModule::CreateNewSoundSource()", FString(e.ToString().c_str()));
-		return -1;
+		return VA_INVALID_ID;
 	}
 }
 
@@ -775,7 +775,7 @@ bool FVAPlugin::SetSoundSourcePosition(const int SoundSourceID, FVector Pos)
 		return false;
 	}
 
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourcePos()]: SoundSourceID invalid (= -1)", true);
 		return false;
@@ -804,7 +804,7 @@ bool FVAPlugin::SetSoundSourceRotation(const int SoundSourceID, FRotator Rot)
 		return false;
 	}
 
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceRot()]: SoundSourceID invalid (= -1)", true);
 		return false;
@@ -833,13 +833,13 @@ bool FVAPlugin::SetNewBufferForSoundSource(const int SoundSourceID, const std::s
 		return false;
 	}
 
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetNewBufferForSoundSource()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 
-	if (BufferID == "-1")
+	if (!VA::IsValidID(BufferID))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetNewBufferForSoundSource()]: BufferID invalid (=-1)", true);
 		return false;
@@ -864,7 +864,7 @@ bool FVAPlugin::SetSoundSourceMuted(const int SoundSourceID, const bool bMuted)
 		return false;
 	}
 
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceMuted()]: SoundSourceID invalid (= -1)", true);
 		return false;
@@ -889,7 +889,7 @@ bool FVAPlugin::SetSoundSourcePower(const int SoundSourceID, const float Power)
 		return false;
 	}
 
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourcePower()]: SoundSourceID invalid (= -1)", true);
 		return false;
@@ -916,7 +916,7 @@ int FVAPlugin::CreateNewDirectivity(const FString FileName)
 {
 	if (!ShouldInteractWithServer())
 	{
-		return -1;
+		return VA_INVALID_ID;
 	}
 
 	try
@@ -928,7 +928,7 @@ int FVAPlugin::CreateNewDirectivity(const FString FileName)
 	{
 		ProcessException("FVAPluginModule::CreateNewDirectivity()",
 		                FString(e.ToString().c_str()) + " (" + FileName + ")");
-		return -1;
+		return VA_INVALID_ID;
 	}
 }
 
@@ -939,13 +939,13 @@ bool FVAPlugin::SetSoundSourceDirectivity(const int SoundSourceID, const int Dir
 		return false;
 	}
 
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceDirectivity()]: SoundSourceID invalid (= -1)", true);
 		return false;
 	}
 
-	if (DirectivityID == -1)
+	if (DirectivityID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceDirectivity()]: DirectivityID invalid (=-1)", true);
 		return false;
@@ -972,7 +972,7 @@ bool FVAPlugin::RemoveSoundSourceDirectivity(const int SoundSourceID)
 		return false;
 	}
 
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SetSoundSourceDirectivity()]: SoundSourceID invalid (= -1)", true);
 		return false;
@@ -980,7 +980,7 @@ bool FVAPlugin::RemoveSoundSourceDirectivity(const int SoundSourceID)
 
 	try
 	{
-		VAServer->SetSoundSourceDirectivity(SoundSourceID, -1);
+		VAServer->SetSoundSourceDirectivity(SoundSourceID, VA_INVALID_ID);
 		return true;
 	}
 	catch (CVAException& e)
@@ -998,7 +998,7 @@ int FVAPlugin::CreateNewHRIR(const FString FileName)
 {
 	if (!ShouldInteractWithServer())
 	{
-		return -1;
+		return VA_INVALID_ID;
 	}
 
 	try
@@ -1009,7 +1009,7 @@ int FVAPlugin::CreateNewHRIR(const FString FileName)
 	catch (CVAException& e)
 	{
 		ProcessException("FVAPluginModule::CreateNewHRIR()", FString(e.ToString().c_str()) + " (" + FileName + ")");
-		return -1;
+		return VA_INVALID_ID;
 	}
 }
 
@@ -1021,7 +1021,7 @@ bool FVAPlugin::SetSoundReceiverHRIR(const int SoundReceiverID, const int HRIRID
 		return false;
 	}
 
-	if (HRIRID == -1)
+	if (HRIRID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[SetSoundReceiverHRIR()]: HRIR is not valid (id = -1)", true);
 		return false;
@@ -1034,7 +1034,7 @@ bool FVAPlugin::SetSoundReceiverHRIR(const int SoundReceiverID, const int HRIRID
 	}
 	catch (CVAException& e)
 	{
-		ProcessException("FVAPluginModule::setSoundReceiverDirectivity()", FString(e.ToString().c_str()));
+		ProcessException("FVAPluginModule::SetSoundReceiverDirectivity()", FString(e.ToString().c_str()));
 		return false;
 	}
 }
@@ -1049,7 +1049,7 @@ int FVAPlugin::CreateNewSoundReceiver(AVAReceiverActor* Actor)
 
 	if (!ShouldInteractWithServer())
 	{
-		return -1;
+		return VA_INVALID_ID;
 	}
 
 	WorldScale = ReceiverActor->GetScale();
@@ -1059,7 +1059,7 @@ int FVAPlugin::CreateNewSoundReceiver(AVAReceiverActor* Actor)
 		const int SoundReceiverID = VAServer->CreateSoundReceiver("VASoundReceiver");
 		const int HRIR = FVAHRIRManager::GetDefaultHRIR()->GetID();
 
-		if (HRIR != -1)
+		if (HRIR != VA_INVALID_ID)
 		{
 			VAServer->SetSoundReceiverDirectivity(SoundReceiverID, HRIR);
 			FVAUtils::LogStuff("[FVAPlugin::CreateNewSoundReceiver()]: Default Directivity is not initialized, using no Directivity", false);
@@ -1070,7 +1070,7 @@ int FVAPlugin::CreateNewSoundReceiver(AVAReceiverActor* Actor)
 	catch (CVAException& e)
 	{
 		ProcessException("FVAPluginModule::createNewSoundReceiver()", FString(e.ToString().c_str()));
-		return -1;
+		return VA_INVALID_ID;
 	}
 }
 
@@ -1082,7 +1082,7 @@ bool FVAPlugin::SetSoundReceiverPosition(const int SoundReceiverID, FVector Pos)
 		return false;
 	}
 
-	if (SoundReceiverID == -1)
+	if (SoundReceiverID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[SetSoundReceiverPosition()]: SoundReceiverID is not valid (id = -1)", true);
 		return false;
@@ -1110,7 +1110,7 @@ bool FVAPlugin::SetSoundReceiverRotation(const int SoundReceiverID, FRotator Rot
 		return false;
 	}
 
-	if (SoundReceiverID == -1)
+	if (SoundReceiverID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[SetSoundReceiverRotation()]: SoundReceiverID is not valid (id = -1)", true);
 		return false;
@@ -1144,7 +1144,7 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 		return false;
 	}
 	
-	if (SoundReceiverID == -1)
+	if (SoundReceiverID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[SetSoundReceiverRealWorldPose()]: SoundReceiverID is not valid (id = -1)", true);
 		return false;
