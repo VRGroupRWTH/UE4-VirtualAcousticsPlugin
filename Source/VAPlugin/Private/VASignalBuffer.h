@@ -4,7 +4,7 @@
 
 #include <string>								// std::string
 #include "Containers/UnrealString.h"			// FString
-#include "SharedPointer.h"
+#include "Templates/SharedPointer.h"
 
 class FVASignalBuffer
 {

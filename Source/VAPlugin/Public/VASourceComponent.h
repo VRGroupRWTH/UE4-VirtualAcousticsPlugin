@@ -3,9 +3,7 @@
 #pragma once
 
 #include "VAEnums.h"									// EDir, EPlayAction, EMovement
-
-#include "GameFramework/Actor.h"
-#include "SharedPointer.h"
+#include "Templates/SharedPointer.h"
 
 #include "VASourceComponent.generated.h"
 

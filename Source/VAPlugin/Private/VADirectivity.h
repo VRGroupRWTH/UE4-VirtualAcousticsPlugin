@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Containers/UnrealString.h"			// FString
-#include "SharedPointer.h"
+#include "Templates/SharedPointer.h"
 
 class FVADirectivity
 {

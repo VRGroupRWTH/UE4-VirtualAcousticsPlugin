@@ -16,7 +16,7 @@
 #include "Engine/World.h"							// World
 #include "GameFramework/PlayerController.h"			// Viewport
 #include "IDisplayCluster.h"						// For Events
-#include "VirtualRealityPawn.h"						// VR Pawn
+#include "Pawn/VirtualRealityPawn.h"						// VR Pawn
 #include "Kismet/GameplayStatics.h"					// Get Actors of class
 
 
