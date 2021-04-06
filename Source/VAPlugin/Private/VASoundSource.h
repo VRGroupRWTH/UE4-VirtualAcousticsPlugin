@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VASignalBufferManager.h"
 
 class UVASourceComponent;
 class FVASoundSourceReflection;
@@ -73,10 +72,6 @@ private:
 	TArray<FVASoundSourceReflection*> ImageSources;
 
 
-	FVASignalBufferManager	BufferManager;
-	FVASignalBuffer*		ActiveBuffer;
-
 	UVASourceComponent* ParentComponent;
-
 
 };
