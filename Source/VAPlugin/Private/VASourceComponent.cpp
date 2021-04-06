@@ -199,7 +199,7 @@ bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSign
 	if (SignalSource != nullptr)
 	{
 		UnbindSignalSourceEvents();
-		SignalSource->Rename(*MakeUniqueObjectName(this, UVAAbstractSignalSource::StaticClass(), "Settings_EXPIRED").ToString());
+		SignalSource->Rename(*MakeUniqueObjectName(this, UVAAbstractSignalSource::StaticClass(), "SignalSource_EXPIRED").ToString());
 		SignalSource->MarkPendingKill();
 		SignalSource = nullptr;
 	}
