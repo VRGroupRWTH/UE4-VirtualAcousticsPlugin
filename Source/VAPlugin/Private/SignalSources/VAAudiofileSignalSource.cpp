@@ -53,9 +53,9 @@ bool UVAAudiofileSignalSource::Stop()
 	return SetPlayAction(EPlayAction::Stop);
 }
 
-bool UVAAudiofileSignalSource::LoadAudiofile(FString AudioFilename)
+bool UVAAudiofileSignalSource::PreLoadAudiofile(FString AudioFilename)
 {
-	return false;
+	return AudiofileManager.PreLoadAudiofile(AudioFilename);
 }
 
 

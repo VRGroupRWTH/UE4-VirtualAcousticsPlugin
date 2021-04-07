@@ -43,7 +43,7 @@ public:
 	// (Pre-) loads an audiofile for later usage
 	//   Internally, VA creates a signal source and the ID is stored. See FVAAudiofileManager
 	//   @return True on success
-	bool LoadAudiofile(FString Filename);
+	bool PreLoadAudiofile(FString Filename);
 
 	UFUNCTION(BlueprintCallable)
 	// Switches the internal signal source to match the corresponding audiofile. Creates a new signal source, if audiofile is not pre-loaded.
