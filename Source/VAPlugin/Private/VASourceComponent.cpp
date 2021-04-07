@@ -318,22 +318,6 @@ bool UVASourceComponent::MuteSound(const bool bMute)
 	return SoundSource->MuteSound(bMuted);
 }
 
-bool UVASourceComponent::LoadSoundFile(FString SoundFileName)
-{
-	//TODO!: Remove Function?
-	return false;
-}
-
-bool UVASourceComponent::SetSoundFile(const FString SoundFileName)
-{
-	//TODO!: Remove Function?
-	return false;
-}
-
-FString UVASourceComponent::GetSoundFile() const
-{
-	return SoundFile;
-}
 
 bool UVASourceComponent::SetSoundPower(const float Power)
 {
@@ -629,12 +613,6 @@ FString UVASourceComponent::GetBoneName() const
 	return BoneName;
 }
 
-
-
-float UVASourceComponent::GetSoundTimeOffset() const
-{
-	return StartingTime;
-}
 
 // ****************************************************************** // 
 // ******* Blueprint Settings *************************************** //

@@ -59,7 +59,6 @@ private:
 	FVector Position;
 	FRotator Rotation;
 
-	bool bPlaying;
 	bool bHandleReflections;
 	bool bShowCones;
 	bool bLoop;

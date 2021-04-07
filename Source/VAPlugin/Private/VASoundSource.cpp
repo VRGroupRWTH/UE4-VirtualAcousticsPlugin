@@ -21,18 +21,13 @@ int FVASoundSource::Counter = 0;
 FVASoundSource::FVASoundSource(UVASourceComponent* ParentComponent, TArray<AVAReflectionWall*> WallArray) :
 	ParentComponent(ParentComponent)
 {
-	bPlaying = false;
-
 	bShowCones = FVAPlugin::GetDebugMode();
 	bHandleReflections = ParentComponent->GetHandleReflections();
 	Power = ParentComponent->GetSoundPower();
 
-	const float SoundTimeOffset = ParentComponent->GetSoundTimeOffset();
-
 	Position = ParentComponent->GetPosition();
 	Rotation = ParentComponent->GetRotation();
 
-	std::string FileName(TCHAR_TO_UTF8(*ParentComponent->GetSoundFile()));
 	const std::string Name = "SoundSource";
 
 	if (FVAPlugin::GetIsMaster())

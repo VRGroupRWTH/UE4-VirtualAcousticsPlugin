@@ -49,23 +49,6 @@ protected:
 	UVAAbstractSignalSource* SignalSource = nullptr;
 
 
-
-	// Action of the sound source at the first tick
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "Signal Source Settings|Audio File"))
-	TEnumAsByte<EPlayAction::Type> StartingPlayAction = EPlayAction::Type::Stop;
-
-	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Name", Category = "Signal Source Settings|Audio File"))
-	FString SoundFile = "WelcomeToVA.wav";
-
-	// Sets Buffer to a specific time stamp when playing back at the first tick (see Action)
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Play from x [s]", Category = "Signal Source Settings|Audio File"))
-	float StartingTime = 0.0f;
-
-	// Check if the sound should be played back in a loop
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Loop", Category = "Signal Source Settings|Audio File"))
-	bool bLoop = false;
-
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
 		CustomStructureParam = "Move With the Object, At Object Spawn Point (unmovable, also reflections), Attatch to a Bone"))
@@ -131,18 +114,6 @@ public:
 	// Mute sound (true = mute)
 	UFUNCTION(BlueprintCallable)
 	bool MuteSound(bool bMute = true);
-
-	// (Pre-) loads a sound file for later usage
-	UFUNCTION(BlueprintCallable)
-	bool LoadSoundFile(FString SoundFileName);
-
-	// Sets a sound file. If already loaded use the loaded one, if not create new
-	UFUNCTION(BlueprintCallable)
-	bool SetSoundFile(FString SoundFileName);
-
-	// Returns the name of the sound file set at the moment
-	UFUNCTION(BlueprintCallable)
-	FString GetSoundFile() const;
 
 	// Sets the Sound Power in Watts
 	UFUNCTION(BlueprintCallable)
@@ -221,10 +192,6 @@ public:
 	FString GetBoneName() const;
 
 
-
-
-	float GetSoundTimeOffset() const;
-
 protected:
 	// Called when the game starts
 	void BeginPlay() override;
@@ -272,7 +239,7 @@ private:
 
 protected:
 #if WITH_EDITOR
-	virtual void PreEditChange(UProperty* PropertyWhatWillChange) override;
+	virtual void PreEditChange(FProperty* PropertyWhatWillChange) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	// Function to improve settings displayed in Editor, can only be used in editor mode
