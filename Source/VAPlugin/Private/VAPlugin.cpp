@@ -689,6 +689,23 @@ std::string FVAPlugin::CreateSignalSourcePrototype(UVAAbstractSignalSource* Sign
 	}
 }
 
+bool FVAPlugin::DeleteSignalSource(const std::string& SignalSourceID)
+{
+	if (!ShouldInteractWithServer() || SignalSourceID == VA_INVALID_ID_STRING)
+	{
+		return false;
+	}
+	try
+	{
+		return VAServer->DeleteSignalSource(SignalSourceID) == 0;
+	}
+	catch (CVAException & e)
+	{
+		ProcessException("FVAPlugin::DeleteSignalSource()", FString(e.ToString().c_str()));
+		return false;
+	}
+}
+
 bool FVAPlugin::SetSignalSourceParameter(std::string SignalSourceID, std::string ParamName, float ParamValue)
 {
 	if (!ShouldInteractWithServer())
@@ -770,6 +787,24 @@ int FVAPlugin::CreateNewSoundSource(const std::string& Name, FVector Pos, FRotat
 	{
 		ProcessException("FVAPluginModule::CreateNewSoundSource()", FString(e.ToString().c_str()));
 		return VA_INVALID_ID;
+	}
+}
+
+bool FVAPlugin::DeleteSoundSource(const int SoundSourceID)
+{
+	if (!ShouldInteractWithServer() || SoundSourceID == VA_INVALID_ID)
+	{
+		return false;
+	}
+	try
+	{
+		const bool bSuccess = VAServer->DeleteSoundSource(SoundSourceID) == 0;
+		return bSuccess;
+	}
+	catch (CVAException & e)
+	{
+		ProcessException("FVAPlugin::DeleteSoundSource()", FString(e.ToString().c_str()));
+		return false;
 	}
 }
 

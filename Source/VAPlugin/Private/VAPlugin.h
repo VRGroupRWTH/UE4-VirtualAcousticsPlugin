@@ -82,6 +82,8 @@ public:
 	// ******* Signal Sources ******* //
 
 	static std::string CreateSignalSourcePrototype(UVAAbstractSignalSource* SignalSource);
+	// Deletes a signal source with given ID. Use with great care!
+	static bool DeleteSignalSource(const std::string& SignalSourceID);
 	static bool SetSignalSourceParameter(std::string sSignalSourceID, std::string sParamName, float fParamValue);
 	static bool SetJetEngineRMP(std::string sSignalSourceID, float fRPM);
 
@@ -90,6 +92,8 @@ public:
 
 	static int CreateNewSoundSource(const std::string& Name, FVector Pos = FVector(0, 0, 0),
 		FRotator Rot = FRotator(0, 0, 0), float Power = -1.0f, const std::string& SignalSourceID = "");
+	// Deletes a sound source with given ID. Use with great care!
+	static bool DeleteSoundSource(int SoundSourceID);
 	static bool SetSoundSourcePosition(int SoundSourceID, FVector Pos);
 	static bool SetSoundSourceRotation(int SoundSourceID, FRotator Rot);
 	static bool SetSoundSourceSignalSource(int SoundSourceID, const std::string& SignalSourceID);
