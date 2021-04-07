@@ -34,7 +34,7 @@ namespace EDirectivitySetting
 {
 	enum Type
 	{
-		DefaultHRIR = 0,
+		DefaultDirectivity = 0,
 		Phoneme = 1,
 		NoDirectivity = 2,
 		ManualFile = 3

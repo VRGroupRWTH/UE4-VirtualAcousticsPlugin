@@ -94,7 +94,7 @@ protected:
 
 	// File Name of the Directivity that should be used
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity by file name", Category = "Directivity"))
-	FString DirectivityByFileName = "$(DefaultHRIR)";
+	FString DirectivityByFileName = "$(HumanDir)";
 
 	// Directivity that is used by a specific phoneme (see Receiver Actor Directivity Manager)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Phoneme Directivity from config", Category = "Directivity"))

@@ -164,7 +164,7 @@ void UVASourceComponent::Initialize()
 	{
 		switch (DirectivitySetting)
 		{
-		case EDirectivitySetting::DefaultHRIR:
+		case EDirectivitySetting::DefaultDirectivity:
 			SoundSource->SetDirectivity(FVADirectivityManager::GetDefaultDirectivity());
 			break;
 
