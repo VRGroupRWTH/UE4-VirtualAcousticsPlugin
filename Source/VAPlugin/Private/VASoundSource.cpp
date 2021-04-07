@@ -12,7 +12,6 @@
 #include "SignalSources/VAJetEngineSignalSource.h"
 #include "SignalSources/VAAudiofileSignalSource.h"
 
-int FVASoundSource::Counter = 0;
 
 // ****************************************************************** // 
 // ******* Initialization ******************************************* //

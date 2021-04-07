@@ -51,17 +51,13 @@ public:
 
 private:
 
-	static int Counter;
-
 	int SoundSourceID;
-	std::string SoundSourceName;
 
 	FVector Position;
 	FRotator Rotation;
 
 	bool bHandleReflections;
 	bool bShowCones;
-	bool bLoop;
 
 	float Power;
 
