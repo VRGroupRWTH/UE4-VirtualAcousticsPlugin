@@ -5,7 +5,7 @@
 
 // For ConstructorHelpers and SphereMesh
 #include "Components/StaticMeshComponent.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 
 #include "Engine/StaticMeshActor.h"

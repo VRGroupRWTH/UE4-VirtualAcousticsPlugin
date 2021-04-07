@@ -20,6 +20,7 @@
 #include "Interfaces/IPluginManager.h"
 #include "Cluster/IDisplayClusterClusterManager.h"
 #include "Containers/UnrealString.h"
+#include "Utility/VirtualRealityUtilities.h"
 
 #include "IDisplayCluster.h"
 #include "SocketSubsystem.h"
@@ -146,7 +147,7 @@ void FVAPlugin::BeginSession(const bool bSomething)
 	bPluginInitialized = false;
 	SetUseVA(true);
 	SetDebugMode(true);
-	bIsMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
+	bIsMaster = UVirtualRealityUtilities::IsMaster();
 }
 
 void FVAPlugin::EndSession(const bool bSomething)
@@ -186,7 +187,7 @@ void FVAPlugin::AskForSettings(const FString Host, const int Port, const bool bA
 		return;
 	}
 
-	bIsMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
+	bIsMaster = UVirtualRealityUtilities::IsMaster();
 
 	if (!bIsMaster)
 	{
@@ -396,7 +397,7 @@ bool FVAPlugin::DisconnectServer()
 
 bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const FString& VersionName)
 {
-	bIsMaster = IDisplayCluster::Get().GetClusterMgr() != nullptr && IDisplayCluster::Get().GetClusterMgr()->IsMaster();
+	bIsMaster = UVirtualRealityUtilities::IsMaster();
 
 	if (!bIsMaster)
 	{
@@ -1232,12 +1233,13 @@ void FVAPlugin::SetDebugMode(const bool bDebugModeN)
     UGameplayStatics::GetAllActorsOfClass(ReceiverActor->GetWorld(), AActor::StaticClass(), ActorArray);
   }
 
-	for (AActor* EntryActor : ActorArray)
+	for (AActor* Actor : ActorArray)
 	{
-		TArray<UActorComponent*> VAComponents = EntryActor->GetComponentsByClass(UVASourceComponent::StaticClass());
-		for (UActorComponent* EntryVAComponents : VAComponents)
+		TArray<UVASourceComponent*> VAComponents;
+		Actor->GetComponents(VAComponents);
+		for (UVASourceComponent* VAComponent : VAComponents)
 		{
-			(Cast<UVASourceComponent>(EntryVAComponents))->SetVisibility(bDebugMode);
+			VAComponent->SetVisibility(bDebugMode);
 		}
 	}
 }

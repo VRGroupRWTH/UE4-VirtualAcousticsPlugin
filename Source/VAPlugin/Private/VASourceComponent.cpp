@@ -642,7 +642,7 @@ float UVASourceComponent::GetSoundTimeOffset() const
 
 #if WITH_EDITOR
 
-void UVASourceComponent::PreEditChange(UProperty* PropertyWhatWillChange)
+void UVASourceComponent::PreEditChange(FProperty* PropertyWhatWillChange)
 {
 	Super::PreEditChange(PropertyWhatWillChange);
 
@@ -668,7 +668,7 @@ void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 }
 
 
-bool UVASourceComponent::CanEditChange(const UProperty* InProperty) const
+bool UVASourceComponent::CanEditChange(const FProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
 

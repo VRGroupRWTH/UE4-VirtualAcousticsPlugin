@@ -54,9 +54,9 @@ void FVADirectivity::AddPhoneme(const FString Phoneme)
 
 void FVADirectivity::AddPhoneme(const TArray<FString> PhonemesN)
 {
-	for (const auto Entry : PhonemesN)
+	for (const FString& Phoneme : PhonemesN)
 	{
-		AddPhoneme(Entry);
+		AddPhoneme(Phoneme);
 	}
 }
 

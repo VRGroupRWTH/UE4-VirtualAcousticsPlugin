@@ -145,7 +145,7 @@ protected:
 
 
 	// Cluster Stuff
-	void HandleClusterEvent(const FDisplayClusterClusterEvent& Event);
+	void HandleClusterEvent(const FDisplayClusterClusterEventJson& Event);
 	void HandleClusterCommand(FString Command);
 
 
@@ -153,7 +153,7 @@ protected:
 
 	
 #if WITH_EDITOR
-	bool CanEditChange(const UProperty* InProperty) const override;
+	bool CanEditChange(const FProperty* InProperty) const override;
 #endif
 
 	// Current Receiver Actor
@@ -179,6 +179,6 @@ protected:
 	float TotalTime;
 
 	// Event Listener Delegate
-	FOnClusterEventListener ClusterEventListenerDelegate;
+	FOnClusterEventJsonListener ClusterEventListenerDelegate;
 
 };
