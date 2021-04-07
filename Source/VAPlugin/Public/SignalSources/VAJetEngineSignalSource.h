@@ -16,7 +16,7 @@ class VAPLUGIN_API UVAJetEngineSignalSource : public UVAAbstractSignalSource
 
 protected:
 	// Set rotations per minute of the jet
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "RPM", Category = "Jet Engine"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "RPM", Category = "Jet Engine", ClampMin = "1000.0", ClampMax = "5000.0"))
 		float JetRPM = 1000.0f;
 	
 public:
