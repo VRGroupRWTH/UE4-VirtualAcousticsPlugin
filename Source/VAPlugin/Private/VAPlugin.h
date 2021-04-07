@@ -71,21 +71,19 @@ public:
 	void EndSession(bool bSomething);
 
 
-	// ******* Sound Buffer ******* //
-
-	static std::string CreateNewBuffer(FString SoundFileName, bool bLoop = false, float SoundOffset = 0.0f);
-	static bool SetSoundBufferAction(std::string BufferID, EPlayAction::Type Action);
-	static int GetSoundBufferAction(std::string BufferID);
-	static bool SetSoundBufferTime(std::string BufferID, float Time);
-	static bool SetSoundBufferLoop(std::string BufferID, bool bLoop);
-
 	// ******* Signal Sources ******* //
+
+	static std::string CreateSignalSourceBuffer(const FString& SoundFileName, bool bLoop = false, float SoundOffset = 0.0f);
+	static bool SetSignalSourceBufferPlayAction(const std::string& SignalSourceID, EPlayAction::Type Action);
+	static int GetSignalSourceBufferPlayAction(const std::string& SignalSourceID);
+	static bool SetSignalSourceBufferPlaybackPosition(const std::string& SignalSourceID, float Time);
+	static bool SetSignalSourceBufferLooping(const std::string& SignalSourceID, bool bLoop);
 
 	static std::string CreateSignalSourcePrototype(UVAAbstractSignalSource* SignalSource);
 	// Deletes a signal source with given ID. Use with great care!
 	static bool DeleteSignalSource(const std::string& SignalSourceID);
-	static bool SetSignalSourceParameter(std::string sSignalSourceID, std::string sParamName, float fParamValue);
-	static bool SetJetEngineRMP(std::string sSignalSourceID, float fRPM);
+	static bool SetSignalSourceParameter(const std::string& SignalSourceID, std::string sParamName, float fParamValue);
+	static bool SetJetEngineRMP(const std::string& SignalSourceID, float fRPM);
 
 
 	// ******* Sound Sources ******* //

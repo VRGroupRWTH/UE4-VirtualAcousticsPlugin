@@ -108,7 +108,7 @@ bool UVAAudiofileSignalSource::SetLoop(const bool bLoopN)
 	}
 
 	bLoop = bLoopN;
-	return FVAPlugin::SetSoundBufferLoop(ID, bLoop);
+	return FVAPlugin::SetSignalSourceBufferLooping(ID, bLoop);
 }
 
 bool UVAAudiofileSignalSource::SetPlayBackPosition(const float Time)
@@ -117,7 +117,7 @@ bool UVAAudiofileSignalSource::SetPlayBackPosition(const float Time)
 	{
 		return false;
 	}
-	return FVAPlugin::SetSoundBufferTime(ID, Time);
+	return FVAPlugin::SetSignalSourceBufferPlaybackPosition(ID, Time);
 }
 
 bool UVAAudiofileSignalSource::SetPlayAction(const int Action)
@@ -131,7 +131,7 @@ bool UVAAudiofileSignalSource::SetPlayAction(const int Action)
 	{
 		return true;
 	}
-	return FVAPlugin::SetSoundBufferAction(ID, EPlayAction::Type(Action));
+	return FVAPlugin::SetSignalSourceBufferPlayAction(ID, EPlayAction::Type(Action));
 }
 
 
@@ -161,7 +161,7 @@ int UVAAudiofileSignalSource::GetPlayAction() const
 	{
 		return -1;
 	}
-	return FVAPlugin::GetSoundBufferAction(ID);
+	return FVAPlugin::GetSignalSourceBufferPlayAction(ID);
 }
 
 bool UVAAudiofileSignalSource::CopySignalSourceSettings(const std::string& OtherID)
@@ -171,7 +171,7 @@ bool UVAAudiofileSignalSource::CopySignalSourceSettings(const std::string& Other
 		return false;
 	}
 
-	if (!FVAPlugin::SetSoundBufferLoop(OtherID, bLoop))
+	if (!FVAPlugin::SetSignalSourceBufferLooping(OtherID, bLoop))
 	{
 		return false;
 	}
@@ -185,5 +185,5 @@ bool UVAAudiofileSignalSource::CopySignalSourceSettings(const std::string& Other
 			return false;
 		}
 	}
-	return FVAPlugin::SetSoundBufferAction(OtherID, EPlayAction::Type(PlayAction));
+	return FVAPlugin::SetSignalSourceBufferPlayAction(OtherID, EPlayAction::Type(PlayAction));
 }
