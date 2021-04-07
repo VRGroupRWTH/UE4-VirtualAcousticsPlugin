@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "VAAudiofileSignalSource.h"
+#include "SignalSources/VAAudiofileSignalSource.h"
 
 #include "VAUtils.h"
 #include "VAPlugin.h"
@@ -53,7 +53,7 @@ bool UVAAudiofileSignalSource::Stop()
 	return SetPlayAction(EPlayAction::Stop);
 }
 
-bool UVAAudiofileSignalSource::LoadAudiofile(FString Filename)
+bool UVAAudiofileSignalSource::LoadAudiofile(FString AudioFilename)
 {
 	return false;
 }
