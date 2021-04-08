@@ -3,9 +3,12 @@
 #include "VASourceComponent.h"
 
 #include "VASoundSource.h"
+#include "VASoundSourceBase.h"
 #include "VAReceiverActor.h"
 #include "VAPlugin.h"
 #include "VAUtils.h"
+
+#include "ImageSourceModel/VAImageSourceModel.h"
 
 #include "SignalSources\VAAudiofileSignalSource.h"
 #include "SignalSources\VAJetEngineSignalSource.h"
@@ -157,6 +160,8 @@ void UVASourceComponent::Initialize()
 	SpawnPosition = GetOwner()->GetTransform().GetLocation();
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
 
+	const std::string SoundSourceName = std::string( TCHAR_TO_UTF8(*GetName()) );
+	SoundSourceBase = MakeShared<FVASoundSourceBase>(GetWorld(), GetPosition(), GetRotation(), SoundPower, SoundSourceName);
 
 	TArray<AVAReflectionWall*> WallArray = CurrentReceiverActor->GetReflectionWalls();
 	SoundSource = MakeShared<FVASoundSource>(this, WallArray);
@@ -194,6 +199,22 @@ void UVASourceComponent::Initialize()
 	bInitialized = true;
 }
 
+void UVASourceComponent::UpdatePose()
+{
+	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
+	{
+		return;
+	}
+
+	SoundSourceBase->SetPosition(GetPosition());
+	SoundSourceBase->SetRotation(GetRotation());
+	if (bHandleReflections && ImageSourceModel.IsValid())
+	{
+		ImageSourceModel->UpdateISPositions();
+		ImageSourceModel->UpdateISRotations();
+	}
+}
+
 bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
 {
 	if (SignalSource != nullptr)
@@ -225,11 +246,15 @@ bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSign
 
 bool UVASourceComponent::SetSignalSourceID(const std::string& SignalSourceID)
 {
-	if (!FVAPlugin::SetSoundSourceSignalSource(SoundSource->GetSoundSourceID(), SignalSourceID))
+	if (!SoundSourceBase->SetSignalSource(SignalSourceID))
 	{
 		return false;
 	}
-	return SoundSource->SetSignalSourceToImageSources(SignalSourceID);
+	if (bHandleReflections && ImageSourceModel.IsValid())
+	{
+		return ImageSourceModel->UpdateISSignalSource();
+	}
+	return true;
 }
 
 void UVASourceComponent::OnSignalSourceIDChanged(const std::string& SignalSourceID)
@@ -307,15 +332,15 @@ bool UVASourceComponent::MuteSound(const bool bMute)
 	{
 		return false;
 	}
-
-	if (bMuted == bMute)
+	if (!SoundSourceBase->MuteSound(bMute))
 	{
-		return true;
+		return false;
 	}
-
-	bMuted = bMute;
-
-	return SoundSource->MuteSound(bMuted);
+	if (bHandleReflections && ImageSourceModel.IsValid())
+	{
+		return ImageSourceModel->MuteIS(bMute);
+	}
+	return true;
 }
 
 
@@ -325,15 +350,16 @@ bool UVASourceComponent::SetSoundPower(const float Power)
 	{
 		return false;
 	}
-
-	if (SoundPower == Power)
+	if (!SoundSourceBase->SetPower(Power))
 	{
-		return true;
+		return false;
 	}
-
 	SoundPower = Power;
-
-	return SoundSource->SetPower(Power);
+	if (bHandleReflections && ImageSourceModel.IsValid())
+	{
+		return ImageSourceModel->UpdateISPower();
+	}
+	return true;
 }
 
 float UVASourceComponent::GetSoundPower() const
@@ -420,7 +446,7 @@ FRotator UVASourceComponent::GetRotation() const
 
 bool UVASourceComponent::SetMovementSetting(const EMovement::Type NewMovementSetting)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
 	{
 		return false;
 	}
@@ -431,16 +457,14 @@ bool UVASourceComponent::SetMovementSetting(const EMovement::Type NewMovementSet
 	}
 
 	MovementSetting = NewMovementSetting;
-
-	SoundSource->SetPosition(GetPosition());
-	SoundSource->SetRotation(GetRotation());
+	UpdatePose();
 
 	return true;
 }
 
 bool UVASourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
 	{
 		return false;
 	}
@@ -451,58 +475,45 @@ bool UVASourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
 	}
 
 	bUsePoseOffset = bNewUsePoseOffset;
-
-	SoundSource->SetPosition(GetPosition());
-	SoundSource->SetRotation(GetRotation());
+	UpdatePose();
 
 	return true;
 }
 
 bool UVASourceComponent::SetOffsetPosition(const FVector Pos)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
 	{
 		return false;
 	}
-
-	if (!bUsePoseOffset)
-	{
-		bUsePoseOffset = true;
-		SoundSource->SetRotation(GetRotation());
-	}
 	
-	if (OffsetPosition == Pos)
+	if (OffsetPosition == Pos && bUsePoseOffset)
 	{
 		return true;
 	}
 
+	bUsePoseOffset = true;
 	OffsetPosition = Pos;
+	UpdatePose();
 
-	SoundSource->SetPosition(GetPosition());
 	return true;
 }
 
 bool UVASourceComponent::SetOffsetRotation(const FRotator Rot)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
 	{
 		return false;
 	}
-	
-	if (!bUsePoseOffset)
-	{
-		bUsePoseOffset = true;
-		SoundSource->SetPosition(GetPosition());
-	}
 
-	if (OffsetRotation == Rot)
+	if (OffsetRotation == Rot && bUsePoseOffset)
 	{
 		return true;
 	}
-
+	bUsePoseOffset = true;
 	OffsetRotation = Rot;
+	UpdatePose();
 
-	SoundSource->SetRotation(GetRotation());
 	return true;
 }
 
@@ -561,18 +572,18 @@ FString UVASourceComponent::GetDirectivityFileName() const
 
 bool UVASourceComponent::SetVisibility(const bool bVis)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
 	{
 		return false;
 	}
 
-	SoundSource->SetVisibility(bVis);
+	SoundSourceBase->SetVisibility(bVis);
 	return true;
 }
 
 bool UVASourceComponent::GetVisibility() const
 {
-	return SoundSource->GetVisibility();
+	return SoundSourceBase->GetVisibility();
 }
 
 bool UVASourceComponent::SetBoneName(const FString NewBoneName)

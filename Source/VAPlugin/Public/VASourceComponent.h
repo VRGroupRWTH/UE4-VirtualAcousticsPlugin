@@ -14,7 +14,9 @@
 #include "VASourceComponent.generated.h"
 
 //forward declarations to not include private header files
-class FVASoundSource;
+class FVASoundSource; //TODO: Remove this
+class FVASoundSourceBase;
+class FVAImageSourceModel;
 class AVAReceiverActor;
 
 
@@ -201,6 +203,8 @@ protected:
 	// initialize Sound Source with the settings set // 
 	void Initialize();
 
+	void UpdatePose();
+
 	bool ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
 
 	bool SetSignalSourceID(const std::string& ID);
@@ -215,7 +219,9 @@ protected:
 
 	AVAReceiverActor* CurrentReceiverActor;
 
-	TSharedPtr<FVASoundSource> SoundSource;
+	TSharedPtr<FVASoundSource> SoundSource; //TODO: Remove this
+	TSharedPtr<FVASoundSourceBase> SoundSourceBase;
+	TSharedPtr<FVAImageSourceModel> ImageSourceModel;
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
 	// Class data
@@ -229,13 +235,10 @@ protected:
 	// Sound Source data
 	FVector SpawnPosition;
 	FRotator SpawnRotation;
-	bool bMuted = false;
 	int UpdateRate;
 
 private:
 	FDelegateHandle SignalSourceChangedDelegate;
-
-	int SoundSourceID = -1; //TODO!: This is for later use once we moved functionality from the VASoundSource to this class
 
 protected:
 #if WITH_EDITOR
