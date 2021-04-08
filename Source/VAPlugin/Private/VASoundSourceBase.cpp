@@ -13,7 +13,7 @@
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, int DirectivityID /* = -1 */, const std::string& Name /* = "" */)
+FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name /* = "" */, int DirectivityID /* = -1 */)
 	: SoundSourceID(VA_INVALID_ID)
 	, Name(Name)
 	, Position(Position)
@@ -21,6 +21,7 @@ FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, c
 	, bShowCones(false)
 	, Power(Power)
 	, DirectivityID(VA_INVALID_ID)
+	, SignalSourceID(VA_INVALID_ID_STRING)
 {
 	bShowCones = FVAPlugin::GetDebugMode();
 
@@ -122,6 +123,20 @@ bool FVASoundSourceBase::RemoveDirectivity()
 	return FVAPlugin::RemoveSoundSourceDirectivity(SoundSourceID);
 }
 
+bool FVASoundSourceBase::SetSignalSource(const std::string& NewSignalSourceID)
+{
+	if (SignalSourceID == NewSignalSourceID)
+	{
+		return true;
+	}
+	if (FVAPlugin::SetSoundSourceSignalSource(SoundSourceID, SignalSourceID))
+	{
+		SignalSourceID = NewSignalSourceID;
+		return true;
+	}
+	return false;
+}
+
 bool FVASoundSourceBase::SetPower(const float PowerN)
 {
 	if (Power == PowerN)
@@ -180,4 +195,9 @@ float FVASoundSourceBase::GetPower() const
 int FVASoundSourceBase::GetDirectivityID() const
 {
 	return DirectivityID;
+}
+
+const std::string& FVASoundSourceBase::GetSignalSourceID() const
+{
+	return SignalSourceID;
 }

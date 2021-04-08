@@ -33,7 +33,7 @@ public:
 	// (Un-)Mutes all image sources
 	bool MuteIS(bool bMute = true);
 
-	bool SetISSignalSource(const std::string& SignalSourceID);
+	bool UpdateISSignalSource();
 
 	// Updates all IS directivities to match the one of the parent source
 	bool UpdateISDirectivities();
@@ -56,7 +56,7 @@ private:
 	class FVAImageSource : public FVASoundSourceBase
 	{
 	public:
-		FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, int DirectivityID, const std::string& NameN);
+		FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN, int DirectivityID = -1);
 		AVAReflectionWall* GetWall();
 	private:
 		AVAReflectionWall* Wall;

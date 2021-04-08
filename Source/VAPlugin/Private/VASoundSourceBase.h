@@ -14,16 +14,18 @@ class FVASoundSourceBase
 public:
 
 	// Initialization
-	FVASoundSourceBase(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, int DirectivityID = -1, const std::string& NameN = "");
+	FVASoundSourceBase(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN = "", int DirectivityID = -1);
 	virtual ~FVASoundSourceBase();
 
 	// Setter
 	void SetPosition(FVector NewPosition);
 	void SetRotation(FRotator NewRotation);
 	void SetVisibility(bool bVisible);
-	bool SetDirectivity(int DirectivityID);
 
+	bool SetDirectivity(int DirectivityID);
 	bool RemoveDirectivity();
+
+	bool SetSignalSource(const std::string& SignalSourceID);
 
 	bool SetPower(float PowerN);
 
@@ -42,6 +44,7 @@ public:
 
 	float GetPower() const;
 	int GetDirectivityID() const;
+	const std::string& GetSignalSourceID() const;
 
 private:
 
@@ -55,6 +58,7 @@ private:
 
 	float Power;
 	int DirectivityID;
+	std::string SignalSourceID;
 	
 	AVASoundSourceRepresentation* SoundSourceRepresentation;
 
