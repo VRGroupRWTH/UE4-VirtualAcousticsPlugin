@@ -15,7 +15,7 @@ public:
 
 	// Initialization
 	FVASoundSourceBase(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, int DirectivityID = -1, const std::string& NameN = "");
-	~FVASoundSourceBase();
+	virtual ~FVASoundSourceBase();
 
 	// Setter
 	void SetPosition(FVector NewPosition);
@@ -51,7 +51,6 @@ private:
 	FVector Position;
 	FRotator Rotation;
 
-	bool bHandleReflections;
 	bool bShowCones;
 
 	float Power;

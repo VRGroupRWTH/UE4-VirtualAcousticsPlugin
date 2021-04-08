@@ -14,11 +14,13 @@
 // ****************************************************************** //
 
 FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, int DirectivityID /* = -1 */, const std::string& Name /* = "" */)
-	: DirectivityID(VA_INVALID_ID)
+	: SoundSourceID(VA_INVALID_ID)
 	, Name(Name)
 	, Position(Position)
 	, Rotation(Rotation)
+	, bShowCones(false)
 	, Power(Power)
+	, DirectivityID(VA_INVALID_ID)
 {
 	bShowCones = FVAPlugin::GetDebugMode();
 
