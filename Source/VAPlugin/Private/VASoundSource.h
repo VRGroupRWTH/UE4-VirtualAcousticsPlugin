@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+#include <string>
+
 class UVASourceComponent;
 class FVASoundSourceReflection;
 class AVASoundSourceRepresentation;
