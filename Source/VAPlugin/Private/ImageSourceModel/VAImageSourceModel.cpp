@@ -14,7 +14,7 @@
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVAImageSourceModel::FVAImageSourceModel(UWorld* World, FVASoundSourceBase* ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls)
+FVAImageSourceModel::FVAImageSourceModel(UWorld* World, FVASoundSource* ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls)
 	: ParentSource(ParentSource)
 {
 	if (!ParentSource)
@@ -180,7 +180,7 @@ FRotator FVAImageSourceModel::ComputeReflectedRot(const AVAReflectionWall* Wall,
 // ****************************************************************** //
 
 FVAImageSourceModel::FVAImageSource::FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name, FVADirectivity*  Directivity /* = nullptr */)
-	: FVASoundSourceBase(World, Position, Rotation, Power, Name, Directivity)
+	: FVASoundSource(World, Position, Rotation, Power, Name, Directivity)
 	, Wall(Wall)
 {
 	if (Wall == nullptr)

@@ -1,4 +1,4 @@
-#include "SoundSource/VASoundSourceBase.h"
+#include "SoundSource/VASoundSource.h"
 
 #include "VAPlugin.h"
 #include "VAUtils.h"
@@ -14,7 +14,7 @@
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name /* = "" */, FVADirectivity* Directivity /* = nullptr */)
+FVASoundSource::FVASoundSource(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name /* = "" */, FVADirectivity* Directivity /* = nullptr */)
 	: SoundSourceID(VA_INVALID_ID)
 	, Name(Name)
 	, Position(Position)
@@ -29,7 +29,7 @@ FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, c
 	SoundSourceID = FVAPlugin::CreateNewSoundSource(Name, Position, Rotation, Power);
 	if (SoundSourceID == -1)
 	{
-		FVAUtils::LogStuff("[FVASoundSourceBase::FVASoundSourceBase()]: Error initializing VA sound source", true);
+		FVAUtils::LogStuff("[FVASoundSource::FVASoundSource()]: Error initializing VA sound source", true);
 		return;
 	}
 	if (Directivity != nullptr)
@@ -52,7 +52,7 @@ FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, c
 	}
 }
 
-FVASoundSourceBase::~FVASoundSourceBase()
+FVASoundSource::~FVASoundSource()
 {
 	if(SoundSourceRepresentation && SoundSourceRepresentation->IsValidLowLevel())
 	{
@@ -67,33 +67,33 @@ FVASoundSourceBase::~FVASoundSourceBase()
 // ****************************************************************** //
 
 
-void FVASoundSourceBase::SetPosition(const FVector NewPosition)
+void FVASoundSource::SetPosition(const FVector NewPosition)
 {
 	Position = NewPosition;
 
 	if (!FVAPlugin::SetSoundSourcePosition(SoundSourceID, Position))
 	{
-		FVAUtils::LogStuff("[FVASoundSourceBase::SetPosition()]:" +
+		FVAUtils::LogStuff("[FVASoundSource::SetPosition()]:" +
 			FString(" Could not set sound source position in VA. Position of visual and auditive representation might mismatch now."), true);
 	}
 
 	SoundSourceRepresentation->SetPosition(Position);
 }
 
-void FVASoundSourceBase::SetRotation(const FRotator NewRotation)
+void FVASoundSource::SetRotation(const FRotator NewRotation)
 {
 	Rotation = NewRotation;
 
 	if (!FVAPlugin::SetSoundSourceRotation(SoundSourceID, Rotation))
 	{
-		FVAUtils::LogStuff("[FVASoundSourceBase::SetRotation()]:" +
+		FVAUtils::LogStuff("[FVASoundSource::SetRotation()]:" +
 			FString(" Could not set sound source rotation in VA. Orientation of visual and auditive representation might mismatch now."), true);
 	}
 	
 	SoundSourceRepresentation->SetRotation(Rotation);
 }
 
-void FVASoundSourceBase::SetVisibility(const bool bVisible)
+void FVASoundSource::SetVisibility(const bool bVisible)
 {
 	if (bShowCones == bVisible)
 	{
@@ -104,11 +104,11 @@ void FVASoundSourceBase::SetVisibility(const bool bVisible)
 	SoundSourceRepresentation->SetVisibility(bShowCones);
 }
 
-bool FVASoundSourceBase::SetDirectivity(FVADirectivity* NewDirectivity)
+bool FVASoundSource::SetDirectivity(FVADirectivity* NewDirectivity)
 {
 	if (NewDirectivity == nullptr)
 	{
-		FVAUtils::OpenMessageBox(FString("[FVASoundSourceBase::SetDirectivity]: Cannot set empty directivity, use RemoveDirectivity() instead"), true);
+		FVAUtils::OpenMessageBox(FString("[FVASoundSource::SetDirectivity]: Cannot set empty directivity, use RemoveDirectivity() instead"), true);
 		return false;
 	}
 	if (Directivity == NewDirectivity)
@@ -124,7 +124,7 @@ bool FVASoundSourceBase::SetDirectivity(FVADirectivity* NewDirectivity)
 	return false;
 }
 
-bool FVASoundSourceBase::RemoveDirectivity()
+bool FVASoundSource::RemoveDirectivity()
 {
 	if(FVAPlugin::RemoveSoundSourceDirectivity(SoundSourceID))
 	{
@@ -134,7 +134,7 @@ bool FVASoundSourceBase::RemoveDirectivity()
 	return false;
 }
 
-bool FVASoundSourceBase::SetSignalSource(const std::string& NewSignalSourceID)
+bool FVASoundSource::SetSignalSource(const std::string& NewSignalSourceID)
 {
 	if (SignalSourceID == NewSignalSourceID)
 	{
@@ -148,7 +148,7 @@ bool FVASoundSourceBase::SetSignalSource(const std::string& NewSignalSourceID)
 	return false;
 }
 
-bool FVASoundSourceBase::SetPower(const float PowerN)
+bool FVASoundSource::SetPower(const float PowerN)
 {
 	if (Power == PowerN)
 	{
@@ -163,7 +163,7 @@ bool FVASoundSourceBase::SetPower(const float PowerN)
 	return false;
 }
 
-bool FVASoundSourceBase::MuteSound(const bool MutedN)
+bool FVASoundSource::MuteSound(const bool MutedN)
 {
 	return FVAPlugin::SetSoundSourceMuted(SoundSourceID, MutedN);
 }
@@ -172,43 +172,43 @@ bool FVASoundSourceBase::MuteSound(const bool MutedN)
 // ******* Getter *************************************************** //
 // ****************************************************************** //
 
-int FVASoundSourceBase::GetSoundSourceID() const
+int FVASoundSource::GetSoundSourceID() const
 {
 	return SoundSourceID;
 }
 
-const std::string& FVASoundSourceBase::GetSoundSourceName() const
+const std::string& FVASoundSource::GetSoundSourceName() const
 {
 	return Name;
 }
 
-FVector FVASoundSourceBase::GetPosition() const
+FVector FVASoundSource::GetPosition() const
 {
 	return Position;
 }
 
-FRotator FVASoundSourceBase::GetRotation() const
+FRotator FVASoundSource::GetRotation() const
 {
 	return Rotation;
 }
 
-bool FVASoundSourceBase::GetVisibility() const
+bool FVASoundSource::GetVisibility() const
 {
 	return bShowCones;
 }
 
 
-float FVASoundSourceBase::GetPower() const
+float FVASoundSource::GetPower() const
 {
 	return Power;
 }
 
-FVADirectivity* FVASoundSourceBase::GetDirectivity() const
+FVADirectivity* FVASoundSource::GetDirectivity() const
 {
 	return Directivity;
 }
 
-FString FVASoundSourceBase::GetDirectivityFilename() const
+FString FVASoundSource::GetDirectivityFilename() const
 {
 	if (!Directivity)
 	{
@@ -218,7 +218,7 @@ FString FVASoundSourceBase::GetDirectivityFilename() const
 	return Directivity->GetFileName();
 }
 
-const std::string& FVASoundSourceBase::GetSignalSourceID() const
+const std::string& FVASoundSource::GetSignalSourceID() const
 {
 	return SignalSourceID;
 }

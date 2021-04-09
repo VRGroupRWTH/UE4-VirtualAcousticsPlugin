@@ -7,7 +7,7 @@
 #include <string>
 #include "Templates/SharedPointer.h"
 
-#include "SoundSource/VASoundSourceBase.h"
+#include "SoundSource/VASoundSource.h"
 
 class AVAReflectionWall;
 class UWorld;
@@ -20,7 +20,7 @@ public:
 
 	// ---Initialization---
 
-	FVAImageSourceModel(UWorld* World, FVASoundSourceBase* ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls);
+	FVAImageSourceModel(UWorld* World, FVASoundSource* ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls);
 
 	// ---Setter---
 
@@ -53,7 +53,7 @@ public:
 
 
 private:
-	class FVAImageSource : public FVASoundSourceBase
+	class FVAImageSource : public FVASoundSource
 	{
 	public:
 		FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN, FVADirectivity* Directivity = nullptr);
@@ -62,7 +62,7 @@ private:
 		AVAReflectionWall* Wall;
 	};
 
-	FVASoundSourceBase* ParentSource;
+	FVASoundSource* ParentSource;
 	TArray<TSharedRef<FVAImageSource>> ImageSources;
 
 };

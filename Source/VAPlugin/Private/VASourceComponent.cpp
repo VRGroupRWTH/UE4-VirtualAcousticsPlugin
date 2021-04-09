@@ -2,7 +2,7 @@
 
 #include "VASourceComponent.h"
 
-#include "SoundSource/VASoundSourceBase.h"
+#include "SoundSource/VASoundSource.h"
 #include "VAReceiverActor.h"
 #include "VAPlugin.h"
 #include "VAUtils.h"
@@ -154,7 +154,7 @@ void UVASourceComponent::Initialize()
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
 
 	const std::string SoundSourceName = std::string( TCHAR_TO_UTF8(*GetName()) );
-	SoundSource = MakeShared<FVASoundSourceBase>(GetWorld(), GetPosition(), GetRotation(), SoundPower, SoundSourceName);
+	SoundSource = MakeShared<FVASoundSource>(GetWorld(), GetPosition(), GetRotation(), SoundPower, SoundSourceName);
 
 	if (FVAPlugin::GetIsMaster())
 	{

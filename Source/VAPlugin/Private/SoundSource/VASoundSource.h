@@ -10,13 +10,13 @@ class AVASoundSourceRepresentation;
 class FVADirectivity;
 class UWorld;
 
-class FVASoundSourceBase
+class FVASoundSource
 {
 public:
 
 	// Initialization
-	FVASoundSourceBase(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN = "", FVADirectivity* DirectivityID = nullptr);
-	virtual ~FVASoundSourceBase();
+	FVASoundSource(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN = "", FVADirectivity* DirectivityID = nullptr);
+	virtual ~FVASoundSource();
 
 	// Setter
 	void SetPosition(FVector NewPosition);

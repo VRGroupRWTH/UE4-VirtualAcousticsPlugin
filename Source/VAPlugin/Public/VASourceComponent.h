@@ -14,7 +14,7 @@
 #include "VASourceComponent.generated.h"
 
 //forward declarations to not include private header files
-class FVASoundSourceBase;
+class FVASoundSource;
 class FVAImageSourceModel;
 class AVAReceiverActor;
 
@@ -218,7 +218,7 @@ protected:
 
 	AVAReceiverActor* CurrentReceiverActor;
 
-	TSharedPtr<FVASoundSourceBase> SoundSource;
+	TSharedPtr<FVASoundSource> SoundSource;
 	TSharedPtr<FVAImageSourceModel> ImageSourceModel;
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
