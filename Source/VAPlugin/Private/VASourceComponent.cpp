@@ -46,7 +46,7 @@ void UVASourceComponent::BeginPlay()
 
 void UVASourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	SoundSourceBase.Reset();
+	SoundSource.Reset();
 	UnbindSignalSourceEvents();
 }
 
@@ -154,23 +154,23 @@ void UVASourceComponent::Initialize()
 	SpawnRotation = GetOwner()->GetTransform().GetRotation().Rotator();
 
 	const std::string SoundSourceName = std::string( TCHAR_TO_UTF8(*GetName()) );
-	SoundSourceBase = MakeShared<FVASoundSourceBase>(GetWorld(), GetPosition(), GetRotation(), SoundPower, SoundSourceName);
+	SoundSource = MakeShared<FVASoundSourceBase>(GetWorld(), GetPosition(), GetRotation(), SoundPower, SoundSourceName);
 
 	if (FVAPlugin::GetIsMaster())
 	{
 		switch (DirectivitySetting)
 		{
 		case EDirectivitySetting::DefaultDirectivity:
-			SoundSourceBase->SetDirectivity(FVADirectivityManager::GetDefaultDirectivity());
+			SoundSource->SetDirectivity(FVADirectivityManager::GetDefaultDirectivity());
 			break;
 
 		case EDirectivitySetting::ManualFile:
-			SoundSourceBase->SetDirectivity(
+			SoundSource->SetDirectivity(
 				CurrentReceiverActor->GetDirectivityByFileName(DirectivityByFileName));
 			break;
 
 		case EDirectivitySetting::Phoneme:
-			SoundSourceBase->SetDirectivity(
+			SoundSource->SetDirectivity(
 				CurrentReceiverActor->GetDirectivityByMapping(DirectivityByMapping));
 			break;
 
@@ -182,7 +182,7 @@ void UVASourceComponent::Initialize()
 	if (bHandleReflections)
 	{
 		TArray<AVAReflectionWall*> ReflWalls = CurrentReceiverActor->GetReflectionWalls();
-		ImageSourceModel = MakeShared<FVAImageSourceModel>(GetWorld(), SoundSourceBase.Get(), ReflWalls);
+		ImageSourceModel = MakeShared<FVAImageSourceModel>(GetWorld(), SoundSource.Get(), ReflWalls);
 	}
 
 	if (SignalSource)
@@ -198,13 +198,13 @@ void UVASourceComponent::Initialize()
 
 void UVASourceComponent::UpdatePose()
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return;
 	}
 
-	SoundSourceBase->SetPosition(GetPosition());
-	SoundSourceBase->SetRotation(GetRotation());
+	SoundSource->SetPosition(GetPosition());
+	SoundSource->SetRotation(GetRotation());
 	if (bHandleReflections && ImageSourceModel.IsValid())
 	{
 		ImageSourceModel->UpdateISPositions();
@@ -243,12 +243,12 @@ bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSign
 
 bool UVASourceComponent::SetSignalSourceID(const std::string& SignalSourceID)
 {
-	if (!SoundSourceBase.IsValid())
+	if (!SoundSource.IsValid())
 	{
 		FVAUtils::OpenMessageBox(FString("[UVASourceComponent::SetSignalSourceID]: VA sound source not initialized"), true);
 		return false;
 	}
-	if (!SoundSourceBase->SetSignalSource(SignalSourceID))
+	if (!SoundSource->SetSignalSource(SignalSourceID))
 	{
 		return false;
 	}
@@ -334,7 +334,7 @@ bool UVASourceComponent::MuteSound(const bool bMute)
 	{
 		return false;
 	}
-	if (!SoundSourceBase->MuteSound(bMute))
+	if (!SoundSource->MuteSound(bMute))
 	{
 		return false;
 	}
@@ -352,7 +352,7 @@ bool UVASourceComponent::SetSoundPower(const float Power)
 	{
 		return false;
 	}
-	if (!SoundSourceBase->SetPower(Power))
+	if (!SoundSource->SetPower(Power))
 	{
 		return false;
 	}
@@ -448,7 +448,7 @@ FRotator UVASourceComponent::GetRotation() const
 
 bool UVASourceComponent::SetMovementSetting(const EMovement::Type NewMovementSetting)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
@@ -466,7 +466,7 @@ bool UVASourceComponent::SetMovementSetting(const EMovement::Type NewMovementSet
 
 bool UVASourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
@@ -484,7 +484,7 @@ bool UVASourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
 
 bool UVASourceComponent::SetOffsetPosition(const FVector Pos)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
@@ -503,7 +503,7 @@ bool UVASourceComponent::SetOffsetPosition(const FVector Pos)
 
 bool UVASourceComponent::SetOffsetRotation(const FRotator Rot)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
@@ -535,7 +535,7 @@ bool UVASourceComponent::SetDirectivityByMapping(const FString Phoneme)
 	DirectivitySetting = EDirectivitySetting::Phoneme;
 	DirectivityByMapping = Phoneme;
 
-	return SoundSourceBase->SetDirectivity(CurrentReceiverActor->GetDirectivityByMapping(Phoneme));
+	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByMapping(Phoneme));
 }
 
 bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
@@ -550,17 +550,17 @@ bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
 
 	if (FileName == "")
 	{
-		 return SoundSourceBase->RemoveDirectivity();
+		 return SoundSource->RemoveDirectivity();
 	}
 	
-	return SoundSourceBase->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
+	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
 }
 
 FString UVASourceComponent::GetDirectivityFileName() const
 {
-	if (SoundSourceBase.IsValid())
+	if (SoundSource.IsValid())
 	{
-		return SoundSourceBase->GetDirectivityFilename();
+		return SoundSource->GetDirectivityFilename();
 	}
 
 	return "";
@@ -574,18 +574,18 @@ FString UVASourceComponent::GetDirectivityFileName() const
 
 bool UVASourceComponent::SetVisibility(const bool bVis)
 {
-	if (!FVAPlugin::GetUseVA() || !SoundSourceBase.IsValid())
+	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
 		return false;
 	}
 
-	SoundSourceBase->SetVisibility(bVis);
+	SoundSource->SetVisibility(bVis);
 	return true;
 }
 
 bool UVASourceComponent::GetVisibility() const
 {
-	return SoundSourceBase->GetVisibility();
+	return SoundSource->GetVisibility();
 }
 
 bool UVASourceComponent::SetBoneName(const FString NewBoneName)

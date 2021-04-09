@@ -218,7 +218,7 @@ protected:
 
 	AVAReceiverActor* CurrentReceiverActor;
 
-	TSharedPtr<FVASoundSourceBase> SoundSourceBase;
+	TSharedPtr<FVASoundSourceBase> SoundSource;
 	TSharedPtr<FVAImageSourceModel> ImageSourceModel;
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
