@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "VADirectivity.h"
+#include "Directivity/VADirectivity.h"
 
 class FVADirectivityManager
 {

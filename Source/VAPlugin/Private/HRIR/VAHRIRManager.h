@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "VAHRIR.h"
+#include "HRIR/VAHRIR.h"
 
 class FVAHRIRManager
 {

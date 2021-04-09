@@ -1,9 +1,9 @@
-#include "VADirectivityManager.h"
+#include "Directivity/VADirectivityManager.h"
 
 #include "VAUtils.h"
 
 #include "Core.h"
-#include "VAHRIR.h"
+//#include "HRIR/VAHRIR.h"
 
 FVADirectivity* FVADirectivityManager::DefaultDirectivity;
 

@@ -1,11 +1,11 @@
-#include "VASoundSourceBase.h"
+#include "SoundSource/VASoundSourceBase.h"
 
 #include "VAPlugin.h"
 #include "VAUtils.h"
 #include "VADefines.h"
-#include "VADirectivity.h"
+#include "Directivity/VADirectivity.h"
 
-#include "VASoundSourceRepresentation.h"
+#include "SoundSource/VASoundSourceRepresentation.h"
 
 #include "Engine/World.h"
 

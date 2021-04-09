@@ -8,8 +8,8 @@
 
 #include "VASourceComponent.h"
 #include "ImageSourceModel/VAReflectionWall.h"
-#include "VADirectivityManager.h"
-#include "VAHRIRManager.h"
+#include "Directivity/VADirectivityManager.h"
+#include "HRIR/VAHRIRManager.h"
 
 
 #include "Cluster/DisplayClusterClusterEvent.h"

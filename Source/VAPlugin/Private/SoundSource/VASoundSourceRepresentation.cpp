@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "VASoundSourceRepresentation.h"
+#include "SoundSource/VASoundSourceRepresentation.h"
 #include "VAPlugin.h"
 
 // For ConstructorHelpers and SphereMesh

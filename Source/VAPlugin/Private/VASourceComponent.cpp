@@ -2,15 +2,15 @@
 
 #include "VASourceComponent.h"
 
-#include "VASoundSourceBase.h"
+#include "SoundSource/VASoundSourceBase.h"
 #include "VAReceiverActor.h"
 #include "VAPlugin.h"
 #include "VAUtils.h"
 
 #include "ImageSourceModel/VAImageSourceModel.h"
 
-#include "SignalSources\VAAudiofileSignalSource.h"
-#include "SignalSources\VAJetEngineSignalSource.h"
+#include "SignalSources/VAAudiofileSignalSource.h"
+#include "SignalSources/VAJetEngineSignalSource.h"
 
 #include "Components/SkeletalMeshComponent.h"		// Skeletons
 #include "Kismet/GameplayStatics.h"					// Get Actors of Class

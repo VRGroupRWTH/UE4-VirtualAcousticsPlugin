@@ -1,4 +1,4 @@
-#include "VAHRIR.h"
+#include "HRIR/VAHRIR.h"
 
 #include "VAPlugin.h"							// For Server
 #include "VAUtils.h"			

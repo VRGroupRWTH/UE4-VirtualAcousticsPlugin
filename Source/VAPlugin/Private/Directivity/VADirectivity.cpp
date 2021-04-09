@@ -1,4 +1,4 @@
-#include "VADirectivity.h"
+#include "Directivity/VADirectivity.h"
 
 #include "VAPlugin.h"							// For Server Interface functions
 #include "VAUtils.h"

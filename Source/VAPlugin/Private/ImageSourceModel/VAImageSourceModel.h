@@ -7,7 +7,7 @@
 #include <string>
 #include "Templates/SharedPointer.h"
 
-#include "../VASoundSourceBase.h"
+#include "SoundSource/VASoundSourceBase.h"
 
 class AVAReflectionWall;
 class UWorld;
