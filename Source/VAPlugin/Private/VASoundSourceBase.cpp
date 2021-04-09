@@ -3,6 +3,7 @@
 #include "VAPlugin.h"
 #include "VAUtils.h"
 #include "VADefines.h"
+#include "VADirectivity.h"
 
 #include "VASoundSourceRepresentation.h"
 
@@ -13,14 +14,14 @@
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name /* = "" */, int DirectivityID /* = -1 */)
+FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name /* = "" */, FVADirectivity* Directivity /* = nullptr */)
 	: SoundSourceID(VA_INVALID_ID)
 	, Name(Name)
 	, Position(Position)
 	, Rotation(Rotation)
 	, bShowCones(false)
 	, Power(Power)
-	, DirectivityID(VA_INVALID_ID)
+	, Directivity(nullptr)
 	, SignalSourceID(VA_INVALID_ID_STRING)
 {
 	bShowCones = FVAPlugin::GetDebugMode();
@@ -31,9 +32,9 @@ FVASoundSourceBase::FVASoundSourceBase(UWorld* World, const FVector& Position, c
 		FVAUtils::LogStuff("[FVASoundSourceBase::FVASoundSourceBase()]: Error initializing VA sound source", true);
 		return;
 	}
-	if (VA::IsValidID(DirectivityID))
+	if (Directivity != nullptr)
 	{
-		SetDirectivity(DirectivityID);
+		SetDirectivity(Directivity);
 	}
 
 	// Show graphical representation
@@ -103,16 +104,21 @@ void FVASoundSourceBase::SetVisibility(const bool bVisible)
 	SoundSourceRepresentation->SetVisibility(bShowCones);
 }
 
-bool FVASoundSourceBase::SetDirectivity(int NewDirectivityID)
+bool FVASoundSourceBase::SetDirectivity(FVADirectivity* NewDirectivity)
 {
-	if (DirectivityID == NewDirectivityID)
+	if (NewDirectivity == nullptr)
+	{
+		FVAUtils::OpenMessageBox(FString("[FVASoundSourceBase::SetDirectivity]: Cannot set empty directivity, use RemoveDirectivity() instead"), true);
+		return false;
+	}
+	if (Directivity == NewDirectivity)
 	{
 		return true;
 	}
 
-	if (FVAPlugin::SetSoundSourceDirectivity(SoundSourceID, DirectivityID))
+	if (FVAPlugin::SetSoundSourceDirectivity(SoundSourceID, NewDirectivity->GetID()))
 	{
-		DirectivityID = NewDirectivityID;
+		Directivity = NewDirectivity;
 		return true;
 	}
 	return false;
@@ -120,7 +126,12 @@ bool FVASoundSourceBase::SetDirectivity(int NewDirectivityID)
 
 bool FVASoundSourceBase::RemoveDirectivity()
 {
-	return FVAPlugin::RemoveSoundSourceDirectivity(SoundSourceID);
+	if(FVAPlugin::RemoveSoundSourceDirectivity(SoundSourceID))
+	{
+		Directivity = nullptr;
+		return true;
+	}
+	return false;
 }
 
 bool FVASoundSourceBase::SetSignalSource(const std::string& NewSignalSourceID)
@@ -129,7 +140,7 @@ bool FVASoundSourceBase::SetSignalSource(const std::string& NewSignalSourceID)
 	{
 		return true;
 	}
-	if (FVAPlugin::SetSoundSourceSignalSource(SoundSourceID, SignalSourceID))
+	if (FVAPlugin::SetSoundSourceSignalSource(SoundSourceID, NewSignalSourceID))
 	{
 		SignalSourceID = NewSignalSourceID;
 		return true;
@@ -192,9 +203,19 @@ float FVASoundSourceBase::GetPower() const
 	return Power;
 }
 
-int FVASoundSourceBase::GetDirectivityID() const
+FVADirectivity* FVASoundSourceBase::GetDirectivity() const
 {
-	return DirectivityID;
+	return Directivity;
+}
+
+FString FVASoundSourceBase::GetDirectivityFilename() const
+{
+	if (!Directivity)
+	{
+		return FString("");
+	}
+
+	return Directivity->GetFileName();
 }
 
 const std::string& FVASoundSourceBase::GetSignalSourceID() const

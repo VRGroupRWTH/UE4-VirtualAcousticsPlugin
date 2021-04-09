@@ -1,10 +1,9 @@
-#include "VASoundSource.h"
+#include "VAImageSourceModel.h"
 
 #include "VAPlugin.h"
 #include "VAUtils.h"
 
 #include "VAReflectionWall.h"
-#include "VAImageSourceModel.h"
 
 #include "Engine/World.h"
 
@@ -30,7 +29,7 @@ FVAImageSourceModel::FVAImageSourceModel(UWorld* World, FVASoundSourceBase* Pare
 
 		const float R = Wall->GetReflectionValueR();
 		const float PowerR = ParentSource->GetPower() * R * R;
-		ImageSources.Add( MakeShared<FVAImageSource>(Wall, World, ParentSource->GetPosition(), ParentSource->GetRotation(), PowerR, ISName, ParentSource->GetDirectivityID()) );
+		ImageSources.Add( MakeShared<FVAImageSource>(Wall, World, ParentSource->GetPosition(), ParentSource->GetRotation(), PowerR, ISName, ParentSource->GetDirectivity()) );
 	}
 }
 
@@ -102,7 +101,7 @@ bool FVAImageSourceModel::UpdateISDirectivities()
 	bool bFullSuccess = true;
 	for (auto IS : ImageSources)
 	{
-		if (!IS->SetDirectivity(ParentSource->GetDirectivityID()))
+		if (!IS->SetDirectivity(ParentSource->GetDirectivity()))
 		{
 			bFullSuccess = false;
 		}
@@ -180,8 +179,8 @@ FRotator FVAImageSourceModel::ComputeReflectedRot(const AVAReflectionWall* Wall,
 // ******* Image Source Class *************************************** //
 // ****************************************************************** //
 
-FVAImageSourceModel::FVAImageSource::FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name, int DirectivityID /* = -1 */)
-	: FVASoundSourceBase(World, Position, Rotation, Power, Name, DirectivityID)
+FVAImageSourceModel::FVAImageSource::FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name, FVADirectivity*  Directivity /* = nullptr */)
+	: FVASoundSourceBase(World, Position, Rotation, Power, Name, Directivity)
 	, Wall(Wall)
 {
 	if (Wall == nullptr)

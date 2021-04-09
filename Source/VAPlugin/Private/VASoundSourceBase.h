@@ -7,6 +7,7 @@
 #include <string>
 
 class AVASoundSourceRepresentation;
+class FVADirectivity;
 class UWorld;
 
 class FVASoundSourceBase
@@ -14,7 +15,7 @@ class FVASoundSourceBase
 public:
 
 	// Initialization
-	FVASoundSourceBase(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN = "", int DirectivityID = -1);
+	FVASoundSourceBase(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN = "", FVADirectivity* DirectivityID = nullptr);
 	virtual ~FVASoundSourceBase();
 
 	// Setter
@@ -22,7 +23,7 @@ public:
 	void SetRotation(FRotator NewRotation);
 	void SetVisibility(bool bVisible);
 
-	bool SetDirectivity(int DirectivityID);
+	bool SetDirectivity(FVADirectivity* NewDirectivity);
 	bool RemoveDirectivity();
 
 	bool SetSignalSource(const std::string& SignalSourceID);
@@ -43,7 +44,8 @@ public:
 	bool GetVisibility() const;
 
 	float GetPower() const;
-	int GetDirectivityID() const;
+	FVADirectivity* GetDirectivity() const;
+	FString GetDirectivityFilename() const;
 	const std::string& GetSignalSourceID() const;
 
 private:
@@ -57,7 +59,7 @@ private:
 	bool bShowCones;
 
 	float Power;
-	int DirectivityID;
+	FVADirectivity* Directivity;
 	std::string SignalSourceID;
 	
 	AVASoundSourceRepresentation* SoundSourceRepresentation;

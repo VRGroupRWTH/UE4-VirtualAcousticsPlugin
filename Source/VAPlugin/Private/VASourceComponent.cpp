@@ -2,7 +2,6 @@
 
 #include "VASourceComponent.h"
 
-#include "VASoundSource.h"
 #include "VASoundSourceBase.h"
 #include "VAReceiverActor.h"
 #include "VAPlugin.h"
@@ -47,7 +46,7 @@ void UVASourceComponent::BeginPlay()
 
 void UVASourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	SoundSource.Reset();
+	SoundSourceBase.Reset();
 	UnbindSignalSourceEvents();
 }
 
@@ -63,21 +62,16 @@ void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick T
 		return;
 	}
 
-
-
-  if (!bInitialized)
-  {
-    FVAUtils::OpenMessageBox("[UVASourceComponent::TickComponent()]: Sound source is not initialized", true);
-  }
+	if (!bInitialized)
+	{
+	    FVAUtils::OpenMessageBox("[UVASourceComponent::TickComponent()]: Sound source is not initialized", true);
+		return;
+	}
 
 
 	if (bFirstTick && FVAPlugin::GetIsMaster())
 	{
 		TimeSinceUpdate = 1.0f;
-		//if (StartingPlayAction == EPlayAction::Play)
-		//{
-		//	SoundSource->PlaySoundFromSecond(StartingTime);
-		//}
 	}
 	bFirstTick = false;
 
@@ -86,8 +80,7 @@ void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick T
 	if ((MovementSetting == EMovement::AttachToBone || MovementSetting == EMovement::MoveWithObject) &&
 		TimeSinceUpdate > (1.0f / float(UpdateRate)))
 	{
-		SoundSource->SetPosition(GetPosition());
-		SoundSource->SetRotation(GetRotation());
+		UpdatePose();
 
 		TimeSinceUpdate = 0.0f;
 	}
@@ -163,29 +156,33 @@ void UVASourceComponent::Initialize()
 	const std::string SoundSourceName = std::string( TCHAR_TO_UTF8(*GetName()) );
 	SoundSourceBase = MakeShared<FVASoundSourceBase>(GetWorld(), GetPosition(), GetRotation(), SoundPower, SoundSourceName);
 
-	TArray<AVAReflectionWall*> WallArray = CurrentReceiverActor->GetReflectionWalls();
-	SoundSource = MakeShared<FVASoundSource>(this, WallArray);
 	if (FVAPlugin::GetIsMaster())
 	{
 		switch (DirectivitySetting)
 		{
 		case EDirectivitySetting::DefaultDirectivity:
-			SoundSource->SetDirectivity(FVADirectivityManager::GetDefaultDirectivity());
+			SoundSourceBase->SetDirectivity(FVADirectivityManager::GetDefaultDirectivity());
 			break;
 
 		case EDirectivitySetting::ManualFile:
-			SoundSource->SetDirectivity(
+			SoundSourceBase->SetDirectivity(
 				CurrentReceiverActor->GetDirectivityByFileName(DirectivityByFileName));
 			break;
 
 		case EDirectivitySetting::Phoneme:
-			SoundSource->SetDirectivity(
+			SoundSourceBase->SetDirectivity(
 				CurrentReceiverActor->GetDirectivityByMapping(DirectivityByMapping));
 			break;
 
 		default:
 			break;
 		}
+	}
+
+	if (bHandleReflections)
+	{
+		TArray<AVAReflectionWall*> ReflWalls = CurrentReceiverActor->GetReflectionWalls();
+		ImageSourceModel = MakeShared<FVAImageSourceModel>(GetWorld(), SoundSourceBase.Get(), ReflWalls);
 	}
 
 	if (SignalSource)
@@ -246,6 +243,11 @@ bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSign
 
 bool UVASourceComponent::SetSignalSourceID(const std::string& SignalSourceID)
 {
+	if (!SoundSourceBase.IsValid())
+	{
+		FVAUtils::OpenMessageBox(FString("[UVASourceComponent::SetSignalSourceID]: VA sound source not initialized"), true);
+		return false;
+	}
 	if (!SoundSourceBase->SetSignalSource(SignalSourceID))
 	{
 		return false;
@@ -533,7 +535,7 @@ bool UVASourceComponent::SetDirectivityByMapping(const FString Phoneme)
 	DirectivitySetting = EDirectivitySetting::Phoneme;
 	DirectivityByMapping = Phoneme;
 
-	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByMapping(Phoneme));
+	return SoundSourceBase->SetDirectivity(CurrentReceiverActor->GetDirectivityByMapping(Phoneme));
 }
 
 bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
@@ -548,17 +550,17 @@ bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
 
 	if (FileName == "")
 	{
-		 return SoundSource->RemoveDirectivity();
+		 return SoundSourceBase->RemoveDirectivity();
 	}
 	
-	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
+	return SoundSourceBase->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
 }
 
 FString UVASourceComponent::GetDirectivityFileName() const
 {
-	if (SoundSource.IsValid())
+	if (SoundSourceBase.IsValid())
 	{
-		return SoundSource->GetDirectivity()->GetFileName();
+		return SoundSourceBase->GetDirectivityFilename();
 	}
 
 	return "";
