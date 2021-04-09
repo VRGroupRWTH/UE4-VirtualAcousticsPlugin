@@ -7,7 +7,7 @@
 #include "VAUtils.h"
 
 #include "VASourceComponent.h"
-#include "VAReflectionWall.h"
+#include "ImageSourceModel/VAReflectionWall.h"
 #include "VADirectivityManager.h"
 #include "VAHRIRManager.h"
 

@@ -8,7 +8,6 @@
 
 #include "VAUtils.h"
 
-#include "VAReflectionWall.h"
 #include "VAReceiverActor.h"
 #include "VASourceComponent.h"
 #include "VASettings.h"

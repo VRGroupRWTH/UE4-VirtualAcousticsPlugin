@@ -2,10 +2,7 @@
 
 #include "VAUtils.h"
 
-#include "VAReflectionWall.h"
 #include "VAPlugin.h"
-
-#include "Kismet/KismetMathLibrary.h"
 
 #include "VA.h"
 
@@ -127,38 +124,6 @@ bool FVAUtils::FQuatToVAQuat(FQuat& QuatF, VAQuat& QuatVA)
 	QuatVA.Set(QuatF.X, QuatF.Y, QuatF.Z, QuatF.W);
 
 	return true;
-}
-
-
-FVector FVAUtils::ComputeReflectedPos(const AVAReflectionWall* Wall, const FVector Pos)
-{
-	const FVector Normal = Wall->GetNormalVector();
-	const float D = Wall->GetHessianD();
-	const float T = D - FVector::DotProduct(Normal, Pos);
-
-	return (Pos + 2.0 * T * Normal);
-}
-
-
-FRotator FVAUtils::ComputeReflectedRot(const AVAReflectionWall* Wall, const FRotator Rot)
-{
-	const FVector WallNormalVec = Wall->GetNormalVector();
-	const FVector StartPos		= Wall->GetSupportVector() + (1000 * WallNormalVec);
-
-	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(Rot);
-	const FVector UpVector		= UKismetMathLibrary::GetUpVector(Rot);
-
-	const FVector PosForward	= StartPos + (500 * ForwardVector);
-	const FVector PosUp			= StartPos + (500 * UpVector);
-
-	const FVector StartPosR		= ComputeReflectedPos(Wall, StartPos);
-	const FVector PosForwardR	= ComputeReflectedPos(Wall, PosForward);
-	const FVector PosUpR		= ComputeReflectedPos(Wall, PosUp);
-
-	const FVector DirForwardR	= PosForwardR - StartPosR;
-	const FVector DirUpR		= PosUpR - StartPosR;
-
-	return UKismetMathLibrary::MakeRotFromXZ(DirForwardR, DirUpR);
 }
 
 

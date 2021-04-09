@@ -9,7 +9,6 @@ DECLARE_LOG_CATEGORY_EXTERN(VALog, Log, All);
 //forward declarations:
 class VAQuat;
 class VAVec3;
-class AVAReflectionWall;
 
 class FVAUtils
 {
@@ -33,10 +32,6 @@ public:
 	// Transforms Vec & Rotators in VA Coordinate System // 
 	static FVector ToVACoordinateSystem(FVector VecF, float Scale);
 	static FRotator ToVACoordinateSystem(FRotator RotF);
-
-	// Compute reflected Position from wall
-	static FVector ComputeReflectedPos(const AVAReflectionWall* Wall, FVector Pos);
-	static FRotator ComputeReflectedRot(const AVAReflectionWall* Wall, FRotator Rot);
 
 	// Log into VALog
 	static void LogStuff(FString Text, bool Error = false);

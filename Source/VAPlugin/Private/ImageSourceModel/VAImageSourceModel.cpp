@@ -3,7 +3,7 @@
 #include "VAPlugin.h"
 #include "VAUtils.h"
 
-#include "VAReflectionWall.h"
+#include "ImageSourceModel/VAReflectionWall.h"
 
 #include "Engine/World.h"
 
