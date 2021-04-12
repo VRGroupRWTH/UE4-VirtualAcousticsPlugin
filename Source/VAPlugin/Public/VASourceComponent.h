@@ -31,13 +31,9 @@ protected:
 
 
 
-	// Check if reflections by walls should be considered
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use reflections?", Category = "General Settings"))
-	bool bHandleReflections = true;
-
 	// Sound power used for this source
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Power", Category = "General Settings",
-		ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0"))
+		ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
 	float SoundPower = 0.0316227749f;
 
 
@@ -83,6 +79,11 @@ protected:
 	// Directivity that is used by a specific phoneme (see Receiver Actor Directivity Manager)
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Phoneme Directivity from config", Category = "Directivity"))
 	FString DirectivityByMapping = "";
+
+
+	// Activate to generate 1st order image sources based on VAReflectionWalls
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Enable", Category = "Image Source Model"))
+	bool bHandleReflections = true;
 
 
 public:
