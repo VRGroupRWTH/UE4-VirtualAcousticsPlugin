@@ -56,7 +56,7 @@ private:
 	class FVAImageSource : public FVASoundSource
 	{
 	public:
-		FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN, FVADirectivity* Directivity = nullptr);
+		FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN, TSharedPtr<FVADirectivity> Directivity = nullptr);
 		AVAReflectionWall* GetWall();
 	private:
 		AVAReflectionWall* Wall;

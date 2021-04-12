@@ -279,12 +279,12 @@ bool AVAReceiverActor::UpdateRealWorldPose()
 // ******* Directivity / HRIR Handling ****************************** //
 // ****************************************************************** //
 
-FVADirectivity* AVAReceiverActor::GetDirectivityByMapping(const FString Phoneme) const
+TSharedPtr<FVADirectivity> AVAReceiverActor::GetDirectivityByMapping(const FString Phoneme) const
 {
 	return DirManager->GetDirectivityByPhoneme(Phoneme);
 }
 
-FVADirectivity* AVAReceiverActor::GetDirectivityByFileName(const FString FileName)
+TSharedPtr<FVADirectivity> AVAReceiverActor::GetDirectivityByFileName(const FString FileName)
 {
 	return DirManager->GetDirectivityByFileName(FileName);
 }

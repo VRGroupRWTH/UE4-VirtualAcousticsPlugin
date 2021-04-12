@@ -179,7 +179,7 @@ FRotator FVAImageSourceModel::ComputeReflectedRot(const AVAReflectionWall* Wall,
 // ******* Image Source Class *************************************** //
 // ****************************************************************** //
 
-FVAImageSourceModel::FVAImageSource::FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name, FVADirectivity*  Directivity /* = nullptr */)
+FVAImageSourceModel::FVAImageSource::FVAImageSource(AVAReflectionWall* Wall, UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name, TSharedPtr<FVADirectivity>  Directivity /* = nullptr */)
 	: FVASoundSource(World, Position, Rotation, Power, Name, Directivity)
 	, Wall(Wall)
 {

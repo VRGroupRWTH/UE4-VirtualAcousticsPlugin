@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+#include "Templates/SharedPointer.h"
+
 #include <string>
 
 class AVASoundSourceRepresentation;
@@ -15,7 +17,7 @@ class FVASoundSource
 public:
 
 	// Initialization
-	FVASoundSource(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN = "", FVADirectivity* DirectivityID = nullptr);
+	FVASoundSource(UWorld* World, const FVector& PosN, const FRotator& RotN, float PowerN, const std::string& NameN = "", TSharedPtr<FVADirectivity> DirectivityID = nullptr);
 	virtual ~FVASoundSource();
 
 	// Setter
@@ -23,7 +25,7 @@ public:
 	void SetRotation(FRotator NewRotation);
 	void SetVisibility(bool bVisible);
 
-	bool SetDirectivity(FVADirectivity* NewDirectivity);
+	bool SetDirectivity(TSharedPtr<FVADirectivity> NewDirectivity);
 	bool RemoveDirectivity();
 
 	bool SetSignalSource(const std::string& SignalSourceID);
@@ -44,7 +46,7 @@ public:
 	bool GetVisibility() const;
 
 	float GetPower() const;
-	FVADirectivity* GetDirectivity() const;
+	TSharedPtr<FVADirectivity> GetDirectivity() const;
 	FString GetDirectivityFilename() const;
 	const std::string& GetSignalSourceID() const;
 
@@ -59,7 +61,7 @@ private:
 	bool bShowCones;
 
 	float Power;
-	FVADirectivity* Directivity;
+	TSharedPtr<FVADirectivity> Directivity;
 	std::string SignalSourceID;
 	
 	AVASoundSourceRepresentation* SoundSourceRepresentation;

@@ -4,6 +4,8 @@
 
 #include "Directivity/VADirectivity.h"
 
+#include "Templates/SharedPointer.h"
+
 class FVADirectivityManager
 {
 public:
@@ -17,10 +19,10 @@ public:
 
 	
 	// Get Directivities
-	FVADirectivity* GetDirectivityByPhoneme(FString Phoneme) const;
-	FVADirectivity* GetDirectivityByFileName(FString FileName);
+	FVADirectivitySharedPtr GetDirectivityByPhoneme(FString Phoneme) const;
+	FVADirectivitySharedPtr GetDirectivityByFileName(FString FileName);
 	
-	static FVADirectivity* GetDefaultDirectivity();
+	static FVADirectivitySharedPtr GetDefaultDirectivity();
 
 
 
@@ -39,5 +41,5 @@ private:
 	FString ConfigFileName;
 
 	// Default Directivity, can be overloaded by config file
-	static FVADirectivity* DefaultDirectivity;
+	static FVADirectivitySharedPtr DefaultDirectivity;
 };

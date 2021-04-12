@@ -14,7 +14,7 @@
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVASoundSource::FVASoundSource(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name /* = "" */, FVADirectivity* Directivity /* = nullptr */)
+FVASoundSource::FVASoundSource(UWorld* World, const FVector& Position, const FRotator& Rotation, float Power, const std::string& Name /* = "" */, TSharedPtr<FVADirectivity> Directivity /* = nullptr */)
 	: SoundSourceID(VA_INVALID_ID)
 	, Name(Name)
 	, Position(Position)
@@ -32,7 +32,7 @@ FVASoundSource::FVASoundSource(UWorld* World, const FVector& Position, const FRo
 		FVAUtils::LogStuff("[FVASoundSource::FVASoundSource()]: Error initializing VA sound source", true);
 		return;
 	}
-	if (Directivity != nullptr)
+	if (Directivity.IsValid())
 	{
 		SetDirectivity(Directivity);
 	}
@@ -104,9 +104,9 @@ void FVASoundSource::SetVisibility(const bool bVisible)
 	SoundSourceRepresentation->SetVisibility(bShowCones);
 }
 
-bool FVASoundSource::SetDirectivity(FVADirectivity* NewDirectivity)
+bool FVASoundSource::SetDirectivity(TSharedPtr<FVADirectivity> NewDirectivity)
 {
-	if (NewDirectivity == nullptr)
+	if (!NewDirectivity.IsValid())
 	{
 		FVAUtils::OpenMessageBox(FString("[FVASoundSource::SetDirectivity]: Cannot set empty directivity, use RemoveDirectivity() instead"), true);
 		return false;
@@ -128,7 +128,7 @@ bool FVASoundSource::RemoveDirectivity()
 {
 	if(FVAPlugin::RemoveSoundSourceDirectivity(SoundSourceID))
 	{
-		Directivity = nullptr;
+		Directivity.Reset();
 		return true;
 	}
 	return false;
@@ -203,7 +203,7 @@ float FVASoundSource::GetPower() const
 	return Power;
 }
 
-FVADirectivity* FVASoundSource::GetDirectivity() const
+TSharedPtr<FVADirectivity> FVASoundSource::GetDirectivity() const
 {
 	return Directivity;
 }

@@ -5,7 +5,7 @@
 #include "Core.h"
 //#include "HRIR/VAHRIR.h"
 
-FVADirectivity* FVADirectivityManager::DefaultDirectivity;
+FVADirectivitySharedPtr FVADirectivityManager::DefaultDirectivity;
 
 
 // ****************************************************************** // 
@@ -28,7 +28,7 @@ void FVADirectivityManager::ResetManager()
 	DefaultDirectivity = nullptr;
 
 	FVADirectivitySharedPtr NewDirectivity(new FVADirectivity("$(HumanDir)"));
-	DefaultDirectivity = NewDirectivity.Get();
+	DefaultDirectivity = NewDirectivity;
 	
 	Directivities.Empty();
 	Directivities.Add(NewDirectivity);
@@ -135,7 +135,7 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 
 
 		// Create Directivities
-		FVADirectivity* TmpDir = GetDirectivityByFileName(TmpFileName);
+		FVADirectivitySharedPtr TmpDir = GetDirectivityByFileName(TmpFileName);
 
 		// If there is no Dir from that file
 		if (TmpDir == nullptr)
@@ -169,14 +169,14 @@ bool FVADirectivityManager::ReadConfigFile(const FString ConfigFileNameN)
 // ******* Get Directivities **************************************** //
 // ****************************************************************** //
 
-FVADirectivity* FVADirectivityManager::GetDirectivityByPhoneme(const FString Phoneme) const
+FVADirectivitySharedPtr FVADirectivityManager::GetDirectivityByPhoneme(const FString Phoneme) const
 {
 	// Search for Directivity
 	for (auto Entry : Directivities)
 	{
 		if (Entry.Get()->ContainsPhoneme(Phoneme))
 		{
-			return Entry.Get();
+			return Entry;
 		}
 	}
 	FVAUtils::LogStuff("[FVADirectivityManager::GetDirectivityByPhoneme()]: Directivity for phoneme " + 
@@ -186,7 +186,7 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByPhoneme(const FString Pho
 	return GetDefaultDirectivity();
 }
 
-FVADirectivity* FVADirectivityManager::GetDirectivityByFileName(const FString FileName)
+FVADirectivitySharedPtr FVADirectivityManager::GetDirectivityByFileName(const FString FileName)
 {
 	if (FileName == "default")
 	{
@@ -203,7 +203,7 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByFileName(const FString Fi
 				FVAUtils::LogStuff("[FVADirectivityManager::getDirectivityByFileName()]: Directivity from file " + 
 					FileName + " was found!", false);
 
-				return Entry.Get();
+				return Entry;
 			}
 		}
 	}
@@ -218,7 +218,7 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByFileName(const FString Fi
 		FVAUtils::LogStuff("[FVAHeadRelatedIRManager::GetDirectivityByFileName()]: Directivity from file "+ 
 			FileName + " is created!", false);
 		Directivities.Add(NewDirectivity);
-		return NewDirectivity.Get();
+		return NewDirectivity;
 	}
 	FVAUtils::LogStuff("[FVADirectivityManager::GetDirectivityByFileName()]: Directivity from file " + 
 		FileName + " cannot be created!", true);
@@ -229,7 +229,7 @@ FVADirectivity* FVADirectivityManager::GetDirectivityByFileName(const FString Fi
 
 
 
-FVADirectivity* FVADirectivityManager::GetDefaultDirectivity()
+FVADirectivitySharedPtr FVADirectivityManager::GetDefaultDirectivity()
 {
 	if (DefaultDirectivity != nullptr)
 	{

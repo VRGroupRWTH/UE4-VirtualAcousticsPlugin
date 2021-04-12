@@ -4,6 +4,8 @@
 
 #include "VAEnums.h"									// EAddress
 
+#include "Templates/SharedPointer.h"
+
 #include "GameFramework/Actor.h"
 #include "Cluster/IDisplayClusterClusterManager.h"		// Events
 
@@ -123,8 +125,8 @@ protected:
 	TArray<AVAReflectionWall*> GetReflectionWalls();					// SourceC
 
 	// Directivity Handling
-	FVADirectivity* GetDirectivityByMapping(FString Phoneme) const;		// SourceC
-	FVADirectivity* GetDirectivityByFileName(FString FileName);			// SourceC
+	TSharedPtr<FVADirectivity> GetDirectivityByMapping(FString Phoneme) const;		// SourceC
+	TSharedPtr<FVADirectivity> GetDirectivityByFileName(FString FileName);			// SourceC
 
 	
 	// Cluster Stuff
@@ -163,7 +165,7 @@ protected:
 	// Receiver Specific Data
 	int ReceiverID;
 	TSharedPtr<FVADirectivityManager> DirManager;
-  TSharedPtr<FVAHRIRManager> HRIRManager;
+	TSharedPtr<FVAHRIRManager> HRIRManager;
 
 	FVAHRIR* CurrentHRIR;
 
