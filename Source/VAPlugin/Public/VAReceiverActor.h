@@ -77,7 +77,7 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName =
 		"Which VAServer version should be started, configurable in the Config of the VAServer Launcher", Category =
 		"General Settigns"))
-	FString WhichVAServerVersionToStart = TEXT("2018.a");
+	FString WhichVAServerVersionToStart = TEXT("2020.a");
 
 
 
