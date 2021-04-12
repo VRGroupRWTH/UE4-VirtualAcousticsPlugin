@@ -14,14 +14,14 @@
 // ******* Initialization ******************************************* //
 // ****************************************************************** //
 
-FVAImageSourceModel::FVAImageSourceModel(UWorld* World, FVASoundSource* ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls)
+FVAImageSourceModel::FVAImageSourceModel(UWorld* World, TSharedRef<FVASoundSource> ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls)
 	: ParentSource(ParentSource)
 {
-	if (!ParentSource)
-	{
-		FVAUtils::LogStuff("[FVAImageSourceModel::FVAImageSourceModel()]: Trying to initialize IS model based on invalid sound source (nullptr)", true);
-		return;
-	}
+	//if (!ParentSource)
+	//{
+	//	FVAUtils::LogStuff("[FVAImageSourceModel::FVAImageSourceModel()]: Trying to initialize IS model based on invalid sound source (nullptr)", true);
+	//	return;
+	//}
 	for (auto Wall : ReflectionWalls)
 	{
 		std::string WallName(TCHAR_TO_UTF8(*Wall->GetName()));

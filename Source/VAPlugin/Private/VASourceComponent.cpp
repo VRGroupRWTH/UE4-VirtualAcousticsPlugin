@@ -182,7 +182,7 @@ void UVASourceComponent::Initialize()
 	if (bHandleReflections)
 	{
 		TArray<AVAReflectionWall*> ReflWalls = CurrentReceiverActor->GetReflectionWalls();
-		ImageSourceModel = MakeShared<FVAImageSourceModel>(GetWorld(), SoundSource.Get(), ReflWalls);
+		ImageSourceModel = MakeShared<FVAImageSourceModel>(GetWorld(), SoundSource.ToSharedRef(), ReflWalls);
 	}
 
 	if (SignalSource)
@@ -580,6 +580,10 @@ bool UVASourceComponent::SetVisibility(const bool bVis)
 	}
 
 	SoundSource->SetVisibility(bVis);
+	if (bHandleReflections && ImageSourceModel.IsValid())
+	{
+		ImageSourceModel->SetISVisibility(bVis);
+	}
 	return true;
 }
 

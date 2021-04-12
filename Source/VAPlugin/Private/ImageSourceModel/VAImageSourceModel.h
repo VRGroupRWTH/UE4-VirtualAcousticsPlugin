@@ -20,7 +20,7 @@ public:
 
 	// ---Initialization---
 
-	FVAImageSourceModel(UWorld* World, FVASoundSource* ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls);
+	FVAImageSourceModel(UWorld* World, TSharedRef<FVASoundSource> ParentSource, const TArray<AVAReflectionWall*>& ReflectionWalls);
 
 	// ---Setter---
 
@@ -62,7 +62,7 @@ private:
 		AVAReflectionWall* Wall;
 	};
 
-	FVASoundSource* ParentSource;
+	TSharedRef<FVASoundSource> ParentSource;
 	TArray<TSharedRef<FVAImageSource>> ImageSources;
 
 };
