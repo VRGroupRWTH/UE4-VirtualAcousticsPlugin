@@ -83,7 +83,7 @@ protected:
 
 	// Activate to generate 1st order image sources based on VAReflectionWalls
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Enable", Category = "Image Source Model"))
-	bool bHandleReflections = true;
+	bool bHandleReflections = false;
 
 
 public:
