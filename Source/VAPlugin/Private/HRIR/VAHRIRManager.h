@@ -4,6 +4,8 @@
 
 #include "HRIR/VAHRIR.h"
 
+#include <Templates/SharedPointer.h>
+
 class FVAHRIRManager
 {
 public:
@@ -15,12 +17,12 @@ public:
 	void ResetManager();
 
 	// Get HRIR
-	FVAHRIR* GetHRIRByFileName(FString FileName);
+	TSharedPtr<FVAHRIR> GetHRIRByFileName(FString FileName);
 
-	static FVAHRIR* GetDefaultHRIR();
+	static TSharedPtr<FVAHRIR> GetDefaultHRIR();
 
 private:
 	TArray<FVAHRIRSharedPtr> HRIRs;
 
-	static FVAHRIR* DefaultHRIR;
+	static TSharedPtr<FVAHRIR> DefaultHRIR;
 };

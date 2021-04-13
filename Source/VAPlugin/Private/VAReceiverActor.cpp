@@ -5,6 +5,7 @@
 
 #include "VAPlugin.h"
 #include "VAUtils.h"
+#include "VADefines.h"
 
 #include "VASourceComponent.h"
 #include "ImageSourceModel/VAReflectionWall.h"
@@ -111,7 +112,7 @@ void AVAReceiverActor::BeginPlay()
 
 		// Initialize Receiver Actor
 		ReceiverID = FVAPlugin::CreateNewSoundReceiver(this);
-		if (FVAHRIRManager::GetDefaultHRIR()->GetID() != -1)
+		if (FVAHRIRManager::GetDefaultHRIR().IsValid() && VA::IsValidID( FVAHRIRManager::GetDefaultHRIR()->GetID() ))
 		{
 			CurrentHRIR = FVAHRIRManager::GetDefaultHRIR();
 		}
@@ -304,20 +305,23 @@ bool AVAReceiverActor::ReadDirMappingFile(const FString FileName)
 
 bool AVAReceiverActor::SetHRIRByFileName(const FString FileName)
 {
-	FVAHRIR* NewHRIR = HRIRManager->GetHRIRByFileName(FileName);
-
-	if (NewHRIR == nullptr)
+	TSharedPtr<FVAHRIR> NewHRIR = HRIRManager->GetHRIRByFileName(FileName);
+	if (!NewHRIR.IsValid())
 	{
 		return false;
 	}
 	
-	if(CurrentHRIR != nullptr && NewHRIR->GetID() == CurrentHRIR->GetID())
+	if(CurrentHRIR.IsValid() && NewHRIR->GetID() == CurrentHRIR->GetID())
 	{
 		return true;
 	}
 	
-	CurrentHRIR = NewHRIR;
-	return FVAPlugin::SetSoundReceiverHRIR(ReceiverID, NewHRIR->GetID());
+	if (FVAPlugin::SetSoundReceiverHRIR(ReceiverID, NewHRIR->GetID()))
+	{
+		CurrentHRIR = NewHRIR;
+		return true;
+	}
+	return false;
 }
 
 

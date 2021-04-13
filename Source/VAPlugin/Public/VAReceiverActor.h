@@ -167,7 +167,7 @@ protected:
 	TSharedPtr<FVADirectivityManager> DirManager;
 	TSharedPtr<FVAHRIRManager> HRIRManager;
 
-	FVAHRIR* CurrentHRIR;
+	TSharedPtr<FVAHRIR> CurrentHRIR;
 
 	TArray<AVAReflectionWall*> ReflectionWalls;
 	

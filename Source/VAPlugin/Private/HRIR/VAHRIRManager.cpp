@@ -2,7 +2,7 @@
 
 #include "VAUtils.h"
 
-FVAHRIR* FVAHRIRManager::DefaultHRIR;
+TSharedPtr<FVAHRIR> FVAHRIRManager::DefaultHRIR;
 
 
 
@@ -23,19 +23,18 @@ FVAHRIRManager::~FVAHRIRManager()
 
 void FVAHRIRManager::ResetManager()
 {
-	DefaultHRIR = nullptr;
-	FVAHRIRSharedPtr NewHRIR(new FVAHRIR("$(DefaultHRIR)"));
-	DefaultHRIR = NewHRIR.Get();
+	DefaultHRIR.Reset();
+	DefaultHRIR = MakeShared<FVAHRIR>("$(DefaultHRIR)");
 
 	HRIRs.Empty();
-	HRIRs.Add(NewHRIR);
+	HRIRs.Add(DefaultHRIR);
 }
 
 // ****************************************************************** // 
 // ******* Get HRIR ************************************************* //
 // ****************************************************************** //
 
-FVAHRIR* FVAHRIRManager::GetHRIRByFileName(const FString FileName)
+TSharedPtr<FVAHRIR> FVAHRIRManager::GetHRIRByFileName(const FString FileName)
 {
 	// Search for already existing HRIR
 	if (HRIRs.Num() > 0)
@@ -47,7 +46,7 @@ FVAHRIR* FVAHRIRManager::GetHRIRByFileName(const FString FileName)
  				FVAUtils::LogStuff("[FVAHRIRManager::GetHRIRByFileName()]: HRIR from file " + 
 					FileName + " was found!", false);
  
- 				return Entry.Get();
+ 				return Entry;
  			}
  		}
 	}
@@ -62,7 +61,7 @@ FVAHRIR* FVAHRIRManager::GetHRIRByFileName(const FString FileName)
 		FVAUtils::LogStuff("[FVAHRIRManager::GetHRIRByFileName()]: HRIR from file " + 
 			FileName + " is created!", false);
 		HRIRs.Add(NewHRIR);
-		return NewHRIR.Get();
+		return NewHRIR;
 	}
 	FVAUtils::LogStuff("[FVAHRIRManager::GetHRIRByFileName()]: HRIR from file " + 
 		FileName + " cannot be created!", true);
@@ -71,9 +70,9 @@ FVAHRIR* FVAHRIRManager::GetHRIRByFileName(const FString FileName)
 	return GetDefaultHRIR();
 }
 
-FVAHRIR* FVAHRIRManager::GetDefaultHRIR()
+TSharedPtr<FVAHRIR> FVAHRIRManager::GetDefaultHRIR()
 {
-	if (DefaultHRIR != nullptr)
+	if (DefaultHRIR.IsValid())
 	{
 		return DefaultHRIR;
 	}
