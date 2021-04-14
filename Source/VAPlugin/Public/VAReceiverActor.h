@@ -9,6 +9,8 @@
 #include "GameFramework/Actor.h"
 #include "Cluster/IDisplayClusterClusterManager.h"		// Events
 
+#include "AuralizationMode/VAAuralizationModeController.h"
+
 #include "VAReceiverActor.generated.h"
 
 
@@ -81,6 +83,9 @@ protected:
 		"General Settigns"))
 	FString WhichVAServerVersionToStart = TEXT("2020.a");
 
+	// Controller for global auraliztion modes
+	UPROPERTY(EditAnywhere, Instanced, NoClear, meta = (DisplayName = "Auraliztion Mode Controller", Category = "Auralization Modes"))
+		UVAAuralizationModeController* AuralizationModeController;
 
 
 public:
@@ -117,7 +122,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetPort() const;
 
-
+	// Gets auralization mode controller
+	UFUNCTION(BlueprintCallable)
+	UVAAuralizationModeController* GetAuralizationModeController() const;
 
 
 protected:

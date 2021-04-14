@@ -32,6 +32,8 @@ AVAReceiverActor::AVAReceiverActor()
 
   DirManager = MakeShared<FVADirectivityManager>();
   HRIRManager = MakeShared<FVAHRIRManager>();
+
+  AuralizationModeController = CreateDefaultSubobject<UVAAuralizationModeController>(TEXT("AuralizationModeController"));
 }
 
 void AVAReceiverActor::BeginPlay()
@@ -98,6 +100,11 @@ void AVAReceiverActor::BeginPlay()
 		else
 		{
 			FVAPlugin::ResetServer();
+		}
+
+		if (AuralizationModeController)
+		{
+			AuralizationModeController->Initialize();
 		}
 		
 		// Initialize the dirManager
@@ -388,6 +395,11 @@ int AVAReceiverActor::GetPort() const
 	FVAUtils::LogStuff("[AVAReceiverActor::GetPort()]: Unreachable Error", true);
 
 	return -1;
+}
+
+UVAAuralizationModeController* AVAReceiverActor::GetAuralizationModeController() const
+{
+	return AuralizationModeController;
 }
 
 int AVAReceiverActor::GetUpdateRate() const
