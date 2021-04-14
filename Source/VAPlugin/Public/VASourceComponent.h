@@ -42,7 +42,7 @@ protected:
 	TSubclassOf<UVAAbstractSignalSource> SignalSourceType = UVAAudiofileSignalSource::StaticClass();
 
 	// Select the type of the signal source
-	UPROPERTY(EditAnywhere, Instanced, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
+	UPROPERTY(EditAnywhere, Instanced, NoClear, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
 	UVAAbstractSignalSource* SignalSource = nullptr;
 
 
@@ -241,7 +241,6 @@ private:
 
 protected:
 #if WITH_EDITOR
-	virtual void PreEditChange(FProperty* PropertyWhatWillChange) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	// Function to improve settings displayed in Editor, can only be used in editor mode

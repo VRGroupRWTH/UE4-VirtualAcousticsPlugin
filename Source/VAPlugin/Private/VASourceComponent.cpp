@@ -20,6 +20,9 @@
 UVASourceComponent::UVASourceComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	
+	//Default objects for subcomponents does not work
+	//SignalSource = CreateDefaultSubobject<UVAAudiofileSignalSource>(TEXT("SignalSource"), false);
 
   // If the receiver Actor is initialized but this sound Component not, this Component is spawned at runtime and has to be initialized
   // Otherwise it will be later on initialized from the Receiver Actor
@@ -636,21 +639,6 @@ FString UVASourceComponent::GetBoneName() const
 // ****************************************************************** //
 
 #if WITH_EDITOR
-
-void UVASourceComponent::PreEditChange(FProperty* PropertyWhatWillChange)
-{
-	Super::PreEditChange(PropertyWhatWillChange);
-
-	// TODO:
-	// This is true if user directly changes the signal source component to "None"
-	// However, it is also true if user changes a sub-property of SignalSource
-	if (PropertyWhatWillChange->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSource))
-	{
-		UnbindSignalSourceEvents(); //Unbind works for now, since we bind in BeginPlay() again.
-		//SignalSourceType = nullptr;
-	}
-
-}
 
 void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
