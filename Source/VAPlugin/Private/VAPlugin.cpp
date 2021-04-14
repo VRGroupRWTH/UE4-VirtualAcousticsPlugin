@@ -1208,6 +1208,42 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 	}
 }
 
+bool FVAPlugin::SetGlobalAuralizationMode(const int AuraModeBitvector)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return false;
+	}
+	try
+	{
+		VAServer->SetGlobalAuralizationMode(AuraModeBitvector);
+		return true;
+	}
+	catch (CVAException & e)
+	{
+		ProcessException("SetGlobalAuralizationMode()", FString(e.ToString().c_str()));
+	}
+	return false;
+}
+
+bool FVAPlugin::SetRenderingModuleAuralizationMode(const std::string& RendererID, int AuraModeBitvector)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return false;
+	}
+	try
+	{
+		VAServer->SetRenderingModuleAuralizationMode(RendererID, AuraModeBitvector);
+		return true;
+	}
+	catch (CVAException & e)
+	{
+		ProcessException("SetRenderingModuleAuralizationMode()", FString(e.ToString().c_str()));
+	}
+	return false;
+}
+
 
 // ****************************************************************** // 
 // ******* General Setter Functions ********************************* //

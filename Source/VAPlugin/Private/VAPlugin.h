@@ -124,6 +124,12 @@ public:
 	static bool SetSoundReceiverRealWorldPose(int SoundReceiverID, FVector Pos, FRotator Rot);
 
 
+	// ******* Auralization Mode ******* //
+
+	static bool SetGlobalAuralizationMode(int AuraModeBitvector);
+	static bool SetRenderingModuleAuralizationMode(const std::string& RendererID, int AuraModeBitvector);
+
+
 	// ******* General Setter Functions ******* //
 
 	static void SetReceiverActor(AVAReceiverActor* Actor);
