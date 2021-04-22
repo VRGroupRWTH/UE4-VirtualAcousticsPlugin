@@ -80,11 +80,11 @@ public class VAPlugin : ModuleRules
             PublicDelayLoadDLLs.Add("VANet.dll");
 
             //also add runtime dependecy so they are packaged correctly?
-            RuntimeDependencies.Add("VABase.dll");
-            RuntimeDependencies.Add("VistaBase.dll");
-            RuntimeDependencies.Add("VistaAspects.dll");
-            RuntimeDependencies.Add("VistaInterProcComm.dll");
-            RuntimeDependencies.Add("VANet.dll");
+            RuntimeDependencies.Add(Path.Combine(LibPath,"VABase.dll"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"VistaBase.dll"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"VistaAspects.dll"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"VistaInterProcComm.dll"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"VANet.dll"));
 
 
         }
