@@ -166,16 +166,22 @@ void AVAReceiverActor::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	FVAPlugin::ResetServer();
-
-	DirManager->ResetManager();
-	HRIRManager->ResetManager();
-
 	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
 	if (ClusterManager && ClusterEventListenerDelegate.IsBound())
 	{
 		ClusterManager->RemoveClusterEventJsonListener(ClusterEventListenerDelegate);
 	}
+
+	if(!FVAPlugin::GetWasStarted())
+	{
+		return;
+	}
+
+	FVAPlugin::ResetServer();
+
+	DirManager->ResetManager();
+	HRIRManager->ResetManager();
+
 }
 
 void AVAReceiverActor::InitializeWalls()

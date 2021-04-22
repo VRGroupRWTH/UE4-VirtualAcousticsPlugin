@@ -58,6 +58,7 @@ void* FVAPlugin::LibraryHandleVistaInterProcComm;
 
 // Vars for setting of usage
 bool FVAPlugin::bPluginInitialized = false;
+bool FVAPlugin::bWasStarted = false;
 bool FVAPlugin::bUseVA = true;
 bool FVAPlugin::bDebugMode = true;
 bool FVAPlugin::bIsMaster = false;
@@ -175,7 +176,9 @@ void FVAPlugin::EndSession(const bool bSomething)
 
 void FVAPlugin::ShutdownModule()
 {
-	DisconnectServer();
+	if(bWasStarted){
+		DisconnectServer();
+	}
 
 #if PLATFORM_WINDOWS
 	FPlatformProcess::FreeDllHandle(LibraryHandleNet);
@@ -244,6 +247,7 @@ void FVAPlugin::AskForSettings(const FString Host, const int Port, const bool bA
 
 
 	bPluginInitialized = true;
+	bWasStarted=true;
 }
 
 bool FVAPlugin::CheckLibraryHandles()
@@ -332,6 +336,11 @@ bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 
 bool FVAPlugin::ResetServer()
 {
+	if(!bWasStarted)
+	{
+		return true;
+	}
+	
 	if (!ShouldInteractWithServer())
 	{
 		return false;
@@ -1335,6 +1344,11 @@ void FVAPlugin::SetDebugMode(const bool bDebugModeN)
 bool FVAPlugin::GetIsInitialized()
 {
 	return bPluginInitialized;
+}
+
+bool FVAPlugin::GetWasStarted()
+{
+	return bWasStarted;
 }
 
 bool FVAPlugin::GetUseVA()

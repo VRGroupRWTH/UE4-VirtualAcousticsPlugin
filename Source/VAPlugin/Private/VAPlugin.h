@@ -141,6 +141,7 @@ public:
 	// ******* Getter Functions ******* //
 
 	static bool GetIsInitialized();
+	static bool GetWasStarted();
 	static bool GetUseVA();
 	static bool GetDebugMode();
 	static bool GetIsMaster();
@@ -161,6 +162,7 @@ protected:
 
 	// States of the plugin
 	static bool bPluginInitialized; // To check if its already initialized
+	static bool bWasStarted; //to check whether it was at all started (not just Editor open and close again)
 	static bool bUseVA; // bool if VA is used 
 	static bool bDebugMode; // bool if is in Debug Mode
 	static bool bIsMaster; // bool if its the master node 
