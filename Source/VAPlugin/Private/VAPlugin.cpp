@@ -1,12 +1,23 @@
 #include "VAPlugin.h"
 #include "VADefines.h"
 
+#if PLATFORM_WINDOWS
 #pragma warning(disable:5038) //disable initilization order warning in MSVC
+#elif PLATFORM_LINUX
 #pragma GCC diagnostic ignored "-Wreorder-ctor" //also for gcc
+#endif
+
 #include "VA.h"
 #include "VANet.h"
-#pragma GCC diagnostic pop
+
+#if PLATFORM_WINDOWS
 #pragma warning(default:5038)
+#elif PLATFORM_LINUX
+#pragma GCC diagnostic pop
+#endif
+
+
+
 
 #include "VAUtils.h"
 
