@@ -79,6 +79,14 @@ public class VAPlugin : ModuleRules
             PublicDelayLoadDLLs.Add("VistaInterProcComm.dll");
             PublicDelayLoadDLLs.Add("VANet.dll");
 
+            //also add runtime dependecy so they are packaged correctly?
+            RuntimeDependencies.Add("VABase.dll");
+            RuntimeDependencies.Add("VistaBase.dll");
+            RuntimeDependencies.Add("VistaAspects.dll");
+            RuntimeDependencies.Add("VistaInterProcComm.dll");
+            RuntimeDependencies.Add("VANet.dll");
+
+
         }
         else // if (Target.Platform == UnrealTargetPlatform.Linux)
         {
