@@ -14,7 +14,7 @@ void UVAAudiofileSignalSource::Initialize()
 {
 	if (bInitialized)
 	{
-		FVAUtils::LogStuff("[UVAAudiofileSignalSource::Initialize()]: Signal source is already initialized, aborting...", true);
+		FVAUtils::LogStuff("[UVAAudiofileSignalSource::Initialize()]: Signal source is already initialized, aborting...", false);
 		return;
 	}
 
@@ -65,6 +65,14 @@ bool UVAAudiofileSignalSource::PreLoadAudiofile(FString AudioFilename)
 
 bool UVAAudiofileSignalSource::SetAudiofile(FString AudioFilename)
 {
+
+	if(!FVAPlugin::GetIsInitialized())
+	{
+		//not yet "started" (probably called from constructor or similar) so just store the file name for the initialization
+		Filename=AudioFilename;
+		return true;
+	}
+	
 	std::string NewID = AudiofileManager.GetAudiofileSignalSourceID(AudioFilename);
 	if (!IsValidID(NewID))
 	{
@@ -97,6 +105,14 @@ bool UVAAudiofileSignalSource::SetAudiofile(FString AudioFilename)
 
 bool UVAAudiofileSignalSource::SetLoop(const bool bLoopN)
 {
+	if(!FVAPlugin::GetIsInitialized())
+	{
+		//not yet "started" (probably called from constructor or similar) so just store the parameter for the initialization
+		bLoop=bLoopN;
+		return true;
+	}
+
+	
 	if (!FVAPlugin::GetIsMaster())
 	{
 		return false;
