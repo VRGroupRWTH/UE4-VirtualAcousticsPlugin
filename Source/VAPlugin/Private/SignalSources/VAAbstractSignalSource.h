@@ -5,12 +5,11 @@
 #include <string>
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "VAAbstractSignalSource.generated.h"
 
 
-UCLASS( ClassGroup=(VA), Abstract, meta=(BlueprintSpawnableComponent), HideDropdown, HideCategories=("Tags", "AssetUserData", "Activation", "Collision", "Cooking") )
-class UVAAbstractSignalSource : public UActorComponent
+UCLASS( ClassGroup=(VA), Abstract, HideCategories=("Tags", "AssetUserData", "Activation", "Collision", "Cooking") )
+class UVAAbstractSignalSource : public UObject
 {
 	GENERATED_BODY()
 

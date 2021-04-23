@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "VASourceComponent.h"
+#include "SoundSource/VAAbstractSourceComponent.h"
 
 #include "SoundSource/VASoundSource.h"
 #include "VAReceiverActor.h"
@@ -17,7 +17,7 @@
 
 
 // Sets default values for this component's properties
-UVASourceComponent::UVASourceComponent()
+UVAAbstractSourceComponent::UVAAbstractSourceComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	
@@ -34,28 +34,21 @@ UVASourceComponent::UVASourceComponent()
   }
 }
 
-void UVASourceComponent::OnComponentCreated()
-{
-	Super::OnComponentCreated();
-	ForceUpdateSignalSourceType(SignalSourceType);
-}
-
 // Called when the game starts
-void UVASourceComponent::BeginPlay()
+void UVAAbstractSourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	BindSignalSourceEvents();
 }
 
-void UVASourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UVAAbstractSourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	SoundSource.Reset();
-	UnbindSignalSourceEvents();
+	Super::EndPlay(EndPlayReason);
 }
 
 
 // Called every frame
-void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
+void UVAAbstractSourceComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
                                        FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -90,7 +83,7 @@ void UVASourceComponent::TickComponent(const float DeltaTime, const ELevelTick T
 }
 
 
-void UVASourceComponent::Initialize()
+void UVAAbstractSourceComponent::Initialize()
 {
 	if (!FVAPlugin::GetUseVA() || bInitialized)
 	{
@@ -199,7 +192,7 @@ void UVASourceComponent::Initialize()
 	bInitialized = true;
 }
 
-void UVASourceComponent::UpdatePose()
+void UVAAbstractSourceComponent::UpdatePose()
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -215,36 +208,8 @@ void UVASourceComponent::UpdatePose()
 	}
 }
 
-bool UVASourceComponent::ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
-{
-	if (SignalSource != nullptr)
-	{
-		UnbindSignalSourceEvents();
-		SignalSource->Rename(*MakeUniqueObjectName(this, UVAAbstractSignalSource::StaticClass(), "SignalSource_EXPIRED").ToString());
-		SignalSource->MarkPendingKill();
-		SignalSource = nullptr;
-	}
 
-	if (SignalSourceTypeN == UVAAudiofileSignalSource::StaticClass())
-	{
-		SignalSource = NewObject<UVAAbstractSignalSource>(this, SignalSourceTypeN);
-	}
-	else if (SignalSourceTypeN == UVAJetEngineSignalSource::StaticClass())
-	{
-		SignalSource = NewObject<UVAAbstractSignalSource>(this, SignalSourceTypeN);
-	}
-	else if (SignalSourceTypeN != nullptr)
-	{
-		FVAUtils::OpenMessageBox("[UVASourceComponent::PostEditChangeProperty()]: Signal source type is not supported", true);
-		return false;
-	}
-
-	SignalSourceType = SignalSourceTypeN;
-	BindSignalSourceEvents();
-	return true;
-}
-
-bool UVASourceComponent::SetSignalSourceID(const std::string& SignalSourceID)
+bool UVAAbstractSourceComponent::SetSignalSourceID(const std::string& SignalSourceID)
 {
 	if (!SoundSource.IsValid())
 	{
@@ -262,68 +227,9 @@ bool UVASourceComponent::SetSignalSourceID(const std::string& SignalSourceID)
 	return true;
 }
 
-void UVASourceComponent::OnSignalSourceIDChanged(const std::string& SignalSourceID)
-{
-	SetSignalSourceID(SignalSourceID);
-}
-
-void UVASourceComponent::BindSignalSourceEvents()
-{
-	UVAAudiofileSignalSource* AudioSignalSource = Cast<UVAAudiofileSignalSource>(SignalSource);
-	if (AudioSignalSource && !AudioSignalSource->OnAudiofileChanged().IsBoundToObject(this))
-	{
-		SignalSourceChangedDelegate = AudioSignalSource->OnAudiofileChanged().AddUObject(this, &UVASourceComponent::OnSignalSourceIDChanged);
-	}
-}
-
-void UVASourceComponent::UnbindSignalSourceEvents()
-{
-	if (SignalSourceChangedDelegate.IsValid())
-	{
-		UVAAudiofileSignalSource* AudioSignalSource = Cast<UVAAudiofileSignalSource>(SignalSource);
-		if (AudioSignalSource)
-		{
-			AudioSignalSource->OnAudiofileChanged().Remove(SignalSourceChangedDelegate);
-		}
-		SignalSourceChangedDelegate.Reset();
-	}
-}
-
-bool UVASourceComponent::ShouldSendCommand() const
+bool UVAAbstractSourceComponent::ShouldSendCommand() const
 {
 	return (bInitialized && FVAPlugin::GetUseVA() && FVAPlugin::GetIsMaster());
-}
-
-
-// ****************************************************************** // 
-// ******* Signal Source ******************************************** //
-// ****************************************************************** //
-
-
-bool UVASourceComponent::SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN)
-{
-	if(SignalSourceType == SignalSourceTypeN)
-		return true;
-
-	if (!ForceUpdateSignalSourceType(SignalSourceTypeN))
-		return false;
-
-	if (SignalSource)
-	{
-		SignalSource->Initialize();
-		return SetSignalSourceID(SignalSource->GetID());
-	}
-	return true;
-}
-
-TSubclassOf<UVAAbstractSignalSource> UVASourceComponent::GetSignalSourceType() const
-{
-	return SignalSourceType;
-}
-
-UVAAbstractSignalSource* UVASourceComponent::GetSignalSource() const
-{
-	return SignalSource;
 }
 
 
@@ -331,7 +237,7 @@ UVAAbstractSignalSource* UVASourceComponent::GetSignalSource() const
 // ******* Sound Source Settings ************************************ //
 // ****************************************************************** //
 
-bool UVASourceComponent::MuteSound(const bool bMute)
+bool UVAAbstractSourceComponent::MuteSound(const bool bMute)
 {
 	if (!ShouldSendCommand())
 	{
@@ -349,7 +255,7 @@ bool UVASourceComponent::MuteSound(const bool bMute)
 }
 
 
-bool UVASourceComponent::SetSoundPower(const float Power)
+bool UVAAbstractSourceComponent::SetSoundPower(const float Power)
 {
 	if (!ShouldSendCommand())
 	{
@@ -367,7 +273,7 @@ bool UVASourceComponent::SetSoundPower(const float Power)
 	return true;
 }
 
-float UVASourceComponent::GetSoundPower() const
+float UVAAbstractSourceComponent::GetSoundPower() const
 {
 	return SoundPower;
 }
@@ -376,7 +282,7 @@ float UVASourceComponent::GetSoundPower() const
 // ******* Image Sources / Reflections ****************************** //
 // ****************************************************************** //
 
-bool UVASourceComponent::GetHandleReflections() const
+bool UVAAbstractSourceComponent::GetHandleReflections() const
 {
 	return bHandleReflections;
 }
@@ -387,7 +293,7 @@ bool UVASourceComponent::GetHandleReflections() const
 // ******* Sound Pose *********************************************** //
 // ****************************************************************** //
 
-FVector UVASourceComponent::GetPosition() const
+FVector UVAAbstractSourceComponent::GetPosition() const
 {
 	FVector Pos;
 	switch (MovementSetting)
@@ -418,7 +324,7 @@ FVector UVASourceComponent::GetPosition() const
 	return Pos;
 }
 
-FRotator UVASourceComponent::GetRotation() const
+FRotator UVAAbstractSourceComponent::GetRotation() const
 {
 	FRotator Rot;
 	switch (MovementSetting)
@@ -449,7 +355,7 @@ FRotator UVASourceComponent::GetRotation() const
 	return Rot;
 }
 
-bool UVASourceComponent::SetMovementSetting(const EMovement::Type NewMovementSetting)
+bool UVAAbstractSourceComponent::SetMovementSetting(const EMovement::Type NewMovementSetting)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -467,7 +373,7 @@ bool UVASourceComponent::SetMovementSetting(const EMovement::Type NewMovementSet
 	return true;
 }
 
-bool UVASourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
+bool UVAAbstractSourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -485,7 +391,7 @@ bool UVASourceComponent::SetUsePoseOffset(const bool bNewUsePoseOffset)
 	return true;
 }
 
-bool UVASourceComponent::SetOffsetPosition(const FVector Pos)
+bool UVAAbstractSourceComponent::SetOffsetPosition(const FVector Pos)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -504,7 +410,7 @@ bool UVASourceComponent::SetOffsetPosition(const FVector Pos)
 	return true;
 }
 
-bool UVASourceComponent::SetOffsetRotation(const FRotator Rot)
+bool UVAAbstractSourceComponent::SetOffsetRotation(const FRotator Rot)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -528,7 +434,7 @@ bool UVASourceComponent::SetOffsetRotation(const FRotator Rot)
 // ******* Directivity stuff **************************************** //
 // ****************************************************************** //
 
-bool UVASourceComponent::SetDirectivityByMapping(const FString Phoneme)
+bool UVAAbstractSourceComponent::SetDirectivityByMapping(const FString Phoneme)
 {
 	if (!ShouldSendCommand())
 	{
@@ -541,7 +447,7 @@ bool UVASourceComponent::SetDirectivityByMapping(const FString Phoneme)
 	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByMapping(Phoneme));
 }
 
-bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
+bool UVAAbstractSourceComponent::SetDirectivityByFileName(const FString FileName)
 {
 	if (!ShouldSendCommand())
 	{
@@ -559,7 +465,7 @@ bool UVASourceComponent::SetDirectivityByFileName(const FString FileName)
 	return SoundSource->SetDirectivity(CurrentReceiverActor->GetDirectivityByFileName(FileName));
 }
 
-FString UVASourceComponent::GetDirectivityFileName() const
+FString UVAAbstractSourceComponent::GetDirectivityFileName() const
 {
 	if (SoundSource.IsValid())
 	{
@@ -575,7 +481,7 @@ FString UVASourceComponent::GetDirectivityFileName() const
 // ******* Graphical Representation ********************************* //
 // ****************************************************************** //
 
-bool UVASourceComponent::SetVisibility(const bool bVis)
+bool UVAAbstractSourceComponent::SetVisibility(const bool bVis)
 {
 	if (!FVAPlugin::GetUseVA() || !SoundSource.IsValid())
 	{
@@ -590,12 +496,12 @@ bool UVASourceComponent::SetVisibility(const bool bVis)
 	return true;
 }
 
-bool UVASourceComponent::GetVisibility() const
+bool UVAAbstractSourceComponent::GetVisibility() const
 {
 	return SoundSource->GetVisibility();
 }
 
-bool UVASourceComponent::SetBoneName(const FString NewBoneName)
+bool UVAAbstractSourceComponent::SetBoneName(const FString NewBoneName)
 {
 	if (!FVAPlugin::GetUseVA())
 	{
@@ -622,7 +528,7 @@ bool UVASourceComponent::SetBoneName(const FString NewBoneName)
 	return false;
 }
 
-FString UVASourceComponent::GetBoneName() const
+FString UVAAbstractSourceComponent::GetBoneName() const
 {
 	if (MovementSetting != EMovement::AttachToBone)
 	{
@@ -640,42 +546,31 @@ FString UVASourceComponent::GetBoneName() const
 
 #if WITH_EDITOR
 
-void UVASourceComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, SignalSourceType))
-	{
-		ForceUpdateSignalSourceType(SignalSourceType);
-	}
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-}
-
-
-bool UVASourceComponent::CanEditChange(const FProperty* InProperty) const
+bool UVAAbstractSourceComponent::CanEditChange(const FProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
 
 	// Check Bone Name
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, BoneName))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVAAbstractSourceComponent, BoneName))
 	{
 		return MovementSetting == EMovement::AttachToBone;
 	}
 
 	// Check Directivity Config
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, DirectivityByFileName))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVAAbstractSourceComponent, DirectivityByFileName))
 	{
 		return DirectivitySetting == EDirectivitySetting::ManualFile;
 	}
 
 	// Check Bone Name
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, DirectivityByMapping))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVAAbstractSourceComponent, DirectivityByMapping))
 	{
 		return DirectivitySetting == EDirectivitySetting::Phoneme;
 	}
 
 	// Check Bone Name
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, OffsetPosition) ||
-		InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVASourceComponent, OffsetRotation))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVAAbstractSourceComponent, OffsetPosition) ||
+		InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UVAAbstractSourceComponent, OffsetRotation))
 	{
 		return bUsePoseOffset;
 	}

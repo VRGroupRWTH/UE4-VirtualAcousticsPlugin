@@ -28,8 +28,8 @@ class VAPLUGIN_API AVAReceiverActor : public AActor
 {
 	GENERATED_BODY()
 
-	friend class UVASourceComponent;
-  friend class FVAPlugin;
+	friend class UVAAbstractSourceComponent;
+   friend class FVAPlugin;
 
 protected:
 

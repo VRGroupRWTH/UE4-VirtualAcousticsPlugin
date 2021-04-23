@@ -7,7 +7,7 @@
 #include "VAUtils.h"
 #include "VADefines.h"
 
-#include "VASourceComponent.h"
+#include "SoundSource/VAAbstractSourceComponent.h"
 #include "ImageSourceModel/VAReflectionWall.h"
 #include "Directivity/VADirectivityManager.h"
 #include "HRIR/VAHRIRManager.h"
@@ -139,9 +139,9 @@ void AVAReceiverActor::BeginPlay()
 
 	for (AActor* Actor : ActorsA)
 	{
-		TArray<UVASourceComponent*> VASourceComponents;
+		TArray<UVAAbstractSourceComponent*> VASourceComponents;
 		Actor->GetComponents(VASourceComponents);
-		for (UVASourceComponent* SourceComponent : VASourceComponents)
+		for (UVAAbstractSourceComponent* SourceComponent : VASourceComponents)
 		{
 			SourceComponent->Initialize();
 		}

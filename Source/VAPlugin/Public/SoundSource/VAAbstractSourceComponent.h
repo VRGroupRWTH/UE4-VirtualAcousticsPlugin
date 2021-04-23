@@ -3,24 +3,23 @@
 #pragma once
 
 #include "VAEnums.h"									// EDir, EPlayAction, EMovement
-#include "SignalSources/VAAbstractSignalSource.h"
-#include "SignalSources/VAAudiofileSignalSource.h"
 
 #include "GameFramework/Actor.h"
 #include "Templates/SharedPointer.h"
 
 #include <string>
 
-#include "VASourceComponent.generated.h"
+#include "VAAbstractSourceComponent.generated.h"
 
 //forward declarations to not include private header files
 class FVASoundSource;
 class FVAImageSourceModel;
 class AVAReceiverActor;
+class UVAAbstractSignalSource;
 
 
-UCLASS( ClassGroup=(VA), meta=(BlueprintSpawnableComponent) )
-class VAPLUGIN_API UVASourceComponent : public UActorComponent
+UCLASS( ClassGroup=(VA), Abstract, meta=(BlueprintSpawnableComponent), HideDropdown )
+class VAPLUGIN_API UVAAbstractSourceComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -35,16 +34,6 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Sound Power", Category = "General Settings",
 		ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
 	float SoundPower = 0.0316227749f;
-
-
-	// Select the class of the signal source
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "Signal Type", Category = "Signal Source", AllowAbstract = "false"))
-	TSubclassOf<UVAAbstractSignalSource> SignalSourceType = UVAAudiofileSignalSource::StaticClass();
-
-	// Select the type of the signal source
-	UPROPERTY(EditAnywhere, Instanced, NoClear, meta = (DisplayName = "Signal Source", Category = "Signal Source", AllowAbstract = "false"))
-	UVAAbstractSignalSource* SignalSource = nullptr;
-
 
 	// Decide whether to use manual Transform (below) or use Transform / Movement of Actor
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Position Settings", Category = "Position",
@@ -66,7 +55,7 @@ protected:
 
 	// Name of Bone bound to if Position is set to "Attatch to a Bone"
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Bone Name", Category = "Position"))
-	FString BoneName = "CC_Base_Head";
+	FString BoneName = "head";
 
 	// Choose Directivity Setting for Receiver
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Directivity", Category = "Directivity"))
@@ -80,7 +69,6 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Phoneme Directivity from config", Category = "Directivity"))
 	FString DirectivityByMapping = "";
 
-
 	// Activate to generate 1st order image sources based on VAReflectionWalls
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Enable", Category = "Image Source Model"))
 	bool bHandleReflections = false;
@@ -89,27 +77,10 @@ protected:
 public:
 
 	// Sets default values for this component's properties
-	UVASourceComponent();
-
-	void OnComponentCreated() override;
+	UVAAbstractSourceComponent();
 
 	// Called every frame
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-
-	// *** Signal Source *** //
-
-	// Sets the signal type used for this sound source
-	UFUNCTION(BlueprintCallable)
-		bool SetSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
-
-	// Gets the signal type used for this sound source
-	UFUNCTION(BlueprintCallable)
-		TSubclassOf<UVAAbstractSignalSource> GetSignalSourceType() const;
-
-	// Returns a pointer to the signal source component
-	UFUNCTION(BlueprintCallable)
-		UVAAbstractSignalSource* GetSignalSource() const;
 
 	// *** Sound Source Settings *** //
 
@@ -146,6 +117,14 @@ public:
 	// Sets Movement Setting 	MoveWithObject = 0, ObjectSpawnPoint = 1, AttachToBone = 2,
 	UFUNCTION(BlueprintCallable)
 	bool SetMovementSetting(EMovement::Type NewMovementSetting);
+
+	// Sets the Bone name and sets the Movement Setting to follow the bone if it is found. Otherwise keeps old settings
+	UFUNCTION(BlueprintCallable)
+	bool SetBoneName(FString NewBoneName);
+
+	// Gets the Bone Name
+	UFUNCTION(BlueprintCallable)
+	FString GetBoneName() const;
 
 	// Sets to use Position Offset
 	UFUNCTION(BlueprintCallable)
@@ -185,37 +164,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetVisibility() const;
 
-	// Sets the Bone name and sets the Movement Setting to follow the bone if it is found. Otherwise keeps old settings
-	UFUNCTION(BlueprintCallable)
-	bool SetBoneName(FString NewBoneName);
-
-	// Gets the Bone Name
-	UFUNCTION(BlueprintCallable)
-	FString GetBoneName() const;
-
 
 protected:
-	// Called when the game starts
+
 	void BeginPlay() override;
 
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	// initialize Sound Source with the settings set // 
-	void Initialize();
+	virtual void Initialize();
 
 	void UpdatePose();
 
-	bool ForceUpdateSignalSourceType(TSubclassOf<UVAAbstractSignalSource> SignalSourceTypeN);
-
 	bool SetSignalSourceID(const std::string& ID);
-	void OnSignalSourceIDChanged(const std::string& ID);
-
-	// *** Event/Delegates *** //
-
-	void BindSignalSourceEvents();
-	void UnbindSignalSourceEvents();
-
-
 
 	AVAReceiverActor* CurrentReceiverActor;
 
@@ -236,13 +197,10 @@ protected:
 	FRotator SpawnRotation;
 	int UpdateRate;
 
-private:
-	FDelegateHandle SignalSourceChangedDelegate;
+	UPROPERTY(EditAnywhere, Instanced, SimpleDisplay, NoClear, meta = (Category = "Signal Source (what to play?)"))
+	UVAAbstractSignalSource* SignalSource;
 
-protected:
 #if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-
 	// Function to improve settings displayed in Editor, can only be used in editor mode
 	bool CanEditChange(const FProperty* InProperty) const override;
 #endif

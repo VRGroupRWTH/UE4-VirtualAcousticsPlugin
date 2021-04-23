@@ -22,7 +22,7 @@
 #include "VAUtils.h"
 
 #include "VAReceiverActor.h"
-#include "VASourceComponent.h"
+#include "SoundSource/VAAbstractSourceComponent.h"
 #include "VASettings.h"
 
 #include "Engine.h"
@@ -1327,9 +1327,9 @@ void FVAPlugin::SetDebugMode(const bool bDebugModeN)
 
 	for (AActor* Actor : ActorArray)
 	{
-		TArray<UVASourceComponent*> VAComponents;
+		TArray<UVAAbstractSourceComponent*> VAComponents;
 		Actor->GetComponents(VAComponents);
-		for (UVASourceComponent* VAComponent : VAComponents)
+		for (UVAAbstractSourceComponent* VAComponent : VAComponents)
 		{
 			VAComponent->SetVisibility(bDebugMode);
 		}
