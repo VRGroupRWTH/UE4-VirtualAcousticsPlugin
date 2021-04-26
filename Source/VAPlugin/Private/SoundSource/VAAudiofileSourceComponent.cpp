@@ -14,22 +14,22 @@ UVAAudiofileSignalSource* UVAAudiofileSourceComponent::GetAudiofileSignalSource(
 	return Cast<UVAAudiofileSignalSource>(SignalSource);
 }
 
-bool UVAAudiofileSourceComponent::Play() const
+bool UVAAudiofileSourceComponent::Play()
 {
 	return GetAudiofileSignalSource()->Play();
 }
 
-bool UVAAudiofileSourceComponent::PlayFromTime(float fTime) const
+bool UVAAudiofileSourceComponent::PlayFromTime(float fTime)
 {
 	return GetAudiofileSignalSource()->PlayFromTime(fTime);
 }
 
-bool UVAAudiofileSourceComponent::Pause() const
+bool UVAAudiofileSourceComponent::Pause()
 {
 	return GetAudiofileSignalSource()->Pause();
 }
 
-bool UVAAudiofileSourceComponent::Stop() const
+bool UVAAudiofileSourceComponent::Stop()
 {
 	return GetAudiofileSignalSource()->Stop();
 }

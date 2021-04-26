@@ -21,13 +21,13 @@ public:
 
 	//some convenience methods, forwarding to the UVAAudiofileSignalSource directly
 	UFUNCTION(BlueprintCallable)
-	bool Play() const;
+	bool Play();
 	UFUNCTION(BlueprintCallable)
-	bool PlayFromTime(float fTime) const; //in seconds
+	bool PlayFromTime(float fTime); //in seconds
 	UFUNCTION(BlueprintCallable)
-	bool Pause() const;
+	bool Pause();
 	UFUNCTION(BlueprintCallable)
-	bool Stop() const;
+	bool Stop();
 	
 	
 
