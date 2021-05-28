@@ -63,6 +63,10 @@ protected:
 		ClampMin = "0", ClampMax = "65535", UIMin = "0", UIMax = "65535"))
 	uint16 ServerPort = 12340;
 
+	// Port for manual input
+	UPROPERTY(EditAnywhere, meta = (Category = "Connection", DisplayName = "Always reconnect to VAServer when this level is started?"))
+	bool bReconnecToVAServer = false;
+
 	// Read in File? 
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Read an initial mapping file?", Category = "Directivity Manager"))
 	bool bReadInitialMappingFile = true;

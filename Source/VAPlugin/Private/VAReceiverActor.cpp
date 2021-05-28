@@ -43,6 +43,11 @@ void AVAReceiverActor::BeginPlay()
 	FVAPlugin::SetReceiverActor(this);
 
 	// CurrentReceiverActor = this;
+	if(bReconnecToVAServer && FVAPlugin::GetIsMaster() && FVAPlugin::IsConnected())
+	{
+		//this might be needed if different server version should be started between levels
+		FVAPlugin::DisconnectServer();
+	}
 
 	//try to start (remote) VAServer automatically
 	bool bStartedVAServer = false;

@@ -202,8 +202,6 @@ void FVAPlugin::AskForSettings(const FString Host, const int Port, const bool bA
 		return;
 	}
 
-	bIsMaster = UVirtualRealityUtilities::IsMaster();
-
 	if (!bIsMaster)
 	{
 		return;
@@ -1373,10 +1371,7 @@ bool FVAPlugin::GetDebugMode()
 
 bool FVAPlugin::GetIsMaster()
 {
-	if (!bPluginInitialized)
-	{
-		AskForSettings();
-	}
+	bIsMaster = UVirtualRealityUtilities::IsMaster();
 
 	return bIsMaster;
 }
