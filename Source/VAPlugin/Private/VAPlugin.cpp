@@ -95,8 +95,8 @@ void FVAPlugin::ProcessException(const FString Location, const CVAException Exce
 
 void FVAPlugin::ProcessException(const FString Location, const FString ExceptionString)
 {
-	FString output = "[FVAPlugin::ProcessException()]: Exception from [";
-	output.Append(Location).Append("] with error message: ").Append(ExceptionString);
+	FString output = "Exception from [";
+	output.Append(Location).Append("] with error message:\n").Append(ExceptionString);
 	FVAUtils::LogStuff(output, true);
 	FVAUtils::OpenMessageBox(output, true);
 }

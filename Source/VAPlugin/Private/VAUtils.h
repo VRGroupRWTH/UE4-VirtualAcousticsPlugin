@@ -18,8 +18,7 @@ public:
 
 	// Open Message Box with Text. bool error expresses whether to use excl. marks ++ //
 	static void OpenMessageBox(FString Text, bool bError = false);
-	static FString AddExclamationMarkAroundChar(FString Text);
-
+	
 	// Checking LibraryHandle  //
 	static bool CheckLibraryHandle(const void* LibraryHandle);
 

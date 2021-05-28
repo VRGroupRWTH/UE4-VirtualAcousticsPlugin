@@ -14,39 +14,11 @@ void FVAUtils::OpenMessageBox(const FString Text, const bool bError)
 	{
 		return;
 	}
-	
-	FString TrueStatement;
-	if (bError)
-	{
-		TrueStatement = "TRUE";
-	}
-	else
-	{
-		TrueStatement = "FALSE";
-	}
-	
-	LogStuff("[FVAUtils::OpenMessageBox(ERROR = " + TrueStatement + ")]: Opening Message Box with message: " + Text);
 
-	if (bError)
-	{
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(AddExclamationMarkAroundChar(Text)));
-	}
-	else
-	{
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(Text));
-	}
-
+	FText Title = FText::FromString(FString(bError?"ERROR":"Message"));
+	FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(Text), &Title);
 }
 
-
-FString FVAUtils::AddExclamationMarkAroundChar(const FString Text)
-{
-	size_t Length = Text.Len();
-	FString ReturnedString = FString("!!!!!");
-	ReturnedString.Append(Text).Append("!!!!!");
-
-	return ReturnedString;
-}
 
 bool FVAUtils::CheckLibraryHandle(const void* LibraryHandle)
 {
