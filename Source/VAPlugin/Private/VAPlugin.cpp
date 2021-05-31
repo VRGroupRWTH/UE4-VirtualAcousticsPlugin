@@ -1216,6 +1216,11 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 	FQuat quat = Rot.Quaternion();
 	FVAUtils::FQuatToVAQuat(quat, *TmpVAQuat);
 
+	FVector VAVector(TmpVAVec3->x, TmpVAVec3->y, TmpVAVec3->z);
+	FVector VAForward = quat.RotateVector(FVector(0,0,-1));
+
+	FVAUtils::LogStuff("VA head, pos: "+VAVector.ToString()+"  forward: "+VAForward.ToString());
+
 	try
 	{
 		VAServer->SetSoundReceiverRealWorldPose(SoundReceiverID, *TmpVAVec3, *TmpVAQuat);

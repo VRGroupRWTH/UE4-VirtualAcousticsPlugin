@@ -290,6 +290,8 @@ bool AVAReceiverActor::UpdateRealWorldPose()
 		Head->GetComponentLocation() - VirtualRealityPawn->GetActorLocation());
 	const FQuat Quat				= InverseOriginRot * Head->GetComponentQuat();
 
+	FVAUtils::LogStuff("Unreal head, pos: "+Pos.ToString()+"  forward: "+Quat.RotateVector(FVector::ForwardVector).ToString());
+
 	return FVAPlugin::SetSoundReceiverRealWorldPose(ReceiverID, Pos, Quat.Rotator());
 }
 
