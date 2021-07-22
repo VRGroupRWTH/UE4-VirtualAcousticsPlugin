@@ -33,7 +33,7 @@ public class VAPlugin : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "DisplayCluster", 
-                "DisplayClusterExtensions",
+                "RWTHVRToolkit",
                 "InputCore",
                 "Sockets",
                 "Networking",
