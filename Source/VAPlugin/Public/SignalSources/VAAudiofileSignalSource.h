@@ -90,7 +90,7 @@ private:
 
 protected:
 	// Action of the sound source at the first tick
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Action", Category = "Audio file"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Starting State", Category = "Audio file"))
 		TEnumAsByte<EPlayAction::Type> StartingPlayAction = EPlayAction::Type::Stop;
 
 	// Name of Sound file. Folder are possible too: "folder/soundfile.wav"
