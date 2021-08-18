@@ -3,7 +3,7 @@
 #include "Modules/ModuleManager.h"
 #include <string>						// std::string
 #include "VAEnums.h"					// EPlayState
-#include "Sockets.h"
+#include "VAServerLauncher.h"
 
 #define VANET_STATIC
 #define VABASE_STATIC
@@ -50,7 +50,7 @@ public:
 	// ******* General Server Functions ******* //
 
 	// connect to Server (called by initializeServer) //
-	static bool ConnectServer(FString HostF = "localhost", int Port = 12340);
+	static bool ConnectServer(FString HostF, int Port);
 
 	// reset Server //
 	static bool ResetServer();
@@ -60,12 +60,6 @@ public:
 
 	// Disconnect from VA Server 
 	static bool DisconnectServer();
-
-	// Remote Start VAServer
-	static bool RemoteStartVAServer(const FString& Host = "localhost", int Port = 41578,
-	                                const FString& VersionName = TEXT("2018.a"));
-
-  static bool StartVAServerLauncher();
 
 	void BeginSession(bool bSomething);
 	void EndSession(bool bSomething);
@@ -148,6 +142,11 @@ public:
 	static bool ShouldInteractWithServer();
 	static AVAReceiverActor* GetReceiverActor();
 
+	
+	// ******* VAServer Launcher ******* //
+	
+	static FVAServerLauncher VAServerLauncher;
+
 
 protected:
 
@@ -188,7 +187,4 @@ protected:
 	static VAQuat* TmpVAQuat;
 	static VAVec3* TmpVAVec3;
 
-
-	//Socket connection to the VAServer Launcher, has to be held open until the program ends
-	static FSocket* VAServerLauncherSocket;
 };
