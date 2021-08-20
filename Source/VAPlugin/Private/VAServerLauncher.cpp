@@ -151,6 +151,12 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 		return false;
 	}
 
+	if(!GetDefault<UVASettings>()->VALauncherCopyFiles)
+	{
+		FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Setting to not send files over the network to VAServer is set, so not sending anything!", false);
+		return false;
+	}
+
 	if(!FPaths::FileExists(FPaths::Combine(FPaths::ProjectContentDir(),RelativeFilename)))
 	{
 		FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File to send("+RelativeFilename+") could not be found and therefore not send!", true);
