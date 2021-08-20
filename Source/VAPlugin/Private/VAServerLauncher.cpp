@@ -1,13 +1,16 @@
 #include "VAServerLauncher.h"
 
+#include <string>
 
 #include "Misc/FileHelper.h"
-#include "Utility/VirtualRealityUtilities.h"
 #include "SocketSubsystem.h"
+#include "GeneralProjectSettings.h"
+
+#include "Utility/VirtualRealityUtilities.h"
 
 #include "VAUtils.h"
 #include "VASettings.h"
-#include "GeneralProjectSettings.h"
+#include "VAPlugin.h"
 
 
 bool FVAServerLauncher::RemoteStartVAServer(const FString& Host, const int Port, const FString& VersionName)
@@ -166,7 +169,8 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 	TArray<uint8> FileBinaryArray;
    FFileHelper::LoadFileToArray(FileBinaryArray, *FPaths::Combine(FPaths::ProjectContentDir(),RelativeFilename));
 
-	FString MetaInfo = "file:"+RelativeFilename+":"+FString::FromInt(FileBinaryArray.Num())+":"+GetDefault<UGeneralProjectSettings>()->ProjectName;
+	const FString ProjectName = GetDefault<UGeneralProjectSettings>()->ProjectName;
+	FString MetaInfo = "file:"+RelativeFilename+":"+FString::FromInt(FileBinaryArray.Num())+":"+ProjectName;
 	TArray<uint8> MetaInfoBinary = ConvertString(MetaInfo);
 
 	int32 BytesSend;
@@ -175,9 +179,10 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 	const int32 BufferSize = 16;
 	int32 BytesRead = 0;
 	uint8 Response[16];
-	if (VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead) && BytesRead == 1)
+	if (VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead))
 	{
-		if(Response[0]=='a'){
+		FString ResponseString = ByteArrayToString(Response, BytesRead);
+		if(ResponseString=="ack"){
 			//VAServer waits for file
 			int32 BytesAlreadySend = 0;
 			while(BytesAlreadySend<FileBinaryArray.Num())
@@ -188,10 +193,23 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 				BytesAlreadySend += BytesSend;
 			}
 			FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Entire file ("+RelativeFilename+") send!", false);
+			VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead);
+			if(BytesRead==3 && Response[0]=='a' && Response[1]=='c' && Response[2]=='k')
+			{
+				FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File was received by VAServerLauncher successfully!", false);
+			}
+			else
+			{
+				FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File was NOT received by VAServerLauncher!", true);
+				return false;
+			}
+		}
+		else if (ResponseString=="exists"){
+			FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File already exists with same size, no need ro re-send!", false);
 		}
 		else
 		{
-			FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Server Launcher does not want to receive a file, wrong answer!", true);
+			FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Server Launcher does not want to receive a file, answer: "+ResponseString, true);
 			return false;	
 		}
 	}
@@ -239,3 +257,20 @@ TArray<uint8> FVAServerLauncher::ConvertString(const FString& String)
 	return RequestData;
 }
 
+FString FVAServerLauncher::ByteArrayToString(const uint8* In, int32 Count)
+{
+	FString Result;
+	Result.Empty(Count);
+
+	while (Count)
+	{
+		// Put the byte into an int16
+		int16 Value = *In;
+
+		Result += TCHAR(Value);
+
+		++In;
+		Count--;
+	}
+	return Result;
+}
