@@ -22,6 +22,8 @@ public:
 
 private:
 
+	TArray<uint8> ConvertString(const FString& String);
+
 	//Socket connection to the VAServer Launcher, has to be held open until the program ends
 	FSocket* VAServerLauncherSocket=nullptr;
 };

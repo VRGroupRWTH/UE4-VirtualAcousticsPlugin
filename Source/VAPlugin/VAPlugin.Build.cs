@@ -37,7 +37,8 @@ public class VAPlugin : ModuleRules
                 "InputCore",
                 "Sockets",
                 "Networking",
-                "DeveloperSettings"
+                "DeveloperSettings",
+                "EngineSettings"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

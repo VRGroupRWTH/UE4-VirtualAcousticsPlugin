@@ -15,6 +15,10 @@ std::string FVAAudiofileManager::GetAudiofileSignalSourceID(FString Filename)
 	}
 	FVAUtils::LogStuff("[FVAAudiofileManager::GetAudiofileSignalSourceID()]: Signal source based on audiofile " +
 		Filename + " cannot be found! Creating one now...", false);
+
+	//also try to send the file over to the VAServer
+	FVAPlugin::VAServerLauncher.SendFileToVAServer(Filename);
+	
 	std::string ID = FVAPlugin::CreateSignalSourceBuffer(Filename);
 	if (ID == "-1")
 	{
@@ -31,6 +35,9 @@ bool FVAAudiofileManager::PreLoadAudiofile(FString Filename)
 		return true;
 	}
 
+	//also try to send the file over to the VAServer
+	FVAPlugin::VAServerLauncher.SendFileToVAServer(Filename);
+	
 	std::string ID = FVAPlugin::CreateSignalSourceBuffer(Filename);
 	if (ID == "-1")
 	{
