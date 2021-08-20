@@ -406,6 +406,11 @@ bool FVAPlugin::DisconnectServer()
 	return true;
 }
 
+void FVAPlugin::AddVAServerSearchPath(const std::string& SearchPath)
+{
+	VAServer->AddSearchPath(SearchPath);
+}
+
 // ****************************************************************** // 
 // ******* Signal Sources ******************************************* //
 // ****************************************************************** //

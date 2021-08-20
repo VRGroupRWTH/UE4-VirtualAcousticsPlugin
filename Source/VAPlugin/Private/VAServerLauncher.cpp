@@ -194,7 +194,9 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 		FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Server Launcher does not want to receive a file, no answer!", true);
 		return false;	
 	}
-	
+
+	std::string SearchPath = "../tmp/"+std::string(TCHAR_TO_UTF8(*ProjectName));
+	FVAPlugin::AddVAServerSearchPath(SearchPath);
 
 	return true;
 }

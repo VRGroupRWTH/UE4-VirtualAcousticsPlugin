@@ -64,6 +64,8 @@ public:
 	void BeginSession(bool bSomething);
 	void EndSession(bool bSomething);
 
+	static void AddVAServerSearchPath(const std::string& SearchPath);
+
 
 	// ******* Signal Sources ******* //
 
