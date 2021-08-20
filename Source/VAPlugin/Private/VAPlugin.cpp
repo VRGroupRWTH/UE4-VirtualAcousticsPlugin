@@ -161,6 +161,9 @@ void FVAPlugin::BeginSession(const bool bSomething)
 
 void FVAPlugin::EndSession(const bool bSomething)
 {
+	if(bWasStarted){
+		DisconnectServer();
+	}
 	VAServerLauncher.ReleaseVAServerLauncherConnection();
 
 	ReceiverActor = nullptr;
@@ -327,7 +330,7 @@ bool FVAPlugin::ResetServer()
 		return true;
 	}
 	
-	if (!ShouldInteractWithServer())
+	if (!ShouldInteractWithServer() || !IsConnected())
 	{
 		return false;
 	}
@@ -382,22 +385,24 @@ bool FVAPlugin::DisconnectServer()
 	
 	FVAUtils::LogStuff("[FVAPluginModule::disconnectServer()]: Disconnecting now", false);
 
+
+	VAServer->Finalize();
+
+	if (VANetClient != nullptr)
+	{
+		if (VANetClient->IsConnected())
+		{
+			VANetClient->Disconnect();
+		}
+	}
+	VAServer = nullptr;
+	VANetClient = nullptr;
+
 	if (VAServerLauncher.IsVAServerLauncherConnected())
 	{
 		VAServerLauncher.ReleaseVAServerLauncherConnection();
 	}
-	else
-	{
-		VAServer->Finalize();
 
-		if (VANetClient != nullptr)
-		{
-			if (VANetClient->IsConnected())
-			{
-				VANetClient->Disconnect();
-			}
-		}
-	}
 	return true;
 }
 
