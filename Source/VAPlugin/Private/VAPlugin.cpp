@@ -20,6 +20,7 @@
 
 
 #include "VAUtils.h"
+#include "VAStruct.h"
 
 #include "VAReceiverActor.h"
 #include "SoundSource/VAAbstractSourceComponent.h"
@@ -1226,6 +1227,24 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 		ProcessException("SetSoundReceiverRealWorldPose()", FString(e.ToString().c_str()));
 		return false;
 	}
+}
+
+bool FVAPlugin::SetRendererParameters(const std::string& RendererID, const CVAStruct& RendererParameterStruct)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return false;
+	}
+	try
+	{
+		VAServer->SetRenderingModuleParameters(RendererID, RendererParameterStruct);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		ProcessException("SetRendererParameters()", FString(e.ToString().c_str()));
+	}
+	return false;
 }
 
 bool FVAPlugin::SetGlobalAuralizationMode(const int AuraModeBitvector)

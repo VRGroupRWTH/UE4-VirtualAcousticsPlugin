@@ -21,6 +21,7 @@ class IVANetClient;
 class IVAInterface;
 class VAQuat;
 class VAVec3;
+class CVAStruct;
 
 class FVAPlugin : public IModuleInterface
 {
@@ -122,6 +123,9 @@ public:
 	// ******* Real World ******* //
 
 	static bool SetSoundReceiverRealWorldPose(int SoundReceiverID, FVector Pos, FRotator Rot);
+
+	// ******* Renderer Settings ******* //
+	static bool SetRendererParameters(const std::string& RendererID, const CVAStruct& RendererParameterStruct);
 
 
 	// ******* Auralization Mode ******* //
