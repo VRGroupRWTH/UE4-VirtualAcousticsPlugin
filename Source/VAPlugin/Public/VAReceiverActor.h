@@ -130,6 +130,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UVAAuralizationModeController* GetAuralizationModeController() const;
 
+	//Returns the VA receiver ID
+	int GetReceiverID() const;
+
 
 protected:
 	// Get Walls

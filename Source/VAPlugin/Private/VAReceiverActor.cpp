@@ -413,6 +413,11 @@ UVAAuralizationModeController* AVAReceiverActor::GetAuralizationModeController()
 	return AuralizationModeController;
 }
 
+int AVAReceiverActor::GetReceiverID() const
+{
+	return ReceiverID;
+}
+
 int AVAReceiverActor::GetUpdateRate() const
 {
 	return UpdateRate;

@@ -501,6 +501,15 @@ bool UVAAbstractSourceComponent::GetVisibility() const
 	return SoundSource->GetVisibility();
 }
 
+int UVAAbstractSourceComponent::GetSoundSourceID() const
+{
+	if (!SoundSource)
+	{
+		return -1;
+	}
+	return SoundSource->GetSoundSourceID();
+}
+
 bool UVAAbstractSourceComponent::SetBoneName(const FString NewBoneName)
 {
 	if (!FVAPlugin::GetUseVA())

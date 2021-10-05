@@ -164,6 +164,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetVisibility() const;
 
+	//Returns the ID of the VA sound source
+	int GetSoundSourceID() const;
+
 
 protected:
 
