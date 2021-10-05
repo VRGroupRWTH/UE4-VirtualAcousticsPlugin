@@ -64,6 +64,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetAuralizationMode(EAuralizationMode::Type AuralizationMode) const;
 
+	//Specifies this auralization mode controller to adjust the modes for renderer of a given name
+	void SetTargetRenderer(const std::string& TargetRendererName);
+
 protected:
 	const static int NumAuralizationModes = 13;
 	typedef std::bitset<NumAuralizationModes> AuralizationBitvector;

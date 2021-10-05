@@ -62,6 +62,12 @@ bool UVAAuralizationModeController::GetAuralizationMode(EAuralizationMode::Type 
 	return AuralizationModeVector[AuralizationMode];
 }
 
+void UVAAuralizationModeController::SetTargetRenderer(const std::string& TargetRendererName)
+{
+	RendererName = TargetRendererName;
+	Target = Renderer;
+}
+
 bool UVAAuralizationModeController::SendAuralizationModeToVA(const AuralizationBitvector& AuraModeBitvector)
 {
 	bool ok = false;
