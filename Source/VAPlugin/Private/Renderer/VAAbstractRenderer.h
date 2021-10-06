@@ -13,7 +13,7 @@
 /**
  * Abstract base class (Actor) representing a renderer in VA
  */
-UCLASS(ClassGroup = (VA), Abstract, HideCategories = ("Actor", "Cooking", "Collision", "Replication", "Input", "LOD"))
+UCLASS(ClassGroup = (VA), Abstract, HideCategories = ("Actor", "Cooking", "Collision", "Replication", "Rendering", "Input", "LOD"))
 class AVAAbstractRenderer : public AActor
 {
 	GENERATED_BODY()
