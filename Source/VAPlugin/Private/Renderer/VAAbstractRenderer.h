@@ -10,7 +10,10 @@
 #include "VAAbstractRenderer.generated.h"
 
 
-UCLASS(ClassGroup = (VA), Abstract, HideCategories = ("Tags", "AssetUserData", "Activation", "Collision", "Cooking"))
+/**
+ * Abstract base class (Actor) representing a renderer in VA
+ */
+UCLASS(ClassGroup = (VA), Abstract, HideCategories = ("Actor", "Cooking", "Collision", "Replication", "Input", "LOD"))
 class AVAAbstractRenderer : public AActor
 {
 	GENERATED_BODY()

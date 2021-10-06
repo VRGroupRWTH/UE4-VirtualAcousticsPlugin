@@ -10,7 +10,7 @@
 class UVAAbstractSourceComponent;
 class AVAReceiverActor;
 
-UCLASS()
+UCLASS(ClassGroup = (VA))
 class VAPLUGIN_API AVAGenericPathRenderer : public AVAAbstractRenderer
 {
 	GENERATED_BODY()
