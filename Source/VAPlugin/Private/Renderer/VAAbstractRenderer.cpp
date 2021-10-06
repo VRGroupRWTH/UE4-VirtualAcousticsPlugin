@@ -13,6 +13,7 @@ AVAAbstractRenderer::AVAAbstractRenderer()
 	PrimaryActorTick.bCanEverTick = false;
 
 	AuralizationModeController = CreateDefaultSubobject<UVAAuralizationModeController>(TEXT("AuralizationModeController"));
+	this->SetActorHiddenInGame(true);
 
 }
 
