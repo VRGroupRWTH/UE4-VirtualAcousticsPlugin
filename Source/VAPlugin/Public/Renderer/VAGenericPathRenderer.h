@@ -7,6 +7,9 @@
 #include "Renderer/VAAbstractRenderer.h"
 #include "VAGenericPathRenderer.generated.h"
 
+class UVAAbstractSourceComponent;
+class AVAReceiverActor;
+
 UCLASS()
 class VAPLUGIN_API AVAGenericPathRenderer : public AVAAbstractRenderer
 {
@@ -23,5 +26,14 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+public:
+	// Set the IR of a single channel using a .wav file (ChannelIDs starts at 1!)
+	UFUNCTION(BlueprintCallable)
+	void SetChannelIR(const AVAReceiverActor* VAReceiver, const UVAAbstractSourceComponent* VASource, const FString& WaveFilename, int ChannelID) const;
+
+	// Set the IR of all channels using a .wav file
+	UFUNCTION(BlueprintCallable)
+	void SetAllIRs(const AVAReceiverActor* VAReceiver, const UVAAbstractSourceComponent* VASource, const FString& WaveFilename) const;
 
 };
