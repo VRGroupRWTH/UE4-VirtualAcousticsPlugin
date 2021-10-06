@@ -4,6 +4,7 @@
 #include "Renderer/VAAbstractRenderer.h"
 
 #include "VAPlugin.h"
+#include "VAUtils.h"
 
 
 // Sets default values
@@ -22,9 +23,11 @@ void AVAAbstractRenderer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	const std::string sRendererID = TCHAR_TO_UTF8(*RendererName);
+
 	if (AuralizationModeController)
 	{
-		AuralizationModeController->SetTargetRenderer(TCHAR_TO_UTF8(*RendererName));
+		AuralizationModeController->SetTargetRenderer(sRendererID);
 	}
 
 	if (FVAPlugin::GetIsMaster())
@@ -32,6 +35,11 @@ void AVAAbstractRenderer::BeginPlay()
 		if (AuralizationModeController)
 		{
 			AuralizationModeController->Initialize();
+		}
+
+		if(!FVAPlugin::RendererEnabled(sRendererID))
+		{
+			FVAUtils::OpenMessageBox("VA Rendering Module: Trying to initialize VA renderer interface with ID '" + RendererName + "'. But renderer was not enabled in VACore ini-file. Commands send via this interface will not be effective.", true);
 		}
 	}
 	

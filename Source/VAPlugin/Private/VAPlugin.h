@@ -124,7 +124,9 @@ public:
 
 	static bool SetSoundReceiverRealWorldPose(int SoundReceiverID, FVector Pos, FRotator Rot);
 
-	// ******* Renderer Settings ******* //
+	// ******* Renderer Related ******* //
+
+	static bool RendererEnabled(const std::string& RendererID);
 	static bool SetRendererParameters(const std::string& RendererID, const CVAStruct& RendererParameterStruct);
 
 

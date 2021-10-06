@@ -38,7 +38,6 @@
 #include "IDisplayCluster.h"
 #include "SocketSubsystem.h"
 
-
 #if WITH_EDITOR
 #include "Editor.h"
 #endif
@@ -1227,6 +1226,26 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 		ProcessException("SetSoundReceiverRealWorldPose()", FString(e.ToString().c_str()));
 		return false;
 	}
+}
+
+bool FVAPlugin::RendererEnabled(const std::string& RendererID)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return false;
+	}
+	try
+	{
+		//TODO: This is a dirty work around !!!
+		//		Add new Get Method in VA and exchange this
+		const double Gain = VAServer->GetRenderingModuleGain(RendererID);
+		return Gain != 0.0;
+	}
+	catch (CVAException& e)
+	{
+		ProcessException("RendererExists()", FString(e.ToString().c_str()));
+	}
+	return false;
 }
 
 bool FVAPlugin::SetRendererParameters(const std::string& RendererID, const CVAStruct& RendererParameterStruct)
