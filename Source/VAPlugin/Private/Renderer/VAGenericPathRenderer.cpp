@@ -16,7 +16,7 @@ AVAGenericPathRenderer::AVAGenericPathRenderer()
 	PrimaryActorTick.bCanEverTick = false;
 
 	//Setting default name for this renderer
-	RendererName = "MyGenericRenderer";
+	RendererID = "MyGenericRenderer";
 
 }
 
@@ -55,11 +55,11 @@ void AVAGenericPathRenderer::SetChannelIR(const AVAReceiverActor* VAReceiver, co
 		FVAUtils::OpenMessageBox("[AVAGenericPathRenderer::SetChannelIR]: Channel ID must be >= 1", true);
 		return;
 	}
-	SetIR(RendererName, VAReceiver, VASource, WaveFilename, ChannelID);
+	SetIR(RendererID, VAReceiver, VASource, WaveFilename, ChannelID);
 }
 
 void AVAGenericPathRenderer::SetAllIRs(const AVAReceiverActor* VAReceiver, const UVAAbstractSourceComponent* VASource, const FString& WaveFilename) const
 {
-	SetIR(RendererName, VAReceiver, VASource, WaveFilename, -1);
+	SetIR(RendererID, VAReceiver, VASource, WaveFilename, -1);
 }
 

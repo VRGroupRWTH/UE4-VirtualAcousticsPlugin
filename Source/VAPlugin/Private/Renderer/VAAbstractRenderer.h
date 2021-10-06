@@ -20,8 +20,8 @@ class AVAAbstractRenderer : public AActor
 
 protected:
 	// Name of the renderer specified in VACore.ini
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Renderer Name", Category = "General")) // CanEditChange used
-	FString RendererName = "MyGenericPathRenderer";
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Renderer ID", Category = "General"))
+	FString RendererID;
 
 	// Controller for global auraliztion modes
 	UPROPERTY(EditAnywhere, Instanced, NoClear, meta = (DisplayName = "Auraliztion Mode Controller", Category = "Auralization Modes"))

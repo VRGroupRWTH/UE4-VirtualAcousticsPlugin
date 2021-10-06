@@ -13,6 +13,7 @@ AVAAbstractRenderer::AVAAbstractRenderer()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	RendererID = "MyBinauralFreeField";
 	AuralizationModeController = CreateDefaultSubobject<UVAAuralizationModeController>(TEXT("AuralizationModeController"));
 	this->SetActorHiddenInGame(true);
 
@@ -23,7 +24,7 @@ void AVAAbstractRenderer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const std::string sRendererID = TCHAR_TO_UTF8(*RendererName);
+	const std::string sRendererID = TCHAR_TO_UTF8(*RendererID);
 
 	if (AuralizationModeController)
 	{
@@ -39,7 +40,7 @@ void AVAAbstractRenderer::BeginPlay()
 
 		if(!FVAPlugin::RendererEnabled(sRendererID))
 		{
-			FVAUtils::OpenMessageBox("VA Rendering Module: Trying to initialize VA renderer interface with ID '" + RendererName + "'. But renderer was not enabled in VACore ini-file. Commands send via this interface will not be effective.", true);
+			FVAUtils::OpenMessageBox("VA Rendering Module: Trying to initialize VA renderer interface with ID '" + RendererID + "'. But renderer was not enabled in VACore ini-file. Commands send via this interface will not be effective.", true);
 		}
 	}
 	
