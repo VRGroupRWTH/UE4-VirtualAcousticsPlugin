@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Renderer/VAAbstractRenderer.h"
+#include "Renderer/VABaseRenderer.h"
 
 #include "VAPlugin.h"
 #include "VAUtils.h"
 
 
 // Sets default values
-AVAAbstractRenderer::AVAAbstractRenderer()
+AVABaseRenderer::AVABaseRenderer()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -20,7 +20,7 @@ AVAAbstractRenderer::AVAAbstractRenderer()
 }
 
 // Called when the game starts or when spawned
-void AVAAbstractRenderer::BeginPlay()
+void AVABaseRenderer::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -47,14 +47,14 @@ void AVAAbstractRenderer::BeginPlay()
 }
 
 // Called every frame
-void AVAAbstractRenderer::Tick(float DeltaTime)
+void AVABaseRenderer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
 
-UVAAuralizationModeController* AVAAbstractRenderer::GetAuralizationModeController() const
+UVAAuralizationModeController* AVABaseRenderer::GetAuralizationModeController() const
 {
 	return AuralizationModeController;
 }

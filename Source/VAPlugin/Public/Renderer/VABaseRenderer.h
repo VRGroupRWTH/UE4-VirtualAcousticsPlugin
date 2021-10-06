@@ -7,14 +7,15 @@
 
 #include "AuralizationMode/VAAuralizationModeController.h"
 
-#include "VAAbstractRenderer.generated.h"
+#include "VABaseRenderer.generated.h"
 
 
 /**
- * Abstract base class (Actor) representing a renderer in VA
+ * Actor representing a renderer in VA. Can adjust auralization modes and muting during runtime.
+ * For more functionality refer to an Actor representing a specific renderer.
  */
-UCLASS(ClassGroup = (VA), Abstract, HideCategories = ("Actor", "Cooking", "Collision", "Replication", "Rendering", "Input", "LOD"))
-class AVAAbstractRenderer : public AActor
+UCLASS(ClassGroup = (VA), HideCategories = ("Actor", "Cooking", "Collision", "Replication", "Rendering", "Input", "LOD"))
+class AVABaseRenderer : public AActor
 {
 	GENERATED_BODY()
 
@@ -32,9 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UVAAuralizationModeController* GetAuralizationModeController() const;
 	
-public:	
+public:
 	// Sets default values for this actor's properties
-	AVAAbstractRenderer();
+	AVABaseRenderer();
 
 protected:
 	// Called when the game starts or when spawned

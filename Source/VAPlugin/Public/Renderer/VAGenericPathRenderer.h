@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Renderer/VAAbstractRenderer.h"
+#include "Renderer/VABaseRenderer.h"
 #include "VAGenericPathRenderer.generated.h"
 
 class UVAAbstractSourceComponent;
 class AVAReceiverActor;
 
 UCLASS(ClassGroup = (VA))
-class VAPLUGIN_API AVAGenericPathRenderer : public AVAAbstractRenderer
+class VAPLUGIN_API AVAGenericPathRenderer : public AVABaseRenderer
 {
 	GENERATED_BODY()
 	
