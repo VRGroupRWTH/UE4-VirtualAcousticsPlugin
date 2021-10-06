@@ -32,6 +32,10 @@ public:
 	// Gets auralization mode controller
 	UFUNCTION(BlueprintCallable)
 	UVAAuralizationModeController* GetAuralizationModeController() const;
+
+	// Toggle mute and unmute
+	UFUNCTION(BlueprintCallable)
+	virtual void SetRendererMute(bool bMute);
 	
 public:
 	// Sets default values for this actor's properties

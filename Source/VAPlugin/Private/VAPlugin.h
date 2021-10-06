@@ -127,8 +127,9 @@ public:
 	// ******* Renderer Related ******* //
 
 	static bool RendererEnabled(const std::string& RendererID);
+	static bool SetRendererMute(const std::string& RendererID, const bool bMute);
 	static bool SetRendererParameters(const std::string& RendererID, const CVAStruct& RendererParameterStruct);
-
+	
 
 	// ******* Auralization Mode ******* //
 

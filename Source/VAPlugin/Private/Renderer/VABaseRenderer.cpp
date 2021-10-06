@@ -7,6 +7,14 @@
 #include "VAUtils.h"
 
 
+//Toggle Unmute
+void AVABaseRenderer::SetRendererMute(bool bMute)
+{
+	const std::string sRendererID = TCHAR_TO_UTF8(*RendererID);
+	FVAPlugin::SetRendererMute(sRendererID, bMute); 
+}
+
+
 // Sets default values
 AVABaseRenderer::AVABaseRenderer()
 {

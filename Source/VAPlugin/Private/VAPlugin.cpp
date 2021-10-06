@@ -1228,6 +1228,10 @@ bool FVAPlugin::SetSoundReceiverRealWorldPose(const int SoundReceiverID, FVector
 	}
 }
 
+// ****************************************************************** // 
+// ******* Renderer RElated ***************************************** //
+// ****************************************************************** //
+
 bool FVAPlugin::RendererEnabled(const std::string& RendererID)
 {
 	if (!ShouldInteractWithServer())
@@ -1245,6 +1249,26 @@ bool FVAPlugin::RendererEnabled(const std::string& RendererID)
 	{
 		ProcessException("RendererExists()", FString(e.ToString().c_str()));
 	}
+	return false;
+}
+
+
+bool FVAPlugin::SetRendererMute(const std::string& RendererID, const bool bMute)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return false;
+	}
+	try
+	{
+		VAServer->SetRenderingModuleMuted(RendererID, bMute);
+		return true;
+	}
+	catch (CVAException& e)
+	{
+		ProcessException("SetRendererMute()", FString(e.ToString().c_str()));
+	}
+
 	return false;
 }
 
