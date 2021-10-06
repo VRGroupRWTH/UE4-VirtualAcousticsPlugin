@@ -13,13 +13,10 @@
 AVAGenericPathRenderer::AVAGenericPathRenderer()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	//Setting default name for this renderer
-	if (RendererName.IsEmpty())
-	{
-		RendererName = "MyGenericRenderer";
-	}
+	RendererName = "MyGenericRenderer";
 
 }
 
