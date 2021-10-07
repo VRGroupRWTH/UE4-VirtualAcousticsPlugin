@@ -14,7 +14,7 @@ AVABaseRenderer::AVABaseRenderer()
 	PrimaryActorTick.bCanEverTick = false;
 
 	RendererID = "MyBinauralFreeField";
-	bRendererMuted = false;
+	bRendererInitiallyMuted = false;
 	AuralizationModeController = CreateDefaultSubobject<UVAAuralizationModeController>(TEXT("AuralizationModeController"));
 	this->SetActorHiddenInGame(true);
 
@@ -45,7 +45,7 @@ void AVABaseRenderer::BeginPlay()
 		}
 		else
 		{
-			this->SetRendererMute(bRendererMuted);
+			this->SetRendererMute(bRendererInitiallyMuted);
 		}
 	}
 	
@@ -64,24 +64,31 @@ UVAAuralizationModeController* AVABaseRenderer::GetAuralizationModeController() 
 	return AuralizationModeController;
 }
 
-//Set Mute, Returns sucess
-bool AVABaseRenderer::SetRendererMute(bool bMute)
+bool AVABaseRenderer::SetRendererMute(bool bMute) const
 {
 	const std::string sRendererID = TCHAR_TO_UTF8(*RendererID);
-	bRendererMuted = bMute; 
-	return FVAPlugin::SetRendererMute(sRendererID, bRendererMuted);
+	return FVAPlugin::SetRendererMute(sRendererID, bMute);
 }
 
-//Get Mute Status
-bool AVABaseRenderer::GetRendererMute() const
+bool AVABaseRenderer::GetRendererMuted() const
 {
-	return bRendererMuted;
+	return (bool)FVAPlugin::GetRendererMuted( TCHAR_TO_UTF8(*RendererID) );
 }
 
-//Toggle Renderer Mute, Returns new status
 bool AVABaseRenderer::ToggleRendererMute()
 {
-	bRendererMuted = !bRendererMuted;
-	this->SetRendererMute(bRendererMuted);
-	return bRendererMuted; 
+	int Muted = FVAPlugin::GetRendererMuted(TCHAR_TO_UTF8(*RendererID));
+	if (Muted < 0)
+	{
+		FVAPlugin::ProcessException("ToggleRendererMute()", "Could not read current renderer mute state.");
+		return false;
+	}
+
+	bool bNewMuteState = !(bool)Muted;
+	if (!SetRendererMute(bNewMuteState))
+	{
+		FVAPlugin::ProcessException("ToggleRendererMute()", "Could not set new renderer mute state.");
+		return !bNewMuteState;
+	}
+	return bNewMuteState;
 }

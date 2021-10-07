@@ -1252,6 +1252,23 @@ bool FVAPlugin::RendererEnabled(const std::string& RendererID)
 	return false;
 }
 
+int FVAPlugin::GetRendererMuted(const std::string& RendererID)
+{
+	if (!ShouldInteractWithServer())
+	{
+		return -1;
+	}
+	try
+	{
+		return (int)VAServer->GetRenderingModuleMuted(RendererID);
+	}
+	catch (CVAException& e)
+	{
+		ProcessException("GetRendererMuted()", FString(e.ToString().c_str()));
+	}
+	return -1;
+}
+
 
 bool FVAPlugin::SetRendererMute(const std::string& RendererID, const bool bMute)
 {

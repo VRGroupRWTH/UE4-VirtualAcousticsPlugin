@@ -127,6 +127,8 @@ public:
 	// ******* Renderer Related ******* //
 
 	static bool RendererEnabled(const std::string& RendererID);
+	//Returns whether given renderer is muted (0 or 1). Returns -1 if could VAServer could not be accessed.
+	static int GetRendererMuted(const std::string& RendererID);
 	static bool SetRendererMute(const std::string& RendererID, const bool bMute);
 	static bool SetRendererParameters(const std::string& RendererID, const CVAStruct& RendererParameterStruct);
 	

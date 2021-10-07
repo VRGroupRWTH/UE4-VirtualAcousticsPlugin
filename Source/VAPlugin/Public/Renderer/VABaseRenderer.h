@@ -24,9 +24,9 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Renderer ID", Category = "General"))
 	FString RendererID;
 
-	// Set Renderer Mute Status
+	// Initial mute state of the renderer (set at BeginPlay())
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Renderer Muted", Category = "General"))
-	bool bRendererMuted;
+	bool bRendererInitiallyMuted;
 
 	// Controller for global auraliztion modes
 	UPROPERTY(EditAnywhere, Instanced, NoClear, meta = (DisplayName = "Auraliztion Mode Controller", Category = "Auralization Modes"))
@@ -39,15 +39,15 @@ public:
 
 	// Renderer Mute functions:
 
-	//Set Renderer MUte
+	//Set renderer mute state. Returns true on success.
 	UFUNCTION(BlueprintCallable)
-	bool SetRendererMute(bool bMute);
+	bool SetRendererMute(bool bMute) const;
 
-	//Get Renderer Mute Status
+	//Get renderer mute state
 	UFUNCTION(BlueprintCallable)
-	bool GetRendererMute() const;
+	bool GetRendererMuted() const;
 
-	//Toggle Renderer Mute
+	//Toggle renderer mute state and return new value
 	UFUNCTION(BlueprintCallable)
 	bool ToggleRendererMute();
 	
