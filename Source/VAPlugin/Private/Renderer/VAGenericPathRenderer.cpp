@@ -37,6 +37,17 @@ void AVAGenericPathRenderer::Tick(float DeltaTime)
 //Helper function creating and sending VAStruct
 void SetIR(FString RendererName, const AVAReceiverActor* VAReceiver, const UVAAbstractSourceComponent* VASource, const FString& WaveFilename, int ChannelID)
 {
+	if (!VAReceiver)
+	{
+		FVAPlugin::ProcessException("AVAGenericPathRenderer::SetIR()", "Pointer to VAReceiver is Null.");
+		return;
+	}
+	if (!VASource)
+	{
+		FVAPlugin::ProcessException("AVAGenericPathRenderer::SetIR()", "Pointer to VASource is Null.");
+		return;
+	}
+
 	CVAStruct RendererParameters;
 	RendererParameters["receiver"] = VAReceiver->GetReceiverID();
 	RendererParameters["source"] = VASource->GetSoundSourceID();
@@ -52,7 +63,7 @@ void AVAGenericPathRenderer::SetChannelIR(const AVAReceiverActor* VAReceiver, co
 {
 	if (ChannelID <= 0)
 	{
-		FVAUtils::OpenMessageBox("[AVAGenericPathRenderer::SetChannelIR]: Channel ID must be >= 1", true);
+		FVAPlugin::ProcessException("AVAGenericPathRenderer::SetChannelIR()", "Channel ID must be >= 1");
 		return;
 	}
 	SetIR(RendererID, VAReceiver, VASource, WaveFilename, ChannelID);
