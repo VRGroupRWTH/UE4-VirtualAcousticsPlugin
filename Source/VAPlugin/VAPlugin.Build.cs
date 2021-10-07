@@ -100,6 +100,7 @@ public class VAPlugin : ModuleRules
             PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVANet.so"));
 			
 			RuntimeDependencies.Add(Path.Combine(LibPath,"libVABase.so"));
+			RuntimeDependencies.Add(Path.Combine(LibPath,"../lib/libVABase.so")); //set in this format by CMake
             RuntimeDependencies.Add(Path.Combine(LibPath,"libVistaBase.so"));
             RuntimeDependencies.Add(Path.Combine(LibPath,"libVistaAspects.so"));
             RuntimeDependencies.Add(Path.Combine(LibPath,"libVistaInterProcComm.so"));
