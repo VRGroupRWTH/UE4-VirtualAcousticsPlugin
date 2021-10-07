@@ -91,6 +91,7 @@ public class VAPlugin : ModuleRules
         else if (Target.Platform == UnrealTargetPlatform.Linux)
         {
             PrivateRuntimeLibraryPaths.Add(LibPath);
+			PublicRuntimeLibraryPaths.Add(LibPath);
 			
 			PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVABase.so"));
             PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVistaBase.so"));
