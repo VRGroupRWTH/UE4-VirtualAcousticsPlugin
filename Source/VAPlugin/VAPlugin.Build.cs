@@ -92,24 +92,11 @@ public class VAPlugin : ModuleRules
         {
             PrivateRuntimeLibraryPaths.Add(LibPath);
 
-			//used for the ViSTA libs (VistaAspects, VistaBase, VistaInterProcComm), which are linked dynamically
             foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.so", SearchOption.AllDirectories))
             {
                 PublicAdditionalLibraries.Add(FilePath);
                 RuntimeDependencies.Add(FilePath);
             }
-			foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.so.*", SearchOption.AllDirectories))
-            {
-                RuntimeDependencies.Add(FilePath);
-            }
-			
-			//VA libs (VABase, VANet) are linked statically:
-			foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.a", SearchOption.AllDirectories))
-            {
-                PublicAdditionalLibraries.Add(FilePath);
-			}
-              
-
         }
 
         //this is needed to register on Editor delegates, i.e., BeginPIE and EndPIE, but only in Editor builds
