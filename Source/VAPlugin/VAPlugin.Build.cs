@@ -88,10 +88,11 @@ public class VAPlugin : ModuleRules
 
 
         }
-        else // if (Target.Platform == UnrealTargetPlatform.Linux)
+        else if (Target.Platform == UnrealTargetPlatform.Linux)
         {
             PrivateRuntimeLibraryPaths.Add(LibPath);
 
+			//used for the ViSTA libs (VistaAspects, VistaBase, VistaInterProcComm), which are linked dynamically
             foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.so", SearchOption.AllDirectories))
             {
                 PublicAdditionalLibraries.Add(FilePath);
@@ -101,6 +102,13 @@ public class VAPlugin : ModuleRules
             {
                 RuntimeDependencies.Add(FilePath);
             }
+			
+			//VA libs (VABase, VANet) are linked statically:
+			foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.a", SearchOption.AllDirectories))
+            {
+                PublicAdditionalLibraries.Add(FilePath);
+			}
+              
 
         }
 
