@@ -32,7 +32,7 @@ void AVABaseRenderer::BeginPlay()
 		AuralizationModeController->SetTargetRenderer(sRendererID);
 	}
 
-	if (FVAPlugin::GetIsMaster())
+	if ( FVAPlugin::GetUseVA() && FVAPlugin::GetIsMaster() )
 	{
 		if (AuralizationModeController)
 		{
@@ -45,7 +45,7 @@ void AVABaseRenderer::BeginPlay()
 		}
 		else
 		{
-			this->SetRendererMute(bRendererInitiallyMuted);
+			SetRendererMute(bRendererInitiallyMuted);
 		}
 	}
 	
