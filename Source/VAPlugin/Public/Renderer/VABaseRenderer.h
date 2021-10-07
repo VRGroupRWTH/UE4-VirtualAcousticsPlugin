@@ -24,6 +24,10 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Renderer ID", Category = "General"))
 	FString RendererID;
 
+	// Set Renderer Mute Status
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Renderer Muted", Category = "General"))
+	bool bRendererMuted;
+
 	// Controller for global auraliztion modes
 	UPROPERTY(EditAnywhere, Instanced, NoClear, meta = (DisplayName = "Auraliztion Mode Controller", Category = "Auralization Modes"))
 	UVAAuralizationModeController* AuralizationModeController;
@@ -33,9 +37,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UVAAuralizationModeController* GetAuralizationModeController() const;
 
-	// Toggle mute and unmute
+	// Renderer Mute functions:
+
+	//Set Renderer MUte
 	UFUNCTION(BlueprintCallable)
-	virtual void SetRendererMute(bool bMute);
+	bool SetRendererMute(bool bMute);
+
+	//Get Renderer Mute Status
+	UFUNCTION(BlueprintCallable)
+	bool GetRendererMute() const;
+
+	//Toggle Renderer Mute
+	UFUNCTION(BlueprintCallable)
+	bool ToggleRendererMute();
 	
 public:
 	// Sets default values for this actor's properties
