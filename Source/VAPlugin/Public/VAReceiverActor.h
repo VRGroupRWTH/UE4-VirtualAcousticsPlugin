@@ -35,19 +35,19 @@ protected:
 
 
 	// How many units in UE equal 1m in World
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale", Category = "General Settigns"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale", Category = "General Settings"))
 	float WorldScale = 100.0f;
 
 	// How many units in UE equal 1m in World
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Updates per second", Category = "General Settigns"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Updates per second", Category = "General Settings"))
 	int UpdateRate = 30;
 
 	// Check if should ask for debug Mode?
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?", Category = "General Settigns"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Ask for Debug mode?", Category = "General Settings"))
 	bool bAskForDebugMode = true;
 
 	// Check if should try to use Python Automatic Remote star
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Automatic Remote VA Start via Python?", Category = "General Settigns"))
+	UPROPERTY(EditAnywhere, meta = (DisplayName = "Use Automatic Remote VA Start via Python?", Category = "General Settings"))
 	bool bAutomaticRemoteVAStart = true;
 
 	// Choose how to connect to the Server (automatic: build with windows connect with 127.0.0.1:12340, build with linux connect to cave)
@@ -84,7 +84,7 @@ protected:
 	// Which version should be started automatically
 	UPROPERTY(EditAnywhere, meta = (DisplayName =
 		"Which VAServer version should be started, configurable in the Config of the VAServer Launcher", Category =
-		"General Settigns"))
+		"General Settings"))
 	FString WhichVAServerVersionToStart = TEXT("2020.a");
 
 	// Controller for global auraliztion modes
