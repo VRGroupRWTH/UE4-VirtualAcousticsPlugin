@@ -89,20 +89,28 @@ public class VAPlugin : ModuleRules
 
 
         }
-        else // if (Target.Platform == UnrealTargetPlatform.Linux)
+        else if (Target.Platform == UnrealTargetPlatform.Linux)
         {
             PrivateRuntimeLibraryPaths.Add(LibPath);
+			PublicRuntimeLibraryPaths.Add(LibPath);
+			
+			PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVABase.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVistaBase.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVistaAspects.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVistaInterProcComm.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibPath,"libVANet.so"));
+			
+			RuntimeDependencies.Add(Path.Combine(LibPath,"libVABase.so"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"libVistaBase.so"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"libVistaAspects.so"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"libVistaInterProcComm.so"));
+            RuntimeDependencies.Add(Path.Combine(LibPath,"libVANet.so"));
 
-            foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.so", SearchOption.AllDirectories))
+            /*foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.so", SearchOption.AllDirectories))
             {
                 PublicAdditionalLibraries.Add(FilePath);
                 RuntimeDependencies.Add(FilePath);
-            }
-			foreach (string FilePath in Directory.EnumerateFiles(LibPath, "*.so.*", SearchOption.AllDirectories))
-            {
-                RuntimeDependencies.Add(FilePath);
-            }
-
+            }*/
         }
 
         //this is needed to register on Editor delegates, i.e., BeginPIE and EndPIE, but only in Editor builds
