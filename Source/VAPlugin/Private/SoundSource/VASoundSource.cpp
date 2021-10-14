@@ -27,7 +27,7 @@ FVASoundSource::FVASoundSource(UWorld* World, const FVector& Position, const FRo
 	bShowCones = FVAPlugin::GetDebugMode();
 
 	SoundSourceID = FVAPlugin::CreateNewSoundSource(Name, Position, Rotation, Power);
-	if (SoundSourceID == -1)
+	if (SoundSourceID == VA_INVALID_ID)
 	{
 		FVAUtils::LogStuff("[FVASoundSource::FVASoundSource()]: Error initializing VA sound source", true);
 		return;

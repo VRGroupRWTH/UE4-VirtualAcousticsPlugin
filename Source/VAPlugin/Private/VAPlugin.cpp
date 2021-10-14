@@ -556,7 +556,7 @@ std::string FVAPlugin::CreateSignalSourceBuffer(const FString& SoundFileName, co
 {
 	if (!ShouldInteractWithServer())
 	{
-		return VA_INVALID_ID_STRING;
+		return VA_SLAVE_ID_STRING;
 	}
 
 	if (SoundOffset < 0.0f)
@@ -687,7 +687,7 @@ bool FVAPlugin::SetSignalSourceBufferLooping(const std::string& SignalSourceID, 
 std::string FVAPlugin::CreateSignalSourcePrototype(UVAAbstractSignalSource* SignalSource)
 {
 	if (!ShouldInteractWithServer())
-		return VA_INVALID_ID_STRING;
+		return VA_SLAVE_ID_STRING;
 
 	if(SignalSource->GetPrototypeName() == "invalid")
 	{
@@ -766,7 +766,7 @@ int FVAPlugin::CreateNewSoundSource(const std::string& Name, FVector Pos, FRotat
 {
 	if (!ShouldInteractWithServer())
 	{
-		return VA_INVALID_ID;
+		return VA_SLAVE_ID;
 	}
 
 	bool bApplySignalSource = !SignalSourceID.empty();
@@ -975,7 +975,7 @@ int FVAPlugin::CreateNewDirectivity(const FString FileName)
 {
 	if (!ShouldInteractWithServer())
 	{
-		return VA_INVALID_ID;
+		return VA_SLAVE_ID;
 	}
 
 	try
@@ -1057,7 +1057,7 @@ int FVAPlugin::CreateNewHRIR(const FString FileName)
 {
 	if (!ShouldInteractWithServer())
 	{
-		return VA_INVALID_ID;
+		return VA_SLAVE_ID;
 	}
 
 	try
@@ -1108,7 +1108,7 @@ int FVAPlugin::CreateNewSoundReceiver(AVAReceiverActor* Actor)
 
 	if (!ShouldInteractWithServer())
 	{
-		return VA_INVALID_ID;
+		return VA_SLAVE_ID;
 	}
 
 	WorldScale = ReceiverActor->GetScale();
