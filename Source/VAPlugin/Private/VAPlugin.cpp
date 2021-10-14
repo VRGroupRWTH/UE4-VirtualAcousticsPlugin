@@ -24,19 +24,15 @@
 
 #include "VAReceiverActor.h"
 #include "SoundSource/VAAbstractSourceComponent.h"
-#include "VASettings.h"
 
 #include "Engine.h"
-#include "Networking.h"
 #include "Core.h"
 
 #include "Interfaces/IPluginManager.h"
-#include "Cluster/IDisplayClusterClusterManager.h"
 #include "Containers/UnrealString.h"
 #include "Utility/VirtualRealityUtilities.h"
 
 #include "IDisplayCluster.h"
-#include "SocketSubsystem.h"
 
 #if WITH_EDITOR
 #include "Editor.h"
@@ -81,7 +77,7 @@ TSharedPtr<VAVec3> FVAPlugin::TmpVAVec3SharedPtr;
 VAQuat* FVAPlugin::TmpVAQuat;
 VAVec3* FVAPlugin::TmpVAVec3;
 
-FSocket* FVAPlugin::VAServerLauncherSocket = nullptr;
+FVAServerLauncher FVAPlugin::VAServerLauncher;
 
 
 // ****************************************************************** // 
@@ -165,13 +161,12 @@ void FVAPlugin::BeginSession(const bool bSomething)
 
 void FVAPlugin::EndSession(const bool bSomething)
 {
-	if (VAServerLauncherSocket != nullptr)
-	{
-		VAServerLauncherSocket->Close();
-		VAServerLauncherSocket = nullptr;
+	if(bWasStarted){
+		DisconnectServer();
 	}
+	VAServerLauncher.ReleaseVAServerLauncherConnection();
 
-  ReceiverActor = nullptr;
+	ReceiverActor = nullptr;
 }
 
 void FVAPlugin::ShutdownModule()
@@ -188,11 +183,7 @@ void FVAPlugin::ShutdownModule()
 	FPlatformProcess::FreeDllHandle(LibraryHandleVistaInterProcComm);
 #endif // PLATFORM_WINDOWS
 
-	if (VAServerLauncherSocket != nullptr)
-	{
-		VAServerLauncherSocket->Close();
-		VAServerLauncherSocket = nullptr;
-	}
+	VAServerLauncher.ReleaseVAServerLauncherConnection();
 }
 
 void FVAPlugin::AskForSettings(const FString Host, const int Port, const bool bAskForDebugMode, const bool bAskForUseVA)
@@ -339,7 +330,7 @@ bool FVAPlugin::ResetServer()
 		return true;
 	}
 	
-	if (!ShouldInteractWithServer())
+	if (!ShouldInteractWithServer() || !IsConnected())
 	{
 		return false;
 	}
@@ -394,159 +385,41 @@ bool FVAPlugin::DisconnectServer()
 	
 	FVAUtils::LogStuff("[FVAPluginModule::disconnectServer()]: Disconnecting now", false);
 
-	if (VAServerLauncherSocket != nullptr)
-	{
-		VAServerLauncherSocket->Close();
-		VAServerLauncherSocket = nullptr;
-	}
-	else
-	{
-		VAServer->Finalize();
 
-		if (VANetClient != nullptr)
+	VAServer->Finalize();
+
+	if (VANetClient != nullptr)
+	{
+		if (VANetClient->IsConnected())
 		{
-			if (VANetClient->IsConnected())
-			{
-				VANetClient->Disconnect();
-			}
+			VANetClient->Disconnect();
 		}
 	}
+	VAServer = nullptr;
+	VANetClient = nullptr;
+
+	if (VAServerLauncher.IsVAServerLauncherConnected())
+	{
+		VAServerLauncher.ReleaseVAServerLauncherConnection();
+	}
+
 	return true;
 }
 
-bool FVAPlugin::RemoteStartVAServer(const FString& Host, const int Port, const FString& VersionName)
+void FVAPlugin::AddVAServerSearchPath(const std::string& SearchPath)
 {
-	bIsMaster = UVirtualRealityUtilities::IsMaster();
-
-	if (!bIsMaster)
-	{
-		return false;
-	}
-
-	if (VAServerLauncherSocket != nullptr)
-	{
-		return true;
-	}
-
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Try to remotely start the VAServer at address " + 
-		Host + ":" + FString::FromInt(Port) + " for version: " + VersionName, false);
-
-
-	//Connect
-	const FString SocketName(TEXT("VAServerStarterConnection"));
-	VAServerLauncherSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(
-		NAME_Stream, SocketName, false);
-
-	TSharedPtr<FInternetAddr> InternetAddress = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-
-	bool bValidIP;
-	InternetAddress->SetIp(*Host, bValidIP);
-	InternetAddress->SetPort(Port);
-
-	if (!bValidIP)
-	{
-		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: The Ip cannot be parsed!", true);
-		return false;
-	}
-
-	if (VAServerLauncherSocket == nullptr || !VAServerLauncherSocket->Connect(*InternetAddress))
-	{
-		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Cannot connect to Launcher!", true);
-		return false;
-	}
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Successfully connected to Launcher", false);
-
-	//Send requested version
-	TArray<uint8> RequestData;
-	for (TCHAR Character : VersionName.GetCharArray())
-	{
-		const uint8 InByte = static_cast<uint8>(Character);
-		if (InByte != 0)
-		{
-			RequestData.Add(static_cast<uint8>(Character));
+	CVAStruct Searchpaths = VAServer->GetSearchPaths();
+  	bool bAlreayAdded=false;
+	for(CVAStruct::const_iterator It = Searchpaths.Begin(); It != Searchpaths.End(); ++It) {
+		std::string Path = It->second;
+		if(Path == SearchPath){
+			bAlreayAdded=true;
 		}
 	}
-	
-	int BytesSend = 0;
-	VAServerLauncherSocket->Send(RequestData.GetData(), RequestData.Num(), BytesSend);
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Send " + FString::FromInt(BytesSend) + 
-		" bytes to the VAServer Launcher, with version name: " + VersionName + " Waiting for answer.", false);
-
-	//Receive response
-	const int32 BufferSize = 16;
-	int32 BytesRead = 0;
-	uint8 Response[16];
-	if (VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead) && BytesRead == 1)
-	{
-		switch (Response[0])
-		{
-		case 'g':
-			FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Received go from launcher, VAServer seems to be correctly started.", false);
-			break;
-		case 'n':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, invalid VAServer binary file or cannot be found",
-			                        true);
-			VAServerLauncherSocket = nullptr;
-			return false;
-		case 'i':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, invalid file entry in the config", true);
-			VAServerLauncherSocket = nullptr;
-			return false;
-		case 'a':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer was aborted", true);
-			VAServerLauncherSocket = nullptr;
-			return false;
-		case 'f':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, requested version \"" + 
-				VersionName + "\" is not available/specified", true);
-			VAServerLauncherSocket = nullptr;
-			return false;
-		default:
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: Unexpected response from VAServer Launcher: " + 
-				FString(reinterpret_cast<char*>(&Response[0])), true);
-			VAServerLauncherSocket = nullptr;
-			return false;
-		}
+	if(!bAlreayAdded){
+		VAServer->AddSearchPath(SearchPath);
 	}
-	else
-	{
-		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Error while receiving response from VAServer Launcher", true);
-		VAServerLauncherSocket = nullptr;
-		return false;
-	}
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: End of function", false);
-	return true;
 }
-
-bool FVAPlugin::StartVAServerLauncher()
-{
-  //check whether we can also start the VSServer Launcher python script.
-
-  const UVASettings* Settings = GetDefault<UVASettings>();
-  FString LauncherScriptDir = Settings->VALauncherPath;
-
-  if(FPaths::IsRelative(LauncherScriptDir))
-  {
-    FString ProjectDir = FPaths::ProjectDir();
-    ProjectDir = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*ProjectDir);
-    LauncherScriptDir = FPaths::ConvertRelativePathToFull(ProjectDir, LauncherScriptDir);
-  }
-
-  LauncherScriptDir = FPaths::Combine(LauncherScriptDir, TEXT("LaunchScript"));
-  FString LauncherScript = TEXT("VirtualAcousticsStarterServer.py");
-  if (FPaths::FileExists(FPaths::Combine(LauncherScriptDir, LauncherScript)))
-  {
-    FString command = "cd/d "+ LauncherScriptDir+" & start py " + LauncherScript;
-    system(TCHAR_TO_ANSI(*command));
-    return true;
-  }
-  else
-  {
-    FVAUtils::LogStuff("Unable to automatically start the launcher script, looked for "+LauncherScript+" at "+LauncherScriptDir+". If you want to use this convenience function change the VALauncher Path in the Engine/Virtual Acoustics(VA) section of the project settings. However, nothing bad will happen without.");
-  }
-  return false;
-}
-
 
 // ****************************************************************** // 
 // ******* Signal Sources ******************************************* //

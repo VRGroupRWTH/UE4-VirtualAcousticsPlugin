@@ -23,6 +23,10 @@ std::string FVAAudiofileManager::GetAudiofileSignalSourceID(FString Filename)
 	}
 	FVAUtils::LogStuff("[FVAAudiofileManager::GetAudiofileSignalSourceID()]: Signal source based on audiofile " +
 		Filename + " cannot be found! Creating one now...", false);
+
+	//also try to send the file over to the VAServer
+	FVAPlugin::VAServerLauncher.SendFileToVAServer(Filename);
+	
 	std::string ID = FVAPlugin::CreateSignalSourceBuffer(Filename);
 	if (ID == VA_INVALID_ID_STRING)
 	{
@@ -42,9 +46,12 @@ bool FVAAudiofileManager::PreLoadAudiofile(FString Filename)
 	if(!FVAPlugin::ShouldInteractWithServer())
 	{
 		FVAUtils::LogStuff("[FVAAudiofileManager::PreLoadAudiofile()]: No preloading on slave: " + Filename, false);
-		return true;
+		return false;
 	}
 
+	//also try to send the file over to the VAServer
+	FVAPlugin::VAServerLauncher.SendFileToVAServer(Filename);
+	
 	std::string ID = FVAPlugin::CreateSignalSourceBuffer(Filename);
 	if (ID == VA_INVALID_ID_STRING)
 	{
