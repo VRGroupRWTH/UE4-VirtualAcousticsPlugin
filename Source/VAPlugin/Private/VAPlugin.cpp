@@ -1305,7 +1305,7 @@ bool FVAPlugin::GetUseVA()
 {
 	if (!bPluginInitialized)
 	{
-		AskForSettings();
+		FVAUtils::LogStuff("[FVAPlugin::GetUseVA()] Not initialized on calling this method, although it should!", true);
 	}
 
 	return bUseVA;
@@ -1315,7 +1315,7 @@ bool FVAPlugin::GetDebugMode()
 {
 	if (!bPluginInitialized)
 	{
-		AskForSettings();
+		FVAUtils::LogStuff("[FVAPlugin::GetDebugMode()] Not initialized on calling this method, although it should!", true);
 	}
 
 	return bDebugMode;
@@ -1332,7 +1332,7 @@ bool FVAPlugin::ShouldInteractWithServer()
 {
 	if (!bPluginInitialized)
 	{
-		AskForSettings();
+		FVAUtils::LogStuff("[FVAPlugin::ShouldInteractWithServer()] Not initialized on calling this method, although it should!", true);
 	}
 
 	return (bIsMaster && bUseVA && IsConnected());
