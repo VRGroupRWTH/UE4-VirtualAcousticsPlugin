@@ -25,7 +25,7 @@ bool FVAServerLauncher::RemoteStartVAServer(const FString& Host, const int Port,
 		return true;
 	}
 
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Try to remotely start the VAServer at address " + 
+	FVAUtils::LogStuff("[FVAServerLauncher::RemoteStartVAServer()]: Try to remotely start the VAServer at address " + 
 		Host + ":" + FString::FromInt(Port) + " for version: " + VersionName, false);
 
 
@@ -42,22 +42,22 @@ bool FVAServerLauncher::RemoteStartVAServer(const FString& Host, const int Port,
 
 	if (!bValidIP)
 	{
-		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: The Ip cannot be parsed!", true);
+		FVAUtils::LogStuff("[FVAServerLauncher::RemoteStartVAServer()]: The Ip cannot be parsed!", true);
 		return false;
 	}
 
 	if (VAServerLauncherSocket == nullptr || !VAServerLauncherSocket->Connect(*InternetAddress))
 	{
-		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Cannot connect to Launcher!", true);
+		FVAUtils::LogStuff("[FVAServerLauncher::RemoteStartVAServer()]: Cannot connect to Launcher!", true);
 		return false;
 	}
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Successfully connected to Launcher", false);
+	FVAUtils::LogStuff("[FVAServerLauncher::RemoteStartVAServer()]: Successfully connected to Launcher", false);
 
 	//Send requested version
 	TArray<uint8> RequestData = ConvertString(VersionName);	
 	int BytesSend = 0;
 	VAServerLauncherSocket->Send(RequestData.GetData(), RequestData.Num(), BytesSend);
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Send " + FString::FromInt(BytesSend) + 
+	FVAUtils::LogStuff("[FVAServerLauncher::RemoteStartVAServer()]: Send " + FString::FromInt(BytesSend) + 
 		" bytes to the VAServer Launcher, with version name: " + VersionName + " Waiting for answer.", false);
 
 	//Receive response
@@ -69,28 +69,28 @@ bool FVAServerLauncher::RemoteStartVAServer(const FString& Host, const int Port,
 		switch (Response[0])
 		{
 		case 'g':
-			FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Received go from launcher, VAServer seems to be correctly started.", false);
+			FVAUtils::LogStuff("[FVAServerLauncher::RemoteStartVAServer()]: Received go from launcher, VAServer seems to be correctly started.", false);
 			break;
 		case 'n':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, invalid VAServer binary file or cannot be found",
+			FVAUtils::OpenMessageBox("[FVAServerLauncher::RemoteStartVAServer()]: VAServer cannot be launched, invalid VAServer binary file or cannot be found",
 			                        true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'i':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, invalid file entry in the config", true);
+			FVAUtils::OpenMessageBox("[FVAServerLauncher::RemoteStartVAServer()]: VAServer cannot be launched, invalid file entry in the config", true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'a':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer was aborted", true);
+			FVAUtils::OpenMessageBox("[FVAServerLauncher::RemoteStartVAServer()]: VAServer was aborted", true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		case 'f':
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: VAServer cannot be launched, requested version \"" + 
+			FVAUtils::OpenMessageBox("[FVAServerLauncher::RemoteStartVAServer()]: VAServer cannot be launched, requested version \"" + 
 				VersionName + "\" is not available/specified", true);
 			VAServerLauncherSocket = nullptr;
 			return false;
 		default:
-			FVAUtils::OpenMessageBox("[FVAPlugin::RemoteStartVAServer()]: Unexpected response from VAServer Launcher: " + 
+			FVAUtils::OpenMessageBox("[FVAServerLauncher::RemoteStartVAServer()]: Unexpected response from VAServer Launcher: " + 
 				FString(reinterpret_cast<char*>(&Response[0])), true);
 			VAServerLauncherSocket = nullptr;
 			return false;
@@ -98,11 +98,10 @@ bool FVAServerLauncher::RemoteStartVAServer(const FString& Host, const int Port,
 	}
 	else
 	{
-		FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: Error while receiving response from VAServer Launcher", true);
+		FVAUtils::LogStuff("[FVAServerLauncher::RemoteStartVAServer()]: Error while receiving response from VAServer Launcher", true);
 		VAServerLauncherSocket = nullptr;
 		return false;
 	}
-	FVAUtils::LogStuff("[FVAPlugin::RemoteStartVAServer()]: End of function", false);
 	return true;
 }
 
@@ -135,7 +134,7 @@ bool FVAServerLauncher::StartVAServerLauncher()
   }
   else
   {
-    FVAUtils::LogStuff("Unable to automatically start the launcher script, looked for "+LauncherScript+" at "+LauncherScriptDir+". If you want to use this convenience function change the VALauncher Path in the Engine/Virtual Acoustics(VA) section of the project settings. However, nothing bad will happen without.");
+    FVAUtils::LogStuff("[FVAServerLauncher::StartVAServerLauncher] Unable to automatically start the launcher script, looked for "+LauncherScript+" at "+LauncherScriptDir+". If you want to use this convenience function change the VALauncher Path in the Engine/Virtual Acoustics(VA) section of the project settings. However, nothing bad will happen without.");
   }
   return false;
 }
@@ -150,19 +149,19 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 	
 	if(VAServerLauncherSocket==nullptr)
 	{
-		FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: No connection to VAServer Starter, so no files can be send to VAServer!", true);
+		FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: No connection to VAServer Starter, so no files can be send to VAServer!", true);
 		return false;
 	}
 
 	if(!GetDefault<UVASettings>()->VALauncherCopyFiles)
 	{
-		FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Setting to not send files over the network to VAServer is set, so not sending anything!", false);
+		FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: Setting to not send files over the network to VAServer is set, so not sending anything!", false);
 		return false;
 	}
 
 	if(!FPaths::FileExists(FPaths::Combine(FPaths::ProjectContentDir(),RelativeFilename)))
 	{
-		FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File to send("+RelativeFilename+") could not be found and therefore not send!", true);
+		FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: File to send("+RelativeFilename+") could not be found and therefore not send!", true);
 		return false;
 	}
 
@@ -192,30 +191,30 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 				VAServerLauncherSocket->Send(&FileBinaryArray[BytesAlreadySend],BytesToSend, BytesSend);
 				BytesAlreadySend += BytesSend;
 			}
-			FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Entire file ("+RelativeFilename+") send!", false);
+			FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: Entire file ("+RelativeFilename+") send!", false);
 			VAServerLauncherSocket->Recv(Response, BufferSize, BytesRead);
 			if(BytesRead==3 && Response[0]=='a' && Response[1]=='c' && Response[2]=='k')
 			{
-				FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File was received by VAServerLauncher successfully!", false);
+				FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: File was received by VAServerLauncher successfully!", false);
 			}
 			else
 			{
-				FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File was NOT received by VAServerLauncher!", true);
+				FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: File was NOT received by VAServerLauncher!", true);
 				return false;
 			}
 		}
 		else if (ResponseString=="exists"){
-			FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: File already exists with same size, no need ro re-send!", false);
+			FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: File already exists with same size, no need ro re-send!", false);
 		}
 		else
 		{
-			FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Server Launcher does not want to receive a file, answer: "+ResponseString, true);
+			FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: Server Launcher does not want to receive a file, answer: "+ResponseString, true);
 			return false;	
 		}
 	}
 	else
 	{
-		FVAUtils::LogStuff("[FVAPlugin::SendFileToVAServer()]: Server Launcher does not want to receive a file, no answer!", true);
+		FVAUtils::LogStuff("[FVAServerLauncher::SendFileToVAServer()]: Server Launcher does not want to receive a file, no answer!", true);
 		return false;	
 	}
 
