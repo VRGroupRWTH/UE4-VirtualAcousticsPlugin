@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Utility/VirtualRealityUtilities.h"
 
 #include "Renderer/VABaseRenderer.h"
 
@@ -32,7 +33,7 @@ void AVABaseRenderer::BeginPlay()
 		AuralizationModeController->SetTargetRenderer(sRendererID);
 	}
 
-	if ( FVAPlugin::GetUseVA() && FVAPlugin::GetIsMaster() )
+	if ( FVAPlugin::GetUseVA() && UVirtualRealityUtilities::IsMaster() )
 	{
 		if (AuralizationModeController)
 		{

@@ -19,7 +19,7 @@
 #include "IDisplayCluster.h"						// For Events
 #include "Pawn/VirtualRealityPawn.h"						// VR Pawn
 #include "Kismet/GameplayStatics.h"					// Get Actors of class
-
+#include "Utility/VirtualRealityUtilities.h"
 
 
 // ****************************************************************** // 
@@ -42,8 +42,11 @@ void AVAReceiverActor::BeginPlay()
 
 	FVAPlugin::SetReceiverActor(this);
 
+	// Cluster Stuff for Events //
+	RunOnAllNodesEvent.Attach(this);
+
 	// CurrentReceiverActor = this;
-	if(bReconnecToVAServer && FVAPlugin::GetIsMaster() && FVAPlugin::IsConnected())
+	if(bReconnecToVAServer && UVirtualRealityUtilities::IsMaster() && FVAPlugin::IsConnected())
 	{
 		//this might be needed if different server version should be started between levels
 		FVAPlugin::DisconnectServer();
@@ -55,13 +58,15 @@ void AVAReceiverActor::BeginPlay()
 	{
 		FVAPlugin::VAServerLauncher.StartVAServerLauncher(); //if possible
 		bStartedVAServer = FVAPlugin::VAServerLauncher.RemoteStartVAServer(GetIPAddress(), RemoteVAStarterPort, WhichVAServerVersionToStart);
-		FVAPlugin::SetUseVA(bStartedVAServer);
+		if(bStartedVAServer){
+			FVAPlugin::SetUseVA(true);
+		}
 	}
 	
 	// Ask if used or not
 	FVAPlugin::AskForSettings(GetIPAddress(), GetPort(), bAskForDebugMode, !bStartedVAServer);
 
-	if (FVAPlugin::GetIsMaster())
+	if (UVirtualRealityUtilities::IsMaster())
 	{
 		if (FVAPlugin::GetUseVA())
 		{
@@ -79,22 +84,13 @@ void AVAReceiverActor::BeginPlay()
 	TimeSinceUpdate = 0.0f;
 	TotalTime = 0.0f;
 
-	// Cluster Stuff for Events //
-	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
-	if (ClusterManager && !ClusterEventListenerDelegate.IsBound())
-	{
-		ClusterEventListenerDelegate = FOnClusterEventJsonListener::CreateUObject(
-			this, &AVAReceiverActor::HandleClusterEvent);
-		ClusterManager->AddClusterEventJsonListener(ClusterEventListenerDelegate);
-	}
-
 	if (!FVAPlugin::GetUseVA())
 	{
 		return;
 	}
 
 
-	if (FVAPlugin::GetIsMaster())
+	if (UVirtualRealityUtilities::IsMaster())
 	{
 		FVAPlugin::SetScale(WorldScale);
 
@@ -152,7 +148,7 @@ void AVAReceiverActor::BeginPlay()
 		}
 	}
 
-	if (FVAPlugin::GetIsMaster())
+	if (UVirtualRealityUtilities::IsMaster())
 	{
 		if (FVAPlugin::GetDebugMode())
 		{
@@ -171,11 +167,7 @@ void AVAReceiverActor::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	IDisplayClusterClusterManager* ClusterManager = IDisplayCluster::Get().GetClusterMgr();
-	if (ClusterManager && ClusterEventListenerDelegate.IsBound())
-	{
-		ClusterManager->RemoveClusterEventJsonListener(ClusterEventListenerDelegate);
-	}
+	RunOnAllNodesEvent.Detach();
 
 	if(!FVAPlugin::GetWasStarted())
 	{
@@ -213,7 +205,7 @@ void AVAReceiverActor::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!FVAPlugin::GetUseVA() || !FVAPlugin::GetIsMaster())
+	if (!FVAPlugin::GetUseVA() || !UVirtualRealityUtilities::IsMaster())
 	{
 		return;
 	}
@@ -255,7 +247,7 @@ bool AVAReceiverActor::UpdateVirtualWorldPose()
 
 bool AVAReceiverActor::UpdateRealWorldPose()
 {
-	if (!(FVAPlugin::GetIsMaster() && FVAPlugin::GetUseVA()))
+	if (!UVirtualRealityUtilities::IsMaster() || !FVAPlugin::GetUseVA())
 	{
 		return false;
 	}
@@ -451,42 +443,9 @@ void AVAReceiverActor::SetDebugMode(const bool bDebugMode)
 }
 
 
-void AVAReceiverActor::RunOnAllNodes(const FString Command)
+void AVAReceiverActor::RunOnAllNodes(FString Command)
 {
-	if (IDisplayCluster::Get().GetOperationMode() != EDisplayClusterOperationMode::Cluster)
-	{
-		//in standalone (e.g., desktop editor play) cluster events are not executed....
-		HandleClusterCommand(Command);
-		FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
-			Command + " ran locally", false);
-	}
-	else
-	{
-		// else create a cluster event to react to
-		FDisplayClusterClusterEventJson ClusterEvent;
-		ClusterEvent.Name		= Command;
-		ClusterEvent.Category	= "VAPlugin";
-		ClusterEvent.Type		= "command";
-
-		IDisplayClusterClusterManager* const Manager = IDisplayCluster::Get().GetClusterMgr();
-		Manager->EmitClusterEventJson(ClusterEvent, true);
-
-		FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
-			Command + " sent", false);
-	}
-}
-
-void AVAReceiverActor::HandleClusterEvent(const FDisplayClusterClusterEventJson& Event)
-{
-	if (Event.Category == "VAPlugin" && Event.Type == "command")
-	{
-		HandleClusterCommand(Event.Name);
-	}
-}
-
-void AVAReceiverActor::HandleClusterCommand(const FString Command)
-{
-	FVAUtils::LogStuff("[AVAReceiverActor::HandleClusterCommand()]: Cluster Command " + 
+	FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
 		Command + " received", false);
 	
 	if (Command == "useVA = true")
@@ -507,7 +466,7 @@ void AVAReceiverActor::HandleClusterCommand(const FString Command)
 	}
 	else
 	{
-		FVAUtils::LogStuff("[AVAReceiverActor::HandleClusterCommand()]: Cluster Command " + 
+		FVAUtils::LogStuff("[AVAReceiverActor::RunOnAllNodes()]: Cluster Command " + 
 			Command + " could not be evaluated.", true);
 	}
 }

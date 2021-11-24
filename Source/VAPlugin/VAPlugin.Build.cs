@@ -34,6 +34,7 @@ public class VAPlugin : ModuleRules
                 "Engine",
                 "DisplayCluster", 
                 "RWTHVRToolkit",
+                "RWTHVRCluster",
                 "InputCore",
                 "Sockets",
                 "Networking",

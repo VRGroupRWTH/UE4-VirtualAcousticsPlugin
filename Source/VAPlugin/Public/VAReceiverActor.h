@@ -7,9 +7,9 @@
 #include "Templates/SharedPointer.h"
 
 #include "GameFramework/Actor.h"
-#include "Cluster/IDisplayClusterClusterManager.h"		// Events
-
 #include "AuralizationMode/VAAuralizationModeController.h"
+
+#include "Events/DisplayClusterEventWrapper.h"
 
 #include "VAReceiverActor.generated.h"
 
@@ -38,7 +38,7 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Scale", Category = "General Settings"))
 	float WorldScale = 100.0f;
 
-	// How many units in UE equal 1m in World
+	// How often are position updates etc. send
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Updates per second", Category = "General Settings"))
 	int UpdateRate = 30;
 
@@ -145,6 +145,7 @@ protected:
 	
 	// Cluster Stuff
 	void RunOnAllNodes(FString Command);
+	DECLARE_DISPLAY_CLUSTER_EVENT(AVAReceiverActor, RunOnAllNodes);
 
 	// Getter Functions	
 	bool IsInitialized() const;											// SourceC
@@ -159,21 +160,12 @@ protected:
 	bool UpdateVirtualWorldPose();
 	bool UpdateRealWorldPose();
 
-
-	// Cluster Stuff
-	void HandleClusterEvent(const FDisplayClusterClusterEventJson& Event);
-	void HandleClusterCommand(FString Command);
-
-
 	void InitializeWalls();
 
 	
 #if WITH_EDITOR
 	bool CanEditChange(const FProperty* InProperty) const override;
 #endif
-
-	// Current Receiver Actor
-	// CurrentReceiverActor;
 
 	
 	// Receiver Specific Data

@@ -14,6 +14,7 @@
 
 #include "Components/SkeletalMeshComponent.h"		// Skeletons
 #include "Kismet/GameplayStatics.h"					// Get Actors of Class
+#include "Utility/VirtualRealityUtilities.h"
 
 
 // Sets default values for this component's properties
@@ -53,7 +54,7 @@ void UVAAbstractSourceComponent::TickComponent(const float DeltaTime, const ELev
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!FVAPlugin::GetUseVA() || !FVAPlugin::GetIsMaster())
+	if (!FVAPlugin::GetUseVA() || !UVirtualRealityUtilities::IsMaster())
 	{
 		return;
 	}
@@ -65,7 +66,7 @@ void UVAAbstractSourceComponent::TickComponent(const float DeltaTime, const ELev
 	}
 
 
-	if (bFirstTick && FVAPlugin::GetIsMaster())
+	if (bFirstTick && UVirtualRealityUtilities::IsMaster())
 	{
 		TimeSinceUpdate = 1.0f;
 	}
@@ -152,7 +153,7 @@ void UVAAbstractSourceComponent::Initialize()
 	const std::string SoundSourceName = std::string( TCHAR_TO_UTF8(*GetName()) );
 	SoundSource = MakeShared<FVASoundSource>(GetWorld(), GetPosition(), GetRotation(), SoundPower, SoundSourceName);
 
-	if (FVAPlugin::GetIsMaster())
+	if (UVirtualRealityUtilities::IsMaster())
 	{
 		switch (DirectivitySetting)
 		{
@@ -229,7 +230,7 @@ bool UVAAbstractSourceComponent::SetSignalSourceID(const std::string& SignalSour
 
 bool UVAAbstractSourceComponent::ShouldSendCommand() const
 {
-	return (bInitialized && FVAPlugin::GetUseVA() && FVAPlugin::GetIsMaster());
+	return (bInitialized && FVAPlugin::GetUseVA() && UVirtualRealityUtilities::IsMaster());
 }
 
 

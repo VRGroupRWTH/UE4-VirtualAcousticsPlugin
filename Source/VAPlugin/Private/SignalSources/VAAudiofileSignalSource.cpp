@@ -5,6 +5,7 @@
 
 #include "VAUtils.h"
 #include "VAPlugin.h"
+#include "Utility/VirtualRealityUtilities.h"
 
 // ****************************************************************** // 
 // ******* Initialization ******************************************* //
@@ -111,7 +112,7 @@ bool UVAAudiofileSignalSource::SetLoop(const bool bLoopN)
 	}
 
 	
-	if (!FVAPlugin::GetIsMaster())
+	if (!UVirtualRealityUtilities::IsMaster())
 	{
 		return false;
 	}
@@ -127,7 +128,7 @@ bool UVAAudiofileSignalSource::SetLoop(const bool bLoopN)
 
 bool UVAAudiofileSignalSource::SetPlayBackPosition(const float Time)
 {
-	if (!FVAPlugin::GetIsMaster())
+	if (!UVirtualRealityUtilities::IsMaster())
 	{
 		return false;
 	}
@@ -136,7 +137,7 @@ bool UVAAudiofileSignalSource::SetPlayBackPosition(const float Time)
 
 bool UVAAudiofileSignalSource::SetPlayAction(const int Action)
 {
-	if (!FVAPlugin::GetIsMaster())
+	if (!UVirtualRealityUtilities::IsMaster())
 	{
 		return false;
 	}
@@ -171,7 +172,7 @@ EPlayAction::Type UVAAudiofileSignalSource::GetPlayActionEnum() const
 
 int UVAAudiofileSignalSource::GetPlayAction() const
 {
-	if (!FVAPlugin::GetIsMaster())
+	if (!UVirtualRealityUtilities::IsMaster())
 	{
 		return -1;
 	}
@@ -180,7 +181,7 @@ int UVAAudiofileSignalSource::GetPlayAction() const
 
 bool UVAAudiofileSignalSource::CopySignalSourceSettings(const std::string& OtherID)
 {
-	if (!FVAPlugin::GetIsMaster())
+	if (!UVirtualRealityUtilities::IsMaster())
 	{
 		return false;
 	}

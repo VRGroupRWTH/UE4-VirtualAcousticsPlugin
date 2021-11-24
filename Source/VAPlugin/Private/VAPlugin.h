@@ -149,7 +149,6 @@ public:
 	static bool GetWasStarted();
 	static bool GetUseVA();
 	static bool GetDebugMode();
-	static bool GetIsMaster();
 	static bool ShouldInteractWithServer();
 	static AVAReceiverActor* GetReceiverActor();
 
@@ -175,8 +174,6 @@ protected:
 	static bool bWasStarted; //to check whether it was at all started (not just Editor open and close again)
 	static bool bUseVA; // bool if VA is used 
 	static bool bDebugMode; // bool if is in Debug Mode
-	static bool bIsMaster; // bool if its the master node 
-
 
 	// Interface Classes to Server 
 	static IVANetClient* VANetClient; // VA Net Client

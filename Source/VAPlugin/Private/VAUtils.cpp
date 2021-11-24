@@ -5,12 +5,13 @@
 #include "VAPlugin.h"
 
 #include "VA.h"
+#include "Utility/VirtualRealityUtilities.h"
 
 DEFINE_LOG_CATEGORY(VALog);
 
 void FVAUtils::OpenMessageBox(const FString Text, const bool bError)
 {
-	if (!FVAPlugin::GetIsMaster())
+	if (!UVirtualRealityUtilities::IsMaster())
 	{
 		return;
 	}

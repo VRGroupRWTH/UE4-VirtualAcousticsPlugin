@@ -57,8 +57,6 @@ bool FVAPlugin::bPluginInitialized = false;
 bool FVAPlugin::bWasStarted = false;
 bool FVAPlugin::bUseVA = true;
 bool FVAPlugin::bDebugMode = true;
-bool FVAPlugin::bIsMaster = false;
-
 
 // Interface Classes to Server 
 IVANetClient* FVAPlugin::VANetClient;
@@ -156,7 +154,6 @@ void FVAPlugin::BeginSession(const bool bSomething)
 	bPluginInitialized = false;
 	SetUseVA(true);
 	SetDebugMode(true);
-	bIsMaster = UVirtualRealityUtilities::IsMaster();
 }
 
 void FVAPlugin::EndSession(const bool bSomething)
@@ -193,8 +190,9 @@ void FVAPlugin::AskForSettings(const FString Host, const int Port, const bool bA
 		return;
 	}
 
-	if (!bIsMaster)
+	if (!UVirtualRealityUtilities::IsMaster())
 	{
+		bPluginInitialized = true;
 		return;
 	}
 
@@ -281,7 +279,7 @@ bool FVAPlugin::CheckLibraryHandles()
 
 bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 {
-	if (!bIsMaster || !bUseVA)
+	if (!UVirtualRealityUtilities::IsMaster() || !bUseVA)
 	{
 		return false;
 	}
@@ -353,7 +351,7 @@ bool FVAPlugin::ResetServer()
 
 bool FVAPlugin::IsConnected()
 {
-	if (!bIsMaster || !bUseVA)
+	if (!UVirtualRealityUtilities::IsMaster() || !bUseVA)
 	{
 		return false;
 	}
@@ -1321,12 +1319,6 @@ bool FVAPlugin::GetDebugMode()
 	return bDebugMode;
 }
 
-bool FVAPlugin::GetIsMaster()
-{
-	bIsMaster = UVirtualRealityUtilities::IsMaster();
-
-	return bIsMaster;
-}
 
 bool FVAPlugin::ShouldInteractWithServer()
 {
@@ -1335,7 +1327,7 @@ bool FVAPlugin::ShouldInteractWithServer()
 		FVAUtils::LogStuff("[FVAPlugin::ShouldInteractWithServer()] Not initialized on calling this method, although it should!", true);
 	}
 
-	return (bIsMaster && bUseVA && IsConnected());
+	return (UVirtualRealityUtilities::IsMaster() && bUseVA && IsConnected());
 }
 
 AVAReceiverActor* FVAPlugin::GetReceiverActor()
