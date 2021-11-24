@@ -163,10 +163,8 @@ void AVAReceiverActor::BeginPlay()
 	bInitialized = true;
 }
 
-void AVAReceiverActor::BeginDestroy()
+void AVAReceiverActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::BeginDestroy();
-
 	RunOnAllNodesEvent.Detach();
 
 	if(!FVAPlugin::GetWasStarted())
@@ -179,6 +177,7 @@ void AVAReceiverActor::BeginDestroy()
 	DirManager->ResetManager();
 	HRIRManager->ResetManager();
 
+	Super::EndPlay(EndPlayReason);
 }
 
 void AVAReceiverActor::InitializeWalls()

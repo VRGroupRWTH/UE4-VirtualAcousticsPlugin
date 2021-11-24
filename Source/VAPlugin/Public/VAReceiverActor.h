@@ -154,7 +154,7 @@ protected:
 	
 	// Initialization
 	void BeginPlay() override;
-	void BeginDestroy() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	// Position updates
 	bool UpdateVirtualWorldPose();
