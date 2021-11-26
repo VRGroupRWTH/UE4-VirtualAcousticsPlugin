@@ -407,16 +407,13 @@ bool FVAPlugin::DisconnectServer()
 void FVAPlugin::AddVAServerSearchPath(const std::string& SearchPath)
 {
 	CVAStruct Searchpaths = VAServer->GetSearchPaths();
-  	bool bAlreayAdded=false;
-	for(CVAStruct::const_iterator It = Searchpaths.Begin(); It != Searchpaths.End(); ++It) {
-		std::string Path = It->second;
+	for(int i=0; i<Searchpaths.Size(); ++i) {
+		std::string Path = Searchpaths["path_"+std::to_string(i)].ToString();
 		if(Path == SearchPath){
-			bAlreayAdded=true;
+			return;
 		}
 	}
-	if(!bAlreayAdded){
-		VAServer->AddSearchPath(SearchPath);
-	}
+	VAServer->AddSearchPath(SearchPath);
 }
 
 // ****************************************************************** // 
