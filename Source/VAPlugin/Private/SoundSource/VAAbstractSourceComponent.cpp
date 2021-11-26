@@ -126,19 +126,20 @@ void UVAAbstractSourceComponent::Initialize()
 
 	UpdateRate = ReceiverActorTmp->GetUpdateRate();
 
-	
-
-	SkeletalMeshComponent = dynamic_cast<USkeletalMeshComponent*>(
-		GetOwner()->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
 
 	if (MovementSetting == EMovement::AttachToBone)
 	{
-		if (SkeletalMeshComponent != nullptr
-			&& SkeletalMeshComponent->DoesSocketExist(FName(*BoneName)))
+		TArray<UActorComponent*> MeshComponents = GetOwner()->GetComponentsByClass(USkeletalMeshComponent::StaticClass());
+		for(UActorComponent* Component : MeshComponents)
 		{
-			FVAUtils::LogStuff("[UVASourceComponent::Initialize()]: Bone " + BoneName + " detected.", false);
+			USkeletalMeshComponent* MeshComp = Cast<USkeletalMeshComponent>(Component);
+			if(MeshComp && MeshComp->DoesSocketExist(FName(*BoneName)))
+			{
+				//found the right mesh component
+				SkeletalMeshComponent = MeshComp;
+			}
 		}
-		else
+		if (SkeletalMeshComponent == nullptr)
 		{
 			FVAUtils::OpenMessageBox("[UVASourceComponent::Initialize()]: Could not find bone " + 
 				BoneName  + ", using MoveWithObject instead.", true);
