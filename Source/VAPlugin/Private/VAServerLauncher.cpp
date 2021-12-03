@@ -218,8 +218,7 @@ bool FVAServerLauncher::SendFileToVAServer(const FString& RelativeFilename)
 		return false;	
 	}
 
-	std::string SearchPath = "../tmp/"+std::string(TCHAR_TO_UTF8(*ProjectName));
-	FVAPlugin::AddVAServerSearchPath(SearchPath);
+	//the search path is added once after connecting to a new server
 
 	return true;
 }

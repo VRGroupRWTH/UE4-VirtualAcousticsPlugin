@@ -287,36 +287,39 @@ bool FVAPlugin::ConnectServer(const FString HostF, const int Port)
 	if (IsConnected())
 	{
 		ResetServer();
-		return true;
 	}
+	else{
 
-	FVAUtils::LogStuff("[FVAPlugin::ConnectServer()]: Connecting to VAServer. Be sure to have it switched on", false);
-
-	try
-	{
-		VANetClient = IVANetClient::Create();
-
-		const std::string HostS(TCHAR_TO_UTF8(*HostF));
-		VANetClient->Initialize(HostS, Port);
-		if (!VANetClient->IsConnected())
+		FVAUtils::LogStuff("[FVAPlugin::ConnectServer()]: Connecting to VAServer. Be sure to have it switched on", false);
+		try
 		{
-			FVAUtils::OpenMessageBox("[FVAPlugin::ConnectServer()]: Could not connect to VA Server", true);
+			VANetClient = IVANetClient::Create();
+
+			const std::string HostS(TCHAR_TO_UTF8(*HostF));
+			VANetClient->Initialize(HostS, Port);
+			if (!VANetClient->IsConnected())
+			{
+				FVAUtils::OpenMessageBox("[FVAPlugin::ConnectServer()]: Could not connect to VA Server", true);
+				bUseVA = false;
+				return false;
+			}
+
+			VAServer = VANetClient->GetCoreInstance();
+			VAServer->Reset();
+		}
+		catch (CVAException& e)
+		{
 			bUseVA = false;
+			ProcessException("FVAPluginModule::connectServer()", FString(e.ToString().c_str()));
+
 			return false;
 		}
-
-		VAServer = VANetClient->GetCoreInstance();
-		VAServer->Reset();
-	}
-	catch (CVAException& e)
-	{
-		bUseVA = false;
-		ProcessException("FVAPluginModule::connectServer()", FString(e.ToString().c_str()));
-
-		return false;
+		FVAUtils::LogStuff("[FVAPlugin::ConnectServer()]: Connected to the VA Server", false);
 	}
 
-	FVAUtils::LogStuff("[FVAPlugin::ConnectServer()]: Connected to the VA Server", false);
+	//add the according search path for audio files being send to the VAServer via network
+	const std::string SearchPath = "../tmp/"+std::string(TCHAR_TO_UTF8(*GetDefault<UGeneralProjectSettings>()->ProjectName));
+	AddVAServerSearchPath(SearchPath);
 
 	return true;
 }
@@ -406,13 +409,15 @@ bool FVAPlugin::DisconnectServer()
 
 void FVAPlugin::AddVAServerSearchPath(const std::string& SearchPath)
 {
-	CVAStruct Searchpaths = VAServer->GetSearchPaths();
+	// This checking whether it already exists, led to undeterministic runtime error, due to std::string dtor.
+	// So keep track whether it was added before yourself ;-)
+	/*CVAStruct Searchpaths = VAServer->GetSearchPaths();
 	for(int i=0; i<Searchpaths.Size(); ++i) {
 		std::string Path = Searchpaths["path_"+std::to_string(i)].ToString();
 		if(Path == SearchPath){
 			return;
 		}
-	}
+	}*/
 	VAServer->AddSearchPath(SearchPath);
 }
 
