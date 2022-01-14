@@ -41,7 +41,7 @@ public:
 
 	//Set renderer mute state. Returns true on success.
 	UFUNCTION(BlueprintCallable)
-	bool SetRendererMute(bool bMute) const;
+	bool SetRendererMute(bool bMute);
 
 	//Get renderer mute state
 	UFUNCTION(BlueprintCallable)

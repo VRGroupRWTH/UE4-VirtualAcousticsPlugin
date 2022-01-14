@@ -66,7 +66,7 @@ UVAAuralizationModeController* AVABaseRenderer::GetAuralizationModeController() 
 	return AuralizationModeController;
 }
 
-bool AVABaseRenderer::SetRendererMute(bool bMute) const
+bool AVABaseRenderer::SetRendererMute(bool bMute)
 {
 	const std::string sRendererID = TCHAR_TO_UTF8(*RendererID);
 	return FVAPlugin::SetRendererMute(sRendererID, bMute);
