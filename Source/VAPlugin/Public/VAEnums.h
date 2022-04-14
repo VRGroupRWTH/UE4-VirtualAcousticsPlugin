@@ -15,6 +15,13 @@ namespace EPlayAction
 	};
 }
 
+UENUM()
+enum class ETrackingSource : uint8
+{
+	VirtualRealityPawn,
+	ManualData
+};
+
 UENUM(BlueprintType)
 namespace EConnectionSetting
 {

@@ -91,6 +91,18 @@ protected:
 	UPROPERTY(EditAnywhere, Instanced, NoClear, meta = (DisplayName = "Auraliztion Mode Controller", Category = "Auralization Modes"))
 		UVAAuralizationModeController* AuralizationModeController;
 
+	// View point to head center offset (x forward-dir, y right-dir, z up-dir) in cm. Note that x and z most probably need to be negative!
+	UPROPERTY(EditAnywhere, meta = (Category = "General Settings"))
+	FVector ViewpointToHeadcenterOffset = FVector(0, 0, 0);
+
+	// Source for tracking data, e.g., VirtualRealityPawn, ManualData (Optitrack)
+	UPROPERTY(EditAnywhere, meta = (Category = "General Settings"))
+	ETrackingSource TrackingSource;
+
+	// Update Function for ManualData case. Can be called out of Unreal to link to an object in the scene which provides the location information
+	UFUNCTION(BlueprintCallable)
+	void SetManualTransformData(FVector Position, FRotator Rotation);
+
 
 public:
 

@@ -231,15 +231,39 @@ void AVAReceiverActor::Tick(const float DeltaTime)
 // ******* Position updates ***************************************** //
 // ****************************************************************** //
 
+void AVAReceiverActor::SetManualTransformData(FVector Pos, FRotator Rot)
+{
+	if (TrackingSource == ETrackingSource::ManualData)
+	{
+		const FVector HeadCenterPosition = Pos + Rot.RotateVector(ViewpointToHeadcenterOffset);
+
+		//Update VirtualWorldPose
+		FVAPlugin::SetSoundReceiverPosition(ReceiverID, HeadCenterPosition);
+		FVAPlugin::SetSoundReceiverRotation(ReceiverID, Rot);
+		//UE_LOG(LogTemp, Warning, TEXT("Optitrack %s"), *Pos.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Optitrack + Offset %s"), *(Pos + Rot.RotateVector(ViewpointToHeadcenterOffset)).ToString());
+
+		//Update RealWorldPose
+		//Todo for CTC
+	}
+}
+
 bool AVAReceiverActor::UpdateVirtualWorldPose()
 {
 	FVector ViewPos;
 	FRotator ViewRot;
-	
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(ViewPos, ViewRot);
 
-	FVAPlugin::SetSoundReceiverPosition(ReceiverID, ViewPos);
-	FVAPlugin::SetSoundReceiverRotation(ReceiverID, ViewRot);
+
+	switch (TrackingSource)
+	{
+	case ETrackingSource::VirtualRealityPawn: //Auralization Pose is coppled to the Virtual Reality Pawn, e.g, HMD, Computer Games
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(ViewPos, ViewRot);
+
+		FVAPlugin::SetSoundReceiverPosition(ReceiverID, ViewPos + ViewRot.RotateVector(ViewpointToHeadcenterOffset)); //Offset from ViewPoint (between eyes) to head center, rotate according to view rotation 
+		FVAPlugin::SetSoundReceiverRotation(ReceiverID, ViewRot);
+		UE_LOG(LogTemp, Warning, TEXT("VirtualWorldPose %s"), *ViewPos.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("VirtualWorldPose + Offset %s"), *(ViewPos + ViewRot.RotateVector(ViewpointToHeadcenterOffset)).ToString());
+	}
 
 	return false;
 }
@@ -276,12 +300,19 @@ bool AVAReceiverActor::UpdateRealWorldPose()
 	}
 
 	// calculate positions
-	const FQuat InverseOriginRot	= VirtualRealityPawn->GetActorQuat().Inverse();
-	const FVector Pos				= InverseOriginRot.RotateVector(
-		Head->GetComponentLocation() - VirtualRealityPawn->GetActorLocation());
-	const FQuat Quat				= InverseOriginRot * Head->GetComponentQuat();
+	const FQuat InverseOriginRot = VirtualRealityPawn->GetActorQuat().Inverse(); //Inverse Quaternion of Actor in Virtual World
+	const FVector HeadCenter = Head->GetComponentLocation() + Head->GetComponentRotation().RotateVector(ViewpointToHeadcenterOffset); //Location of Head Center in Virtual World
+	const FVector Pos = InverseOriginRot.RotateVector(
+		HeadCenter - VirtualRealityPawn->GetActorLocation()); //Get position by subtraction virtual origin
+	const FQuat Quat = InverseOriginRot * Head->GetComponentQuat();
 
-	return FVAPlugin::SetSoundReceiverRealWorldPose(ReceiverID, Pos, Quat.Rotator());
+
+	switch (TrackingSource)
+	{
+	case ETrackingSource::VirtualRealityPawn: //VirtualRealityPawn
+		return FVAPlugin::SetSoundReceiverRealWorldPose(ReceiverID, Pos, Quat.Rotator());
+	}
+	return false;
 }
 
 
